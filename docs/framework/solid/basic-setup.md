@@ -42,9 +42,9 @@ import { render } from 'solid-js/web';
 
 import { TanstackDevtools } from '@tanstack/solid-devtools'
 
-import { ReactQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
+import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'
-import { ReactFormDevtoolsPanel } from '@tanstack/solid-form'
+import { SolidFormDevtoolsPanel } from '@tanstack/solid-form'
 
 import App from './App'
 
@@ -55,16 +55,12 @@ render(() => (
     <TanstackDevtools
       plugins={[
         {
-          name: 'Tanstack Query',
-          render: () => <ReactQueryDevtoolsPanel />,
-        },
-        {
           name: 'Tanstack router',
           render: () => <TanStackRouterDevtoolsPanel />,
         },
         {
           name: 'Tanstack Form',
-          render: () => <ReactFormDevtoolsPanel />,
+          render: () => <SolidFormDevtoolsPanel />,
         },
       ]}
     />
