@@ -19,8 +19,14 @@ class QueryDevtoolsClient extends EventClient<EventMap> {
   constructor() {
     super({
       pluginId: 'query-devtools',
+      debug: true,
     })
   }
 }
 
 export const queryPlugin = new QueryDevtoolsClient()
+// this should be queued and emitted when bus is available
+queryPlugin.emit('test', {
+  title: 'Query Devtools',
+  description: 'A plugin for query debugging',
+})

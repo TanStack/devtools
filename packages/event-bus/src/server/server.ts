@@ -33,7 +33,9 @@ export class ServerEventBus {
     this.debugLog('Dispatching event from dispatcher, forwarding', event)
     this.emit(event)
   }
-
+  #connectFunction = () => {
+    this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
+  }
   constructor({ port = 42069, debug = false } = {}) {
     this.#port = port
     this.#eventTarget = globalThis.__EVENT_TARGET__ ?? new EventTarget()
@@ -165,6 +167,10 @@ export class ServerEventBus {
       'tanstack-dispatch-event',
       this.#dispatcher,
     )
+    this.#eventTarget.addEventListener(
+      'tanstack-connect',
+      this.#connectFunction,
+    )
     this.handleNewConnection(wss)
 
     // Handle connection upgrade for WebSocket
@@ -199,6 +205,10 @@ export class ServerEventBus {
     this.#eventTarget.removeEventListener(
       'tanstack-dispatch-event',
       this.#dispatcher,
+    )
+    this.#eventTarget.removeEventListener(
+      'tanstack-connect',
+      this.#connectFunction,
     )
     this.debugLog('[tanstack-devtools] All connections cleared')
   }

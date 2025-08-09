@@ -30,10 +30,17 @@ export class ClientEventBus {
   #eventTarget: EventTarget
   #debug: boolean
   #connectToServerBus: boolean
+
   #dispatcher = (e: Event) => {
     const event = (e as CustomEvent).detail
     this.emitToServer(event)
     this.emitToClients(event)
+  }
+  #connectFunction = () => {
+    this.debugLog(
+      'Connection request made to event-bus, replying back with success',
+    )
+    this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
   constructor({
     port = 42069,
@@ -46,6 +53,7 @@ export class ClientEventBus {
     this.#socket = null
     this.#connectToServerBus = connectToServerBus
     this.#eventTarget = this.getGlobalTarget()
+
     this.debugLog('Initializing client event bus')
   }
 
@@ -91,6 +99,10 @@ export class ClientEventBus {
       'tanstack-dispatch-event',
       this.#dispatcher,
     )
+    this.#eventTarget.addEventListener(
+      'tanstack-connect',
+      this.#connectFunction,
+    )
   }
   stop() {
     this.debugLog('Stopping client event bus')
@@ -100,6 +112,10 @@ export class ClientEventBus {
     this.#eventTarget.removeEventListener(
       'tanstack-dispatch-event',
       this.#dispatcher,
+    )
+    this.#eventTarget.removeEventListener(
+      'tanstack-connect',
+      this.#connectFunction,
     )
     this.#eventSource?.close()
     this.#socket?.close()

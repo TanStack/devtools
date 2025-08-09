@@ -23,7 +23,26 @@ export class EventClient<
   #pluginId: TPluginId
   #eventTarget: () => EventTarget
   #debug: boolean
+  #queuedEvents: Array<TanStackDevtoolsEvent<string, any>>
+  #connected: boolean
+  #connectIntervalId: number | null
+  #connectEveryMs: number
+  #retryCount = 0
+  #maxRetries = 5
 
+  #connectFunction = () => {
+    if (this.#retryCount < this.#maxRetries) {
+      this.#retryCount++
+      this.#eventTarget().dispatchEvent(new CustomEvent('tanstack-connect'))
+      return
+    }
+    this.#eventTarget().removeEventListener(
+      'tanstack-connect',
+      this.#connectFunction,
+    )
+    this.debugLog('Max retries reached, giving up on connection')
+    clearInterval(this.#connectIntervalId!)
+  }
   constructor({
     pluginId,
     debug = false,
@@ -35,6 +54,46 @@ export class EventClient<
     this.#eventTarget = this.getGlobalTarget
     this.#debug = debug
     this.debugLog(' Initializing event subscription for plugin', this.#pluginId)
+    this.#queuedEvents = []
+    this.#connected = false
+    this.#connectIntervalId = null
+    this.#connectEveryMs = 600
+    this.startConnectLoop()
+  }
+
+  private startConnectLoop() {
+    if (this.#connectIntervalId !== null) return
+    this.debugLog(`Starting connect loop (every ${this.#connectEveryMs}ms)`)
+    const onConnected = () => {
+      this.debugLog('Connected to event bus')
+      this.#connected = true
+      this.debugLog('Emitting queued events', this.#queuedEvents)
+      this.#queuedEvents.forEach((event) => this.emitEventToBus(event))
+      this.#queuedEvents = []
+      this.stopConnectLoop()
+      this.#eventTarget().removeEventListener(
+        'tanstack-connect-success',
+        onConnected,
+      )
+    }
+    this.#eventTarget().addEventListener(
+      'tanstack-connect-success',
+      onConnected,
+    )
+
+    this.#connectIntervalId = setInterval(
+      this.#connectFunction,
+      this.#connectEveryMs,
+    ) as unknown as number
+  }
+
+  private stopConnectLoop() {
+    if (this.#connectIntervalId === null) {
+      return
+    }
+    clearInterval(this.#connectIntervalId)
+    this.#connectIntervalId = null
+    this.debugLog('Stopped connect loop')
   }
 
   private debugLog(...args: Array<any>) {
@@ -84,7 +143,17 @@ export class EventClient<
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
   ) {
-    this.emitEventToBus({
+    // wait to connect to the bus
+    if (!this.#connected) {
+      this.debugLog('Bus not available, will be pushed as soon as connected')
+      return this.#queuedEvents.push({
+        type: `${this.#pluginId}:${eventSuffix}`,
+        payload,
+        pluginId: this.#pluginId,
+      })
+    }
+    // emit right now
+    return this.emitEventToBus({
       type: `${this.#pluginId}:${eventSuffix}`,
       payload,
       pluginId: this.#pluginId,
