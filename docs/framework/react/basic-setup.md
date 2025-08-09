@@ -7,10 +7,10 @@ TanStack devtools provides you with an easy to use and modular client that allow
 
 ## Setup
 
-Install the [TanStack Devtools](https://tanstack.com/devtools/) library, this will install the devtools core as well as provide you framework specific adapters.
+Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/react-devtools) library, this will install the devtools core as well as provide you framework specific adapters.
 
 ```bash
-npm i @tanstack/devtools
+npm i @tanstack/solid-devtools
 ```
 
 Next in the root of your application import the `TanstackDevtools` from the required framework adapter (in this case @tanstack/react-devtools).
@@ -38,10 +38,14 @@ Currently TanStack offers:
 - `FormDevtools`
 
 ```tsx
+import { createRoot } from 'react-dom/client'
+
 import { TanstackDevtools } from '@tanstack/react-devtools'
 
-import { QueryDevtools } from '@tanstack/react-query'
-import { FormDevtools } from '@tanstack/react-form'
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { ReactFormDevtoolsPanel } from '@tanstack/react-form'
+
 
 import App from './App'
 
@@ -53,11 +57,15 @@ createRoot(document.getElementById('root')!).render(
       plugins={[
         {
           name: 'Tanstack Query',
-          render: <QueryDevtools />,
+          render: <ReactQueryDevtoolsPanel />,
+        },
+        {
+          name: 'Tanstack Router',
+          render: <TanStackRouterDevtoolsPanel />,
         },
         {
           name: 'Tanstack Form',
-          render: <FormDevtools />,
+          render: <ReactFormDevtoolsPanel />,
         },
       ]}
     />
