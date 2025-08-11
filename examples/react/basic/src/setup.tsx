@@ -2,13 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import {
-  Outlet,
   Link,
-  createRouter,
-  createRoute,
+  Outlet,
+  RouterProvider,
   createRootRoute,
+  createRoute,
+  createRouter,
 } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { TanstackDevtools } from '@tanstack/react-devtools'
 
 const rootRoute = createRootRoute({
@@ -24,7 +24,6 @@ const rootRoute = createRootRoute({
       </div>
       <hr />
       <Outlet />
-      <TanStackRouterDevtools />
     </>
   ),
 })
@@ -41,7 +40,11 @@ const indexRoute = createRoute({
   },
 })
 function About() {
-  return <div className="p-2">Hello from About!</div>
+  return (
+    <div className="p-2">
+      <h3>Hello from About!</h3>
+    </div>
+  )
 }
 
 const aboutRoute = createRoute({
@@ -72,6 +75,7 @@ export default function DevtoolsExample() {
             },
           ]}
         />
+        <RouterProvider router={router} />
       </QueryClientProvider>
     </>
   )
