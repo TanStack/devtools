@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import Devtools from './setup'
 import { queryPlugin } from './plugin'
+
 setTimeout(() => {
   queryPlugin.emit('test', {
     title: 'Test Event',
@@ -12,10 +13,11 @@ setTimeout(() => {
 queryPlugin.on('test', (event) => {
   console.log('Received test event:', event)
 })
+
 function App() {
   return (
     <div>
-      <h1>TanStack Devtools Basic Example</h1>
+      <h1>TanStack Devtools React Basic Example</h1>
       <Devtools />
     </div>
   )
