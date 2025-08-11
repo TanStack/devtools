@@ -2,20 +2,28 @@ import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
 import { SolidQueryDevtools } from '@tanstack/solid-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'
 import {
+  Link,
   Outlet,
-  createRouter,
-  createRoute,
+  RouterProvider,
   createRootRoute,
+  createRoute,
+  createRouter,
 } from '@tanstack/solid-router'
-import { TanStackRouterDevtools } from '@tanstack/solid-router-devtools'
 import { TanstackDevtools } from '@tanstack/solid-devtools'
+
 const rootRoute = createRootRoute({
   component: () => (
     <>
-      <div class="p-2 flex gap-2"></div>
+      <div class="p-2 flex gap-2">
+        <Link to="/" class="[&.active]:font-bold">
+          Home
+        </Link>{' '}
+        <Link to="/about" class="[&.active]:font-bold">
+          About
+        </Link>
+      </div>
       <hr />
       <Outlet />
-      <TanStackRouterDevtools />
     </>
   ),
 })
@@ -32,8 +40,13 @@ const indexRoute = createRoute({
   },
 })
 function About() {
-  return <div class="p-2">Hello from About!</div>
+  return (
+    <div class="p-2">
+      <h3>Hello from About!</h3>
+    </div>
+  )
 }
+
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/about',
@@ -65,6 +78,7 @@ export default function DevtoolsExample() {
           },
         ]}
       />
+      <RouterProvider router={router} />
     </>
   )
 }
