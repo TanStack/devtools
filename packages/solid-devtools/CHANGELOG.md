@@ -1,5 +1,16 @@
 # @tanstack/solid-devtools
 
+## 0.3.0
+
+### Minor Changes
+
+- Added json tree to devtools-ui and adjusted the width for the plugin renderers ([#29](https://github.com/TanStack/devtools/pull/29))
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.3.1
+
 ## 0.2.2
 
 ### Patch Changes

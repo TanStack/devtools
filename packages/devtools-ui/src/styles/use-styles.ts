@@ -38,12 +38,14 @@ const stylesFactory = () => {
       font-size: 0.875rem;
       font-weight: 500;
       color: ${colors.gray[100]};
+      text-align: left;
     `,
     selectDescription: css`
       font-size: 0.8rem;
       color: ${colors.gray[400]};
       margin: 0;
       line-height: 1.3;
+      text-align: left;
     `,
     select: css`
       appearance: none;
@@ -87,12 +89,14 @@ const stylesFactory = () => {
       font-size: 0.875rem;
       font-weight: 500;
       color: ${colors.gray[100]};
+      text-align: left;
     `,
     inputDescription: css`
       font-size: 0.8rem;
       color: ${colors.gray[400]};
       margin: 0;
       line-height: 1.3;
+      text-align: left;
     `,
     input: css`
       appearance: none;
@@ -180,11 +184,13 @@ const stylesFactory = () => {
       font-size: 0.875rem;
       font-weight: 500;
       line-height: 1.4;
+      text-align: left;
     `,
     checkboxDescription: css`
       color: ${colors.gray[400]};
       font-size: 0.8rem;
       line-height: 1.3;
+      text-align: left;
     `,
     tree: {
       valueString: css`

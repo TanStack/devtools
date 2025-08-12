@@ -5,4 +5,4 @@ export * from '@tanstack/devtools'
  */
 
 export { TanstackDevtools } from './devtools'
-export type { TanStackDevtoolsSolidPlugin } from './devtools'
+export type { TanStackDevtoolsSolidPlugin } from './core'
