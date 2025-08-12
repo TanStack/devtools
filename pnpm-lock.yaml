@@ -240,6 +240,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4
 
+  examples/react/start/generated/prisma: {}
+
   examples/solid/basic:
     dependencies:
       '@tanstack/solid-devtools':
