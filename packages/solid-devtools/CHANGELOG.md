@@ -1,5 +1,11 @@
 # @tanstack/solid-devtools
 
+## 0.3.1
+
+### Patch Changes
+
+- Fixed issue where solid devtools didn't work with solid start ([#31](https://github.com/TanStack/devtools/pull/31))
+
 ## 0.3.0
 
 ### Minor Changes
