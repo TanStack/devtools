@@ -1,5 +1,5 @@
 {
-  "name": "example-bare",
+  "name": "@tanstack/devtools-example-solid-basic",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
