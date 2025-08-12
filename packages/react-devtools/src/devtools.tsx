@@ -153,7 +153,7 @@ export const TanstackDevtools = ({
 
   return (
     <>
-      <div style={{height: "100%"}} ref={devToolRef} />
+      <div style={{ height: '100%' }} ref={devToolRef} />
       {pluginContainer && PluginComponent
         ? createPortal(<>{PluginComponent}</>, pluginContainer)
         : null}
