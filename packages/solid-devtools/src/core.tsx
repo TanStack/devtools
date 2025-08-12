@@ -108,7 +108,7 @@ export default function SolidDevtoolsCore({
           typeof plugin.name === 'string'
             ? plugin.name
             : // The check above confirms that `plugin.name` is of Render type
-              (el) => convertRender(el, plugin.name as SolidPluginRender),
+            (el) => convertRender(el, plugin.name as SolidPluginRender),
         render: (el: HTMLDivElement) => convertRender(el, plugin.render),
       })),
     }),

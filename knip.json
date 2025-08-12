@@ -1,10 +1,17 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "ignoreDependencies": ["@size-limit/preset-small-lib", "@faker-js/faker"],
-  "ignoreWorkspaces": ["examples/**"],
+  "ignoreDependencies": [
+    "@size-limit/preset-small-lib",
+    "@faker-js/faker"
+  ],
+  "ignoreWorkspaces": [
+    "examples/**"
+  ],
   "workspaces": {
-    "packages/react-devtools": {
-      "ignore": []
+    "packages/solid-devtools": {
+      "ignore": [
+        "**/core.tsx"
+      ]
     }
   }
 }
