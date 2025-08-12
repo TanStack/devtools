@@ -5,7 +5,7 @@ export function JsonTree(props: { value: any }) {
   return <JsonValue isRoot value={props.value} />
 }
 
-export function JsonValue(props: {
+function JsonValue(props: {
   value: any
   keyName?: string
   isRoot?: boolean
