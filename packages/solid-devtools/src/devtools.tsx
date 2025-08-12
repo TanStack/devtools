@@ -126,5 +126,5 @@ export const TanstackDevtools = ({
       })
     }
   })
-  return <div ref={devToolRef} />
+  return <div style={{height: '100%'}} ref={devToolRef} />
 }

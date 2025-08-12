@@ -186,6 +186,31 @@ const stylesFactory = () => {
       font-size: 0.8rem;
       line-height: 1.3;
     `,
+    tree: {
+      valueString: css`
+      color: ${colors.green[400]};
+    `,
+      valueNumber: css`
+      color: ${colors.yellow[400]};
+    `,
+      valueBoolean: css`
+      color: ${colors.pink[400]};
+    `,
+      valueNull: css`
+      color: ${colors.gray[400]};
+      font-style: italic;
+    `,
+      valueKey: css`
+      color: ${colors.blue[300]};
+    `,
+      valueBraces: css`
+      color: ${colors.gray[500]};
+    `,
+      valueContainer: (isRoot: boolean) => css`
+      display: block;
+      margin-left: ${isRoot ? '0' : '1rem'};
+    `
+    }
   }
 }
 
