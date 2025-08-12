@@ -1,5 +1,12 @@
 # @tanstack/devtools
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [[`5372697`](https://github.com/TanStack/devtools/commit/5372697a58bfd60f4c25f0d3f7291c2d1b473b09)]:
+  - @tanstack/devtools-ui@0.3.0
+
 ## 0.3.0
 
 ### Minor Changes
