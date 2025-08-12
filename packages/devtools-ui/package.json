@@ -53,13 +53,13 @@
     "build": "vite build"
   },
   "dependencies": {
-    "goober": "^2.1.16",
-    "solid-js": "^1.9.7"
+    "goober": "catalog:",
+    "solid-js": "catalog:solid"
   },
   "peerDependencies": {
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
-    "vite-plugin-solid": "^2.11.6"
+    "vite-plugin-solid": "catalog:vite"
   }
 }

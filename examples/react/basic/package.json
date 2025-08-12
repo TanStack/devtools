@@ -9,21 +9,20 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "^0.2.1",
-    "@tanstack/react-devtools": "^0.2.2",
-    "@tanstack/react-query": "^5.83.0",
-    "@tanstack/react-query-devtools": "^5.83.0",
-    "@tanstack/react-router": "^1.130.2",
-    "@tanstack/react-router-devtools": "^1.130.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "zod": "^4.0.14"
+    "@tanstack/devtools-event-client": "catalog:tanstack",
+    "@tanstack/react-devtools": "catalog:tanstack",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-query-devtools": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
+    "@tanstack/react-router-devtools": "catalog:tanstack",
+    "react": "catalog:react",
+    "react-dom": "catalog:react"
   },
   "devDependencies": {
-    "@types/react": "^19.1.2",
-    "@types/react-dom": "^19.1.2",
-    "@vitejs/plugin-react": "^4.5.2",
-    "vite": "^7.0.6"
+    "@types/react": "catalog:react",
+    "@types/react-dom": "catalog:react",
+    "@vitejs/plugin-react": "catalog:vite",
+    "vite": "catalog:vite"
   },
   "browserslist": {
     "production": [
