@@ -74,7 +74,7 @@ npm install @tanstack/devtools # no framework, just vanilla js
 ### React
 
 ```tsx
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
@@ -82,14 +82,14 @@ function App() {
   return (
     <div>
       <h1>My App</h1>
-      <TanstackDevtools
+      <TanStackDevtools
         plugins={[
           {
-            name: 'Tanstack Query',
+            name: 'TanStack Query',
             render: <ReactQueryDevtoolsPanel />,
           },
           {
-            name: 'Tanstack Router',
+            name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
         ]}

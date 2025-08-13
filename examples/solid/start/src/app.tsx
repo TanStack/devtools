@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js'
-import { TanstackDevtools } from '@tanstack/solid-devtools'
+import { TanStackDevtools } from '@tanstack/solid-devtools'
 import './app.css'
 
 export default function App() {
@@ -7,7 +7,7 @@ export default function App() {
 
   return (
     <main>
-      <TanstackDevtools plugins={[]} />
+      <TanStackDevtools plugins={[]} />
 
       <h1>Hello world!</h1>
       <button

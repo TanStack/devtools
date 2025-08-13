@@ -9,7 +9,7 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router'
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ZustandTimeTravel } from './zustand-time-travel'
 
 const rootRoute = createRootRoute({
@@ -64,14 +64,14 @@ export default function DevtoolsExample() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <TanstackDevtools
+        <TanStackDevtools
           plugins={[
             {
-              name: 'Tanstack Query',
+              name: 'TanStack Query',
               render: <ReactQueryDevtoolsPanel />,
             },
             {
-              name: 'Tanstack Router',
+              name: 'TanStack Router',
               render: <TanStackRouterDevtoolsPanel router={router} />,
             },
             {

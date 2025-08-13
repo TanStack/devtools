@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { StudioPlugin } from './prisma-plugin'
 import ClientPlugin from './client-plugin'
 
@@ -11,17 +11,17 @@ export default function DevtoolsExample() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <TanstackDevtools
+        <TanStackDevtools
           eventBusConfig={{
             debug: true,
           }}
           plugins={[
             {
-              name: 'Tanstack Query',
+              name: 'TanStack Query',
               render: <ReactQueryDevtoolsPanel />,
             },
             {
-              name: 'Tanstack Router',
+              name: 'TanStack Router',
               render: <TanStackRouterDevtoolsPanel />,
             },
             {

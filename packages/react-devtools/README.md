@@ -5,7 +5,7 @@ This package is still under active development and might have breaking changes i
 ## Usage
 
 ```tsx
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -14,14 +14,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <h1>My App</h1>
-      <TanstackDevtools
+      <TanStackDevtools
         plugins={[
           {
-            name: 'Tanstack Query',
+            name: 'TanStack Query',
             render: <ReactQueryDevtoolsPanel />,
           },
           {
-            name: 'Tanstack Router',
+            name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
         ]}
@@ -33,16 +33,16 @@ function App() {
 
 ## Creating plugins
 
-In order to create a plugin for TanStack Devtools, you can use the `plugins` prop of the `TanstackDevtools` component. Here's an example of how to create a simple plugin:
+In order to create a plugin for TanStack Devtools, you can use the `plugins` prop of the `TanStackDevtools` component. Here's an example of how to create a simple plugin:
 
 ```tsx
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 function App() {
   return (
     <div>
       <h1>My App</h1>
-      <TanstackDevtools
+      <TanStackDevtools
         plugins={[
           {
             id: 'your-plugin-id',

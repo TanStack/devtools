@@ -66,7 +66,7 @@ export interface TanStackDevtoolsReactInit {
    *
    * Example:
    * ```jsx
-   * <TanstackDevtools
+   * <TanStackDevtools
    *   plugins={[
    *     {
    *       id: "your-plugin-id",
@@ -97,7 +97,7 @@ const convertRender = (
   setComponent(typeof Component === 'function' ? Component() : Component)
 }
 
-export const TanstackDevtools = ({
+export const TanStackDevtools = ({
   plugins,
   config,
   eventBusConfig,

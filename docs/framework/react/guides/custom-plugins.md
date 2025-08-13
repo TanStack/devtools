@@ -3,7 +3,7 @@ title: Custom plugins
 id: custom-plugins
 ---
 
-Tanstack devtools allows you to create your own custom plugins by emitting and listening to our event bus.
+TanStack devtools allows you to create your own custom plugins by emitting and listening to our event bus.
 
 ## Prerequisite
 
@@ -144,7 +144,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
 
-    <TanstackDevtools
+    <TanStackDevtools
       plugins={[
         {
           // Name it what you like, this is how it will appear in the Menu
@@ -160,11 +160,11 @@ createRoot(document.getElementById('root')!).render(
 
 ## Debugging
 
-Both the TansTack `TanstackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
+Both the TansTack `TanStackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
 
-TanstackDevtool's debugging mode can be activated like so:
+TanStackDevtool's debugging mode can be activated like so:
 ```tsx
-<TanstackDevtools
+<TanStackDevtools
   eventBusConfig={{ debug: true }}
   plugins={[
     {

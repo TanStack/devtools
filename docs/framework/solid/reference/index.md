@@ -13,4 +13,4 @@ title: "@tanstack/solid-devtools"
 
 ## Functions
 
-- [TanstackDevtools](functions/tanstackdevtools.md)
+- [TanStackDevtools](functions/tanstackdevtools.md)
