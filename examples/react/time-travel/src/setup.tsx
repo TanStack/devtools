@@ -75,9 +75,9 @@ export default function DevtoolsExample() {
               render: <TanStackRouterDevtoolsPanel router={router} />,
             },
             {
-              name: "Zustand time-travel",
+              name: 'Zustand time-travel',
               render: <ZustandTimeTravel />,
-            }
+            },
           ]}
         />
         <RouterProvider router={router} />

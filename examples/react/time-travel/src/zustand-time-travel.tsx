@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
-import { eventClient } from "./zustand-client";
+import { useEffect, useState } from 'react'
+import { eventClient } from './zustand-client'
 
 export function ZustandTimeTravel() {
-  const [snapshots, setSnapshots] = useState<Array<any>>([]);
+  const [snapshots, setSnapshots] = useState<Array<any>>([])
 
   useEffect(() => {
-
-    const cleanup = eventClient.on("stateChange", (event) => setSnapshots((prev) => [...prev, event.payload]));
+    const cleanup = eventClient.on('stateChange', (event) =>
+      setSnapshots((prev) => [...prev, event.payload]),
+    )
     return () => {
-      cleanup();
-    };
-  }, []);
+      cleanup()
+    }
+  }, [])
 
   return (
     <div>
@@ -22,10 +23,10 @@ export function ZustandTimeTravel() {
         min={0}
         max={snapshots.length - 1}
         onChange={(e) => {
-          const index = Number(e.target.value);
-          eventClient.emit("revertSnapshot", snapshots[index]);
+          const index = Number(e.target.value)
+          eventClient.emit('revertSnapshot', snapshots[index])
         }}
       />
     </div>
-  );
+  )
 }

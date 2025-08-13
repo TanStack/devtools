@@ -4,7 +4,7 @@ import Devtools from './setup'
 import { store } from './zustand-client'
 
 function App() {
-  const { count, increment, decrement } = useStore(store);
+  const { count, increment, decrement } = useStore(store)
   return (
     <div>
       <h1>Zustand time-travel</h1>
