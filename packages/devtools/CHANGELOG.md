@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.4.0
+
+### Minor Changes
+
+- Change the TanStackDevtools export ([#40](https://github.com/TanStack/devtools/pull/40))
+
 ## 0.3.2
 
 ### Patch Changes

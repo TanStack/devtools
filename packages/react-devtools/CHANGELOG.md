@@ -1,5 +1,16 @@
 # @tanstack/react-devtools
 
+## 0.4.0
+
+### Minor Changes
+
+- Change the TanStackDevtools export ([#40](https://github.com/TanStack/devtools/pull/40))
+
+### Patch Changes
+
+- Updated dependencies [[`94731d3`](https://github.com/TanStack/devtools/commit/94731d397436d10d43d874f3aff5bf549db32e06)]:
+  - @tanstack/devtools@0.4.0
+
 ## 0.3.1
 
 ### Patch Changes
