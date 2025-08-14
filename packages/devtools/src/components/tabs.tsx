@@ -23,17 +23,17 @@ export const Tabs = (props: TabsProps) => {
   const { setDetachedWindowOwner, detachedWindowOwner, detachedWindow } =
     useDetachedWindowControls()
   const handleDetachment = () => {
-    const rdtWindow = window.open(
+    const detachedWindow = window.open(
       window.location.href,
       '',
       `popup,width=${window.innerWidth},height=${state().height},top=${window.screen.height},left=${window.screenLeft}}`,
     )
 
-    if (rdtWindow) {
+    if (detachedWindow) {
       setDetachedWindowOwner(true)
       setStorageItem(TANSTACK_DEVTOOLS_IS_DETACHED, 'true')
       setSessionItem(TANSTACK_DEVTOOLS_DETACHED_OWNER, 'true')
-      rdtWindow.TDT_MOUNTED = true
+      detachedWindow.TDT_MOUNTED = true
     }
   }
   return (
