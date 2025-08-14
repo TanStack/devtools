@@ -8,7 +8,7 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router'
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -59,7 +59,7 @@ const router = createRouter({ routeTree })
 export default function DevtoolsExample() {
   return (
     <>
-      <TanstackDevtools
+      <TanStackDevtools
         plugins={[
           {
             name: 'Tanstack Query',

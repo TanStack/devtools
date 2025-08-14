@@ -2,7 +2,7 @@ import http from 'node:http'
 import { WebSocket, WebSocketServer } from 'ws'
 
 // Shared types
-export interface TanstackDevtoolsEvent<
+export interface TanStackDevtoolsEvent<
   TEventName extends string,
   TPayload = any,
 > {
@@ -55,7 +55,7 @@ export class ServerEventBus {
     }
   }
 
-  private emitToServer(event: TanstackDevtoolsEvent<string>) {
+  private emitToServer(event: TanStackDevtoolsEvent<string>) {
     this.debugLog('Emitting event to specific server listeners', event)
     this.#eventTarget.dispatchEvent(
       new CustomEvent(event.type, { detail: event }),
@@ -66,7 +66,7 @@ export class ServerEventBus {
     )
   }
 
-  private emitEventToClients(event: TanstackDevtoolsEvent<string>) {
+  private emitEventToClients(event: TanStackDevtoolsEvent<string>) {
     this.debugLog('Emitting event to clients', event)
     const json = JSON.stringify(event)
 
@@ -80,7 +80,7 @@ export class ServerEventBus {
     }
   }
 
-  private emit(event: TanstackDevtoolsEvent<string>) {
+  private emit(event: TanStackDevtoolsEvent<string>) {
     this.emitEventToClients(event)
     this.emitToServer(event)
   }

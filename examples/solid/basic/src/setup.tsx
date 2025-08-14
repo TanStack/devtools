@@ -9,7 +9,7 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/solid-router'
-import { TanstackDevtools } from '@tanstack/solid-devtools'
+import { TanStackDevtools } from '@tanstack/solid-devtools'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -62,10 +62,10 @@ const queryClient = new QueryClient()
 export default function DevtoolsExample() {
   return (
     <>
-      <TanstackDevtools
+      <TanStackDevtools
         plugins={[
           {
-            name: 'Tanstack Query',
+            name: 'TanStack Query',
             render: (
               <QueryClientProvider client={queryClient}>
                 <SolidQueryDevtools />
@@ -73,7 +73,7 @@ export default function DevtoolsExample() {
             ),
           },
           {
-            name: 'Tanstack Router',
+            name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
         ]}

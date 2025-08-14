@@ -34,6 +34,6 @@ plugin.on('b', (e) => {
 
 ## Understanding the implementation
 
-The `EventClient` class is a base class for creating plugins that can subscribe to events in the Tanstack Devtools event bus. It allows you to define a set of events and their corresponding data schemas using a standard-schema based schemas.
+The `EventClient` class is a base class for creating plugins that can subscribe to events in the TanStack Devtools event bus. It allows you to define a set of events and their corresponding data schemas using a standard-schema based schemas.
 
 It will work on both the client/server side and all you have to worry about is emitting/listening to events.

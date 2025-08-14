@@ -13,13 +13,13 @@ To get up and running install the correct adapter for your framework:
 Then import the devtools into the root of your application:
 
 ```javascript
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 function App() {
   return (
     <>
       <YourApp />
-      <TanstackDevtools />
+      <TanStackDevtools />
     </>
   )
 }
@@ -28,13 +28,13 @@ function App() {
 And you're done! If you want to add custom plugins, you can do so by using the `plugins` prop:
 
 ```javascript
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 function App() {
   return (
     <>
       <YourApp />
-      <TanstackDevtools plugins={[
+      <TanStackDevtools plugins={[
         // Add your custom plugins here
       ]} />
     </>
@@ -44,7 +44,7 @@ function App() {
 
 For example, if you want to add TanStack query & router you could do so in the following way:
 ```javascript
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
@@ -52,13 +52,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <YourApp />
-      <TanstackDevtools plugins={[
+      <TanStackDevtools plugins={[
         {
-          name: 'Tanstack Query',
+          name: 'TanStack Query',
           render: <ReactQueryDevtoolsPanel />,
         },
         {
-          name: 'Tanstack Router',
+          name: 'TanStack Router',
           render: <TanStackRouterDevtoolsPanel />,
         },
       ]} />

@@ -62,14 +62,14 @@ export type TanStackDevtoolsSolidPlugin = Omit<
    */
   name: string | SolidPluginRender
 }
-export interface TanstackDevtoolsInit {
+export interface TanStackDevtoolsInit {
   /**
    * Array of plugins to be used in the devtools.
    * Each plugin should have a `render` function that returns a React element or a function
    *
    * Example:
    * ```jsx
-   * <TanstackDevtools
+   * <TanStackDevtools
    *   plugins={[
    *     {
    *       id: "your-plugin-id",
@@ -97,7 +97,7 @@ export default function SolidDevtoolsCore({
   config,
   plugins,
   eventBusConfig,
-}: TanstackDevtoolsInit) {
+}: TanStackDevtoolsInit) {
   const [devtools] = createSignal(
     new TanStackDevtoolsCore({
       config,
@@ -126,5 +126,5 @@ export default function SolidDevtoolsCore({
       })
     }
   })
-  return <div style={{ height: '100%' }} ref={devToolRef} />
+  return <div style={{ position: 'absolute' }} ref={devToolRef} />
 }

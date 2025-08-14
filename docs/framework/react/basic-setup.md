@@ -13,10 +13,10 @@ Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/react-de
 npm i @tanstack/react-devtools
 ```
 
-Next in the root of your application import the `TanstackDevtools` from the required framework adapter (in this case @tanstack/react-devtools).
+Next in the root of your application import the `TanStackDevtools` from the required framework adapter (in this case @tanstack/react-devtools).
 
 ```tsx
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import App from './App'
 
@@ -24,12 +24,12 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
 
-    <TanstackDevtools />
+    <TanStackDevtools />
   </StrictMode>,
 )
 ```
 
-Import the desired devtools and provide it to the `TanstackDevtools` component along with a label for the menu.
+Import the desired devtools and provide it to the `TanStackDevtools` component along with a label for the menu.
 
 Currently TanStack offers:
 
@@ -40,7 +40,7 @@ Currently TanStack offers:
 ```tsx
 import { createRoot } from 'react-dom/client'
 
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
@@ -53,18 +53,18 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
 
-    <TanstackDevtools
+    <TanStackDevtools
       plugins={[
         {
-          name: 'Tanstack Query',
+          name: 'TanStack Query',
           render: <ReactQueryDevtoolsPanel />,
         },
         {
-          name: 'Tanstack Router',
+          name: 'TanStack Router',
           render: <TanStackRouterDevtoolsPanel />,
         },
         {
-          name: 'Tanstack Form',
+          name: 'TanStack Form',
           render: <ReactFormDevtoolsPanel />,
         },
       ]}
@@ -73,6 +73,6 @@ createRoot(document.getElementById('root')!).render(
 )
 ```
 
-Finally add any additional configuration you desire to the `TanstackDevtools` component, more information can be found under the [TanStack Devtools Configuration](../../configuration.md) section.
+Finally add any additional configuration you desire to the `TanStackDevtools` component, more information can be found under the [TanStack Devtools Configuration](../../configuration.md) section.
 
 A complete working example can be found in our [basic example](https://tanstack.com/devtools/latest/docs/framework/react/examples/basic).

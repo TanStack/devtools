@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { TanstackDevtools } from '@tanstack/react-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import App from './App'
 import CustomDevtoolPanel from './CustomDevtoolsPanel'
@@ -9,7 +9,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
 
-    <TanstackDevtools
+    <TanStackDevtools
       eventBusConfig={{ debug: true }}
       plugins={[
         {

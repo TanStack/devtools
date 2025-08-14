@@ -1,5 +1,17 @@
 # @tanstack/devtools
 
+## 0.4.0
+
+### Minor Changes
+
+- Change the TanStackDevtools export ([#40](https://github.com/TanStack/devtools/pull/40))
+
+## 0.3.2
+
+### Patch Changes
+
+- fix the height of the mounted container ([#38](https://github.com/TanStack/devtools/pull/38))
+
 ## 0.3.1
 
 ### Patch Changes
