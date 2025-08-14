@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.3.2
+
+### Patch Changes
+
+- fix the height of the mounted container ([#38](https://github.com/TanStack/devtools/pull/38))
+
 ## 0.3.1
 
 ### Patch Changes

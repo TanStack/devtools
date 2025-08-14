@@ -1,5 +1,14 @@
 # @tanstack/solid-devtools
 
+## 0.3.2
+
+### Patch Changes
+
+- fix the height of the mounted container ([#38](https://github.com/TanStack/devtools/pull/38))
+
+- Updated dependencies [[`4bbb4b8`](https://github.com/TanStack/devtools/commit/4bbb4b8715b89f7ad84fb137fdeebdf5a02569a3)]:
+  - @tanstack/devtools@0.3.2
+
 ## 0.3.1
 
 ### Patch Changes
