@@ -15,10 +15,15 @@ export const useCheckIfStillDetached = () => {
   const context = useDevtoolsContext()
 
   const checkDetachment = (e: StorageEvent) => {
-
-    const isWindowOwner = getBooleanFromSession(TANSTACK_DEVTOOLS_DETACHED_OWNER)
+    const isWindowOwner = getBooleanFromSession(
+      TANSTACK_DEVTOOLS_DETACHED_OWNER,
+    )
     // close the window if the main panel closed it via trigger
-    if (e.key === TANSTACK_DEVTOOLS_IS_DETACHED && e.newValue === "false" && !isWindowOwner) {
+    if (
+      e.key === TANSTACK_DEVTOOLS_IS_DETACHED &&
+      e.newValue === 'false' &&
+      !isWindowOwner
+    ) {
       window.close()
     }
     // We only care about the should_check key

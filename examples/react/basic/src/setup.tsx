@@ -1,4 +1,3 @@
-
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import {
@@ -57,7 +56,6 @@ const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
 
 const router = createRouter({ routeTree })
 
-
 export default function DevtoolsExample() {
   return (
     <>
@@ -74,7 +72,6 @@ export default function DevtoolsExample() {
         ]}
       />
       <RouterProvider router={router} />
-
     </>
   )
 }

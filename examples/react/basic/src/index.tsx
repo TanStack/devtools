@@ -1,8 +1,12 @@
 import { createRoot } from 'react-dom/client'
-import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { useState } from 'react'
 import Devtools from './setup'
-
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,9 +51,9 @@ function Posts({
                       // ones that are cached
                       queryClient.getQueryData(['post', post.id])
                         ? {
-                          fontWeight: 'bold',
-                          color: 'green',
-                        }
+                            fontWeight: 'bold',
+                            color: 'green',
+                          }
                         : {}
                     }
                   >
@@ -127,14 +131,12 @@ function App() {
 
   return (
     <div>
-      <QueryClientProvider
-        client={queryClient}
-      >
+      <QueryClientProvider client={queryClient}>
         <p>
           As you visit the posts below, you will notice them in a loading state
-          the first time you load them. However, after you return to this list and
-          click on any posts you have already visited again, you will see them
-          load instantly and background refresh right before your eyes!{' '}
+          the first time you load them. However, after you return to this list
+          and click on any posts you have already visited again, you will see
+          them load instantly and background refresh right before your eyes!{' '}
           <strong>
             (You may need to throttle your network speed to simulate longer
             loading sequences)
