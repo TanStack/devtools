@@ -4,6 +4,7 @@ import {
   TANSTACK_DEVTOOLS_DETACHED,
   TANSTACK_DEVTOOLS_DETACHED_OWNER,
   TANSTACK_DEVTOOLS_IS_DETACHED,
+  getBooleanFromSession,
   getBooleanFromStorage,
   setStorageItem,
 } from '../../utils/storage'
@@ -14,11 +15,18 @@ export const useCheckIfStillDetached = () => {
   const context = useDevtoolsContext()
 
   const checkDetachment = (e: StorageEvent) => {
+
+    const isWindowOwner = getBooleanFromSession(TANSTACK_DEVTOOLS_DETACHED_OWNER)
+    // close the window if the main panel closed it via trigger
+    if (e.key === TANSTACK_DEVTOOLS_IS_DETACHED && e.newValue === "false" && !isWindowOwner) {
+      window.close()
+    }
     // We only care about the should_check key
     if (e.key !== TANSTACK_DEVTOOLS_CHECK_DETACHED) {
       return
     }
     const isDetached = getBooleanFromStorage(TANSTACK_DEVTOOLS_IS_DETACHED)
+
     if (!isDetached) {
       return
     }
@@ -33,6 +41,7 @@ export const useCheckIfStillDetached = () => {
         const isNotDetachedAnymore = getBooleanFromStorage(
           TANSTACK_DEVTOOLS_CHECK_DETACHED,
         )
+
         // The window hasn't set it back to true so it is not detached anymore and we clean all the detached state
         if (isNotDetachedAnymore) {
           setStorageItem(TANSTACK_DEVTOOLS_IS_DETACHED, 'false')
