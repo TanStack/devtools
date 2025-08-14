@@ -12,6 +12,7 @@ const stylesFactory = () => {
   return {
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
+      isDetached: boolean,
     ) => css`
       direction: ltr;
       position: fixed;
@@ -21,8 +22,7 @@ const stylesFactory = () => {
       right: 0;
       z-index: 99999;
       width: 100%;
-
-      max-height: 90%;
+      ${isDetached ? '' : 'max-height: 90%;'}
       border-top: 1px solid ${colors.gray[700]};
       transform-origin: top;
     `,
@@ -181,7 +181,7 @@ const stylesFactory = () => {
       border: none;
       transition: all 0.2s ease-in-out;
       border-left: 2px solid transparent;
-      &:hover:not(.close):not(.active) {
+      &:hover:not(.close):not(.active):not(.detach) {
         background-color: ${colors.gray[700]};
         color: ${colors.gray[100]};
         border-left: 2px solid ${colors.purple[500]};
@@ -191,8 +191,15 @@ const stylesFactory = () => {
         color: ${colors.gray[100]};
         border-left: 2px solid ${colors.purple[500]};
       }
+      &.detach {
+        &:hover {
+          background-color: ${colors.gray[700]};
+        }
+        &:hover {
+          color: ${colors.green[500]};
+        }
+      }
       &.close {
-        margin-top: auto;
         &:hover {
           background-color: ${colors.gray[700]};
         }
@@ -312,6 +319,15 @@ const stylesFactory = () => {
       @media (max-width: 768px) {
         grid-template-columns: 1fr;
       }
+    `,
+    cover: css`
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9997;
+      background-color: ${colors.darkGray[700]};
+      top: 0;
+      left: 0;
     `,
   }
 }
