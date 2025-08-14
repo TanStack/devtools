@@ -126,5 +126,5 @@ export default function SolidDevtoolsCore({
       })
     }
   })
-  return <div style={{ height: '100%' }} ref={devToolRef} />
+  return <div style={{ position: 'absolute' }} ref={devToolRef} />
 }
