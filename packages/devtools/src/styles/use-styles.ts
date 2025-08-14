@@ -12,6 +12,7 @@ const stylesFactory = () => {
   return {
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
+      isDetached: boolean
     ) => css`
       direction: ltr;
       position: fixed;
@@ -20,9 +21,8 @@ const stylesFactory = () => {
       ${panelLocation}: 0;
       right: 0;
       z-index: 99999;
-      width: 100%;
-
-      max-height: 90%;
+      width: 100%; 
+      ${isDetached ? "" : "max-height: 90%;"}
       border-top: 1px solid ${colors.gray[700]};
       transform-origin: top;
     `,
@@ -320,6 +320,15 @@ const stylesFactory = () => {
         grid-template-columns: 1fr;
       }
     `,
+    cover: css`
+      position: fixed;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9997;
+      background-color: ${colors.darkGray[700]};
+      top: 0;
+      left:0;
+    `
   }
 }
 

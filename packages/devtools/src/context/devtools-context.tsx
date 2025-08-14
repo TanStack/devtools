@@ -2,11 +2,16 @@ import { createContext } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { tryParseJson } from '../utils/sanitize'
 import {
+  TANSTACK_DEVTOOLS_CHECK_DETACHED,
+  TANSTACK_DEVTOOLS_DETACHED,
   TANSTACK_DEVTOOLS_SETTINGS,
   TANSTACK_DEVTOOLS_STATE,
   getStorageItem,
+  setSessionItem,
   setStorageItem,
 } from '../utils/storage'
+import { checkIsDetached, checkIsDetachedOwner, checkIsDetachedWindow } from '../utils/detached'
+import { useRemoveBody } from '../hooks/detached/use-remove-body'
 import { initialState } from './devtools-store'
 import type { DevtoolsStore } from './devtools-store'
 import type { JSX, Setter } from 'solid-js'
@@ -91,13 +96,40 @@ const generatePluginId = (plugin: TanStackDevtoolsPlugin, index: number) => {
   return index.toString()
 }
 
-const getExistingStateFromStorage = (
+const setIsDetachedIfRequired = () => {
+  const isDetachedWindow = checkIsDetachedWindow()
+  if (!isDetachedWindow && window.TDT_MOUNTED) {
+    setSessionItem(TANSTACK_DEVTOOLS_DETACHED, "true")
+  }
+}
+
+const resetIsDetachedCheck = () => {
+  setStorageItem(TANSTACK_DEVTOOLS_CHECK_DETACHED, "false")
+}
+
+const detachedModeSetup = () => {
+  resetIsDetachedCheck()
+  setIsDetachedIfRequired()
+  const isDetachedWindow = checkIsDetachedWindow()
+  const isDetached = checkIsDetached()
+  const isDetachedOwner = checkIsDetachedOwner()
+
+  if (isDetachedWindow && !isDetached) {
+    window.close()
+  }
+
+  return {
+    detachedWindow: window.TDT_MOUNTED ?? isDetachedWindow,
+    detachedWindowOwner: isDetachedOwner,
+  }
+}
+export const getExistingStateFromStorage = (
   config?: TanStackDevtoolsConfig,
   plugins?: Array<TanStackDevtoolsPlugin>,
 ) => {
   const existingState = getStorageItem(TANSTACK_DEVTOOLS_STATE)
   const settings = getSettings()
-
+  const { detachedWindow, detachedWindowOwner } = detachedModeSetup()
   const state: DevtoolsStore = {
     ...initialState,
     plugins:
@@ -112,6 +144,8 @@ const getExistingStateFromStorage = (
       ...initialState.state,
       ...(existingState ? JSON.parse(existingState) : {}),
     },
+    detachedWindow,
+    detachedWindowOwner,
     settings: {
       ...initialState.settings,
       ...config,
@@ -127,6 +161,8 @@ export const DevtoolsProvider = (props: ContextProps) => {
   const [store, setStore] = createStore(
     getExistingStateFromStorage(props.config, props.plugins),
   )
+
+  useRemoveBody(store)
 
   const value = {
     store,

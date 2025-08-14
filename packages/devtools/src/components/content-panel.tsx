@@ -1,4 +1,5 @@
-import { useDevtoolsSettings } from '../context/use-devtools-context'
+import { Show } from 'solid-js'
+import { useDetachedWindowControls, useDevtoolsSettings } from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
@@ -9,14 +10,15 @@ export const ContentPanel = (props: {
 }) => {
   const styles = useStyles()
   const { settings } = useDevtoolsSettings()
+  const { isDetached } = useDetachedWindowControls()
   return (
     <div ref={props.ref} class={styles().devtoolsPanel}>
-      {props.handleDragStart ? (
+      <Show when={props.handleDragStart && !isDetached}>
         <div
           class={styles().dragHandle(settings().panelLocation)}
           onMouseDown={props.handleDragStart}
         ></div>
-      ) : null}
+      </Show>
       {props.children}
     </div>
   )

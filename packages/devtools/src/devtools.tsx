@@ -1,26 +1,33 @@
-import { Show, createEffect, createSignal } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import {
+  useDetachedWindowControls,
   useDevtoolsSettings,
   useHeight,
   usePersistOpen,
 } from './context/use-devtools-context'
 import { useDisableTabbing } from './hooks/use-disable-tabbing'
-import { TANSTACK_DEVTOOLS } from './utils/storage'
+import { TANSTACK_DEVTOOLS, TANSTACK_DEVTOOLS_DETACHED_OWNER, TANSTACK_DEVTOOLS_IS_DETACHED, setSessionItem, setStorageItem, } from './utils/storage'
 import { Trigger } from './components/trigger'
 import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
 import { Tabs } from './components/tabs'
 import { TabContent } from './components/tab-content'
+import { useResetDetachmentCheck } from './hooks/detached/use-reset-detachment-check'
+import { useSyncStateWhenDetached } from './hooks/detached/use-sync-state-when-detached'
+import { useWindowListener } from './hooks/use-event-listener'
+import { useCheckIfStillDetached } from './hooks/detached/use-check-if-still-detached'
 
 export default function DevTools() {
+  const { detachedWindowOwner, isDetached, setDetachedWindowOwner } = useDetachedWindowControls()
   const { settings } = useDevtoolsSettings()
   const { setHeight } = useHeight()
   const { persistOpen, setPersistOpen } = usePersistOpen()
   const [rootEl, setRootEl] = createSignal<HTMLDivElement>()
   const [isOpen, setIsOpen] = createSignal(
-    settings().defaultOpen || persistOpen(),
+    isDetached || settings().defaultOpen || persistOpen(),
   )
+
   let panelRef: HTMLDivElement | undefined = undefined
   const [isResizing, setIsResizing] = createSignal(false)
   const toggleOpen = () => {
@@ -28,7 +35,10 @@ export default function DevTools() {
     setIsOpen(!open)
     setPersistOpen(!open)
   }
-  createEffect(() => {})
+
+  useSyncStateWhenDetached()
+  useResetDetachmentCheck()
+  useCheckIfStillDetached()
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -116,10 +126,14 @@ export default function DevTools() {
     return
   })
   createEffect(() => {
-    window.addEventListener('keydown', (e) => {
+    const event = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen()) {
         toggleOpen()
       }
+    }
+    window.addEventListener('keydown', event)
+    onCleanup(() => {
+      window.removeEventListener('keydown', event)
     })
   })
   useDisableTabbing(isOpen)
@@ -136,14 +150,31 @@ export default function DevTools() {
     })
   })
 
-  createEffect(() => {})
+  createEffect(() => {
+    if (isDetached) {
+      useWindowListener("resize", () => {
+        setHeight(window.innerHeight)
+      })
+    }
+  })
+
   return (
-    <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
+    <div id={TANSTACK_DEVTOOLS} ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
+      <Show when={detachedWindowOwner()}>
+        <Trigger
+          isOpen={() => false}
+          setIsOpen={() => {
+            setDetachedWindowOwner(false)
+            setStorageItem(TANSTACK_DEVTOOLS_IS_DETACHED, "false")
+            setSessionItem(TANSTACK_DEVTOOLS_DETACHED_OWNER, "false")
+          }}
+        />
+      </Show>
       <Show
         when={
-          settings().requireUrlFlag
+          !detachedWindowOwner() && (settings().requireUrlFlag
             ? window.location.search.includes(settings().urlFlag)
-            : true
+            : true)
         }
       >
         <Trigger isOpen={isOpen} setIsOpen={toggleOpen} />

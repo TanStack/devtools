@@ -7,7 +7,7 @@ import type { DevtoolsStore } from './devtools-store.js'
  * Returns an object containing the current state and setState function of the ShellContext.
  * Throws an error if used outside of a ShellContextProvider.
  */
-const useDevtoolsContext = () => {
+export const useDevtoolsContext = () => {
   const context = useContext(DevtoolsContext)
   if (context === undefined) {
     throw new Error(
@@ -91,4 +91,30 @@ export const useHeight = () => {
   }
 
   return { height, setHeight }
+}
+
+declare global {
+  interface Window {
+    TDT_MOUNTED: boolean | undefined
+  }
+}
+
+export const useDetachedWindowControls = () => {
+  const { store, setStore } = useDevtoolsContext()
+  const detachedWindowOwner = createMemo(() => store.detachedWindowOwner)
+  const detachedWindow = createMemo(() => store.detachedWindow)
+  const mounted = createMemo(() => Boolean(window.TDT_MOUNTED))
+  const setDetachedWindowOwner = (isDetachedWindowOwner: boolean) => {
+    setStore((prev) => ({
+      ...prev,
+      detachedWindowOwner: isDetachedWindowOwner,
+    }))
+  }
+
+  return {
+    detachedWindow: detachedWindow() || mounted(),
+    detachedWindowOwner,
+    setDetachedWindowOwner,
+    isDetached: Boolean(detachedWindow() || detachedWindowOwner()),
+  }
 }
