@@ -10,7 +10,11 @@ import {
   setSessionItem,
   setStorageItem,
 } from '../utils/storage'
-import { checkIsDetached, checkIsDetachedOwner, checkIsDetachedWindow } from '../utils/detached'
+import {
+  checkIsDetached,
+  checkIsDetachedOwner,
+  checkIsDetachedWindow,
+} from '../utils/detached'
 import { useRemoveBody } from '../hooks/detached/use-remove-body'
 import { initialState } from './devtools-store'
 import type { DevtoolsStore } from './devtools-store'
@@ -99,12 +103,12 @@ const generatePluginId = (plugin: TanStackDevtoolsPlugin, index: number) => {
 const setIsDetachedIfRequired = () => {
   const isDetachedWindow = checkIsDetachedWindow()
   if (!isDetachedWindow && window.TDT_MOUNTED) {
-    setSessionItem(TANSTACK_DEVTOOLS_DETACHED, "true")
+    setSessionItem(TANSTACK_DEVTOOLS_DETACHED, 'true')
   }
 }
 
 const resetIsDetachedCheck = () => {
-  setStorageItem(TANSTACK_DEVTOOLS_CHECK_DETACHED, "false")
+  setStorageItem(TANSTACK_DEVTOOLS_CHECK_DETACHED, 'false')
 }
 
 const detachedModeSetup = () => {

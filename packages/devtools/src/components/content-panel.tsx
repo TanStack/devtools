@@ -1,5 +1,8 @@
 import { Show } from 'solid-js'
-import { useDetachedWindowControls, useDevtoolsSettings } from '../context/use-devtools-context'
+import {
+  useDetachedWindowControls,
+  useDevtoolsSettings,
+} from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 

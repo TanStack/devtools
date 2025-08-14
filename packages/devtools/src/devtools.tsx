@@ -7,7 +7,13 @@ import {
   usePersistOpen,
 } from './context/use-devtools-context'
 import { useDisableTabbing } from './hooks/use-disable-tabbing'
-import { TANSTACK_DEVTOOLS, TANSTACK_DEVTOOLS_DETACHED_OWNER, TANSTACK_DEVTOOLS_IS_DETACHED, setSessionItem, setStorageItem, } from './utils/storage'
+import {
+  TANSTACK_DEVTOOLS,
+  TANSTACK_DEVTOOLS_DETACHED_OWNER,
+  TANSTACK_DEVTOOLS_IS_DETACHED,
+  setSessionItem,
+  setStorageItem,
+} from './utils/storage'
 import { Trigger } from './components/trigger'
 import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
@@ -19,7 +25,8 @@ import { useWindowListener } from './hooks/use-event-listener'
 import { useCheckIfStillDetached } from './hooks/detached/use-check-if-still-detached'
 
 export default function DevTools() {
-  const { detachedWindowOwner, isDetached, setDetachedWindowOwner } = useDetachedWindowControls()
+  const { detachedWindowOwner, isDetached, setDetachedWindowOwner } =
+    useDetachedWindowControls()
   const { settings } = useDevtoolsSettings()
   const { setHeight } = useHeight()
   const { persistOpen, setPersistOpen } = usePersistOpen()
@@ -152,7 +159,7 @@ export default function DevTools() {
 
   createEffect(() => {
     if (isDetached) {
-      useWindowListener("resize", () => {
+      useWindowListener('resize', () => {
         setHeight(window.innerHeight)
       })
     }
@@ -165,14 +172,15 @@ export default function DevTools() {
           isOpen={() => false}
           setIsOpen={() => {
             setDetachedWindowOwner(false)
-            setStorageItem(TANSTACK_DEVTOOLS_IS_DETACHED, "false")
-            setSessionItem(TANSTACK_DEVTOOLS_DETACHED_OWNER, "false")
+            setStorageItem(TANSTACK_DEVTOOLS_IS_DETACHED, 'false')
+            setSessionItem(TANSTACK_DEVTOOLS_DETACHED_OWNER, 'false')
           }}
         />
       </Show>
       <Show
         when={
-          !detachedWindowOwner() && (settings().requireUrlFlag
+          !detachedWindowOwner() &&
+          (settings().requireUrlFlag
             ? window.location.search.includes(settings().urlFlag)
             : true)
         }

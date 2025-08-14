@@ -1,7 +1,6 @@
-
-import { createEffect } from "solid-js"
-import { useStyles } from "../../styles/use-styles"
-import type { DevtoolsStore } from "../../context/devtools-store"
+import { createEffect } from 'solid-js'
+import { useStyles } from '../../styles/use-styles'
+import type { DevtoolsStore } from '../../context/devtools-store'
 
 export const useRemoveBody = (state: DevtoolsStore) => {
   const styles = useStyles()
@@ -10,9 +9,8 @@ export const useRemoveBody = (state: DevtoolsStore) => {
       return
     }
 
-    const coverEl = document.createElement("div")
+    const coverEl = document.createElement('div')
     coverEl.classList.add(styles().cover)
     document.body.appendChild(coverEl)
-
   })
 }

@@ -55,7 +55,7 @@ export type DevtoolsStore = {
     activeTab: TabName
     height: number
     activePlugin?: string | undefined
-    persistOpen: boolean,
+    persistOpen: boolean
   }
   detachedWindowOwner?: boolean
   detachedWindow?: boolean

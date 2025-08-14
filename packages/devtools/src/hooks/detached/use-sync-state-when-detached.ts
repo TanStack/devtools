@@ -1,16 +1,26 @@
-import { getExistingStateFromStorage } from "../../context/devtools-context"
-import { useDevtoolsContext, useDevtoolsSettings, useDevtoolsState } from "../../context/use-devtools-context"
-import { TANSTACK_DEVTOOLS_SETTINGS, TANSTACK_DEVTOOLS_STATE } from "../../utils/storage"
-import { useWindowListener } from "../use-event-listener"
+import { getExistingStateFromStorage } from '../../context/devtools-context'
+import {
+  useDevtoolsContext,
+  useDevtoolsSettings,
+  useDevtoolsState,
+} from '../../context/use-devtools-context'
+import {
+  TANSTACK_DEVTOOLS_SETTINGS,
+  TANSTACK_DEVTOOLS_STATE,
+} from '../../utils/storage'
+import { useWindowListener } from '../use-event-listener'
 
-const refreshRequiredKeys = [TANSTACK_DEVTOOLS_SETTINGS, TANSTACK_DEVTOOLS_STATE]
+const refreshRequiredKeys = [
+  TANSTACK_DEVTOOLS_SETTINGS,
+  TANSTACK_DEVTOOLS_STATE,
+]
 
 // Sync state with local storage when in detached mode
 export const useSyncStateWhenDetached = () => {
   const { store } = useDevtoolsContext()
   const { state, setState } = useDevtoolsState()
   const { setSettings, settings } = useDevtoolsSettings()
-  useWindowListener("storage", (e) => {
+  useWindowListener('storage', (e) => {
     // Not in detached mode
     if (!store.detachedWindow && !store.detachedWindowOwner) {
       return

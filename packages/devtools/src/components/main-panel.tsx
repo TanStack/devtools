@@ -1,9 +1,12 @@
 import clsx from 'clsx'
-import { useDetachedWindowControls, useDevtoolsSettings, useHeight } from '../context/use-devtools-context'
+import {
+  useDetachedWindowControls,
+  useDevtoolsSettings,
+  useHeight,
+} from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
 import { TANSTACK_DEVTOOLS } from '../utils/storage'
 import type { Accessor, JSX } from 'solid-js'
-
 
 export const MainPanel = (props: {
   isOpen: Accessor<boolean>
@@ -18,7 +21,7 @@ export const MainPanel = (props: {
     <div
       id={TANSTACK_DEVTOOLS}
       style={{
-        height: isDetached ? window.innerHeight + "px" : height() + 'px',
+        height: isDetached ? window.innerHeight + 'px' : height() + 'px',
       }}
       class={clsx(
         styles().devtoolsPanelContainer(settings().panelLocation, isDetached),
