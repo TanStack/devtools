@@ -18,5 +18,7 @@ class MockClass {
   }
 }
 
-export const EventClient: typeof Client["EventClient"] =
-  process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== "test" ? MockClass as any : Client.EventClient
+export const EventClient: (typeof Client)['EventClient'] =
+  process.env.NODE_ENV !== 'development' && process.env.NODE_ENV !== 'test'
+    ? (MockClass as any)
+    : Client.EventClient
