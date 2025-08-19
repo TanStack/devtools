@@ -237,6 +237,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4
 
+  examples/react/start/generated/prisma: {}
+
   examples/react/time-travel:
     dependencies:
       '@tanstack/devtools-event-client':
@@ -353,6 +355,9 @@ importers:
 
   packages/devtools-ui:
     dependencies:
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
       goober:
         specifier: ^2.1.16
         version: 2.1.16(csstype@3.1.3)
