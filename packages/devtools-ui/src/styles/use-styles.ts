@@ -3,7 +3,10 @@ import { createSignal } from 'solid-js'
 import { tokens } from './tokens'
 import type { ButtonVariant } from '../components/button'
 
-const buttonVariantColors: Record<ButtonVariant, { bg: string; hover: string; active: string; text: string; border: string }> = {
+const buttonVariantColors: Record<
+  ButtonVariant,
+  { bg: string; hover: string; active: string; text: string; border: string }
+> = {
   primary: {
     bg: tokens.colors.purple[500],
     hover: tokens.colors.purple[600],
@@ -46,8 +49,8 @@ const buttonVariantColors: Record<ButtonVariant, { bg: string; hover: string; ac
     text: '#fff',
     border: tokens.colors.green[500],
   },
-};
-const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
+}
+const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
   const { colors, font, size, alpha } = tokens
   const { fontFamily } = font
   const css = goober.css
@@ -240,22 +243,26 @@ const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
     `,
     button: {
       base: css`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: ${tokens.font.fontFamily.sans};
-  font-size: 0.8rem;
-  font-weight: 500;
-  border-radius: 0.2rem;
-  padding: 0.2rem 0.6rem;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
-  outline: none;
-  border-width: 1px;
-  border-style: solid;
-`,
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-family: ${tokens.font.fontFamily.sans};
+        font-size: 0.8rem;
+        font-weight: 500;
+        border-radius: 0.2rem;
+        padding: 0.2rem 0.6rem;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          border 0.2s,
+          box-shadow 0.2s;
+        outline: none;
+        border-width: 1px;
+        border-style: solid;
+      `,
       variant(variant: ButtonVariant, outline?: boolean, ghost?: boolean) {
-        const v = buttonVariantColors[variant];
+        const v = buttonVariantColors[variant]
         if (ghost) {
           return goober.css`
             background: transparent;
@@ -267,7 +274,7 @@ const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
             &:active {
               background: ${tokens.colors.purple[200]};
             }
-          `;
+          `
         }
         if (outline) {
           return goober.css`
@@ -282,7 +289,7 @@ const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
               background: ${tokens.colors.purple[200]};
               border-color: ${v.active};
             }
-          `;
+          `
         }
         // Default solid button
         return goober.css`
@@ -297,8 +304,8 @@ const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
             background: ${v.active};
             border-color: ${v.active};
           }
-        `;
-      }
+        `
+      },
     },
     tag: {
       dot: (color: keyof typeof tokens.colors) => css`
