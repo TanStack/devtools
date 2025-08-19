@@ -1,4 +1,4 @@
-import { Show, createSignal } from 'solid-js'
+import { Show, } from 'solid-js'
 import { useStyles } from '../styles/use-styles'
 import type { tokens } from '../styles/tokens'
 
@@ -9,29 +9,10 @@ export const Tag = (props: {
   disabled?: boolean
 }) => {
   const styles = useStyles()
-
-  let tagRef!: HTMLButtonElement
-
-  const [mouseOver, setMouseOver] = createSignal(false)
-  const [focused, setFocused] = createSignal(false)
-
   return (
     <button
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      onMouseEnter={() => setMouseOver(true)}
-      onMouseLeave={() => {
-        setMouseOver(false)
-        setFocused(false)
-      }}
       disabled={props.disabled}
-      ref={tagRef}
       class={styles().tag.base}
-      {...(mouseOver() || focused()
-        ? {
-          'aria-describedby': 'tsqd-status-tooltip',
-        }
-        : {})}
     >
       <span class={styles().tag.dot(props.color)} />
       <span class={styles().tag.label}>{props.label}</span>
