@@ -30,7 +30,7 @@ export default function DevTools() {
     setIsOpen(!open)
     setPersistOpen(!open)
   }
-  createEffect(() => { })
+  createEffect(() => {})
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -134,8 +134,12 @@ export default function DevTools() {
   })
   createEffect(() => {
     // we create all combinations of modifiers
-    const modifiers = settings().openHotkey.filter(key => keyboardModifiers.includes(key as any))
-    const nonModifiers = settings().openHotkey.filter(key => !keyboardModifiers.includes(key as any))
+    const modifiers = settings().openHotkey.filter((key) =>
+      keyboardModifiers.includes(key as any),
+    )
+    const nonModifiers = settings().openHotkey.filter(
+      (key) => !keyboardModifiers.includes(key as any),
+    )
 
     const allModifierCombinations = getAllPermutations(modifiers)
     console.log(allModifierCombinations, nonModifiers)
@@ -145,7 +149,6 @@ export default function DevTools() {
         toggleOpen()
       })
     }
-
   })
 
   return (

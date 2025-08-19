@@ -1,4 +1,4 @@
-import { Show, createMemo, } from 'solid-js'
+import { Show, createMemo } from 'solid-js'
 import { Button, Checkbox, Input, Select } from '@tanstack/devtools-ui'
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { uppercaseFirstLetter } from '../utils/sanitize'
@@ -9,19 +9,22 @@ export const SettingsTab = () => {
   const { setSettings, settings } = useDevtoolsSettings()
   const styles = useStyles()
   const hotkey = createMemo(() => settings().openHotkey)
-  const modifiers: Array<ModifierKey> = ["Control", "Alt", "Meta", "Shift"]
+  const modifiers: Array<ModifierKey> = ['Control', 'Alt', 'Meta', 'Shift']
   const changeHotkey = (newHotkey: ModifierKey) => () => {
     if (hotkey().includes(newHotkey)) {
       return setSettings({
-        openHotkey: hotkey().filter(key => key !== newHotkey),
-      });
+        openHotkey: hotkey().filter((key) => key !== newHotkey),
+      })
     }
-    const existingModifiers = hotkey().filter(key => modifiers.includes(key as any));
-    const otherModifiers = hotkey().filter(key => !modifiers.includes(key as any));
+    const existingModifiers = hotkey().filter((key) =>
+      modifiers.includes(key as any),
+    )
+    const otherModifiers = hotkey().filter(
+      (key) => !modifiers.includes(key as any),
+    )
     setSettings({
       openHotkey: [...existingModifiers, newHotkey, ...otherModifiers],
-    });
-
+    })
   }
   return (
     <div class={styles().settingsContainer}>
@@ -154,40 +157,57 @@ export const SettingsTab = () => {
         <div class={styles().settingsGroup}>
           <div class={styles().settingsModifiers}>
             <Show keyed when={hotkey()}>
-              <Button variant="success" onclick={changeHotkey("Shift")} outline={!hotkey().includes("Shift")}>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Shift')}
+                outline={!hotkey().includes('Shift')}
+              >
                 Shift
               </Button>
-              <Button variant="success" onclick={changeHotkey("Alt")} outline={!hotkey().includes("Alt")}>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Alt')}
+                outline={!hotkey().includes('Alt')}
+              >
                 Alt
               </Button>
-              <Button variant="success" onclick={changeHotkey("Meta")} outline={!hotkey().includes("Meta")}>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Meta')}
+                outline={!hotkey().includes('Meta')}
+              >
                 Meta
               </Button>
-              <Button variant="success" onclick={changeHotkey("Control")} outline={!hotkey().includes("Control")}>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Control')}
+                outline={!hotkey().includes('Control')}
+              >
                 Control
               </Button>
-
             </Show>
           </div>
-
           <Input
             label="Hotkey to open/close devtools"
             description="Use '+' to combine keys (e.g., 'A+B' or 'D')"
             placeholder="A"
-            value={hotkey().filter(key => !(["Shift", "Meta", "Alt", "Ctrl"].includes(key))).join('+')}
+            value={hotkey()
+              .filter((key) => !['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key))
+              .join('+')}
             onChange={(e) =>
               setSettings({
                 openHotkey: [
-                  ...hotkey().filter(key => (["Shift", "Meta", "Alt", "Ctrl"].includes(key)))],
+                  ...hotkey().filter((key) =>
+                    ['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key),
+                  ),
+                ],
                 ...e
                   .split('+')
                   .map((key) => uppercaseFirstLetter(key))
                   .filter(Boolean),
-
               })
             }
           />
-
           Final shortcut is: {hotkey().join(' + ')}
         </div>
       </div>
