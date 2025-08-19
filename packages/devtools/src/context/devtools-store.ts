@@ -1,8 +1,9 @@
 import type { TabName } from '../tabs'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
 
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift'
+export type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift'
 type KeyboardKey = ModifierKey | (string & {})
+export const keyboardModifiers: Array<ModifierKey> = ['Alt', 'Control', 'Meta', 'Shift']
 
 type TriggerPosition =
   | 'top-left'
