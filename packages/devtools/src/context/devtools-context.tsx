@@ -85,7 +85,7 @@ const generatePluginId = (plugin: TanStackDevtoolsPlugin, index: number) => {
   }
   if (typeof plugin.name === 'string') {
     // if name is a string, use it to generate an id
-    return plugin.name.toLowerCase().replace(' ', '-')
+    return `${plugin.name.toLowerCase().replace(' ', '-')}-${index}`
   }
   // Name is JSX? return the index as a string
   return index.toString()
