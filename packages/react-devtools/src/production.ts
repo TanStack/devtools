@@ -4,4 +4,7 @@ import * as Devtools from './devtools'
 
 export const TanStackDevtools = Devtools.TanStackDevtools
 
-export type { TanStackDevtoolsReactPlugin, TanStackDevtoolsReactInit } from './devtools'
+export type {
+  TanStackDevtoolsReactPlugin,
+  TanStackDevtoolsReactInit,
+} from './devtools'

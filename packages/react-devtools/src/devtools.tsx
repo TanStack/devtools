@@ -123,16 +123,16 @@ export const TanStackDevtools = ({
               typeof plugin.name === 'string'
                 ? plugin.name
                 : // The check above confirms that `plugin.name` is of Render type
-                () => {
-                  setTitleContainer(
-                    document.getElementById(PLUGIN_TITLE_CONTAINER_ID) ||
-                    null,
-                  )
-                  convertRender(
-                    plugin.name as PluginRender,
-                    setTitleComponent,
-                  )
-                },
+                  () => {
+                    setTitleContainer(
+                      document.getElementById(PLUGIN_TITLE_CONTAINER_ID) ||
+                        null,
+                    )
+                    convertRender(
+                      plugin.name as PluginRender,
+                      setTitleComponent,
+                    )
+                  },
             render: () => {
               setPluginContainer(
                 document.getElementById(PLUGIN_CONTAINER_ID) || null,
