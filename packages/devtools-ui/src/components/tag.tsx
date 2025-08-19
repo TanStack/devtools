@@ -29,8 +29,8 @@ export const Tag = (props: {
       class={styles().tag.base}
       {...(mouseOver() || focused()
         ? {
-          'aria-describedby': 'tsqd-status-tooltip',
-        }
+            'aria-describedby': 'tsqd-status-tooltip',
+          }
         : {})}
     >
       <span class={styles().tag.dot(props.color)} />
