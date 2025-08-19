@@ -1,8 +1,9 @@
-// re-export everything from the core devtools package
-export * from '@tanstack/devtools'
-/**
- * Export every hook individually - DON'T export from barrel files
- */
+'use client'
 
-export * from './devtools'
-export type { TanStackDevtoolsReactPlugin } from './devtools'
+import * as Devtools from "./devtools";
+
+export const TanStackDevtools: (typeof Devtools)["TanStackDevtools"] =
+  process.env.NODE_ENV !== "development" ?
+    function () { return null; } : Devtools.TanStackDevtools;
+
+export type { TanStackDevtoolsReactPlugin, TanStackDevtoolsReactInit } from './devtools'

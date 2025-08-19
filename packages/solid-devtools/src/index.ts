@@ -1,8 +1,10 @@
-// re-export everything from the core devtools package
-export * from '@tanstack/devtools'
-/**
- * Export every hook individually - DON'T export from barrel files
- */
+import { isDev } from 'solid-js/web'
+import * as Devtools from "./devtools";
 
-export { TanStackDevtools } from './devtools'
+export const TanStackDevtools: typeof Devtools["TanStackDevtools"] = isDev ?
+  Devtools.TanStackDevtools :
+  function () {
+    return null;
+  }
+
 export type { TanStackDevtoolsSolidPlugin } from './core'

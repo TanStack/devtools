@@ -5,7 +5,7 @@ import {
   TanStackDevtoolsCore,
 } from '@tanstack/devtools'
 import { createPortal } from 'react-dom'
-import type { JSX } from 'react'
+import type { JSX, ReactElement } from 'react'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
@@ -101,7 +101,7 @@ export const TanStackDevtools = ({
   plugins,
   config,
   eventBusConfig,
-}: TanStackDevtoolsReactInit) => {
+}: TanStackDevtoolsReactInit): ReactElement | null => {
   const devToolRef = useRef<HTMLDivElement>(null)
   const [pluginContainer, setPluginContainer] = useState<HTMLElement | null>(
     null,
@@ -123,16 +123,16 @@ export const TanStackDevtools = ({
               typeof plugin.name === 'string'
                 ? plugin.name
                 : // The check above confirms that `plugin.name` is of Render type
-                  () => {
-                    setTitleContainer(
-                      document.getElementById(PLUGIN_TITLE_CONTAINER_ID) ||
-                        null,
-                    )
-                    convertRender(
-                      plugin.name as PluginRender,
-                      setTitleComponent,
-                    )
-                  },
+                () => {
+                  setTitleContainer(
+                    document.getElementById(PLUGIN_TITLE_CONTAINER_ID) ||
+                    null,
+                  )
+                  convertRender(
+                    plugin.name as PluginRender,
+                    setTitleComponent,
+                  )
+                },
             render: () => {
               setPluginContainer(
                 document.getElementById(PLUGIN_CONTAINER_ID) || null,

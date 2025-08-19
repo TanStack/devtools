@@ -7,6 +7,7 @@
     "start": "node .output/server/index.mjs",
     "serve": "vite preview",
     "test": "vitest run",
+    "build": "vite build",
     "db:migrate": "prisma migrate dev --name init",
     "db:reset": " prisma migrate reset",
     "db:gen": "prisma generate",
@@ -35,7 +36,6 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@tanstack/devtools": "^0.4.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/react": "^19.1.2",

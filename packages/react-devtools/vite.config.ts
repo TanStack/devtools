@@ -1,7 +1,8 @@
-import { defineConfig, mergeConfig, Plugin } from 'vitest/config'
+import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/config/vite'
 import react from '@vitejs/plugin-react'
 import packageJson from './package.json'
+import type { Plugin } from 'vitest/config';
 
 const config = defineConfig({
   plugins: [react() as any satisfies Plugin],
@@ -18,7 +19,7 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/index.ts'],
+    entry: ['./src/index.ts', './src/production.ts'],
     srcDir: './src',
   }),
 )
