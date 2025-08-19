@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.2
+
+### Patch Changes
+
+- exclude from production by default ([#45](https://github.com/TanStack/devtools/pull/45))
+
 ## 0.2.1
 
 ### Patch Changes

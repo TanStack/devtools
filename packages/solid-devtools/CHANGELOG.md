@@ -1,5 +1,11 @@
 # @tanstack/solid-devtools
 
+## 0.4.1
+
+### Patch Changes
+
+- exclude from production by default ([#45](https://github.com/TanStack/devtools/pull/45))
+
 ## 0.4.0
 
 ### Minor Changes
