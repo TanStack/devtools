@@ -355,9 +355,6 @@ importers:
 
   packages/devtools-ui:
     dependencies:
-      clsx:
-        specifier: ^2.1.1
-        version: 2.1.1
       goober:
         specifier: ^2.1.16
         version: 2.1.16(csstype@3.1.3)
