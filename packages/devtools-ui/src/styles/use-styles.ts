@@ -264,7 +264,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       variant(variant: ButtonVariant, outline?: boolean, ghost?: boolean) {
         const v = buttonVariantColors[variant]
         if (ghost) {
-          return goober.css`
+          return css`
             background: transparent;
             color: ${v.bg};
             border-color: transparent;
@@ -277,7 +277,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
           `
         }
         if (outline) {
-          return goober.css`
+          return css`
             background: transparent;
             color: ${v.bg};
             border-color: ${v.bg};
@@ -292,7 +292,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
           `
         }
         // Default solid button
-        return goober.css`
+        return css`
           background: ${v.bg};
           color: ${v.text};
           border-color: ${v.border};

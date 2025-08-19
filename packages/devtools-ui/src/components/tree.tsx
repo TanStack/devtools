@@ -1,7 +1,6 @@
 import { For, Show, createSignal } from 'solid-js'
+import clsx from 'clsx'
 import { useStyles } from '../styles/use-styles'
-
-const clsx = (...args: any) => [...args].filter(Boolean).join(' ')
 
 export function JsonTree(props: { value: any }) {
   return <JsonValue isRoot value={props.value} />
