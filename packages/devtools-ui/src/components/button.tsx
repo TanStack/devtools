@@ -28,9 +28,11 @@ export function Button(props: ButtonProps) {
     'className',
   ])
   const variant = local.variant || 'primary'
-  const classes = clsx(styles().button.base,
+  const classes = clsx(
+    styles().button.base,
     styles().button.variant(variant, local.outline, local.ghost),
-    local.className,)
+    local.className,
+  )
 
   return (
     <button {...rest} class={classes}>
