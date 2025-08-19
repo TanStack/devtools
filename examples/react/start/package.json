@@ -7,7 +7,7 @@
     "start": "node .output/server/index.mjs",
     "serve": "vite preview",
     "test": "vitest run",
-    "build": "vite build",
+    "preview": "vite preview",
     "db:migrate": "prisma migrate dev --name init",
     "db:reset": " prisma migrate reset",
     "db:gen": "prisma generate",
