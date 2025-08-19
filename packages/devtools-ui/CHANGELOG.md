@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.3.1
+
+### Patch Changes
+
+- new ui components and enhancements for json tree ([#47](https://github.com/TanStack/devtools/pull/47))
+
 ## 0.3.0
 
 ### Minor Changes
