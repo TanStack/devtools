@@ -31,7 +31,9 @@ export function Button(props: ButtonProps) {
     styles().button.base,
     styles().button.variant(variant, local.outline, local.ghost),
     local.className,
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <button {...rest} class={classes}>
