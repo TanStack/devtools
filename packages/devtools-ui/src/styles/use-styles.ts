@@ -2,7 +2,7 @@ import * as goober from 'goober'
 import { createSignal } from 'solid-js'
 import { tokens } from './tokens'
 
-const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
+const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
   const { colors, font, size, alpha } = tokens
   const { fontFamily } = font
   const css = goober.css
@@ -195,46 +195,47 @@ const stylesFactory = (theme: 'light' | 'dark' = "dark") => {
     `,
     tag: {
       dot: (color: keyof typeof tokens.colors) => css`
-            width: ${tokens.size[1.5]};
-            height: ${tokens.size[1.5]};
-            border-radius: ${tokens.border.radius.full};
-            background-color: ${tokens.colors[color][500]};
-          `, queryStatusTag: css`
-      display: flex;
-      gap: ${tokens.size[1.5]};
-      box-sizing: border-box;
-      height: ${tokens.size[6.5]};
-      background: ${t(colors.gray[50], colors.darkGray[500])};
-      color: ${t(colors.gray[700], colors.gray[300])};
-      border-radius: ${tokens.border.radius.sm};
-      font-size: ${font.size.sm};
-      padding: ${tokens.size[1]};
-      padding-left: ${tokens.size[1.5]};
-      align-items: center;
-      font-weight: ${font.weight.medium};
-      border: ${t('1px solid ' + colors.gray[300], '1px solid transparent')};
-      user-select: none;
-      position: relative;
-      &:focus-visible {
-        outline-offset: 2px;
-        outline: 2px solid ${colors.blue[800]};
-      }
-    `,
+        width: ${tokens.size[1.5]};
+        height: ${tokens.size[1.5]};
+        border-radius: ${tokens.border.radius.full};
+        background-color: ${tokens.colors[color][500]};
+      `,
+      queryStatusTag: css`
+        display: flex;
+        gap: ${tokens.size[1.5]};
+        box-sizing: border-box;
+        height: ${tokens.size[6.5]};
+        background: ${t(colors.gray[50], colors.darkGray[500])};
+        color: ${t(colors.gray[700], colors.gray[300])};
+        border-radius: ${tokens.border.radius.sm};
+        font-size: ${font.size.sm};
+        padding: ${tokens.size[1]};
+        padding-left: ${tokens.size[1.5]};
+        align-items: center;
+        font-weight: ${font.weight.medium};
+        border: ${t('1px solid ' + colors.gray[300], '1px solid transparent')};
+        user-select: none;
+        position: relative;
+        &:focus-visible {
+          outline-offset: 2px;
+          outline: 2px solid ${colors.blue[800]};
+        }
+      `,
       queryStatusTagLabel: css`
-      font-size: ${font.size.xs};
-    `,
+        font-size: ${font.size.xs};
+      `,
       queryStatusCount: css`
-      font-size: ${font.size.xs};
-      padding: 0 5px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: ${t(colors.gray[500], colors.gray[400])};
-      background-color: ${t(colors.gray[200], colors.darkGray[300])};
-      border-radius: 2px;
-      font-variant-numeric: tabular-nums;
-      height: ${tokens.size[4.5]};
-    `,
+        font-size: ${font.size.xs};
+        padding: 0 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: ${t(colors.gray[500], colors.gray[400])};
+        background-color: ${t(colors.gray[200], colors.darkGray[300])};
+        border-radius: 2px;
+        font-variant-numeric: tabular-nums;
+        height: ${tokens.size[4.5]};
+      `,
     },
     tree: {
       collapsible: css`

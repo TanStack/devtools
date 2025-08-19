@@ -1,11 +1,11 @@
-import { Show, createSignal, } from "solid-js"
-import { useStyles } from "../styles/use-styles"
-import type { tokens } from "../styles/tokens";
+import { Show, createSignal } from 'solid-js'
+import { useStyles } from '../styles/use-styles'
+import type { tokens } from '../styles/tokens'
 
 export const Tag = (props: {
-  color: keyof typeof tokens.colors;
-  label: string;
-  count?: number;
+  color: keyof typeof tokens.colors
+  label: string
+  count?: number
   disabled?: boolean
 }) => {
   const styles = useStyles()
@@ -14,7 +14,6 @@ export const Tag = (props: {
 
   const [mouseOver, setMouseOver] = createSignal(false)
   const [focused, setFocused] = createSignal(false)
-
 
   return (
     <button
@@ -30,27 +29,15 @@ export const Tag = (props: {
       class={styles().tag.queryStatusTag}
       {...(mouseOver() || focused()
         ? {
-          'aria-describedby': 'tsqd-status-tooltip',
-        }
+            'aria-describedby': 'tsqd-status-tooltip',
+          }
         : {})}
     >
-
-      <span
-        class={styles().tag.dot(props.color)}
-      />
-      <span
-        class={styles().tag.queryStatusTagLabel}
-      >
-        {props.label}
-      </span>
-
+      <span class={styles().tag.dot(props.color)} />
+      <span class={styles().tag.queryStatusTagLabel}>{props.label}</span>
 
       <Show when={props.count && props.count > 0}>
-        <span
-          class={styles().tag.queryStatusCount}
-        >
-          {props.count}
-        </span>
+        <span class={styles().tag.queryStatusCount}>{props.count}</span>
       </Show>
     </button>
   )

@@ -1,18 +1,27 @@
-import { splitProps } from 'solid-js';
-import * as goober from 'goober';
-import { tokens } from '../styles/tokens';
-import type { JSX } from 'solid-js';
+import { splitProps } from 'solid-js'
+import * as goober from 'goober'
+import { tokens } from '../styles/tokens'
+import type { JSX } from 'solid-js'
 
-type MainVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'warning';
+type MainVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'success'
+  | 'info'
+  | 'warning'
 type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: MainVariant;
-  outline?: boolean;
-  ghost?: boolean;
-  children?: any;
-  className?: string;
-};
+  variant?: MainVariant
+  outline?: boolean
+  ghost?: boolean
+  children?: any
+  className?: string
+}
 
-const variantColors: Record<MainVariant, { bg: string; hover: string; active: string; text: string; border: string }> = {
+const variantColors: Record<
+  MainVariant,
+  { bg: string; hover: string; active: string; text: string; border: string }
+> = {
   primary: {
     bg: tokens.colors.purple[500],
     hover: tokens.colors.purple[600],
@@ -55,7 +64,7 @@ const variantColors: Record<MainVariant, { bg: string; hover: string; active: st
     text: '#fff',
     border: tokens.colors.green[500],
   },
-};
+}
 
 const buttonBase = goober.css`
   display: inline-flex;
@@ -71,10 +80,14 @@ const buttonBase = goober.css`
   outline: none;
   border-width: 1px;
   border-style: solid;
-`;
+`
 
-function getButtonStyle(variant: MainVariant, outline?: boolean, ghost?: boolean) {
-  const v = variantColors[variant];
+function getButtonStyle(
+  variant: MainVariant,
+  outline?: boolean,
+  ghost?: boolean,
+) {
+  const v = variantColors[variant]
   if (ghost) {
     return goober.css`
       background: transparent;
@@ -86,7 +99,7 @@ function getButtonStyle(variant: MainVariant, outline?: boolean, ghost?: boolean
       &:active {
         background: ${tokens.colors.purple[200]};
       }
-    `;
+    `
   }
   if (outline) {
     return goober.css`
@@ -101,7 +114,7 @@ function getButtonStyle(variant: MainVariant, outline?: boolean, ghost?: boolean
         background: ${tokens.colors.purple[200]};
         border-color: ${v.active};
       }
-    `;
+    `
   }
   // Default solid button
   return goober.css`
@@ -116,21 +129,24 @@ function getButtonStyle(variant: MainVariant, outline?: boolean, ghost?: boolean
       background: ${v.active};
       border-color: ${v.active};
     }
-  `;
+  `
 }
 
 export function Button(props: ButtonProps) {
-  const [local, rest] = splitProps(props, ['variant', 'outline', 'ghost', 'children', 'className']);
-  const variant = local.variant || 'primary';
-  const style = getButtonStyle(variant, local.outline, local.ghost);
-  const classes = [buttonBase, style, local.className].filter(Boolean).join(' ');
+  const [local, rest] = splitProps(props, [
+    'variant',
+    'outline',
+    'ghost',
+    'children',
+    'className',
+  ])
+  const variant = local.variant || 'primary'
+  const style = getButtonStyle(variant, local.outline, local.ghost)
+  const classes = [buttonBase, style, local.className].filter(Boolean).join(' ')
 
   return (
-    <button
-      {...rest}
-      class={classes}
-    >
+    <button {...rest} class={classes}>
       {local.children}
     </button>
-  );
+  )
 }

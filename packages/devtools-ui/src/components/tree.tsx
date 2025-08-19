@@ -1,4 +1,4 @@
-import { For, Show, createSignal, } from 'solid-js'
+import { For, Show, createSignal } from 'solid-js'
 import clsx from 'clsx'
 import { useStyles } from '../styles/use-styles'
 
@@ -17,59 +17,34 @@ function JsonValue(props: {
 
   return (
     <span class={styles().tree.valueContainer(isRoot)}>
-      {keyName && typeof value !== "object" && !Array.isArray(value) && (
-        <span class={styles().tree.valueKey}>
-          &quot;{keyName}&quot;:{' '}
-        </span>
+      {keyName && typeof value !== 'object' && !Array.isArray(value) && (
+        <span class={styles().tree.valueKey}>&quot;{keyName}&quot;: </span>
       )}
       {(() => {
         if (typeof value === 'string') {
           return (
             <span class={styles().tree.valueString}>&quot;{value}&quot;</span>
-
           )
         }
         if (typeof value === 'number') {
-          return (
-
-            <span class={styles().tree.valueNumber}>{value}</span>
-
-          )
+          return <span class={styles().tree.valueNumber}>{value}</span>
         }
         if (typeof value === 'boolean') {
-          return (
-
-
-            <span class={styles().tree.valueBoolean}>{String(value)}</span>
-
-          )
+          return <span class={styles().tree.valueBoolean}>{String(value)}</span>
         }
         if (value === null) {
-          return (
-
-            <span class={styles().tree.valueNull}>null</span>
-
-          )
+          return <span class={styles().tree.valueNull}>null</span>
         }
         if (value === undefined) {
-          return (
-
-            <span class={styles().tree.valueNull}>undefined</span>
-
-          )
+          return <span class={styles().tree.valueNull}>undefined</span>
         }
-        if (typeof value === "function") {
+        if (typeof value === 'function') {
           return (
-
-
             <span class={styles().tree.valueFunction}>{String(value)}</span>
-
           )
         }
         if (Array.isArray(value)) {
-          return (
-            <ArrayValue keyName={keyName} value={value} />
-          )
+          return <ArrayValue keyName={keyName} value={value} />
         }
         if (typeof value === 'object') {
           return <ObjectValue keyName={keyName} value={value} />
@@ -81,18 +56,26 @@ function JsonValue(props: {
   )
 }
 
-
-const ArrayValue = ({ value, keyName }: { value: Array<any>, keyName?: string }) => {
-  const styles = useStyles();
+const ArrayValue = ({
+  value,
+  keyName,
+}: {
+  value: Array<any>
+  keyName?: string
+}) => {
+  const styles = useStyles()
   const [expanded, setExpanded] = createSignal(true)
   return (
     <span>
       {keyName && (
-        <span onclick={e => {
-          e.stopPropagation()
-          e.stopImmediatePropagation()
-          setExpanded(!expanded())
-        }} class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+        <span
+          onclick={(e) => {
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            setExpanded(!expanded())
+          }}
+          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+        >
           &quot;{keyName}&quot;:{' '}
         </span>
       )}
@@ -110,11 +93,14 @@ const ArrayValue = ({ value, keyName }: { value: Array<any>, keyName?: string })
         </For>
       </Show>
       <Show when={!expanded()}>
-        <span onClick={(e) => {
-          e.stopPropagation()
-          e.stopImmediatePropagation()
-          setExpanded(!expanded())
-        }} class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+        <span
+          onClick={(e) => {
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            setExpanded(!expanded())
+          }}
+          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+        >
           {`... ${value.length} more`}
         </span>
       </Show>
@@ -123,21 +109,32 @@ const ArrayValue = ({ value, keyName }: { value: Array<any>, keyName?: string })
   )
 }
 
-const ObjectValue = ({ value, keyName }: { value: Record<string, any>, keyName?: string }) => {
-  const styles = useStyles();
+const ObjectValue = ({
+  value,
+  keyName,
+}: {
+  value: Record<string, any>
+  keyName?: string
+}) => {
+  const styles = useStyles()
   const [expanded, setExpanded] = createSignal(true)
   const keys = Object.keys(value)
   const lastKeyName = keys[keys.length - 1]
 
   return (
-    <span >
-      {keyName && <span onClick={(e) => {
-        e.stopPropagation()
-        e.stopImmediatePropagation()
-        setExpanded(!expanded())
-      }} class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
-        &quot;{keyName}&quot;:{' '}
-      </span>}
+    <span>
+      {keyName && (
+        <span
+          onClick={(e) => {
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            setExpanded(!expanded())
+          }}
+          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+        >
+          &quot;{keyName}&quot;:{' '}
+        </span>
+      )}
       <span class={styles().tree.valueBraces}>{'{'}</span>
       <Show when={expanded()}>
         <For each={keys}>
@@ -153,12 +150,14 @@ const ObjectValue = ({ value, keyName }: { value: Record<string, any>, keyName?:
         </For>
       </Show>
       <Show when={!expanded()}>
-        <span onClick={(e) => {
-
-          e.stopPropagation()
-          e.stopImmediatePropagation()
-          setExpanded(!expanded())
-        }} class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+        <span
+          onClick={(e) => {
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            setExpanded(!expanded())
+          }}
+          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+        >
           {`... ${keys.length} more`}
         </span>
       </Show>
