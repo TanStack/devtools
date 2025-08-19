@@ -26,18 +26,18 @@ export const Tag = (props: {
       }}
       disabled={props.disabled}
       ref={tagRef}
-      class={styles().tag.queryStatusTag}
+      class={styles().tag.base}
       {...(mouseOver() || focused()
         ? {
-            'aria-describedby': 'tsqd-status-tooltip',
-          }
+          'aria-describedby': 'tsqd-status-tooltip',
+        }
         : {})}
     >
       <span class={styles().tag.dot(props.color)} />
-      <span class={styles().tag.queryStatusTagLabel}>{props.label}</span>
+      <span class={styles().tag.label}>{props.label}</span>
 
       <Show when={props.count && props.count > 0}>
-        <span class={styles().tag.queryStatusCount}>{props.count}</span>
+        <span class={styles().tag.count}>{props.count}</span>
       </Show>
     </button>
   )
