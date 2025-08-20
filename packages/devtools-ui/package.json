@@ -73,7 +73,6 @@
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
-    "@types/react": "19.1.10",
     "vite-plugin-solid": "^2.11.6"
   }
 }
