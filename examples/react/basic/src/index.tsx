@@ -32,7 +32,14 @@ function App() {
     <div>
       <h1>TanStack Devtools React Basic Example</h1>
       <tsd-json-tree value={JSON.stringify(value)} />
-      <tsd-button text="test" ghost={true} outline={true} value='test' variant="secondary" onClick={() => console.log('Button clicked!')} />
+      <tsd-button
+        text="test"
+        ghost={true}
+        outline={true}
+        value="test"
+        variant="secondary"
+        onClick={() => console.log('Button clicked!')}
+      />
       <Devtools />
     </div>
   )

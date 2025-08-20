@@ -25,7 +25,12 @@ const rootRoute = createRootRoute({
       <tsd-json-tree
         value={{ title: 'Test Event', description: 'This is a test event.' }}
       />
-      <tsd-button text="test" value='test' variant="secondary" onClick={() => console.log('Button clicked!')} />
+      <tsd-button
+        text="test"
+        value="test"
+        variant="secondary"
+        onClick={() => console.log('Button clicked!')}
+      />
       <hr />
       <Outlet />
     </>
