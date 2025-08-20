@@ -32,6 +32,16 @@
         "default": "./dist/cjs/index.cjs"
       }
     },
+    "./types": {
+      "import": {
+        "types": "./dist/esm/types.d.ts",
+        "default": "./dist/esm/types.js"
+      },
+      "require": {
+        "types": "./dist/cjs/types.d.cts",
+        "default": "./dist/cjs/types.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -55,12 +65,15 @@
   "dependencies": {
     "clsx": "^2.1.1",
     "goober": "^2.1.16",
+    "solid-element": "^1.9.1",
     "solid-js": "^1.9.7"
   },
   "peerDependencies": {
+    "@types/react": ">=17.0.0",
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
-    "vite-plugin-solid": "^2.11.6"
+    "vite-plugin-solid": "^2.11.6",
+    "@types/react": "19.1.10"
   }
 }
