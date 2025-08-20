@@ -167,8 +167,13 @@ const ObjectValue = ({
   )
 }
 
+// web component
+export interface JsonTreeWebComponentProps {
+  value: any
+}
+
 export const registerJsonTreeComponent = (elName: string = 'tsd-json-tree') =>
-  customElement(elName, { value: {} }, (props, { element }) => {
+  customElement<JsonTreeWebComponentProps>(elName, { value: {} }, (props, { element }) => {
     noShadowDOM()
     function getValue(value: any) {
       if (typeof value === 'string') {
