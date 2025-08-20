@@ -32,16 +32,6 @@
         "default": "./dist/cjs/index.cjs"
       }
     },
-    "./types": {
-      "import": {
-        "types": "./dist/esm/types.d.ts",
-        "default": "./dist/esm/types.js"
-      },
-      "require": {
-        "types": "./dist/cjs/types.d.cts",
-        "default": "./dist/cjs/types.cjs"
-      }
-    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
