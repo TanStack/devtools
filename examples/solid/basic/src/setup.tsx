@@ -22,7 +22,9 @@ const rootRoute = createRootRoute({
           About
         </Link>
       </div>
-      <tsd-json-tree value={{ title: 'Test Event', description: 'This is a test event.' }} />
+      <tsd-json-tree
+        value={{ title: 'Test Event', description: 'This is a test event.' }}
+      />
       <hr />
       <Outlet />
     </>
@@ -44,7 +46,6 @@ function About() {
   return (
     <div class="p-2">
       <h3>Hello from About!</h3>
-
     </div>
   )
 }

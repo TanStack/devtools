@@ -10,7 +10,6 @@ import type {
   TanStackDevtoolsPlugin,
 } from './context/devtools-context'
 
-
 export interface TanStackDevtoolsInit {
   /**
    * Configuration for the devtools shell. These configuration options are used to set the
@@ -71,7 +70,7 @@ export class TanStackDevtoolsCore {
       const Devtools = this.#Component
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
-      registerJsonTreeComponent();
+      registerJsonTreeComponent()
       return (
         <DevtoolsProvider plugins={this.#plugins} config={this.#config}>
           <Portal mount={mountTo}>
