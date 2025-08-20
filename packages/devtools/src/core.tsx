@@ -1,7 +1,7 @@
 import { lazy } from 'solid-js'
 import { Portal, render } from 'solid-js/web'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
-import { registerJsonTreeComponent } from '@tanstack/devtools-ui'
+import { registerButtonComponent, registerJsonTreeComponent } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from './context/devtools-context'
 import { initialState } from './context/devtools-store'
 import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
@@ -71,6 +71,7 @@ export class TanStackDevtoolsCore {
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
       registerJsonTreeComponent()
+      registerButtonComponent()
       return (
         <DevtoolsProvider plugins={this.#plugins} config={this.#config}>
           <Portal mount={mountTo}>

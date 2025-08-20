@@ -1,5 +1,6 @@
-import { splitProps } from 'solid-js'
+import { Show, createEffect, createSignal, splitProps } from 'solid-js'
 import clsx from 'clsx'
+import { customElement, noShadowDOM } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js'
 
@@ -10,12 +11,14 @@ export type ButtonVariant =
   | 'success'
   | 'info'
   | 'warning'
-type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
+
+export type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant
   outline?: boolean
   ghost?: boolean
   children?: any
   className?: string
+  text?: string
 }
 
 export function Button(props: ButtonProps) {
@@ -40,3 +43,27 @@ export function Button(props: ButtonProps) {
     </button>
   )
 }
+
+export interface ButtonWebComponentProps extends Exclude<ButtonProps, "children"> {
+  text: string
+}
+
+export const registerButtonComponent = (elName: string = 'tsd-button') =>
+  customElement<ButtonWebComponentProps>(elName, { variant: 'primary', outline: false, ghost: false, text: "" }, (props, { element }) => {
+    noShadowDOM()
+    const [buttonProps, setButtonProps] = createSignal(props)
+
+    createEffect(() => {
+      element.addPropertyChangedCallback((name, value) => {
+        setButtonProps((prev) => ({ ...prev, [name]: value }))
+      })
+    })
+
+    return (
+      <Show keyed when={buttonProps()}>
+        <Button {...buttonProps()}>
+          {buttonProps().text}
+        </Button>
+      </Show>
+    )
+  })
