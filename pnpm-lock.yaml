@@ -409,6 +409,9 @@ importers:
       '@eslint-react/eslint-plugin':
         specifier: ^1.48.5
         version: 1.48.5(eslint@9.25.1(jiti@2.5.1))(ts-api-utils@2.1.0(typescript@5.8.3))(typescript@5.8.3)
+      '@tanstack/devtools-ui':
+        specifier: workspace:*
+        version: link:../devtools-ui
       '@types/react':
         specifier: 19.1.10
         version: 19.1.10
@@ -431,6 +434,9 @@ importers:
         specifier: workspace:*
         version: link:../devtools
     devDependencies:
+      '@tanstack/devtools-ui':
+        specifier: workspace:*
+        version: link:../devtools-ui
       solid-js:
         specifier: ^1.9.7
         version: 1.9.7
