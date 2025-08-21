@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.4.4
+
+### Patch Changes
+
+- Add go to source functionality to devtools ([#56](https://github.com/TanStack/devtools/pull/56))
+
 ## 0.4.3
 
 ### Patch Changes

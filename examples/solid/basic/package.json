@@ -9,7 +9,7 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/solid-devtools": "^0.4.4",
+    "@tanstack/solid-devtools": "^0.4.5",
     "@tanstack/solid-query": "^5.83.0",
     "@tanstack/solid-query-devtools": "^5.83.0",
     "@tanstack/solid-router": "^1.129.8",
@@ -17,7 +17,7 @@
     "solid-js": "^1.9.7"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "0.2.3",
+    "@tanstack/devtools-vite": "0.2.4",
     "vite": "^7.0.6",
     "vite-plugin-inspect": "11.3.2",
     "vite-plugin-solid": "^2.11.6"
