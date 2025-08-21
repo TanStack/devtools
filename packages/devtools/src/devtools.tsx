@@ -30,7 +30,7 @@ export default function DevTools() {
     setIsOpen(!open)
     setPersistOpen(!open)
   }
-  createEffect(() => { })
+  createEffect(() => {})
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -167,7 +167,7 @@ export default function DevTools() {
           e.stopPropagation()
           fetch(
             `http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`,
-          ).catch(() => { })
+          ).catch(() => {})
         }
       }
     }
