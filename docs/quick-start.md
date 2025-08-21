@@ -7,8 +7,8 @@ TanStack Devtools is a framework-agnostic devtool for managing and debugging *de
 
 To get up and running install the correct adapter for your framework:
 
-- **React**: `npm install @tanstack/react-devtools`
-- **Solid**: `npm install @tanstack/solid-devtools`
+- **React**: `npm install @tanstack/react-devtools @tanstack/devtools-vite`
+- **Solid**: `npm install @tanstack/solid-devtools @tanstack/devtools-vite`
 
 Then import the devtools into the root of your application:
 
@@ -22,6 +22,19 @@ function App() {
       <TanStackDevtools />
     </>
   )
+}
+```
+
+And plug the vite plugin as the first plugin in your plugin array in `vite.config.ts`:
+
+```javascript
+import { devtools } from '@tanstack/devtools-vite'
+
+export default {
+  plugins: [
+    devtools(),
+    // ... rest of your plugins here
+  ],
 }
 ```
 

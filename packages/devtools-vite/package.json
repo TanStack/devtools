@@ -1,7 +1,7 @@
 {
-  "name": "@tanstack/devtools",
-  "version": "0.4.2",
-  "description": "TanStack Devtools is a set of tools for building advanced devtools for your application.",
+  "name": "@tanstack/devtools-vite",
+  "version": "0.2.3",
+  "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",
   "repository": {
@@ -18,18 +18,13 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "main": "dist/cjs/index.cjs",
+  "types": "dist/esm//index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
       }
     },
     "./package.json": "./package.json"
@@ -52,18 +47,11 @@
     "test:build": "publint --strict",
     "build": "vite build"
   },
-  "dependencies": {
-    "@solid-primitives/keyboard": "^1.2.8",
-    "@tanstack/devtools-event-bus": "workspace:*",
-    "@tanstack/devtools-ui": "workspace:*",
-    "clsx": "^2.1.1",
-    "goober": "^2.1.16",
-    "solid-js": "^1.9.7"
-  },
   "peerDependencies": {
-    "solid-js": ">=1.9.7"
+    "vite": "^7.0.0"
   },
-  "devDependencies": {
-    "vite-plugin-solid": "^2.11.6"
+  "dependencies": {
+    "@tanstack/devtools-event-bus": "workspace:*",
+    "chalk": "^5.6.0"
   }
 }

@@ -19,7 +19,7 @@ class QueryDevtoolsClient extends EventClient<EventMap> {
   constructor() {
     super({
       pluginId: 'query-devtools',
-      debug: true,
+      debug: false,
     })
   }
 }

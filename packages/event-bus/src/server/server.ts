@@ -20,6 +20,11 @@ declare global {
   var __EVENT_TARGET__: EventTarget | null
 }
 
+export interface ServerEventBusConfig {
+  port?: number | undefined
+  debug?: boolean | undefined
+}
+
 export class ServerEventBus {
   #eventTarget: EventTarget
   #clients = new Set<WebSocket>()
@@ -36,7 +41,7 @@ export class ServerEventBus {
   #connectFunction = () => {
     this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
-  constructor({ port = 42069, debug = false } = {}) {
+  constructor({ port = 42069, debug = false }: ServerEventBusConfig = {}) {
     this.#port = port
     this.#eventTarget = globalThis.__EVENT_TARGET__ ?? new EventTarget()
     // we want to set the global event target only once so that we can emit/listen to events on the server
