@@ -1,7 +1,7 @@
 import type { TabName } from '../tabs'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
 
-export type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift'
+type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift'
 type KeyboardKey = ModifierKey | (string & {})
 export const keyboardModifiers: Array<ModifierKey> = [
   'Alt',
