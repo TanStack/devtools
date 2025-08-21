@@ -189,23 +189,37 @@ export const SettingsTab = () => {
           </div>
           <Input
             label="Hotkey to open/close devtools"
-            description="Use '+' to combine keys (e.g., 'A+B' or 'D')"
-            placeholder="A"
+            description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
+            placeholder="a"
             value={hotkey()
               .filter((key) => !['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key))
               .join('+')}
-            onChange={(e) =>
-              setSettings({
+            onChange={(e) => {
+              const makeModifierArray = (key: string) => {
+                if (key.length === 1) return [uppercaseFirstLetter(key)]
+                const modifiers: Array<string> = [];
+                for (const character of key) {
+                  const newLetter = uppercaseFirstLetter(character)
+                  if (!modifiers.includes(newLetter))
+                    modifiers.push(newLetter)
+
+                }
+                return modifiers;
+              }
+              const modifiers = e
+                .split('+')
+                .flatMap((key) => makeModifierArray(key))
+                .filter(Boolean)
+              console.log(e, modifiers)
+              return setSettings({
                 openHotkey: [
                   ...hotkey().filter((key) =>
                     ['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key),
                   ),
+                  ...modifiers,
                 ],
-                ...e
-                  .split('+')
-                  .map((key) => uppercaseFirstLetter(key))
-                  .filter(Boolean),
               })
+            }
             }
           />
           Final shortcut is: {hotkey().join(' + ')}
