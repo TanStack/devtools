@@ -11,6 +11,7 @@ Only install one of the following packages depending on your use case:
 
 ```sh
 npm install @tanstack/react-devtools
+npm install -D @tanstack/devtools-vite
 ```
 
 TanStack Devtools is compatible with React v16.8+
@@ -19,6 +20,7 @@ TanStack Devtools is compatible with React v16.8+
 
 ```sh
 npm install @tanstack/solid-devtools
+npm install -D @tanstack/devtools-vite
 ```
 
 TanStack Devtools is compatible with Solid v1.9.5+
