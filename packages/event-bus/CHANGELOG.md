@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-bus
 
+## 0.2.2
+
+### Patch Changes
+
+- Add devtools vite plugin for enhanced functionalities ([#53](https://github.com/TanStack/devtools/pull/53))
+
 ## 0.2.1
 
 ### Patch Changes

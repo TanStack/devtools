@@ -1,5 +1,14 @@
 # @tanstack/devtools-event-client
 
+## 0.2.3
+
+### Patch Changes
+
+- Add devtools vite plugin for enhanced functionalities ([#53](https://github.com/TanStack/devtools/pull/53))
+
+- Updated dependencies [[`a7c5601`](https://github.com/TanStack/devtools/commit/a7c5601607a8f2ee293f23f10f434c623f0b7761)]:
+  - @tanstack/devtools-event-bus@0.2.2
+
 ## 0.2.2
 
 ### Patch Changes
