@@ -30,7 +30,7 @@ export default function DevTools() {
     setIsOpen(!open)
     setPersistOpen(!open)
   }
-  createEffect(() => { })
+  createEffect(() => {})
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -152,12 +152,12 @@ export default function DevTools() {
   })
 
   createEffect(() => {
-
     // this will only work with the Vite plugin
     const openSourceHandler = (e: Event) => {
-      const isShiftHeld = (e as KeyboardEvent).shiftKey;
-      const isCtrlHeld = (e as KeyboardEvent).ctrlKey || (e as KeyboardEvent).metaKey;
-      if (!isShiftHeld || !isCtrlHeld) return;
+      const isShiftHeld = (e as KeyboardEvent).shiftKey
+      const isCtrlHeld =
+        (e as KeyboardEvent).ctrlKey || (e as KeyboardEvent).metaKey
+      if (!isShiftHeld || !isCtrlHeld) return
 
       if (e.target instanceof HTMLElement) {
         const dataSource = e.target.getAttribute('data-source')
@@ -165,13 +165,15 @@ export default function DevTools() {
         if (dataSource) {
           e.preventDefault()
           e.stopPropagation()
-          fetch(`http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`).catch(() => { })
+          fetch(
+            `http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`,
+          ).catch(() => {})
         }
       }
     }
-    window.addEventListener("click", openSourceHandler)
+    window.addEventListener('click', openSourceHandler)
     onCleanup(() => {
-      window.removeEventListener("click", openSourceHandler)
+      window.removeEventListener('click', openSourceHandler)
     })
   })
 

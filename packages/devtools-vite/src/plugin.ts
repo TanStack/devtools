@@ -42,7 +42,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
 
   return [
     {
-      enforce: "pre",
+      enforce: 'pre',
       name: '@tanstack/devtools:inject-source',
       apply(config) {
         return config.mode === 'development'
@@ -57,7 +57,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           return code
 
         return addSourceToJsx(code, id)
-      }
+      },
     },
     {
       enforce: 'pre',
@@ -107,11 +107,11 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         )
       },
       transform(code) {
-        if (code.includes("__TSD_PORT__")) {
-          code = code.replace("__TSD_PORT__", String(port))
+        if (code.includes('__TSD_PORT__')) {
+          code = code.replace('__TSD_PORT__', String(port))
         }
         return code
-      }
+      },
     },
     {
       name: '@tanstack/devtools:better-console-logs',
