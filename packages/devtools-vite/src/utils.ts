@@ -1,5 +1,5 @@
-import {  normalizePath } from "vite"
-import type {Connect} from "vite";
+import { normalizePath } from "vite"
+import type { Connect } from "vite";
 import type { IncomingMessage, ServerResponse } from "node:http"
 
 
@@ -10,7 +10,6 @@ export const handleDevToolsViteRequest = (
 	cb: (data: any) => void
 ) => {
 	if (req.url?.includes("__tsd/open-source")) {
-		console.log("hello?")
 		const searchParams = new URLSearchParams(req.url.split("?")[1])
 		const source = searchParams.get("source")
 		const line = searchParams.get("line")
@@ -43,7 +42,7 @@ export const handleDevToolsViteRequest = (
 			const parsedData = JSON.parse(dataToParse.toString())
 			cb(parsedData)
 		} catch (e) {
-			 
+
 		}
 		res.write("OK")
 	})
