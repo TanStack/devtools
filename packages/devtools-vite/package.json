@@ -54,7 +54,6 @@
     "@babel/core": "^7.28.3",
     "@babel/generator": "^7.28.3",
     "@babel/parser": "^7.28.3",
-    "@babel/preset-react": "^7.27.1",
     "@babel/traverse": "^7.28.3",
     "@babel/types": "^7.28.2",
     "@tanstack/devtools-event-bus": "workspace:*",

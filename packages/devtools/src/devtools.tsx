@@ -30,7 +30,7 @@ export default function DevTools() {
     setIsOpen(!open)
     setPersistOpen(!open)
   }
-  createEffect(() => {})
+  createEffect(() => { })
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -160,14 +160,14 @@ export default function DevTools() {
       if (!isShiftHeld || !isCtrlHeld) return
 
       if (e.target instanceof HTMLElement) {
-        const dataSource = e.target.getAttribute('data-source')
+        const dataSource = e.target.getAttribute('data-tsd-source')
         window.getSelection()?.removeAllRanges()
         if (dataSource) {
           e.preventDefault()
           e.stopPropagation()
           fetch(
             `http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`,
-          ).catch(() => {})
+          ).catch(() => { })
         }
       }
     }

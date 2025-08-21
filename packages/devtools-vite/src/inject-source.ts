@@ -15,7 +15,7 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
       // Inject data-source as a string: "<file>:<line>:<column>"
       path.node.attributes.push(
         t.jsxAttribute(
-          t.jsxIdentifier('data-source'),
+          t.jsxIdentifier('data-tsd-source'),
           t.stringLiteral(`${file}:${line}:${column}`),
         ),
       )
