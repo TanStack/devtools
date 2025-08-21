@@ -13,8 +13,10 @@ export default function DevtoolsExample() {
       <QueryClientProvider client={queryClient}>
         <TanStackDevtools
           eventBusConfig={{
-            debug: true,
+            debug: false,
+            connectToServerBus: true
           }}
+
           plugins={[
             {
               name: 'TanStack Query',
