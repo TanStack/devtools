@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.4.3
+
+### Patch Changes
+
+- improve devtools shortcut handling ([#49](https://github.com/TanStack/devtools/pull/49))
+
 ## 0.4.2
 
 ### Patch Changes
