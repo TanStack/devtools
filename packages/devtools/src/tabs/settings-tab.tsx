@@ -197,14 +197,12 @@ export const SettingsTab = () => {
             onChange={(e) => {
               const makeModifierArray = (key: string) => {
                 if (key.length === 1) return [uppercaseFirstLetter(key)]
-                const modifiers: Array<string> = [];
+                const modifiers: Array<string> = []
                 for (const character of key) {
                   const newLetter = uppercaseFirstLetter(character)
-                  if (!modifiers.includes(newLetter))
-                    modifiers.push(newLetter)
-
+                  if (!modifiers.includes(newLetter)) modifiers.push(newLetter)
                 }
-                return modifiers;
+                return modifiers
               }
               const modifiers = e
                 .split('+')
@@ -219,8 +217,7 @@ export const SettingsTab = () => {
                   ...modifiers,
                 ],
               })
-            }
-            }
+            }}
           />
           Final shortcut is: {hotkey().join(' + ')}
         </div>
