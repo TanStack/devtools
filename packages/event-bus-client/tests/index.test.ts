@@ -2,6 +2,15 @@ import { describe, expect, it, vi } from 'vitest'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import { EventClient } from '../src'
 
+vi.stubGlobal(
+  'BroadcastChannel',
+  class {
+    postMessage = vi.fn()
+    addEventListener = vi.fn()
+    removeEventListener = vi.fn()
+    close = vi.fn()
+  },
+)
 // start the client bus for testing
 const bus = new ClientEventBus()
 bus.start()

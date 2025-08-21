@@ -57,6 +57,8 @@ export type DevtoolsStore = {
     activePlugin?: string | undefined
     persistOpen: boolean
   }
+  detachedWindowOwner?: boolean
+  detachedWindow?: boolean
   plugins?: Array<TanStackDevtoolsPlugin>
 }
 
