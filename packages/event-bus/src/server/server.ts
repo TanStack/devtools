@@ -21,10 +21,9 @@ declare global {
 }
 
 export interface ServerEventBusConfig {
-  port?: number | undefined;
-  debug?: boolean | undefined;
+  port?: number | undefined
+  debug?: boolean | undefined
 }
-
 
 export class ServerEventBus {
   #eventTarget: EventTarget
@@ -118,7 +117,7 @@ export class ServerEventBus {
             const msg = JSON.parse(body)
             this.debugLog('Received event from client', msg)
             this.emitToServer(msg)
-          } catch { }
+          } catch {}
         })
         res.writeHead(200).end()
         return

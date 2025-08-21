@@ -1,12 +1,11 @@
-import { normalizePath } from "vite";
-import chalk from "chalk"
-import { ServerEventBus } from "@tanstack/devtools-event-bus/server"
-import { handleDevToolsViteRequest } from "./utils";
-import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from "./editor";
-import type { EditorConfig } from "./editor";
-import type { ServerEventBusConfig } from "@tanstack/devtools-event-bus/server";
-import type { Plugin } from "vite";
-
+import { normalizePath } from 'vite'
+import chalk from 'chalk'
+import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
+import { handleDevToolsViteRequest } from './utils'
+import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
+import type { EditorConfig } from './editor'
+import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
+import type { Plugin } from 'vite'
 
 export type TanStackDevtoolsViteConfig = {
   /** The directory where the react router app is located. Defaults to the "./src" relative to where vite.config is being defined. */
@@ -20,7 +19,7 @@ export type TanStackDevtoolsViteConfig = {
    */
   eventBusConfig?: ServerEventBusConfig
   /**
-   * Configuration for enhanced logging.  
+   * Configuration for enhanced logging.
    */
   enhancedLogs?: {
     /**
@@ -31,28 +30,28 @@ export type TanStackDevtoolsViteConfig = {
   }
 }
 
-export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) => config
+export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
+  config
 
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
-  const appDir = args?.appDir || "./src"
+  const appDir = args?.appDir || './src'
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
     {
-      enforce: "pre",
-      name: "@tanstack/devtools:custom-server",
+      enforce: 'pre',
+      name: '@tanstack/devtools:custom-server',
       apply(config) {
         // Custom server is only needed in development for piping events to the client
-        return config.mode === "development"
+        return config.mode === 'development'
       },
       configureServer(server) {
-        bus.start();
+        bus.start()
         server.middlewares.use((req, _res, next) => {
           if (req.socket.localPort && req.socket.localPort !== port) {
             port = req.socket.localPort
-
           }
           next()
         })
@@ -60,12 +59,15 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           port = server.config.server.port
         }
 
-        server.httpServer?.on("listening", () => {
+        server.httpServer?.on('listening', () => {
           port = server.config.server.port
         })
 
         const editor = args?.editor ?? DEFAULT_EDITOR_CONFIG
-        const openInEditor = async (path: string | undefined, lineNum: string | undefined) => {
+        const openInEditor = async (
+          path: string | undefined,
+          lineNum: string | undefined,
+        ) => {
           if (!path) {
             return
           }
@@ -74,58 +76,70 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         server.middlewares.use((req, res, next) =>
           handleDevToolsViteRequest(req, res, next, (parsedData) => {
             const { data, routine } = parsedData
-            if (routine === "open-source") {
-              return handleOpenSource({ data: { type: data.type, data }, openInEditor, appDir })
+            if (routine === 'open-source') {
+              return handleOpenSource({
+                data: { type: data.type, data },
+                openInEditor,
+                appDir,
+              })
             }
-            return;
-          })
+            return
+          }),
         )
       },
     },
     {
-      name: "@tanstack/devtools:better-console-logs",
-      enforce: "pre",
+      name: '@tanstack/devtools:better-console-logs',
+      enforce: 'pre',
       apply(config) {
-        return config.mode === "development" && enhancedLogsConfig.enabled
+        return config.mode === 'development' && enhancedLogsConfig.enabled
       },
       transform(code, id) {
         // Ignore anything external
         if (
-          id.includes("node_modules") ||
-          id.includes("?raw") ||
-          id.includes("dist") ||
-          id.includes("build")
+          id.includes('node_modules') ||
+          id.includes('?raw') ||
+          id.includes('dist') ||
+          id.includes('build')
         )
           return code
 
-        if (!code.includes("console.")) {
+        if (!code.includes('console.')) {
           return code
         }
-        const lines = code.split("\n")
+        const lines = code.split('\n')
         return lines
           .map((line, lineNumber) => {
-            if (line.trim().startsWith("//") || line.trim().startsWith("/**") || line.trim().startsWith("*")) {
+            if (
+              line.trim().startsWith('//') ||
+              line.trim().startsWith('/**') ||
+              line.trim().startsWith('*')
+            ) {
               return line
             }
             // Do not add for arrow functions or return statements
-            if (line.replaceAll(" ", "").includes("=>console.") || line.includes("return console.")) {
+            if (
+              line.replaceAll(' ', '').includes('=>console.') ||
+              line.includes('return console.')
+            ) {
               return line
             }
 
-            const column = line.indexOf("console.")
-            const location = `${id.replace(normalizePath(process.cwd()), "")}:${lineNumber + 1}:${column + 1}`
-            const logMessage = `'${chalk.magenta("LOG")} ${chalk.blueBright(`${location} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(id.replace(normalizePath(process.cwd()), ""))}&line=${lineNumber + 1}&column=${column + 1}`)}\\n → '`
-            if (line.includes("console.log(")) {
+            const column = line.indexOf('console.')
+            const location = `${id.replace(normalizePath(process.cwd()), '')}:${lineNumber + 1}:${column + 1}`
+            const logMessage = `'${chalk.magenta('LOG')} ${chalk.blueBright(`${location} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(id.replace(normalizePath(process.cwd()), ''))}&line=${lineNumber + 1}&column=${column + 1}`)}\\n → '`
+            if (line.includes('console.log(')) {
               const newLine = `console.log(${logMessage},`
-              return line.replace("console.log(", newLine)
+              return line.replace('console.log(', newLine)
             }
-            if (line.includes("console.error(")) {
+            if (line.includes('console.error(')) {
               const newLine = `console.error(${logMessage},`
-              return line.replace("console.error(", newLine)
+              return line.replace('console.error(', newLine)
             }
             return line
           })
-          .join("\n")
+          .join('\n')
       },
-    },];
-};
+    },
+  ]
+}

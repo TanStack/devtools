@@ -6,6 +6,7 @@ This package is still under active development and might have breaking changes i
 
 The `@tanstack/devtools-vite` package is designed to work with Vite projects.
 Plug it into your plugins array:
+
 ```ts
 import { devtools } from '@tanstack/devtools-vite'
 

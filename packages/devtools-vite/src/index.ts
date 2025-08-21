@@ -1,2 +1,2 @@
-export { devtools, defineDevtoolsConfig } from "./plugin"
-export type { TanStackDevtoolsViteConfig } from "./plugin"
+export { devtools, defineDevtoolsConfig } from './plugin'
+export type { TanStackDevtoolsViteConfig } from './plugin'

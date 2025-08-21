@@ -14,9 +14,8 @@ export default function DevtoolsExample() {
         <TanStackDevtools
           eventBusConfig={{
             debug: false,
-            connectToServerBus: true
+            connectToServerBus: true,
           }}
-
           plugins={[
             {
               name: 'TanStack Query',
