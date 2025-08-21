@@ -17,6 +17,8 @@
     "solid-js": "^1.9.7"
   },
   "devDependencies": {
+    "vite-plugin-inspect": "11.3.2",
+    "@tanstack/devtools-vite": "0.2.3",
     "vite": "^7.0.6",
     "vite-plugin-solid": "^2.11.6"
   },

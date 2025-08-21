@@ -1,4 +1,4 @@
-import { Show, createEffect, createSignal } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import {
   useDevtoolsSettings,
@@ -30,7 +30,7 @@ export default function DevTools() {
     setIsOpen(!open)
     setPersistOpen(!open)
   }
-  createEffect(() => {})
+  createEffect(() => { })
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -149,6 +149,30 @@ export default function DevTools() {
         toggleOpen()
       })
     }
+  })
+
+  createEffect(() => {
+
+    // this will only work with the Vite plugin
+    const openSourceHandler = (e: Event) => {
+      const isShiftHeld = (e as KeyboardEvent).shiftKey;
+      const isCtrlHeld = (e as KeyboardEvent).ctrlKey || (e as KeyboardEvent).metaKey;
+      if (!isShiftHeld || !isCtrlHeld) return;
+
+      if (e.target instanceof HTMLElement) {
+        const dataSource = e.target.getAttribute('data-source')
+        window.getSelection()?.removeAllRanges()
+        if (dataSource) {
+          e.preventDefault()
+          e.stopPropagation()
+          fetch(`http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`).catch(() => { })
+        }
+      }
+    }
+    window.addEventListener("click", openSourceHandler)
+    onCleanup(() => {
+      window.removeEventListener("click", openSourceHandler)
+    })
   })
 
   return (

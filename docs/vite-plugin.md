@@ -92,3 +92,13 @@ const open = (file: string, line: number) => {
     enabled: true
   }
 }
+```
+
+## Features
+
+### Go to source
+
+Allows you to open the source location on anything in your browser by clicking on it.
+
+To trigger this behavior you need the Devtools Vite plugin installed and configured and
+the Panel available on the page. Simply click on any element while holding down the Shift and Ctrl (or Meta) keys.

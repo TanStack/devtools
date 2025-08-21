@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { handleDevToolsViteRequest } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
+import { addSourceToJsx } from './inject-source'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
 import type { Plugin } from 'vite'
@@ -40,6 +41,24 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
+    {
+      enforce: "pre",
+      name: '@tanstack/devtools:inject-source',
+      apply(config) {
+        return config.mode === 'development'
+      },
+      transform(code, id) {
+        if (
+          id.includes('node_modules') ||
+          id.includes('?raw') ||
+          id.includes('dist') ||
+          id.includes('build')
+        )
+          return code
+
+        return addSourceToJsx(code, id)
+      }
+    },
     {
       enforce: 'pre',
       name: '@tanstack/devtools:custom-server',
@@ -87,6 +106,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }),
         )
       },
+      transform(code) {
+        if (code.includes("__TSD_PORT__")) {
+          code = code.replace("__TSD_PORT__", String(port))
+        }
+        return code
+      }
     },
     {
       name: '@tanstack/devtools:better-console-logs',
