@@ -208,7 +208,6 @@ export const SettingsTab = () => {
                 .split('+')
                 .flatMap((key) => makeModifierArray(key))
                 .filter(Boolean)
-              console.log(e, modifiers)
               return setSettings({
                 openHotkey: [
                   ...hotkey().filter((key) =>
