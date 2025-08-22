@@ -24,9 +24,12 @@
         {
           "label": "Installation",
           "to": "installation"
+        },
+        {
+          "label": "Vite plugin",
+          "to": "vite-plugin"
         }
       ],
-
       "frameworks": [
         {
           "label": "react",
@@ -56,7 +59,6 @@
         }
       ]
     },
-
     {
       "label": "Guides",
       "children": [],
@@ -76,7 +78,6 @@
         }
       ]
     },
-
     {
       "label": "API Reference",
       "children": [
@@ -106,7 +107,6 @@
         }
       ]
     },
-
     {
       "label": "Examples",
       "children": [],
