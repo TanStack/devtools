@@ -61,7 +61,7 @@ const transformJSX = (
   const line = loc.start.line
   const column = loc.start.column
 
-  // Check if props are spread  
+  // Check if props are spread
   const hasSpread = element.node.attributes.some(
     (attr) =>
       attr.type === 'JSXSpreadAttribute' &&
@@ -70,7 +70,7 @@ const transformJSX = (
   )
 
   if (hasSpread) {
-    // Do not inject if props are spread  
+    // Do not inject if props are spread
     return
   }
 
