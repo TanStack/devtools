@@ -6,9 +6,7 @@ export const Feature = () => {
     <div>
       <h2>Feature component</h2>
       <Button>Nested</Button>
-      <ButtonWithProps>
-        With props
-      </ButtonWithProps>
+      <ButtonWithProps>With props</ButtonWithProps>
     </div>
   )
 }

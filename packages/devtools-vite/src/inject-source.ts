@@ -3,44 +3,59 @@ import { gen, parse, t, trav } from './babel'
 import type { types as Babel, NodePath } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
 
-const getPropsNameFromFunctionDeclaration = (functionDeclaration: t.VariableDeclarator | t.FunctionDeclaration) => {
-  let propsName: string | null = null;
-  if (functionDeclaration.type === "FunctionDeclaration") {
-    const firstArgument = functionDeclaration.params[0];
+const getPropsNameFromFunctionDeclaration = (
+  functionDeclaration: t.VariableDeclarator | t.FunctionDeclaration,
+) => {
+  let propsName: string | null = null
+  if (functionDeclaration.type === 'FunctionDeclaration') {
+    const firstArgument = functionDeclaration.params[0]
     // handles (props) => {}
     if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name;
+      propsName = firstArgument.name
     }
     // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === "ObjectPattern") {
-      firstArgument.properties.forEach(prop => {
-        if (prop.type === "RestElement" && prop.argument.type === "Identifier") {
-          propsName = prop.argument.name;
+    if (firstArgument && firstArgument.type === 'ObjectPattern') {
+      firstArgument.properties.forEach((prop) => {
+        if (
+          prop.type === 'RestElement' &&
+          prop.argument.type === 'Identifier'
+        ) {
+          propsName = prop.argument.name
         }
       })
     }
-    return propsName;
+    return propsName
   }
   // Arrow function case
-  if (functionDeclaration.init?.type === "ArrowFunctionExpression" || functionDeclaration.init?.type === "FunctionExpression") {
+  if (
+    functionDeclaration.init?.type === 'ArrowFunctionExpression' ||
+    functionDeclaration.init?.type === 'FunctionExpression'
+  ) {
     const firstArgument = functionDeclaration.init.params[0]
     // handles (props) => {}
     if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name;
+      propsName = firstArgument.name
     }
     // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === "ObjectPattern") {
-      firstArgument.properties.forEach(prop => {
-        if (prop.type === "RestElement" && prop.argument.type === "Identifier") {
-          propsName = prop.argument.name;
+    if (firstArgument && firstArgument.type === 'ObjectPattern') {
+      firstArgument.properties.forEach((prop) => {
+        if (
+          prop.type === 'RestElement' &&
+          prop.argument.type === 'Identifier'
+        ) {
+          propsName = prop.argument.name
         }
       })
     }
   }
-  return propsName;
+  return propsName
 }
 
-const transformJSX = (element: NodePath<t.JSXOpeningElement>, propsName: string | null, file: string) => {
+const transformJSX = (
+  element: NodePath<t.JSXOpeningElement>,
+  propsName: string | null,
+  file: string,
+) => {
   const loc = element.node.loc
   if (!loc) return
   const line = loc.start.line
@@ -48,7 +63,10 @@ const transformJSX = (element: NodePath<t.JSXOpeningElement>, propsName: string 
 
   // Check if props are spread and element name starts with lowercase
   const hasSpread = element.node.attributes.some(
-    (attr) => attr.type === 'JSXSpreadAttribute' && attr.argument.type === "Identifier" && attr.argument.name === propsName,
+    (attr) =>
+      attr.type === 'JSXSpreadAttribute' &&
+      attr.argument.type === 'Identifier' &&
+      attr.argument.name === propsName,
   )
 
   if (hasSpread) {
@@ -86,28 +104,31 @@ const transformJSX = (element: NodePath<t.JSXOpeningElement>, propsName: string 
     ),
   )
 
-
   return true
 }
-
 
 const transform = (ast: ParseResult<Babel.File>, file: string) => {
   let didTransform = false
   trav(ast, {
     FunctionDeclaration(functionDeclaration) {
-      const propsName = getPropsNameFromFunctionDeclaration(functionDeclaration.node)
+      const propsName = getPropsNameFromFunctionDeclaration(
+        functionDeclaration.node,
+      )
       functionDeclaration.traverse({
         JSXOpeningElement(element) {
           const transformed = transformJSX(element, propsName, file)
           if (transformed) {
             didTransform = true
           }
-        }
+        },
       })
     },
     VariableDeclaration(path) {
-      const functionDeclaration = path.node.declarations.find(decl => {
-        return decl.init?.type === "ArrowFunctionExpression" || decl.init?.type === "FunctionExpression"
+      const functionDeclaration = path.node.declarations.find((decl) => {
+        return (
+          decl.init?.type === 'ArrowFunctionExpression' ||
+          decl.init?.type === 'FunctionExpression'
+        )
       })
       if (!functionDeclaration) {
         return
@@ -120,12 +141,10 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
           if (transformed) {
             didTransform = true
           }
-        }
+        },
       })
-    }
-  },
-
-  )
+    },
+  })
 
   return didTransform
 }
