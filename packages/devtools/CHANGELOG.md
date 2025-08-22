@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.4.5
+
+### Patch Changes
+
+- fix console log ([#58](https://github.com/TanStack/devtools/pull/58))
+
 ## 0.4.4
 
 ### Patch Changes
