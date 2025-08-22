@@ -7,6 +7,34 @@ const removeEmptySpace = (str: string) => {
 
 describe('inject source', () => {
   describe('function declarations', () => {
+    it("should not apply data-tsd-source from parent props if not an external import", () => {
+      const output = removeEmptySpace(addSourceToJsx(`
+          function test(props) {
+              return <Custom children={props.children} />
+            }
+        `, "test.tsx").code)
+      expect(output).toBe(removeEmptySpace(`
+          function test(props) {
+              return <Custom children={props.children} />
+            }
+        `))
+    })
+    it("should apply data-tsd-source from parent props if an external import", () => {
+      const output = removeEmptySpace(addSourceToJsx(`
+        
+        import Custom from "external";
+
+function test({...props })  {
+  return <Custom children={props.children} />
+}
+  `, "test.tsx").code)
+      expect(output).toBe(removeEmptySpace(`
+          import Custom from "external";
+
+function test({...props })  {
+  return <Custom children={props.children} data-tsd-source="test.tsx:6:9" />;
+}`))
+    })
     it(' props not destructured', () => {
       const output = removeEmptySpace(
         addSourceToJsx(

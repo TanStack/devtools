@@ -61,7 +61,7 @@ const transformJSX = (
   const line = loc.start.line
   const column = loc.start.column
 
-  // Check if props are spread and element name starts with lowercase
+  // Check if props are spread  
   const hasSpread = element.node.attributes.some(
     (attr) =>
       attr.type === 'JSXSpreadAttribute' &&
@@ -70,31 +70,54 @@ const transformJSX = (
   )
 
   if (hasSpread) {
-    // Do not inject if props are spread and element is lowercase (native HTML)
+    // Do not inject if props are spread  
     return
   }
-  if (propsName) {
-    // inject data-source either via props or default to a string "<file>:<line>:<column>"
-    // Inject data-source via props
-    element.node.attributes.push(
-      t.jsxAttribute(
-        t.jsxIdentifier('data-tsd-source'),
-        t.jsxExpressionContainer(
-          t.logicalExpression(
-            '??',
-            t.memberExpression(
-              t.identifier(propsName),
-              t.stringLiteral('data-tsd-source'),
-              true,
+
+  /*   const isLowercase = element.node.name.type === "JSXIdentifier" ? element.node.name.name.charAt(0) === element.node.name.name.charAt(0).toLowerCase() : false
+    // Check if the JSX element is imported from a third-party library
+    let externalImport = false;
+    if (element.node.name.type === "JSXIdentifier") {
+      const jsxName = element.node.name.name;
+      const program = element.findParent((p) => p.isProgram());
+      if (program && program.node.type === "Program") {
+        const importDecl = program.node.body.find(
+          (stmt) =>
+            stmt.type === "ImportDeclaration" &&
+            stmt.specifiers.some(
+              (spec) =>
+                (spec.type === "ImportSpecifier" || spec.type === "ImportDefaultSpecifier"  ) &&
+                spec.local.name === jsxName
+            ) &&
+            !stmt.source.value.startsWith(".") // not a relative import
+            && !stmt.source.value.startsWith("@/")
+            && !stmt.source.value.startsWith("~")
+        );
+        externalImport = !!importDecl;
+      }
+    } 
+    if (propsName && !(externalImport)) {
+      // inject data-source either via props or default to a string "<file>:<line>:<column>"
+      // Inject data-source via props
+      element.node.attributes.push(
+        t.jsxAttribute(
+          t.jsxIdentifier('data-tsd-source'),
+          t.jsxExpressionContainer(
+            t.logicalExpression(
+              '??',
+              t.memberExpression(
+                t.identifier(propsName),
+                t.stringLiteral('data-tsd-source'),
+                true,
+              ),
+              t.stringLiteral(`${file}:${line}:${column}`),
             ),
-            t.stringLiteral(`${file}:${line}:${column}`),
           ),
         ),
-      ),
-    )
-
-    return true
-  }
+      )
+  
+      return true
+    } */
 
   // Inject data-source as a string: "<file>:<line>:<column>"
   element.node.attributes.push(
