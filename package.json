@@ -82,5 +82,10 @@
     "@tanstack/devtools": "workspace:*",
     "@tanstack/react-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "component-register": "patches/component-register.patch"
+    }
   }
 }
