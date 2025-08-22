@@ -1,3 +1,5 @@
+import { Button } from "./button"
+
 export const ButtonWithProps = (props: { children: React.ReactNode }) => {
-  return <button children={props.children} />
+  return <Button children={props.children} />
 }
