@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  component-register:
+    hash: 77e26fa4f81b0d3b9f3df77c90412c841c06cacf9b9c46a409b26e2815cbe4f7
+    path: patches/component-register.patch
+
 importers:
 
   .:
@@ -236,8 +241,6 @@ importers:
       web-vitals:
         specifier: ^4.2.4
         version: 4.2.4
-
-  examples/react/start/generated/prisma: {}
 
   examples/react/time-travel:
     dependencies:
@@ -10526,7 +10529,7 @@ snapshots:
 
   compatx@0.2.0: {}
 
-  component-register@0.8.7: {}
+  component-register@0.8.7(patch_hash=77e26fa4f81b0d3b9f3df77c90412c841c06cacf9b9c46a409b26e2815cbe4f7): {}
 
   compress-commons@6.0.2:
     dependencies:
@@ -13327,7 +13330,7 @@ snapshots:
 
   solid-element@1.9.1(solid-js@1.9.7):
     dependencies:
-      component-register: 0.8.7
+      component-register: 0.8.7(patch_hash=77e26fa4f81b0d3b9f3df77c90412c841c06cacf9b9c46a409b26e2815cbe4f7)
       solid-js: 1.9.7
 
   solid-js@1.9.7:
