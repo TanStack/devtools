@@ -12,6 +12,19 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
       const line = loc.start.line
       const column = loc.start.column
 
+      // Check if props are spread and element name starts with lowercase
+      const hasSpread = path.node.attributes.some(attr => attr.type === 'JSXSpreadAttribute')
+      let isLowercase = false
+      const nameNode = path.node.name
+      if (nameNode.type === 'JSXIdentifier') {
+        isLowercase = /^[a-z]/.test(nameNode.name)
+      }
+
+      if (hasSpread && isLowercase) {
+        // Do not inject if props are spread and element is lowercase (native HTML)
+        return
+      }
+
       // Inject data-source as a string: "<file>:<line>:<column>"
       path.node.attributes.push(
         t.jsxAttribute(

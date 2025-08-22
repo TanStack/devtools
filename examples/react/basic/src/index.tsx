@@ -1,6 +1,8 @@
 import { createRoot } from 'react-dom/client'
 import Devtools from './setup'
 import { queryPlugin } from './plugin'
+import { Button } from './button'
+import { Feature } from './feature'
 
 setTimeout(() => {
   queryPlugin.emit('test', {
@@ -18,6 +20,10 @@ function App() {
   return (
     <div>
       <h1>TanStack Devtools React Basic Example</h1>
+      <Button >
+        Click me
+      </Button>
+      <Feature />
       <Devtools />
     </div>
   )
