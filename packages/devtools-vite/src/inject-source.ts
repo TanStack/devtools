@@ -13,7 +13,9 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
       const column = loc.start.column
 
       // Check if props are spread and element name starts with lowercase
-      const hasSpread = path.node.attributes.some(attr => attr.type === 'JSXSpreadAttribute')
+      const hasSpread = path.node.attributes.some(
+        (attr) => attr.type === 'JSXSpreadAttribute',
+      )
       let isLowercase = false
       const nameNode = path.node.name
       if (nameNode.type === 'JSXIdentifier') {

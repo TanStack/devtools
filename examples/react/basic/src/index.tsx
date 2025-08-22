@@ -20,9 +20,7 @@ function App() {
   return (
     <div>
       <h1>TanStack Devtools React Basic Example</h1>
-      <Button >
-        Click me
-      </Button>
+      <Button>Click me</Button>
       <Feature />
       <Devtools />
     </div>
