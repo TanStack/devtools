@@ -28,7 +28,7 @@ export type TanStackDevtoolsViteConfig = {
      * @default true
      */
     enabled: boolean
-  },
+  }
   /**
    * Configuration for source injection.
    */
