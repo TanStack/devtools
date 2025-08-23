@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.5
+
+### Patch Changes
+
+- add better handling for open source to respect parent info ([#61](https://github.com/TanStack/devtools/pull/61))
+
 ## 0.2.4
 
 ### Patch Changes
