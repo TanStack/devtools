@@ -4,11 +4,15 @@ import type { types as Babel, NodePath } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
 
 const getPropsNameFromFunctionDeclaration = (
-  functionDeclaration: t.VariableDeclarator | t.FunctionExpression | t.FunctionDeclaration | t.ArrowFunctionExpression,
+  functionDeclaration:
+    | t.VariableDeclarator
+    | t.FunctionExpression
+    | t.FunctionDeclaration
+    | t.ArrowFunctionExpression,
 ) => {
   let propsName: string | null = null
 
-  if (functionDeclaration.type === "FunctionExpression") {
+  if (functionDeclaration.type === 'FunctionExpression') {
     const firstArgument = functionDeclaration.params[0]
     // handles (props) => {}
     if (firstArgument && firstArgument.type === 'Identifier') {
@@ -27,7 +31,7 @@ const getPropsNameFromFunctionDeclaration = (
     }
     return propsName
   }
-  if (functionDeclaration.type === "ArrowFunctionExpression") {
+  if (functionDeclaration.type === 'ArrowFunctionExpression') {
     const firstArgument = functionDeclaration.params[0]
     // handles (props) => {}
     if (firstArgument && firstArgument.type === 'Identifier') {
@@ -104,7 +108,7 @@ const transformJSX = (
     (attr) =>
       attr.type === 'JSXAttribute' &&
       attr.name.type === 'JSXIdentifier' &&
-      attr.name.name === 'data-tsd-source'
+      attr.name.name === 'data-tsd-source',
   )
   // Check if props are spread
   const hasSpread = element.node.attributes.some(
@@ -118,7 +122,6 @@ const transformJSX = (
     // Do not inject if props are spread
     return
   }
-
 
   // Inject data-source as a string: "<file>:<line>:<column>"
   element.node.attributes.push(
@@ -191,9 +194,7 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
         },
       })
     },
-
   })
-
 
   return didTransform
 }

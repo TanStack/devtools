@@ -6,8 +6,8 @@ const removeEmptySpace = (str: string) => {
 }
 
 describe('inject source', () => {
-  describe("FunctionExpression", () => {
-    it("should work with deeply nested custom JSX syntax", () => {
+  describe('FunctionExpression', () => {
+    it('should work with deeply nested custom JSX syntax', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -23,12 +23,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: function() { return <div data-tsd-source="test.jsx:3:37">Hello World</div>; }
       });
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props not destructured and spread", () => {
+    it('should work with props not destructured and spread', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -44,12 +43,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: function(props) { return <div {...props}>Hello World</div> },
       })
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props destructured and spread", () => {
+    it('should work with props destructured and spread', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -65,12 +63,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: function({...props}) { return <div {...props}>Hello World</div> },
       })
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props destructured and spread with a different name", () => {
+    it('should work with props destructured and spread with a different name', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -86,12 +83,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: function({...rest}) { return <div {...rest}>Hello World</div> },
       })
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props spread and other normal elements", () => {
+    it('should work with props spread and other normal elements', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -107,16 +103,13 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: function({...rest}) { return <div data-tsd-source="test.jsx:3:46"><div {...rest}>Hello World</div></div>; }
       });
-        `,
-        )
+        `),
       )
     })
-
-
   })
 
-  describe("ArrowFunctionExpression", () => {
-    it("should work with deeply nested custom JSX syntax", () => {
+  describe('ArrowFunctionExpression', () => {
+    it('should work with deeply nested custom JSX syntax', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -132,12 +125,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: () => <div data-tsd-source="test.jsx:3:23">Hello World</div>
       });
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props not destructured and spread", () => {
+    it('should work with props not destructured and spread', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -153,12 +145,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: (props) => <div {...props}>Hello World</div>,
       })
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props destructured and spread", () => {
+    it('should work with props destructured and spread', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -174,12 +165,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: ({...props}) => <div {...props}>Hello World</div>,
       })
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props destructured and spread with a different name", () => {
+    it('should work with props destructured and spread with a different name', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -195,12 +185,11 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: ({...rest}) => <div {...rest}>Hello World</div>,
       })
-        `,
-        )
+        `),
       )
     })
 
-    it("should work with props spread and other normal elements", () => {
+    it('should work with props spread and other normal elements', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -216,16 +205,12 @@ describe('inject source', () => {
             export const Route = createFileRoute("/test")({
       component: ({...rest}) => <div data-tsd-source="test.jsx:3:32"><div {...rest}>Hello World</div></div>
       });
-        `,
-        )
+        `),
       )
     })
-
-
   })
   describe('function declarations', () => {
-
-    it("should not duplicate the same property if there are nested functions", () => {
+    it('should not duplicate the same property if there are nested functions', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
@@ -247,8 +232,7 @@ describe('inject source', () => {
             }
             return <Child {...props} />;
           }
-        `,
-        )
+        `),
       )
     })
     it('should apply data-tsd-source from parent props if an external import', () => {
