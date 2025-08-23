@@ -96,6 +96,16 @@ const open = (file: string, line: number) => {
 }
 ```
 
+- `injectSource` - Configuration for source injection. Defaults to enabled.
+
+```ts
+{
+  injectSource: {
+    enabled: true
+  }
+}
+```
+
 ## Features
 
 ### Go to source

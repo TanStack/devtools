@@ -28,6 +28,16 @@ export type TanStackDevtoolsViteConfig = {
      * @default true
      */
     enabled: boolean
+  },
+  /**
+   * Configuration for source injection.
+   */
+  injectSource: {
+    /**
+     * Whether to enable source injection via data-tsd-source.
+     * @default true
+     */
+    enabled: boolean
   }
 }
 
@@ -38,6 +48,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
   const appDir = args?.appDir || './src'
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
+  const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
@@ -45,7 +56,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       enforce: 'pre',
       name: '@tanstack/devtools:inject-source',
       apply(config) {
-        return config.mode === 'development'
+        return config.mode === 'development' && injectSourceConfig.enabled
       },
       transform(code, id) {
         if (
