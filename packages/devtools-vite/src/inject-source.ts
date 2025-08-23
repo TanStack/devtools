@@ -4,9 +4,48 @@ import type { types as Babel, NodePath } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
 
 const getPropsNameFromFunctionDeclaration = (
-  functionDeclaration: t.VariableDeclarator | t.FunctionDeclaration,
+  functionDeclaration: t.VariableDeclarator | t.FunctionExpression | t.FunctionDeclaration | t.ArrowFunctionExpression,
 ) => {
   let propsName: string | null = null
+
+  if (functionDeclaration.type === "FunctionExpression") {
+    const firstArgument = functionDeclaration.params[0]
+    // handles (props) => {}
+    if (firstArgument && firstArgument.type === 'Identifier') {
+      propsName = firstArgument.name
+    }
+    // handles ({ ...props }) => {}
+    if (firstArgument && firstArgument.type === 'ObjectPattern') {
+      firstArgument.properties.forEach((prop) => {
+        if (
+          prop.type === 'RestElement' &&
+          prop.argument.type === 'Identifier'
+        ) {
+          propsName = prop.argument.name
+        }
+      })
+    }
+    return propsName
+  }
+  if (functionDeclaration.type === "ArrowFunctionExpression") {
+    const firstArgument = functionDeclaration.params[0]
+    // handles (props) => {}
+    if (firstArgument && firstArgument.type === 'Identifier') {
+      propsName = firstArgument.name
+    }
+    // handles ({ ...props }) => {}
+    if (firstArgument && firstArgument.type === 'ObjectPattern') {
+      firstArgument.properties.forEach((prop) => {
+        if (
+          prop.type === 'RestElement' &&
+          prop.argument.type === 'Identifier'
+        ) {
+          propsName = prop.argument.name
+        }
+      })
+    }
+    return propsName
+  }
   if (functionDeclaration.type === 'FunctionDeclaration') {
     const firstArgument = functionDeclaration.params[0]
     // handles (props) => {}
@@ -61,6 +100,12 @@ const transformJSX = (
   const line = loc.start.line
   const column = loc.start.column
 
+  const hasDataSource = element.node.attributes.some(
+    (attr) =>
+      attr.type === 'JSXAttribute' &&
+      attr.name.type === 'JSXIdentifier' &&
+      attr.name.name === 'data-tsd-source'
+  )
   // Check if props are spread
   const hasSpread = element.node.attributes.some(
     (attr) =>
@@ -69,55 +114,11 @@ const transformJSX = (
       attr.argument.name === propsName,
   )
 
-  if (hasSpread) {
+  if (hasSpread || hasDataSource) {
     // Do not inject if props are spread
     return
   }
 
-  /*   const isLowercase = element.node.name.type === "JSXIdentifier" ? element.node.name.name.charAt(0) === element.node.name.name.charAt(0).toLowerCase() : false
-    // Check if the JSX element is imported from a third-party library
-    let externalImport = false;
-    if (element.node.name.type === "JSXIdentifier") {
-      const jsxName = element.node.name.name;
-      const program = element.findParent((p) => p.isProgram());
-      if (program && program.node.type === "Program") {
-        const importDecl = program.node.body.find(
-          (stmt) =>
-            stmt.type === "ImportDeclaration" &&
-            stmt.specifiers.some(
-              (spec) =>
-                (spec.type === "ImportSpecifier" || spec.type === "ImportDefaultSpecifier"  ) &&
-                spec.local.name === jsxName
-            ) &&
-            !stmt.source.value.startsWith(".") // not a relative import
-            && !stmt.source.value.startsWith("@/")
-            && !stmt.source.value.startsWith("~")
-        );
-        externalImport = !!importDecl;
-      }
-    } 
-    if (propsName && !(externalImport)) {
-      // inject data-source either via props or default to a string "<file>:<line>:<column>"
-      // Inject data-source via props
-      element.node.attributes.push(
-        t.jsxAttribute(
-          t.jsxIdentifier('data-tsd-source'),
-          t.jsxExpressionContainer(
-            t.logicalExpression(
-              '??',
-              t.memberExpression(
-                t.identifier(propsName),
-                t.stringLiteral('data-tsd-source'),
-                true,
-              ),
-              t.stringLiteral(`${file}:${line}:${column}`),
-            ),
-          ),
-        ),
-      )
-  
-      return true
-    } */
 
   // Inject data-source as a string: "<file>:<line>:<column>"
   element.node.attributes.push(
@@ -132,12 +133,35 @@ const transformJSX = (
 
 const transform = (ast: ParseResult<Babel.File>, file: string) => {
   let didTransform = false
+
   trav(ast, {
     FunctionDeclaration(functionDeclaration) {
       const propsName = getPropsNameFromFunctionDeclaration(
         functionDeclaration.node,
       )
       functionDeclaration.traverse({
+        JSXOpeningElement(element) {
+          const transformed = transformJSX(element, propsName, file)
+          if (transformed) {
+            didTransform = true
+          }
+        },
+      })
+    },
+    ArrowFunctionExpression(path) {
+      const propsName = getPropsNameFromFunctionDeclaration(path.node)
+      path.traverse({
+        JSXOpeningElement(element) {
+          const transformed = transformJSX(element, propsName, file)
+          if (transformed) {
+            didTransform = true
+          }
+        },
+      })
+    },
+    FunctionExpression(path) {
+      const propsName = getPropsNameFromFunctionDeclaration(path.node)
+      path.traverse({
         JSXOpeningElement(element) {
           const transformed = transformJSX(element, propsName, file)
           if (transformed) {
@@ -167,7 +191,9 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
         },
       })
     },
+
   })
+
 
   return didTransform
 }
