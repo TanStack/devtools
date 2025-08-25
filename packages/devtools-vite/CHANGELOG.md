@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.6
+
+### Patch Changes
+
+- fix bugs with go to source not passing in column line properly to config ([#66](https://github.com/TanStack/devtools/pull/66))
+
 ## 0.2.5
 
 ### Patch Changes
