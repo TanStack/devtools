@@ -16,7 +16,7 @@ npm install -D @tanstack/devtools-vite
 
 Then add it as the *FIRST* plugin in your Vite config:
 
-```javascript
+```ts
 import { devtools } from '@tanstack/devtools-vite'
 
 export default {
@@ -33,7 +33,7 @@ And you're done!
 
 You can configure the devtools plugin by passing options to the `devtools` function:
 
-```javascript
+```ts
 import { devtools } from '@tanstack/devtools-vite'
 
 export default {
@@ -46,63 +46,95 @@ export default {
 }
 ```
 
-- `eventBusConfig` - Configuration for the event bus that the devtools use to communicate with the client
+### eventBusConfig
+
+  Configuration for the event bus that the devtools use to communicate with the client
 
 ```ts
-{ 
-  eventBusConfig: {
-    // port to run the event bus on
-    port: 1234,
-    // console log debug logs or not
-    debug: false
-  }, 
+import { devtools } from '@tanstack/devtools-vite'
+
+export default {
+  plugins: [
+    devtools({
+      eventBusConfig: {
+        // port to run the event bus on
+        port: 1234,
+        // console log debug logs or not
+        debug: false
+      }, 
+    }),
+    // ... rest of your plugins here
+  ],
 }
+ 
 ```
 
-- `appDir` - The directory where the react router app is located. Defaults to the "./src" relative to where vite.config is being defined.
+### editor
 
-```javascript
-{
-  appDir: './src',
-}
-```
-
-- `editor` - The open in editor configuration which has two fields, `name` and `open`,
+The open in editor configuration which has two fields, `name` and `open`,
 `name` is the name of your editor, and `open` is a function that opens the editor with the given file and line number. You can implement your version for your editor as follows:
 
+ ```ts
+import { devtools } from '@tanstack/devtools-vite'
+
+export default {
+  plugins: [
+    devtools({
+      editor: {
+        name: 'VSCode',
+        open: async (path, lineNumber, columnNumber) => {
+          const { exec } = await import('node:child_process')
+          exec(
+            // or windsurf/cursor/webstorm
+            `code -g "${(path).replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`,
+          )
+        },
+      }, 
+    }),
+    // ... rest of your plugins here
+  ],
+}
+ 
+```
+ 
 > [!IMPORTANT] `editor` is only needed for editors that are NOT VS Code, by default this works OOTB with VS Code.
+ 
+### enhancedLogs
+
+  Configuration for enhanced logging. Defaults to enabled.
 
 ```ts
-const open = (file: string, line: number) => {
-  // implement your editor opening logic here
-}
+import { devtools } from '@tanstack/devtools-vite'
 
-{
-  editor: {
-    name: 'vscode',
-    open
-  }
-}
-```
-
-
-- `enhancedLogs` - Configuration for enhanced logging. Defaults to enabled.
-
-```ts
-{
-  enhancedLogs: {
-    enabled: true
-  }
+export default {
+  plugins: [
+    devtools({
+      enhancedLogs: {
+        enabled: true
+      }
+    }),
+    // ... rest of your plugins here
+  ],
 }
 ```
 
-- `injectSource` - Configuration for source injection. Defaults to enabled.
+### injectSource 
+
+Configuration for source injection. Defaults to enabled.
+
 
 ```ts
-{
-  injectSource: {
-    enabled: true
-  }
+import { devtools } from '@tanstack/devtools-vite'
+
+export default {
+  plugins: [
+    devtools({
+      injectSource: {
+        enabled: true
+      }
+    }),
+    // ... rest of your plugins here
+  ],
 }
 ```
 
@@ -114,3 +146,7 @@ Allows you to open the source location on anything in your browser by clicking o
 
 To trigger this behavior you need the Devtools Vite plugin installed and configured and
 the Panel available on the page. Simply click on any element while holding down the Shift and Ctrl (or Meta) keys.
+
+### Advanced console logs
+
+Allows you to go directly to the console log location directly from the browser/terminal

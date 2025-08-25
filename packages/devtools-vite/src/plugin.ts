@@ -9,8 +9,6 @@ import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
 import type { Plugin } from 'vite'
 
 export type TanStackDevtoolsViteConfig = {
-  /** The directory where the react router app is located. Defaults to the "./src" relative to where vite.config is being defined. */
-  appDir?: string
   /**
    * Configuration for the editor integration. Defaults to opening in VS code
    */
@@ -46,7 +44,6 @@ export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
 
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
-  const appDir = args?.appDir || './src'
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const bus = new ServerEventBus(args?.eventBusConfig)
@@ -94,14 +91,15 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         })
 
         const editor = args?.editor ?? DEFAULT_EDITOR_CONFIG
-        const openInEditor = async (
-          path: string | undefined,
-          lineNum: string | undefined,
+        const openInEditor: EditorConfig["open"] = async (
+          path,
+          lineNum,
+          columnNum,
         ) => {
           if (!path) {
             return
           }
-          await editor.open(path, lineNum)
+          await editor.open(path, lineNum, columnNum)
         }
         server.middlewares.use((req, res, next) =>
           handleDevToolsViteRequest(req, res, next, (parsedData) => {
@@ -110,7 +108,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
               return handleOpenSource({
                 data: { type: data.type, data },
                 openInEditor,
-                appDir,
+
               })
             }
             return

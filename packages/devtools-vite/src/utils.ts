@@ -11,14 +11,17 @@ export const handleDevToolsViteRequest = (
   if (req.url?.includes('__tsd/open-source')) {
     const searchParams = new URLSearchParams(req.url.split('?')[1])
     const source = searchParams.get('source')
-    const line = searchParams.get('line')
-    const column = searchParams.get('column')
+    if (!source) {
+      return;
+    }
+    const [file, line, column] = source.split(':')
+
     cb({
       type: 'open-source',
       routine: 'open-source',
       data: {
-        source: source
-          ? normalizePath(`${process.cwd()}/${source}`)
+        source: file
+          ? normalizePath(`${process.cwd()}/${file}`)
           : undefined,
         line,
         column,
@@ -42,29 +45,8 @@ export const handleDevToolsViteRequest = (
     try {
       const parsedData = JSON.parse(dataToParse.toString())
       cb(parsedData)
-    } catch (e) {}
+    } catch (e) { }
     res.write('OK')
   })
 }
 
-export async function checkPath(
-  routePath: string,
-  extensions = ['.tsx', '.jsx', '.ts', '.js'],
-) {
-  const fs = await import('node:fs')
-  // Check if the path exists as a directory
-  if (fs.existsSync(routePath) && fs.lstatSync(routePath).isDirectory()) {
-    return { validPath: routePath, type: 'directory' } as const
-  }
-
-  // Check if the path exists as a file with one of the given extensions
-  for (const ext of extensions) {
-    const filePath = `${routePath}${ext}`
-    if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
-      return { validPath: filePath, type: 'file' } as const
-    }
-  }
-
-  // If neither a file nor a directory is found
-  return null
-}
