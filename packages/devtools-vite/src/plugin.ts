@@ -30,7 +30,7 @@ export type TanStackDevtoolsViteConfig = {
   /**
    * Configuration for source injection.
    */
-  injectSource: {
+  injectSource?: {
     /**
      * Whether to enable source injection via data-tsd-source.
      * @default true
