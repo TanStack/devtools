@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.7
+
+### Patch Changes
+
+- fix the config for inject config to be optional ([#68](https://github.com/TanStack/devtools/pull/68))
+
 ## 0.2.6
 
 ### Patch Changes
