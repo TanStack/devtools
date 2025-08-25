@@ -91,7 +91,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         })
 
         const editor = args?.editor ?? DEFAULT_EDITOR_CONFIG
-        const openInEditor: EditorConfig["open"] = async (
+        const openInEditor: EditorConfig['open'] = async (
           path,
           lineNum,
           columnNum,
@@ -108,7 +108,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
               return handleOpenSource({
                 data: { type: data.type, data },
                 openInEditor,
-
               })
             }
             return

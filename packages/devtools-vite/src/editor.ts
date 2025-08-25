@@ -1,5 +1,3 @@
-
-
 type OpenSourceData = {
   type: 'open-source'
   data: {
@@ -30,7 +28,7 @@ export const DEFAULT_EDITOR_CONFIG: EditorConfig = {
   open: async (path, lineNumber, columnNumber) => {
     const { exec } = await import('node:child_process')
     exec(
-      `code -g "${(path).replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`,
+      `code -g "${path.replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`,
     )
   },
 }
@@ -42,12 +40,10 @@ export const handleOpenSource = async ({
   data: OpenSourceData
   openInEditor: EditorConfig['open']
 }) => {
-  const { source, line, column, } = data.data
+  const { source, line, column } = data.data
   const lineNum = line ? `${line}` : undefined
   const columnNum = column ? `${column}` : undefined
   if (source) {
     return openInEditor(source, lineNum, columnNum)
   }
-
-
 }

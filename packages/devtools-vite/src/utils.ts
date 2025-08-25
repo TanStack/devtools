@@ -12,7 +12,7 @@ export const handleDevToolsViteRequest = (
     const searchParams = new URLSearchParams(req.url.split('?')[1])
     const source = searchParams.get('source')
     if (!source) {
-      return;
+      return
     }
     const [file, line, column] = source.split(':')
 
@@ -20,9 +20,7 @@ export const handleDevToolsViteRequest = (
       type: 'open-source',
       routine: 'open-source',
       data: {
-        source: file
-          ? normalizePath(`${process.cwd()}/${file}`)
-          : undefined,
+        source: file ? normalizePath(`${process.cwd()}/${file}`) : undefined,
         line,
         column,
       },
@@ -45,8 +43,7 @@ export const handleDevToolsViteRequest = (
     try {
       const parsedData = JSON.parse(dataToParse.toString())
       cb(parsedData)
-    } catch (e) { }
+    } catch (e) {}
     res.write('OK')
   })
 }
-
