@@ -2,6 +2,8 @@ import { createRoot } from 'react-dom/client'
 import { useEffect, useState } from 'react'
 import Devtools from './setup'
 import { queryPlugin } from './plugin'
+import { Button } from './button'
+import { Feature } from './feature'
 
 setTimeout(() => {
   queryPlugin.emit('test', {
@@ -40,6 +42,8 @@ function App() {
         variant="secondary"
         onClick={() => console.log('Button clicked!')}
       />
+      <Button>Click me</Button>
+      <Feature />
       <Devtools />
     </div>
   )

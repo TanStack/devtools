@@ -1,13 +1,31 @@
-import { Show } from 'solid-js'
-import { Checkbox, Input, Select } from '@tanstack/devtools-ui'
+import { Show, createMemo } from 'solid-js'
+import { Button, Checkbox, Input, Select } from '@tanstack/devtools-ui'
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'
+import type { ModifierKey } from '@solid-primitives/keyboard'
 
 export const SettingsTab = () => {
   const { setSettings, settings } = useDevtoolsSettings()
   const styles = useStyles()
-
+  const hotkey = createMemo(() => settings().openHotkey)
+  const modifiers: Array<ModifierKey> = ['Control', 'Alt', 'Meta', 'Shift']
+  const changeHotkey = (newHotkey: ModifierKey) => () => {
+    if (hotkey().includes(newHotkey)) {
+      return setSettings({
+        openHotkey: hotkey().filter((key) => key !== newHotkey),
+      })
+    }
+    const existingModifiers = hotkey().filter((key) =>
+      modifiers.includes(key as any),
+    )
+    const otherModifiers = hotkey().filter(
+      (key) => !modifiers.includes(key as any),
+    )
+    setSettings({
+      openHotkey: [...existingModifiers, newHotkey, ...otherModifiers],
+    })
+  }
   return (
     <div class={styles().settingsContainer}>
       {/* General Settings */}
@@ -137,20 +155,70 @@ export const SettingsTab = () => {
           Customize keyboard shortcuts for quick access.
         </p>
         <div class={styles().settingsGroup}>
+          <div class={styles().settingsModifiers}>
+            <Show keyed when={hotkey()}>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Shift')}
+                outline={!hotkey().includes('Shift')}
+              >
+                Shift
+              </Button>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Alt')}
+                outline={!hotkey().includes('Alt')}
+              >
+                Alt
+              </Button>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Meta')}
+                outline={!hotkey().includes('Meta')}
+              >
+                Meta
+              </Button>
+              <Button
+                variant="success"
+                onclick={changeHotkey('Control')}
+                outline={!hotkey().includes('Control')}
+              >
+                Control
+              </Button>
+            </Show>
+          </div>
           <Input
             label="Hotkey to open/close devtools"
-            description="Use '+' to combine keys (e.g., 'Ctrl+Shift+D' or 'Alt+D')"
-            placeholder="Ctrl+Shift+D"
-            value={settings().openHotkey.join('+')}
-            onChange={(e) =>
-              setSettings({
-                openHotkey: e
-                  .split('+')
-                  .map((key) => uppercaseFirstLetter(key))
-                  .filter(Boolean),
+            description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
+            placeholder="a"
+            value={hotkey()
+              .filter((key) => !['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key))
+              .join('+')}
+            onChange={(e) => {
+              const makeModifierArray = (key: string) => {
+                if (key.length === 1) return [uppercaseFirstLetter(key)]
+                const modifiers: Array<string> = []
+                for (const character of key) {
+                  const newLetter = uppercaseFirstLetter(character)
+                  if (!modifiers.includes(newLetter)) modifiers.push(newLetter)
+                }
+                return modifiers
+              }
+              const modifiers = e
+                .split('+')
+                .flatMap((key) => makeModifierArray(key))
+                .filter(Boolean)
+              return setSettings({
+                openHotkey: [
+                  ...hotkey().filter((key) =>
+                    ['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key),
+                  ),
+                  ...modifiers,
+                ],
               })
-            }
+            }}
           />
+          Final shortcut is: {hotkey().join(' + ')}
         </div>
       </div>
 

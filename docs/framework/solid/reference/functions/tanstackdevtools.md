@@ -8,17 +8,17 @@ title: TanStackDevtools
 # Function: TanStackDevtools()
 
 ```ts
-function TanStackDevtools(__namedParameters): Element
+function TanStackDevtools(props): any
 ```
 
-Defined in: [devtools.tsx:96](https://github.com/TanStack/devtools/blob/main/packages/solid-devtools/src/devtools.tsx#L96)
+Defined in: [index.ts:4](https://github.com/TanStack/devtools/blob/main/packages/solid-devtools/src/index.ts#L4)
 
 ## Parameters
 
-### \_\_namedParameters
+### props
 
-`TanStackDevtoolsInit`
+`TanStackDevtoolsInit` & `object`
 
 ## Returns
 
-`Element`
+`any`

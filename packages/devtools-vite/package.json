@@ -1,13 +1,13 @@
 {
-  "name": "@tanstack/solid-devtools",
-  "version": "0.4.6",
-  "description": "TanStack Devtools is a set of tools for building advanced devtools for your Solid application.",
+  "name": "@tanstack/devtools-vite",
+  "version": "0.2.7",
+  "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/TanStack/devtools.git",
-    "directory": "packages/solid-devtools"
+    "directory": "packages/devtools"
   },
   "homepage": "https://tanstack.com/devtools",
   "funding": {
@@ -15,32 +15,16 @@
     "url": "https://github.com/sponsors/tannerlinsley"
   },
   "keywords": [
-    "solid",
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "main": "dist/cjs/index.cjs",
+  "types": "dist/esm//index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
-      }
-    },
-    "./production": {
-      "import": {
-        "types": "./dist/esm/production.d.ts",
-        "default": "./dist/esm/production.js"
-      },
-      "require": {
-        "types": "./dist/cjs/production.d.cts",
-        "default": "./dist/cjs/production.cjs"
       }
     },
     "./package.json": "./package.json"
@@ -50,27 +34,35 @@
     "node": ">=18"
   },
   "files": [
-    "dist",
+    "dist/",
     "src"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
+    "lint:fix": "eslint ./src --fix",
     "test:eslint": "eslint ./src",
-    "test:lib": "vitest --passWithNoTests",
+    "test:lib": "vitest",
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
     "build": "vite build"
   },
+  "peerDependencies": {
+    "vite": "^7.0.0"
+  },
   "dependencies": {
-    "@tanstack/devtools": "workspace:*"
+    "@babel/core": "^7.28.3",
+    "@babel/generator": "^7.28.3",
+    "@babel/parser": "^7.28.3",
+    "@babel/traverse": "^7.28.3",
+    "@babel/types": "^7.28.2",
+    "@tanstack/devtools-event-bus": "workspace:*",
+    "chalk": "^5.6.0"
   },
   "devDependencies": {
-    "@tanstack/devtools-ui": "workspace:*",
-    "solid-js": "^1.9.7",
-    "vite-plugin-solid": "^2.11.6"
-  },
-  "peerDependencies": {
-    "solid-js": ">=1.9.7"
+    "@types/babel__core": "^7.20.5",
+    "@types/babel__generator": "^7.27.0",
+    "@types/babel__traverse": "^7.28.0",
+    "happy-dom": "^18.0.1"
   }
 }

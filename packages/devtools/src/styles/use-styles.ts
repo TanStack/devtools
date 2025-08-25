@@ -313,6 +313,10 @@ const stylesFactory = () => {
         grid-template-columns: 1fr;
       }
     `,
+    settingsModifiers: css`
+      display: flex;
+      gap: 0.5rem;
+    `,
   }
 }
 

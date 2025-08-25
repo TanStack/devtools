@@ -29,6 +29,7 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  console.log('hello in root document')
   return (
     <html lang="en">
       <head>

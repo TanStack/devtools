@@ -1,2 +1,2 @@
 export { ServerEventBus } from './server'
-export type { TanStackDevtoolsEvent } from './server'
+export type { TanStackDevtoolsEvent, ServerEventBusConfig } from './server'

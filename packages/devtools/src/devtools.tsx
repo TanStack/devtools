@@ -1,4 +1,4 @@
-import { Show, createEffect, createSignal } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import {
   useDevtoolsSettings,
@@ -12,6 +12,8 @@ import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
 import { Tabs } from './components/tabs'
 import { TabContent } from './components/tab-content'
+import { keyboardModifiers } from './context/devtools-store'
+import { getAllPermutations } from './utils/sanitize'
 
 export default function DevTools() {
   const { settings } = useDevtoolsSettings()
@@ -131,12 +133,50 @@ export default function DevTools() {
     }
   })
   createEffect(() => {
-    createShortcut(settings().openHotkey, () => {
-      toggleOpen()
+    // we create all combinations of modifiers
+    const modifiers = settings().openHotkey.filter((key) =>
+      keyboardModifiers.includes(key as any),
+    )
+    const nonModifiers = settings().openHotkey.filter(
+      (key) => !keyboardModifiers.includes(key as any),
+    )
+
+    const allModifierCombinations = getAllPermutations(modifiers)
+
+    for (const combination of allModifierCombinations) {
+      const permutation = [...combination, ...nonModifiers]
+      createShortcut(permutation, () => {
+        toggleOpen()
+      })
+    }
+  })
+
+  createEffect(() => {
+    // this will only work with the Vite plugin
+    const openSourceHandler = (e: Event) => {
+      const isShiftHeld = (e as KeyboardEvent).shiftKey
+      const isCtrlHeld =
+        (e as KeyboardEvent).ctrlKey || (e as KeyboardEvent).metaKey
+      if (!isShiftHeld || !isCtrlHeld) return
+
+      if (e.target instanceof HTMLElement) {
+        const dataSource = e.target.getAttribute('data-tsd-source')
+        window.getSelection()?.removeAllRanges()
+        if (dataSource) {
+          e.preventDefault()
+          e.stopPropagation()
+          fetch(
+            `http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`,
+          ).catch(() => {})
+        }
+      }
+    }
+    window.addEventListener('click', openSourceHandler)
+    onCleanup(() => {
+      window.removeEventListener('click', openSourceHandler)
     })
   })
 
-  createEffect(() => {})
   return (
     <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
       <Show

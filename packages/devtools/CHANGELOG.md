@@ -1,5 +1,30 @@
 # @tanstack/devtools
 
+## 0.4.5
+
+### Patch Changes
+
+- fix console log ([#58](https://github.com/TanStack/devtools/pull/58))
+
+## 0.4.4
+
+### Patch Changes
+
+- Add go to source functionality to devtools ([#56](https://github.com/TanStack/devtools/pull/56))
+
+## 0.4.3
+
+### Patch Changes
+
+- improve devtools shortcut handling ([#49](https://github.com/TanStack/devtools/pull/49))
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies [[`a7c5601`](https://github.com/TanStack/devtools/commit/a7c5601607a8f2ee293f23f10f434c623f0b7761)]:
+  - @tanstack/devtools-event-bus@0.2.2
+
 ## 0.4.1
 
 ### Patch Changes
