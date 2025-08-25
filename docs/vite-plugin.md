@@ -70,6 +70,9 @@ export default {
 ```
 
 ### editor
+ 
+> [!IMPORTANT] `editor` is only needed for editors that are NOT VS Code, by default this works OOTB with VS Code.
+ 
 
 The open in editor configuration which has two fields, `name` and `open`,
 `name` is the name of your editor, and `open` is a function that opens the editor with the given file and line number. You can implement your version for your editor as follows:
@@ -96,8 +99,6 @@ export default {
 }
  
 ```
- 
-> [!IMPORTANT] `editor` is only needed for editors that are NOT VS Code, by default this works OOTB with VS Code.
  
 ### enhancedLogs
 
