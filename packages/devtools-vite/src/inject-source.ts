@@ -94,7 +94,9 @@ const getPropsNameFromFunctionDeclaration = (
   return propsName
 }
 
-const getNameOfElement = (element: t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName): string => {
+const getNameOfElement = (
+  element: t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName,
+): string => {
   if (element.type === 'JSXIdentifier') {
     return element.name
   }
@@ -103,7 +105,6 @@ const getNameOfElement = (element: t.JSXIdentifier | t.JSXMemberExpression | t.J
   }
 
   return `${element.namespace.name}:${element.name.name}`
-
 }
 
 const transformJSX = (
@@ -117,8 +118,8 @@ const transformJSX = (
   const column = loc.start.column
   const nameOfElement = getNameOfElement(element.node.name)
 
-  if (nameOfElement === "Fragment" || nameOfElement === "React.Fragment") {
-    return;
+  if (nameOfElement === 'Fragment' || nameOfElement === 'React.Fragment') {
+    return
   }
   const hasDataSource = element.node.attributes.some(
     (attr) =>
