@@ -8,7 +8,7 @@ import {
 } from 'solid-js'
 import { clearDelegatedEvents, delegateEvents } from 'solid-js/web'
 import type { Accessor, JSX } from 'solid-js'
-// import type { StorageObject, StorageSetter } from '@solid-primitives/storage'
+
 
 interface PiPProviderProps {
   children: JSX.Element
@@ -60,6 +60,16 @@ export const PiPProvider = (props: PiPProviderProps) => {
       )
     }
 
+    const meta = typeof import.meta !== "undefined" ? import.meta : null;
+
+    meta?.hot?.on("vite:beforeUpdate", () => {
+      localStorage.setItem('pip_open', 'false')
+      closePipWindow()
+    });
+    window.addEventListener('beforeunload', () => {
+      localStorage.setItem('pip_open', 'false')
+      closePipWindow()
+    })
     // Remove existing styles
     pip.document.head.innerHTML = ''
     // Remove existing body
@@ -72,8 +82,8 @@ export const PiPProvider = (props: PiPProviderProps) => {
 
     // Detect when window is closed by user
     pip.addEventListener('pagehide', () => {
-      // props.setLocalStore('pip_open', 'false')
-      setPipWindow(null)
+      localStorage.setItem('pip_open', 'false')
+      closePipWindow()
     })
 
       // It is important to copy all parent window styles. Otherwise, there would be no CSS available at all
@@ -125,19 +135,11 @@ export const PiPProvider = (props: PiPProviderProps) => {
       ],
       pip.document,
     )
-    //  props.setLocalStore('pip_open', 'true')
+
     setPipWindow(pip)
   }
 
-  /*  createEffect(() => {
-     const pip_open = (props.localStore.pip_open ?? 'false') as 'true' | 'false'
-     if (pip_open === 'true' && !props.disabled) {
-       requestPipWindow(
-         Number(window.innerWidth),
-         Number(props.localStore.height || 300),
-       )
-     }
-   }) */
+
 
   createEffect(() => {
     // Setup mutation observer for goober styles with id `_goober

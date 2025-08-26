@@ -29,6 +29,9 @@ export default function DevTools() {
   let panelRef: HTMLDivElement | undefined = undefined
   const [isResizing, setIsResizing] = createSignal(false)
   const toggleOpen = () => {
+    if (pip().pipWindow) {
+      return;
+    }
     const open = isOpen()
     setIsOpen(!open)
     setPersistOpen(!open)
@@ -186,7 +189,7 @@ export default function DevTools() {
       <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
         <Show
           when={
-            settings().requireUrlFlag
+            pip().pipWindow !== null ? true : settings().requireUrlFlag
               ? window.location.search.includes(settings().urlFlag)
               : true
           }

@@ -1,11 +1,11 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/config/vite'
-import packageJson from './package.json'
 import solid from 'vite-plugin-solid'
-import { Plugin } from 'vite'
+import packageJson from './package.json'
+import type { Plugin } from 'vite'
 
 const config = defineConfig({
-  plugins: [solid() as any satisfies Plugin],
+  plugins: [solid() as any satisfies Plugin,],
   test: {
     name: packageJson.name,
     dir: './',
@@ -21,5 +21,6 @@ export default mergeConfig(
   tanstackViteConfig({
     entry: ['./src/index.ts'],
     srcDir: './src',
+    cjs: false,
   }),
 )
