@@ -30,7 +30,7 @@ export class ClientEventBus {
   #eventTarget: EventTarget
   #debug: boolean
   #connectToServerBus: boolean
-
+  #broadcastChannel: BroadcastChannel | null
   #dispatcher = (e: Event) => {
     const event = (e as CustomEvent).detail
     this.emitToServer(event)
@@ -48,16 +48,19 @@ export class ClientEventBus {
     connectToServerBus = false,
   }: ClientEventBusConfig = {}) {
     this.#debug = debug
+    this.#broadcastChannel = new BroadcastChannel('tanstack-devtools')
     this.#eventSource = null
     this.#port = port
     this.#socket = null
     this.#connectToServerBus = connectToServerBus
     this.#eventTarget = this.getGlobalTarget()
-
+    this.#broadcastChannel.onmessage = (e) => {
+      this.emitToClients(e.data, true)
+    }
     this.debugLog('Initializing client event bus')
   }
 
-  private emitToClients(event: TanStackDevtoolsEvent<string>) {
+  private emitToClients(event: TanStackDevtoolsEvent<string>, fromBroadcastChannel = false,) {
     this.debugLog('Emitting event from client bus', event)
     const specificEvent = new CustomEvent(event.type, { detail: event })
     this.debugLog('Emitting event to specific client listeners', event)
@@ -65,6 +68,11 @@ export class ClientEventBus {
     const globalEvent = new CustomEvent('tanstack-devtools-global', {
       detail: event,
     })
+    // We only emit the events if they didn't come from the broadcast channel
+    // otherwise it would infinitely send events between
+    if (!fromBroadcastChannel) {
+      this.#broadcastChannel?.postMessage(event)
+    }
     this.debugLog('Emitting event to global client listeners', event)
     this.#eventTarget.dispatchEvent(globalEvent)
   }
@@ -83,7 +91,7 @@ export class ClientEventBus {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json,
-      }).catch(() => {})
+      }).catch(() => { })
     }
   }
   start() {
@@ -176,6 +184,6 @@ export class ClientEventBus {
     try {
       const event = JSON.parse(data) as TanStackDevtoolsEvent<string, any>
       this.emitToClients(event)
-    } catch {}
+    } catch { }
   }
 }
