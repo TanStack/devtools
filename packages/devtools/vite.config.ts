@@ -5,7 +5,7 @@ import packageJson from './package.json'
 import type { Plugin } from 'vite'
 
 const config = defineConfig({
-  plugins: [solid() as any satisfies Plugin,],
+  plugins: [solid() as any satisfies Plugin],
   test: {
     name: packageJson.name,
     dir: './',

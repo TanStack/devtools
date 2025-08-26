@@ -55,9 +55,9 @@ function Posts({
                       // ones that are cached
                       queryClient.getQueryData(['post', post.id])
                         ? {
-                          fontWeight: 'bold',
-                          color: 'green',
-                        }
+                            fontWeight: 'bold',
+                            color: 'green',
+                          }
                         : {}
                     }
                   >
@@ -131,8 +131,10 @@ function usePosts() {
   })
 }
 
-
-const Context = createContext<{ count: number, setCount: (count: number) => void }>({ count: 0, setCount: () => { } })
+const Context = createContext<{
+  count: number
+  setCount: (count: number) => void
+}>({ count: 0, setCount: () => {} })
 
 setTimeout(() => {
   queryPlugin.emit('test', {
@@ -148,13 +150,17 @@ queryPlugin.on('test', (event) => {
 
 function Mounted() {
   const c = useContext(Context)
-  console.log(c);
-  return <p onClick={() => {
-    c.setCount(c.count + 1)
-  }}>
-    {c.count}
-    <hr />
-  </p>
+  console.log(c)
+  return (
+    <p
+      onClick={() => {
+        c.setCount(c.count + 1)
+      }}
+    >
+      {c.count}
+      <hr />
+    </p>
+  )
 }
 
 function App() {
@@ -166,10 +172,11 @@ function App() {
       <Context.Provider value={{ count: state, setCount: setState }}>
         <QueryClientProvider client={queryClient}>
           <p>
-            As you visit the posts below, you will notice them in a loading state
-            the first time you load them. However, after you return to this list
-            and click on any posts you have already visited again, you will see
-            them load instantly and background refresh right before your eyes!{' '}
+            As you visit the posts below, you will notice them in a loading
+            state the first time you load them. However, after you return to
+            this list and click on any posts you have already visited again, you
+            will see them load instantly and background refresh right before
+            your eyes!{' '}
             <strong>
               (You may need to throttle your network speed to simulate longer
               loading sequences)
@@ -182,11 +189,12 @@ function App() {
           )}
           <Devtools />
         </QueryClientProvider>
-
         <h1>TanStack Devtools React Basic Example</h1>
         current count: {state}
         <Button onClick={() => setState(state + 1)}>Click me</Button>
-        <Button onClick={() => setWin(window.open('', "", "popup"))}>Click me to open new window</Button>
+        <Button onClick={() => setWin(window.open('', '', 'popup'))}>
+          Click me to open new window
+        </Button>
         {win && createPortal(<Mounted />, win.document.body)}
         <Feature />
       </Context.Provider>

@@ -12,7 +12,7 @@ const stylesFactory = () => {
   return {
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
-      isDetached: boolean
+      isDetached: boolean,
     ) => css`
       direction: ltr;
       position: fixed;
@@ -22,7 +22,7 @@ const stylesFactory = () => {
       right: 0;
       z-index: 99999;
       width: 100%;
-   ${isDetached ? '' : 'max-height: 90%;'} 
+      ${isDetached ? '' : 'max-height: 90%;'}
       border-top: 1px solid ${colors.gray[700]};
       transform-origin: top;
     `,
@@ -191,7 +191,7 @@ const stylesFactory = () => {
         color: ${colors.gray[100]};
         border-left: 2px solid ${colors.purple[500]};
       }
-           &.detach {
+      &.detach {
         &:hover {
           background-color: ${colors.gray[700]};
         }

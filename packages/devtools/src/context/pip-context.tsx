@@ -9,7 +9,6 @@ import {
 import { clearDelegatedEvents, delegateEvents } from 'solid-js/web'
 import type { Accessor, JSX } from 'solid-js'
 
-
 interface PiPProviderProps {
   children: JSX.Element
   //  localStore: StorageObject<string>
@@ -48,11 +47,7 @@ export const PiPProvider = (props: PiPProviderProps) => {
       return
     }
 
-    const pip = window.open(
-      '',
-      'TSDT-Devtools-Panel',
-      `${settings},popup`,
-    )
+    const pip = window.open('', 'TSDT-Devtools-Panel', `${settings},popup`)
 
     if (!pip) {
       throw new Error(
@@ -60,12 +55,12 @@ export const PiPProvider = (props: PiPProviderProps) => {
       )
     }
 
-    const meta = typeof import.meta !== "undefined" ? import.meta : null;
+    const meta = typeof import.meta !== 'undefined' ? import.meta : null
 
-    meta?.hot?.on("vite:beforeUpdate", () => {
+    meta?.hot?.on('vite:beforeUpdate', () => {
       localStorage.setItem('pip_open', 'false')
       closePipWindow()
-    });
+    })
     window.addEventListener('beforeunload', () => {
       localStorage.setItem('pip_open', 'false')
       closePipWindow()
@@ -86,41 +81,39 @@ export const PiPProvider = (props: PiPProviderProps) => {
       closePipWindow()
     })
 
-      // It is important to copy all parent window styles. Otherwise, there would be no CSS available at all
-      // https://developer.chrome.com/docs/web-platform/document-picture-in-picture/#copy-style-sheets-to-the-picture-in-picture-window
-      ;[
-        ...document.styleSheets,
-      ].forEach((styleSheet) => {
-        try {
-          const cssRules = [...styleSheet.cssRules]
-            .map((rule) => rule.cssText)
-            .join('')
-          const style = document.createElement('style')
-          const style_node = styleSheet.ownerNode
-          let style_id = ''
+    // It is important to copy all parent window styles. Otherwise, there would be no CSS available at all
+    // https://developer.chrome.com/docs/web-platform/document-picture-in-picture/#copy-style-sheets-to-the-picture-in-picture-window
+    ;[...document.styleSheets].forEach((styleSheet) => {
+      try {
+        const cssRules = [...styleSheet.cssRules]
+          .map((rule) => rule.cssText)
+          .join('')
+        const style = document.createElement('style')
+        const style_node = styleSheet.ownerNode
+        let style_id = ''
 
-          if (style_node && 'id' in style_node) {
-            style_id = style_node.id
-          }
-
-          if (style_id) {
-            style.setAttribute('id', style_id)
-          }
-          style.textContent = cssRules
-          pip.document.head.appendChild(style)
-        } catch (e) {
-          const link = document.createElement('link')
-          if (styleSheet.href == null) {
-            return
-          }
-
-          link.rel = 'stylesheet'
-          link.type = styleSheet.type
-          link.media = styleSheet.media.toString()
-          link.href = styleSheet.href
-          pip.document.head.appendChild(link)
+        if (style_node && 'id' in style_node) {
+          style_id = style_node.id
         }
-      })
+
+        if (style_id) {
+          style.setAttribute('id', style_id)
+        }
+        style.textContent = cssRules
+        pip.document.head.appendChild(style)
+      } catch (e) {
+        const link = document.createElement('link')
+        if (styleSheet.href == null) {
+          return
+        }
+
+        link.rel = 'stylesheet'
+        link.type = styleSheet.type
+        link.media = styleSheet.media.toString()
+        link.href = styleSheet.href
+        pip.document.head.appendChild(link)
+      }
+    })
     delegateEvents(
       [
         'focusin',
@@ -139,19 +132,13 @@ export const PiPProvider = (props: PiPProviderProps) => {
     setPipWindow(pip)
   }
 
-
-
   createEffect(() => {
     // Setup mutation observer for goober styles with id `_goober
-    const gooberStyles = (
-      document
-    ).querySelector('#_goober')
+    const gooberStyles = document.querySelector('#_goober')
     const w = pipWindow()
     if (gooberStyles && w) {
       const observer = new MutationObserver(() => {
-        const pip_style = (
-          w.document
-        ).querySelector('#_goober')
+        const pip_style = w.document.querySelector('#_goober')
         if (pip_style) {
           pip_style.textContent = gooberStyles.textContent
         }

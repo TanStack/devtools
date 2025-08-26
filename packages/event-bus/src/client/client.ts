@@ -60,7 +60,10 @@ export class ClientEventBus {
     this.debugLog('Initializing client event bus')
   }
 
-  private emitToClients(event: TanStackDevtoolsEvent<string>, fromBroadcastChannel = false,) {
+  private emitToClients(
+    event: TanStackDevtoolsEvent<string>,
+    fromBroadcastChannel = false,
+  ) {
     this.debugLog('Emitting event from client bus', event)
     const specificEvent = new CustomEvent(event.type, { detail: event })
     this.debugLog('Emitting event to specific client listeners', event)
@@ -91,7 +94,7 @@ export class ClientEventBus {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json,
-      }).catch(() => { })
+      }).catch(() => {})
     }
   }
   start() {
@@ -184,6 +187,6 @@ export class ClientEventBus {
     try {
       const event = JSON.parse(data) as TanStackDevtoolsEvent<string, any>
       this.emitToClients(event)
-    } catch { }
+    } catch {}
   }
 }

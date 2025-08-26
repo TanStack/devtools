@@ -1,4 +1,4 @@
-import { createMemo, } from 'solid-js'
+import { createMemo } from 'solid-js'
 import { useDevtoolsState } from '../context/use-devtools-context'
 import { tabs } from '../tabs'
 import { useStyles } from '../styles/use-styles'

@@ -8,7 +8,7 @@ vi.stubGlobal(
     addEventListener = vi.fn()
     removeEventListener = vi.fn()
     close = vi.fn()
-  }
+  },
 )
 describe('ClientEventBus', () => {
   describe('debug', () => {
@@ -16,7 +16,7 @@ describe('ClientEventBus', () => {
       vi.restoreAllMocks()
     })
     it('should log events to the console when debug set to true', () => {
-      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => { })
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
       const clientBus = new ClientEventBus({ debug: true })
       clientBus.start()
 
@@ -29,7 +29,7 @@ describe('ClientEventBus', () => {
     })
 
     it('should not log events to the console when debug set to false', () => {
-      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => { })
+      const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
       const clientBus = new ClientEventBus({ debug: false })
       clientBus.start()
 

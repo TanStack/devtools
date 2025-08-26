@@ -25,12 +25,12 @@ export default function DevTools() {
   const [isOpen, setIsOpen] = createSignal(
     settings().defaultOpen || persistOpen(),
   )
-  const pip = usePiPWindow();
+  const pip = usePiPWindow()
   let panelRef: HTMLDivElement | undefined = undefined
   const [isResizing, setIsResizing] = createSignal(false)
   const toggleOpen = () => {
     if (pip().pipWindow) {
-      return;
+      return
     }
     const open = isOpen()
     setIsOpen(!open)
@@ -97,10 +97,10 @@ export default function DevTools() {
       run()
 
       if (typeof window !== 'undefined') {
-        (pip().pipWindow ?? window).addEventListener('resize', run)
+        ;(pip().pipWindow ?? window).addEventListener('resize', run)
 
         return () => {
-          (pip().pipWindow ?? window).removeEventListener('resize', run)
+          ;(pip().pipWindow ?? window).removeEventListener('resize', run)
           if (rootEl()?.parentElement && typeof previousValue === 'string') {
             setRootEl((prev) => {
               // prev!.parentElement!.style.paddingBottom = previousValue
@@ -157,7 +157,6 @@ export default function DevTools() {
     }
   })
 
-
   createEffect(() => {
     // this will only work with the Vite plugin
     const openSourceHandler = (e: Event) => {
@@ -174,7 +173,7 @@ export default function DevTools() {
           e.stopPropagation()
           fetch(
             `http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`,
-          ).catch(() => { })
+          ).catch(() => {})
         }
       }
     }
@@ -189,9 +188,11 @@ export default function DevTools() {
       <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
         <Show
           when={
-            pip().pipWindow !== null ? true : settings().requireUrlFlag
-              ? window.location.search.includes(settings().urlFlag)
-              : true
+            pip().pipWindow !== null
+              ? true
+              : settings().requireUrlFlag
+                ? window.location.search.includes(settings().urlFlag)
+                : true
           }
         >
           <Trigger isOpen={isOpen} setIsOpen={toggleOpen} />
