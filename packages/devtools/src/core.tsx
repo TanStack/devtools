@@ -3,6 +3,7 @@ import { Portal, render } from 'solid-js/web'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import { DevtoolsProvider } from './context/devtools-context'
 import { initialState } from './context/devtools-store'
+import { PiPProvider } from './context/pip-context'
 import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
 import type {
   TanStackDevtoolsConfig,
@@ -71,9 +72,11 @@ export class TanStackDevtoolsCore {
       this.#eventBus.start()
       return (
         <DevtoolsProvider plugins={this.#plugins} config={this.#config}>
-          <Portal mount={mountTo}>
-            <Devtools />
-          </Portal>
+          <PiPProvider>
+            <Portal mount={mountTo}>
+              <Devtools />
+            </Portal>
+          </PiPProvider>
         </DevtoolsProvider>
       )
     }, mountTo)

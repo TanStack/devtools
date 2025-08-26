@@ -12,6 +12,7 @@ const stylesFactory = () => {
   return {
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
+      isDetached: boolean
     ) => css`
       direction: ltr;
       position: fixed;
@@ -21,8 +22,7 @@ const stylesFactory = () => {
       right: 0;
       z-index: 99999;
       width: 100%;
-
-      max-height: 90%;
+   ${isDetached ? '' : 'max-height: 90%;'} 
       border-top: 1px solid ${colors.gray[700]};
       transform-origin: top;
     `,

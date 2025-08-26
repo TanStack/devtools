@@ -3,6 +3,7 @@ import { For } from 'solid-js'
 import { useStyles } from '../styles/use-styles'
 import { useDevtoolsState } from '../context/use-devtools-context'
 import { tabs } from '../tabs'
+import { usePiPWindow } from '../context/pip-context'
 
 interface TabsProps {
   toggleOpen: () => void
@@ -11,11 +12,10 @@ interface TabsProps {
 export const Tabs = (props: TabsProps) => {
   const styles = useStyles()
   const { state, setState } = useDevtoolsState()
+  const pipWindow = usePiPWindow()
   const handleDetachment = () => {
-    window.open(
-      "",
-      '',
-      `popup,width=${window.innerWidth},height=${state().height},top=${window.screen.height},left=${window.screenLeft}}`,
+    pipWindow().requestPipWindow(
+      `width=${window.innerWidth},height=${state().height},top=${window.screen.height},left=${window.screenLeft}}`
     )
   }
   return (
@@ -31,7 +31,7 @@ export const Tabs = (props: TabsProps) => {
           </button>
         )}
       </For>
-      <div style={{
+      {pipWindow().pipWindow !== null ? null : <div style={{
         "margin-top": "auto"
       }}>
         <button
@@ -78,7 +78,7 @@ export const Tabs = (props: TabsProps) => {
             <path d="m6 6 12 12" />
           </svg>
         </button>
-      </div>
+      </div>}
     </div>
   )
 }
