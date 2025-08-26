@@ -1,5 +1,16 @@
 # @tanstack/react-devtools
 
+## 0.5.0
+
+### Minor Changes
+
+- removed CJS support, added detached mode to devtools ([#70](https://github.com/TanStack/devtools/pull/70))
+
+### Patch Changes
+
+- Updated dependencies [[`9feb9c3`](https://github.com/TanStack/devtools/commit/9feb9c33517bda2e515b00d423bedab2502c9981)]:
+  - @tanstack/devtools@0.5.0
+
 ## 0.4.6
 
 ### Patch Changes

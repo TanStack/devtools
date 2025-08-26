@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-bus
 
+## 0.3.0
+
+### Minor Changes
+
+- removed CJS support, added detached mode to devtools ([#70](https://github.com/TanStack/devtools/pull/70))
+
 ## 0.2.2
 
 ### Patch Changes
