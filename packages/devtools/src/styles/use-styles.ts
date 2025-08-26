@@ -181,7 +181,7 @@ const stylesFactory = () => {
       border: none;
       transition: all 0.2s ease-in-out;
       border-left: 2px solid transparent;
-      &:hover:not(.close):not(.active) {
+      &:hover:not(.close):not(.active):not(.detach) {
         background-color: ${colors.gray[700]};
         color: ${colors.gray[100]};
         border-left: 2px solid ${colors.purple[500]};
@@ -190,6 +190,14 @@ const stylesFactory = () => {
         background-color: ${colors.purple[500]};
         color: ${colors.gray[100]};
         border-left: 2px solid ${colors.purple[500]};
+      }
+           &.detach {
+        &:hover {
+          background-color: ${colors.gray[700]};
+        }
+        &:hover {
+          color: ${colors.green[500]};
+        }
       }
       &.close {
         margin-top: auto;
