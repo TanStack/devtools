@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.5.1
+
+### Patch Changes
+
+- fix issue with react-router and delegated events ([#75](https://github.com/TanStack/devtools/pull/75))
+
 ## 0.5.0
 
 ### Minor Changes
