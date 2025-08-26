@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.9
+
+### Patch Changes
+
+- fix issue with ast transform ([#73](https://github.com/TanStack/devtools/pull/73))
+
 ## 0.2.8
 
 ### Patch Changes

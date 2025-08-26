@@ -103,7 +103,7 @@ importers:
         version: 4.0.14
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.2.8
+        specifier: 0.2.9
         version: link:../../../packages/devtools-vite
       '@types/react':
         specifier: ^19.1.2
@@ -213,7 +213,7 @@ importers:
         version: 4.0.14
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.2.8
+        specifier: 0.2.9
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -314,7 +314,7 @@ importers:
         version: 1.9.7
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.2.8
+        specifier: 0.2.9
         version: link:../../../packages/devtools-vite
       vite:
         specifier: ^7.0.6
