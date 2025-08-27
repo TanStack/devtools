@@ -1,4 +1,4 @@
-import { For, createSignal, } from 'solid-js'
+import { For, createSignal } from 'solid-js'
 import { Button } from '@tanstack/devtools-ui'
 import { useStyles } from '../styles/use-styles'
 import { useHeadChanges } from '../hooks/use-head-changes'
@@ -173,7 +173,6 @@ export const SeoTab = () => {
   useHeadChanges(() => {
     setReports(analyzeHead())
   })
-
 
   return (
     <div class={styles().seoTabContainer}>
