@@ -10,6 +10,124 @@ const stylesFactory = () => {
   const css = goober.css
 
   return {
+    seoTabContainer: css`
+      padding: 0;
+      margin: 0 auto;
+      background: ${colors.darkGray[700]};
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      overflow-y: auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+      overflow-y: auto;
+    `,
+    seoTabTitle: css`
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: ${colors.purple[400]};
+      margin: 0;
+      padding: 1rem 1.5rem 0.5rem 1.5rem;
+      text-align: left;
+      border-bottom: 1px solid ${colors.gray[700]};
+    `,
+    seoTabSection: css`
+      padding: 1.5rem;
+      background: ${colors.darkGray[800]};
+      border: 1px solid ${colors.gray[700]};
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin: 1.5rem;
+      margin-bottom: 2rem;
+      border-radius: 0.75rem; 
+    `,
+    seoPreviewSection: css`
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      margin-bottom: 0;
+      justify-content: flex-start;
+      align-items: flex-start;
+      overflow-x: auto;
+      flex-wrap: wrap;
+      padding-bottom: 0.5rem;
+    `,
+    seoPreviewCard: css`
+      border: 1px solid ${colors.gray[700]};
+      border-radius: 8px;
+      padding: 12px 10px;
+      background: ${colors.darkGray[900]};
+      margin-bottom: 0;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 200px;
+      max-width: 240px;
+      font-size: 0.95rem;
+      gap: 4px;
+    `,
+    seoPreviewHeader: css`
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: ${colors.purple[400]};
+    `,
+    seoPreviewImage: css`
+      max-width: 100%;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      height: 160px;
+    `,
+    seoPreviewTitle: css`
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: ${colors.gray[100]};
+    `,
+    seoPreviewDesc: css`
+      color: ${colors.gray[300]};
+      margin-bottom: 2px;
+      font-size: 0.95rem;
+    `,
+    seoPreviewUrl: css`
+      color: ${colors.gray[500]};
+      font-size: 0.9rem;
+      margin-bottom: 2px;
+      word-break: break-all;
+    `,
+    seoMissingTagsSection: css`
+      margin-top: 4px;
+      font-size: 0.95rem;
+      color: ${colors.red[400]};
+    `,
+    seoMissingTagsList: css`
+      margin: 4px 0 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-width: 240px;
+    `,
+    seoMissingTag: css`
+      background: ${colors.red[500]}22;
+      color: ${colors.red[500]};
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    `,
+    seoAllTagsFound: css`
+      color: ${colors.green[500]};
+      font-weight: 500;
+      margin-left: 6px;
+      font-size: 0.95rem;
+    `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
       isDetached: boolean,
