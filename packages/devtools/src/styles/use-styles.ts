@@ -15,7 +15,7 @@ const stylesFactory = () => {
       margin: 0 auto;
       background: ${colors.darkGray[700]};
       border-radius: 12px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
       overflow-y: auto;
       height: 100%;
       display: flex;
@@ -42,7 +42,7 @@ const stylesFactory = () => {
       gap: 0.5rem;
       margin: 1.5rem;
       margin-bottom: 2rem;
-      border-radius: 0.75rem; 
+      border-radius: 0.75rem;
     `,
     seoPreviewSection: css`
       display: flex;
@@ -61,7 +61,7 @@ const stylesFactory = () => {
       padding: 12px 10px;
       background: ${colors.darkGray[900]};
       margin-bottom: 0;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -80,7 +80,7 @@ const stylesFactory = () => {
       max-width: 100%;
       border-radius: 6px;
       margin-bottom: 6px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
       height: 160px;
     `,
     seoPreviewTitle: css`

@@ -1,19 +1,19 @@
-import { For, createEffect, createSignal, onCleanup } from 'solid-js';
-import { Button } from '@tanstack/devtools-ui';
-import { useStyles } from '../styles/use-styles';
+import { For, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Button } from '@tanstack/devtools-ui'
+import { useStyles } from '../styles/use-styles'
 
 type SocialMeta = {
-  title?: string;
-  description?: string;
-  image?: string;
-  url?: string;
-};
+  title?: string
+  description?: string
+  image?: string
+  url?: string
+}
 
 type SocialReport = {
-  network: string;
-  found: Partial<SocialMeta>;
-  missing: Array<string>;
-};
+  network: string
+  found: Partial<SocialMeta>
+  missing: Array<string>
+}
 
 const SOCIALS = [
   {
@@ -87,101 +87,171 @@ const SOCIALS = [
     color: '#1185FE',
   },
   // Add more networks as needed
-];
-function SocialPreview(props: { meta: SocialMeta; color: string; network: string }) {
-  const styles = useStyles();
+]
+function SocialPreview(props: {
+  meta: SocialMeta
+  color: string
+  network: string
+}) {
+  const styles = useStyles()
 
   return (
-    <div class={styles().seoPreviewCard} style={{ 'border-color': props.color }}>
-      <div class={styles().seoPreviewHeader} style={{ 'color': props.color }}>{props.network} Preview</div>
+    <div
+      class={styles().seoPreviewCard}
+      style={{ 'border-color': props.color }}
+    >
+      <div class={styles().seoPreviewHeader} style={{ color: props.color }}>
+        {props.network} Preview
+      </div>
       {props.meta.image ? (
-        <img src={props.meta.image} alt="Preview" class={styles().seoPreviewImage} />
+        <img
+          src={props.meta.image}
+          alt="Preview"
+          class={styles().seoPreviewImage}
+        />
       ) : (
-        <div class={styles().seoPreviewImage} style={{ background: '#222', color: '#888', display: 'flex', 'align-items': 'center', 'justify-content': 'center', 'min-height': '80px', width: '100%' }}>No Image</div>
+        <div
+          class={styles().seoPreviewImage}
+          style={{
+            background: '#222',
+            color: '#888',
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center',
+            'min-height': '80px',
+            width: '100%',
+          }}
+        >
+          No Image
+        </div>
       )}
-      <div class={styles().seoPreviewTitle}>{props.meta.title || 'No Title'}</div>
-      <div class={styles().seoPreviewDesc}>{props.meta.description || 'No Description'}</div>
-      <div class={styles().seoPreviewUrl}>{props.meta.url || window.location.href}</div>
+      <div class={styles().seoPreviewTitle}>
+        {props.meta.title || 'No Title'}
+      </div>
+      <div class={styles().seoPreviewDesc}>
+        {props.meta.description || 'No Description'}
+      </div>
+      <div class={styles().seoPreviewUrl}>
+        {props.meta.url || window.location.href}
+      </div>
     </div>
-  );
+  )
 }
 export const SeoTab = () => {
-  const [reports, setReports] = createSignal<Array<SocialReport>>([]);
-  const styles = useStyles();
+  const [reports, setReports] = createSignal<Array<SocialReport>>([])
+  const styles = useStyles()
 
   function analyzeHead(): Array<SocialReport> {
-    const metaTags = Array.from(document.head.querySelectorAll('meta'));
-    const reports: Array<SocialReport> = [];
+    const metaTags = Array.from(document.head.querySelectorAll('meta'))
+    const reports: Array<SocialReport> = []
 
     for (const social of SOCIALS) {
-      const found: Partial<SocialMeta> = {};
-      const missing: Array<string> = [];
+      const found: Partial<SocialMeta> = {}
+      const missing: Array<string> = []
       for (const tag of social.tags) {
-        const meta = metaTags.find((m) => (tag.key.includes("twitter:") ? false : m.getAttribute('property') === tag.key) || m.getAttribute('name') === tag.key);
+        const meta = metaTags.find(
+          (m) =>
+            (tag.key.includes('twitter:')
+              ? false
+              : m.getAttribute('property') === tag.key) ||
+            m.getAttribute('name') === tag.key,
+        )
 
         if (meta && meta.getAttribute('content')) {
-          found[tag.prop as keyof SocialMeta] = meta.getAttribute('content') || undefined;
+          found[tag.prop as keyof SocialMeta] =
+            meta.getAttribute('content') || undefined
         } else {
-          missing.push(tag.key);
+          missing.push(tag.key)
         }
       }
-      reports.push({ network: social.network, found, missing });
+      reports.push({ network: social.network, found, missing })
     }
-    return reports;
+    return reports
   }
 
   createEffect(() => {
     const update = () => {
-      setReports(analyzeHead());
-    };
-    update();
-    window.addEventListener('popstate', update);
-    window.addEventListener('hashchange', update);
-    window.addEventListener("load", update);
+      setReports(analyzeHead())
+    }
+    update()
+    window.addEventListener('popstate', update)
+    window.addEventListener('hashchange', update)
+    window.addEventListener('load', update)
     onCleanup(() => {
-      window.removeEventListener('popstate', update);
-      window.removeEventListener('hashchange', update);
-      window.removeEventListener("load", update);
-    });
-  });
+      window.removeEventListener('popstate', update)
+      window.removeEventListener('hashchange', update)
+      window.removeEventListener('load', update)
+    })
+  })
 
   return (
     <div class={styles().seoTabContainer}>
       <section class={styles().seoTabSection}>
         <h3 class={styles().sectionTitle}>
-          <svg class={styles().sectionIcon} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 9-3 3 3 3" /><path d="m14 15 3-3-3-3" /><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" /></svg>
+          <svg
+            class={styles().sectionIcon}
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m10 9-3 3 3 3" />
+            <path d="m14 15 3-3-3-3" />
+            <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+          </svg>
           Social previews
-          <Button style={{ "margin-left": "auto" }} onClick={() => setReports(analyzeHead())} variant="success" outline>
+          <Button
+            style={{ 'margin-left': 'auto' }}
+            onClick={() => setReports(analyzeHead())}
+            variant="success"
+            outline
+          >
             Refresh
           </Button>
         </h3>
         <p class={styles().sectionDescription}>
-          See how your current page will look when shared on popular social networks. The tool checks for essential meta tags and highlights any that are missing.
+          See how your current page will look when shared on popular social
+          networks. The tool checks for essential meta tags and highlights any
+          that are missing.
         </p>
         <div class={styles().seoPreviewSection}>
-          <For each={reports()}>{(report, i) => {
-            const social = SOCIALS[i()];
-            return (
-              <div>
-                <SocialPreview meta={report.found} color={social!.color} network={social!.network} />
-                {report.missing.length > 0 ?
-                  <><div class={styles().seoMissingTagsSection}>
-                    <strong>Missing tags for {social?.network}:</strong>
+          <For each={reports()}>
+            {(report, i) => {
+              const social = SOCIALS[i()]
+              return (
+                <div>
+                  <SocialPreview
+                    meta={report.found}
+                    color={social!.color}
+                    network={social!.network}
+                  />
+                  {report.missing.length > 0 ? (
+                    <>
+                      <div class={styles().seoMissingTagsSection}>
+                        <strong>Missing tags for {social?.network}:</strong>
 
-                    <ul class={styles().seoMissingTagsList}>
-                      <For each={report.missing}>{(tag) => (
-                        <li class={styles().seoMissingTag}>{tag}</li>
-                      )}</For>
-                    </ul>
-
-                  </div></>
-                  : null}
-              </div>
-            );
-          }}</For>
+                        <ul class={styles().seoMissingTagsList}>
+                          <For each={report.missing}>
+                            {(tag) => (
+                              <li class={styles().seoMissingTag}>{tag}</li>
+                            )}
+                          </For>
+                        </ul>
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              )
+            }}
+          </For>
         </div>
       </section>
       {/* Future sections can be added here as <section class={styles().seoTabSection}>...</section> */}
     </div>
-  );
-};
+  )
+}
