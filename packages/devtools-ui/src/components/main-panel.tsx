@@ -1,18 +1,27 @@
-import clsx from "clsx";
-import { useStyles } from "../styles/use-styles";
-import type { JSX } from "solid-js/jsx-runtime";
+import clsx from 'clsx'
+import { useStyles } from '../styles/use-styles'
+import type { JSX } from 'solid-js/jsx-runtime'
 
-type PanelProps = JSX.IntrinsicElements["div"] & {
-  children?: any;
-  className?: string;
-  withPadding?: boolean;
-};
+type PanelProps = JSX.IntrinsicElements['div'] & {
+  children?: any
+  className?: string
+  withPadding?: boolean
+}
 
-export const MainPanel = ({ className, children, class: classStyles, withPadding }: PanelProps) => {
-  const styles = useStyles();
+export const MainPanel = ({
+  className,
+  children,
+  class: classStyles,
+  withPadding,
+}: PanelProps) => {
+  const styles = useStyles()
   return (
-    <div class={clsx(styles().mainPanel.panel, className, classStyles, { [styles().mainPanel.withPadding]: withPadding })}>
+    <div
+      class={clsx(styles().mainPanel.panel, className, classStyles, {
+        [styles().mainPanel.withPadding]: withPadding,
+      })}
+    >
       {children}
     </div>
-  );
+  )
 }

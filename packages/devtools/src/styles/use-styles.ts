@@ -42,7 +42,7 @@ const stylesFactory = () => {
       border: 1px solid ${colors.gray[700]};
       display: flex;
       flex-direction: column;
-      gap: 0.5rem; 
+      gap: 0.5rem;
       margin-bottom: 2rem;
       border-radius: 0.75rem;
     `,

@@ -6,4 +6,9 @@ export { JsonTree } from './components/tree'
 export { Button } from './components/button'
 export { Tag } from './components/tag'
 export { MainPanel } from './components/main-panel'
-export { Section, SectionTitle, SectionDescription, SectionIcon } from './components/section'
+export {
+  Section,
+  SectionTitle,
+  SectionDescription,
+  SectionIcon,
+} from './components/section'

@@ -1,5 +1,15 @@
 import { Show, createMemo } from 'solid-js'
-import { Button, Checkbox, Input, MainPanel, Section, SectionDescription, SectionIcon, SectionTitle, Select } from '@tanstack/devtools-ui'
+import {
+  Button,
+  Checkbox,
+  Input,
+  MainPanel,
+  Section,
+  SectionDescription,
+  SectionIcon,
+  SectionTitle,
+  Select,
+} from '@tanstack/devtools-ui'
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'
@@ -76,7 +86,8 @@ export const SettingsTab = () => {
       <Section>
         <SectionTitle>
           <SectionIcon>
-            <svg xmlns="http://www.w3.org/2000/svg"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
               width="20"
               height="20"
               viewBox="0 0 24 24"

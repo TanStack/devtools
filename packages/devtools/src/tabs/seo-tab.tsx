@@ -1,5 +1,11 @@
 import { For, createSignal } from 'solid-js'
-import { MainPanel, Section, SectionDescription, SectionIcon, SectionTitle } from '@tanstack/devtools-ui'
+import {
+  MainPanel,
+  Section,
+  SectionDescription,
+  SectionIcon,
+  SectionTitle,
+} from '@tanstack/devtools-ui'
 import { useStyles } from '../styles/use-styles'
 import { useHeadChanges } from '../hooks/use-head-changes'
 
