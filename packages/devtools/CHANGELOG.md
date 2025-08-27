@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.0
+
+### Minor Changes
+
+- add seo tab and improve UX of plugins tab ([#80](https://github.com/TanStack/devtools/pull/80))
+
 ## 0.5.1
 
 ### Patch Changes
