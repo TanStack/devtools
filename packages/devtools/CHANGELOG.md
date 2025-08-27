@@ -1,5 +1,14 @@
 # @tanstack/devtools
 
+## 0.6.1
+
+### Patch Changes
+
+- consolidate styles into devtools-ui ([#83](https://github.com/TanStack/devtools/pull/83))
+
+- Updated dependencies [[`fc02e84`](https://github.com/TanStack/devtools/commit/fc02e849dd4a00e2e96d867d4c78dabac9989610)]:
+  - @tanstack/devtools-ui@0.3.2
+
 ## 0.6.0
 
 ### Minor Changes

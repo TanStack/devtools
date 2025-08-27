@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.3.2
+
+### Patch Changes
+
+- consolidate styles into devtools-ui ([#83](https://github.com/TanStack/devtools/pull/83))
+
 ## 0.3.1
 
 ### Patch Changes
