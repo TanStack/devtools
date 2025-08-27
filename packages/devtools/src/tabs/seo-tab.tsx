@@ -1,4 +1,5 @@
 import { For, createSignal } from 'solid-js'
+import { MainPanel, Section, SectionDescription, SectionIcon, SectionTitle } from '@tanstack/devtools-ui'
 import { useStyles } from '../styles/use-styles'
 import { useHeadChanges } from '../hooks/use-head-changes'
 
@@ -174,32 +175,33 @@ export const SeoTab = () => {
   })
 
   return (
-    <div class={styles().seoTabContainer}>
-      <section class={styles().seoTabSection}>
-        <h3 class={styles().sectionTitle}>
-          <svg
-            class={styles().sectionIcon}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="m10 9-3 3 3 3" />
-            <path d="m14 15 3-3-3-3" />
-            <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
-          </svg>
+    <MainPanel withPadding>
+      <Section>
+        <SectionTitle>
+          <SectionIcon>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m10 9-3 3 3 3" />
+              <path d="m14 15 3-3-3-3" />
+              <path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719" />
+            </svg>
+          </SectionIcon>
           Social previews
-        </h3>
-        <p class={styles().sectionDescription}>
+        </SectionTitle>
+        <SectionDescription>
           See how your current page will look when shared on popular social
           networks. The tool checks for essential meta tags and highlights any
           that are missing.
-        </p>
+        </SectionDescription>
         <div class={styles().seoPreviewSection}>
           <For each={reports()}>
             {(report, i) => {
@@ -231,8 +233,7 @@ export const SeoTab = () => {
             }}
           </For>
         </div>
-      </section>
-      {/* Future sections can be added here as <section class={styles().seoTabSection}>...</section> */}
-    </div>
+      </Section>
+    </MainPanel>
   )
 }

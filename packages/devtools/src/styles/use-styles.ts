@@ -42,8 +42,7 @@ const stylesFactory = () => {
       border: 1px solid ${colors.gray[700]};
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      margin: 1.5rem;
+      gap: 0.5rem; 
       margin-bottom: 2rem;
       border-radius: 0.75rem;
     `,
@@ -407,42 +406,6 @@ const stylesFactory = () => {
       overflow-y: auto;
     `,
 
-    settingsContainer: css`
-      padding: 1.5rem;
-      height: 100%;
-      overflow-y: auto;
-      background-color: ${colors.darkGray[700]};
-    `,
-    settingsSection: css`
-      margin-bottom: 2rem;
-      padding: 1.5rem;
-      background-color: ${colors.darkGray[800]};
-      border: 1px solid ${colors.gray[700]};
-      border-radius: 0.75rem;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    `,
-    sectionTitle: css`
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: ${colors.gray[100]};
-      margin: 0 0 1rem 0;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid ${colors.gray[700]};
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      text-align: left;
-    `,
-    sectionIcon: css`
-      color: ${colors.purple[400]};
-    `,
-    sectionDescription: css`
-      color: ${colors.gray[400]};
-      font-size: 0.875rem;
-      margin: 0 0 1.5rem 0;
-      line-height: 1.5;
-      text-align: left;
-    `,
     settingsGroup: css`
       display: flex;
       flex-direction: column;
