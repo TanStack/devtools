@@ -1,6 +1,7 @@
-import { For, createEffect, createSignal, onCleanup } from 'solid-js'
+import { For, createSignal, } from 'solid-js'
 import { Button } from '@tanstack/devtools-ui'
 import { useStyles } from '../styles/use-styles'
+import { useHeadChanges } from '../hooks/use-head-changes'
 
 type SocialMeta = {
   title?: string
@@ -138,7 +139,7 @@ function SocialPreview(props: {
   )
 }
 export const SeoTab = () => {
-  const [reports, setReports] = createSignal<Array<SocialReport>>([])
+  const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
   const styles = useStyles()
 
   function analyzeHead(): Array<SocialReport> {
@@ -169,20 +170,10 @@ export const SeoTab = () => {
     return reports
   }
 
-  createEffect(() => {
-    const update = () => {
-      setReports(analyzeHead())
-    }
-    update()
-    window.addEventListener('popstate', update)
-    window.addEventListener('hashchange', update)
-    window.addEventListener('load', update)
-    onCleanup(() => {
-      window.removeEventListener('popstate', update)
-      window.removeEventListener('hashchange', update)
-      window.removeEventListener('load', update)
-    })
+  useHeadChanges(() => {
+    setReports(analyzeHead())
   })
+
 
   return (
     <div class={styles().seoTabContainer}>
