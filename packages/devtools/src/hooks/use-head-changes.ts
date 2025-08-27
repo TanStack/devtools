@@ -1,17 +1,17 @@
 import { onCleanup, onMount } from 'solid-js'
 
-export type HeadChange =
+type HeadChange =
   | { kind: 'added'; node: Node }
   | { kind: 'removed'; node: Node }
   | {
-      kind: 'attr'
-      target: Element
-      name: string | null
-      oldValue: string | null
-    }
+    kind: 'attr'
+    target: Element
+    name: string | null
+    oldValue: string | null
+  }
   | { kind: 'title'; title: string }
 
-export type UseHeadChangesOptions = {
+type UseHeadChangesOptions = {
   /**
    * Observe attribute changes on elements inside <head>
    * Default: true
