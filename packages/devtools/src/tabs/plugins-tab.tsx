@@ -7,7 +7,7 @@ import { PLUGIN_CONTAINER_ID, PLUGIN_TITLE_CONTAINER_ID } from '../constants'
 
 export const PluginsTab = () => {
   const { plugins, activePlugin, setActivePlugin } = usePlugins()
-  const { activeMenuHover, hoverUtils } = useDrawContext()
+  const { expanded, hoverUtils, animationMs } = useDrawContext()
   let activePluginRef: HTMLDivElement | undefined
 
   createEffect(() => {
@@ -23,9 +23,13 @@ export const PluginsTab = () => {
   return (
     <div class={styles().pluginsTabPanel}>
       <div
-        class={clsx(styles().pluginsTabDraw, {
-          [styles().pluginsTabDrawExpanded]: activeMenuHover(),
-        })}
+        class={clsx(
+          styles().pluginsTabDraw,
+          {
+            [styles().pluginsTabDrawExpanded]: expanded(),
+          },
+          styles().pluginsTabDrawTransition(animationMs),
+        )}
         onMouseEnter={() => {
           hoverUtils.enter()
         }}
@@ -34,9 +38,13 @@ export const PluginsTab = () => {
         }}
       >
         <div
-          class={clsx(styles().pluginsTabSidebar, {
-            [styles().pluginsTabSidebarExpanded]: activeMenuHover(),
-          })}
+          class={clsx(
+            styles().pluginsTabSidebar,
+            {
+              [styles().pluginsTabSidebarExpanded]: expanded(),
+            },
+            styles().pluginsTabSidebarTransition(animationMs),
+          )}
         >
           <For each={plugins()}>
             {(plugin) => {

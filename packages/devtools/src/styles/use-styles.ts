@@ -4,6 +4,9 @@ import { tokens } from './tokens'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 import type { Accessor } from 'solid-js'
 
+const mSecondsToCssSeconds = (mSeconds: number) =>
+  `${(mSeconds / 1000).toFixed(2)}s`
+
 const stylesFactory = () => {
   const { colors, font, size, alpha, border } = tokens
   const { fontFamily, size: fontSize } = font
@@ -349,26 +352,37 @@ const stylesFactory = () => {
       height: 100%;
       overflow: hidden;
     `,
+
     pluginsTabDraw: css`
       width: 0px;
       height: 100%;
       background-color: ${colors.darkGray[800]};
       box-shadow: 0 1px 0 ${colors.gray[700]};
-      transition: width 0.3s ease;
     `,
     pluginsTabDrawExpanded: css`
       width: ${size[48]};
       border-right: 1px solid ${colors.gray[700]};
     `,
+    pluginsTabDrawTransition: (mSeconds: number) => {
+      return css`
+        transition: width ${mSecondsToCssSeconds(mSeconds)} ease;
+      `
+    },
+
     pluginsTabSidebar: css`
       width: ${size[48]};
       overflow-y: auto;
-      transition: transform 0.3s ease;
       transform: translateX(-100%);
     `,
     pluginsTabSidebarExpanded: css`
       transform: translateX(0);
     `,
+    pluginsTabSidebarTransition: (mSeconds: number) => {
+      return css`
+        transition: transform ${mSecondsToCssSeconds(mSeconds)} ease;
+      `
+    },
+
     pluginName: css`
       font-size: ${fontSize.xs};
       font-family: ${fontFamily.sans};

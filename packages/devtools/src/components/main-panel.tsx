@@ -32,7 +32,9 @@ export const MainPanel = (props: {
         styles().devtoolsPanelContainerResizing(props.isResizing),
       )}
     >
-      <DrawClientProvider>{props.children}</DrawClientProvider>
+      <DrawClientProvider animationMs={400}>
+        {props.children}
+      </DrawClientProvider>
     </div>
   )
 }

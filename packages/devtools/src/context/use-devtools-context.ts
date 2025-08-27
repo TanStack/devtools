@@ -1,6 +1,7 @@
-import { createMemo, useContext } from 'solid-js'
+import { createEffect, createMemo, useContext } from 'solid-js'
 import { DevtoolsContext } from './devtools-context.jsx'
-/* import type { DevtoolsPlugin } from './devtools-context' */
+import { useDrawContext } from './draw-context.jsx'
+
 import type { DevtoolsStore } from './devtools-store.js'
 
 /**
@@ -19,9 +20,18 @@ const useDevtoolsContext = () => {
 
 export const usePlugins = () => {
   const { store, setStore } = useDevtoolsContext()
+  const { setForceExpand } = useDrawContext()
 
   const plugins = createMemo(() => store.plugins)
   const activePlugin = createMemo(() => store.state.activePlugin)
+
+  createEffect(() => {
+    if (activePlugin() == null) {
+      setForceExpand(false)
+    } else {
+      setForceExpand(true)
+    }
+  })
 
   const setActivePlugin = (pluginId: string) => {
     setStore((prev) => ({
