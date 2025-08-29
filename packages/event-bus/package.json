@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-event-bus",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "TanStack Event Bus is a lightweight event bus for TanStack Devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",

@@ -1,5 +1,14 @@
 # @tanstack/devtools-event-client
 
+## 0.2.10
+
+### Patch Changes
+
+- fix a bug for server event bus not connecting with clients properly ([#88](https://github.com/TanStack/devtools/pull/88))
+
+- Updated dependencies [[`f85fcf5`](https://github.com/TanStack/devtools/commit/f85fcf5f73fdca80297707b8eb4211a7a1308aa1)]:
+  - @tanstack/devtools-event-bus@0.3.1
+
 ## 0.2.9
 
 ### Patch Changes
