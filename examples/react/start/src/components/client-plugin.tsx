@@ -1,5 +1,5 @@
-import { queryPlugin } from '@/plugin'
 import { useEffect, useState } from 'react'
+import { queryPlugin } from '@/plugin'
 
 export default function ClientPlugin() {
   const [events, setEvents] = useState<
@@ -10,6 +10,7 @@ export default function ClientPlugin() {
       console.log('Received message in here:', event)
       setEvents((prev) => [...prev, event as any])
     })
+
 
     return cleanup
   }, [])

@@ -17,7 +17,7 @@ declare global {
   // eslint-disable-next-line no-var
   var __TANSTACK_DEVTOOLS_WSS_SERVER__: WebSocketServer | null
   // eslint-disable-next-line no-var
-  var __EVENT_TARGET__: EventTarget | null
+  var __TANSTACK_EVENT_TARGET__: EventTarget | null
 }
 
 export interface ServerEventBusConfig {
@@ -39,14 +39,17 @@ export class ServerEventBus {
     this.emit(event)
   }
   #connectFunction = () => {
+    this.debugLog(
+      'Connection request made to event-bus, replying back with success',
+    )
     this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
   constructor({ port = 42069, debug = false }: ServerEventBusConfig = {}) {
     this.#port = port
-    this.#eventTarget = globalThis.__EVENT_TARGET__ ?? new EventTarget()
+    this.#eventTarget = globalThis.__TANSTACK_EVENT_TARGET__ ?? new EventTarget()
     // we want to set the global event target only once so that we can emit/listen to events on the server
-    if (!globalThis.__EVENT_TARGET__) {
-      globalThis.__EVENT_TARGET__ = this.#eventTarget
+    if (!globalThis.__TANSTACK_EVENT_TARGET__) {
+      globalThis.__TANSTACK_EVENT_TARGET__ = this.#eventTarget
     }
     this.#server = globalThis.__TANSTACK_DEVTOOLS_SERVER__ ?? null
     this.#wssServer = globalThis.__TANSTACK_DEVTOOLS_WSS_SERVER__ ?? null
@@ -117,7 +120,7 @@ export class ServerEventBus {
             const msg = JSON.parse(body)
             this.debugLog('Received event from client', msg)
             this.emitToServer(msg)
-          } catch {}
+          } catch { }
         })
         res.writeHead(200).end()
         return

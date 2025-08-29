@@ -60,6 +60,9 @@ export default function DevtoolsExample() {
   return (
     <>
       <TanStackDevtools
+        eventBusConfig={{
+          connectToServerBus: true
+        }}
         plugins={[
           {
             name: 'TanStack Query',
