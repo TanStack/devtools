@@ -1,7 +1,7 @@
 import { Button } from './button'
 import { ButtonWithProps } from './button-with-props-only'
 
-export const Feature = () => {
+export function Feature() {
   return (
     <div>
       <h2>Feature component</h2>

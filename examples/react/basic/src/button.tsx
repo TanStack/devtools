@@ -1,3 +1,3 @@
-export const Button = (props: any) => {
+export function Button(props: any) {
   return <button {...props} />
 }

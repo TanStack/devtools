@@ -51,7 +51,7 @@ const buttonVariantColors: Record<
   },
 }
 const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
-  const { colors, font, size, alpha } = tokens
+  const { colors, font, size, alpha, border } = tokens
   const { fontFamily } = font
   const css = goober.css
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
@@ -390,6 +390,68 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         display: block;
         margin-left: ${isRoot ? '0' : '1rem'};
       `,
+    },
+    header: {
+      row: css`
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: ${tokens.size[2]} ${tokens.size[2.5]};
+      gap: ${tokens.size[2.5]};
+      border-bottom: ${t(colors.gray[300], colors.darkGray[500])} 1px solid;
+      align-items: center;
+     
+    `,
+      logoAndToggleContainer: css`
+      display: flex;
+      gap: ${tokens.size[3]};
+      align-items: center;
+       & > button {
+        padding: 0;
+        background: transparent;
+        border: none;
+        display: flex;
+        gap: ${size[0.5]};
+        flex-direction: column;
+      }
+    `,
+      logo: css`
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      background-color: transparent;
+      border: none;
+      gap: ${tokens.size[0.5]};
+      padding: 0px;
+      &:hover {
+        opacity: 0.7;
+      }
+      &:focus-visible {
+        outline-offset: 4px;
+        border-radius: ${border.radius.xs};
+        outline: 2px solid ${colors.blue[800]};
+      }
+    `,
+      tanstackLogo: css`
+      font-size: ${font.size.md};
+      font-weight: ${font.weight.bold};
+      line-height: ${font.lineHeight.xs};
+      white-space: nowrap;
+      color: ${t(colors.gray[600], colors.gray[300])};
+    `,
+      flavorLogo: (flavorLight: string, flavorDark: string) => css`
+      font-weight: ${font.weight.semibold};
+      font-size: ${font.size.xs};
+      background: linear-gradient(
+        to right,
+        ${t(flavorLight, flavorDark)}
+      );
+      background-clip: text;
+      -webkit-background-clip: text;
+      line-height: 1;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    `,
     },
     section: {
       main: css`
