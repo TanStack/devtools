@@ -2,6 +2,7 @@ import { Show, createMemo } from 'solid-js'
 import {
   Button,
   Checkbox,
+  Explorer,
   Input,
   MainPanel,
   Section,
@@ -38,6 +39,7 @@ export const SettingsTab = () => {
   }
   return (
     <MainPanel withPadding>
+      <Explorer label='test' editable itemsDeletable value={settings()} />
       {/* General Settings */}
       <Section>
         <SectionTitle>
