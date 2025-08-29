@@ -404,9 +404,6 @@ importers:
       '@tanstack/devtools-event-bus':
         specifier: workspace:*
         version: link:../event-bus
-      '@tanstack/devtools-event-client':
-        specifier: workspace:*
-        version: link:../event-bus-client
       chalk:
         specifier: ^5.6.0
         version: 5.6.0
