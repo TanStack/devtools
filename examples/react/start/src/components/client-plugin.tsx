@@ -11,7 +11,6 @@ export default function ClientPlugin() {
       setEvents((prev) => [...prev, event as any])
     })
 
-
     return cleanup
   }, [])
   return (

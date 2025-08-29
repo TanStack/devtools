@@ -46,7 +46,8 @@ export class ServerEventBus {
   }
   constructor({ port = 42069, debug = false }: ServerEventBusConfig = {}) {
     this.#port = port
-    this.#eventTarget = globalThis.__TANSTACK_EVENT_TARGET__ ?? new EventTarget()
+    this.#eventTarget =
+      globalThis.__TANSTACK_EVENT_TARGET__ ?? new EventTarget()
     // we want to set the global event target only once so that we can emit/listen to events on the server
     if (!globalThis.__TANSTACK_EVENT_TARGET__) {
       globalThis.__TANSTACK_EVENT_TARGET__ = this.#eventTarget
@@ -120,7 +121,7 @@ export class ServerEventBus {
             const msg = JSON.parse(body)
             this.debugLog('Received event from client', msg)
             this.emitToServer(msg)
-          } catch { }
+          } catch {}
         })
         res.writeHead(200).end()
         return

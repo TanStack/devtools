@@ -61,7 +61,7 @@ export default function DevtoolsExample() {
     <>
       <TanStackDevtools
         eventBusConfig={{
-          connectToServerBus: true
+          connectToServerBus: true,
         }}
         plugins={[
           {

@@ -15,10 +15,10 @@ type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
 export class EventClient<
   TEventMap extends Record<string, any>,
   TPluginId extends string = TEventMap extends Record<infer P, any>
-  ? P extends `${infer Id}:${string}`
-  ? Id
-  : never
-  : never,
+    ? P extends `${infer Id}:${string}`
+      ? Id
+      : never
+    : never,
 > {
   #pluginId: TPluginId
   #eventTarget: () => EventTarget
@@ -75,7 +75,6 @@ export class EventClient<
     this.#connected = false
     this.#connectIntervalId = null
     this.#connectEveryMs = 500
-
 
     this.#connectFunction()
     this.startConnectLoop()
@@ -141,8 +140,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-    ? S
-    : never,
+      ? S
+      : never,
   >(
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
@@ -169,8 +168,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-    ? S
-    : never,
+      ? S
+      : never,
   >(
     eventSuffix: TSuffix,
     cb: (
