@@ -343,6 +343,9 @@ importers:
 
   packages/devtools:
     dependencies:
+      '@neodrag/solid':
+        specifier: 3.0.0-next.8
+        version: 3.0.0-next.8(@neodrag/core@3.0.0-next.8)(solid-js@1.9.7)
       '@solid-primitives/keyboard':
         specifier: ^1.2.8
         version: 1.2.8(solid-js@1.9.7)
@@ -1488,6 +1491,15 @@ packages:
 
   '@napi-rs/wasm-runtime@0.2.4':
     resolution: {integrity: sha512-9zESzOO5aDByvhIAsOy9TbpZ0Ur2AJbUI7UT73kcUTS2mxAMHOBaa1st/jAymNoCtvrit99kkzT1FZuXVcgfIQ==}
+
+  '@neodrag/core@3.0.0-next.8':
+    resolution: {integrity: sha512-RNFwbo2w6M7BEzCh7pls68X2h3n+ofFDW1XnGyIzhtJ2bb8J/2VqixOpOlw9NfSJ61xgUC5ymGQbQFg5BKsWBA==}
+
+  '@neodrag/solid@3.0.0-next.8':
+    resolution: {integrity: sha512-7NCXB/fZtImSneXSEJ4sK0O9Ob/1SvIjzqTEshE9TATegXFD+jdqDwFhF8W0y6xNpjQlI2cjMELfHARH7HH65g==}
+    peerDependencies:
+      '@neodrag/core': 3.0.0-next.8
+      solid-js: ^1.0.0
 
   '@netlify/binary-info@1.0.0':
     resolution: {integrity: sha512-4wMPu9iN3/HL97QblBsBay3E1etIciR84izI3U+4iALY+JHCrI+a2jO0qbAZ/nxKoegypYEaiiqWXylm+/zfrw==}
@@ -8148,6 +8160,13 @@ snapshots:
       '@emnapi/core': 1.4.3
       '@emnapi/runtime': 1.4.3
       '@tybys/wasm-util': 0.9.0
+
+  '@neodrag/core@3.0.0-next.8': {}
+
+  '@neodrag/solid@3.0.0-next.8(@neodrag/core@3.0.0-next.8)(solid-js@1.9.7)':
+    dependencies:
+      '@neodrag/core': 3.0.0-next.8
+      solid-js: 1.9.7
 
   '@netlify/binary-info@1.0.0': {}
 

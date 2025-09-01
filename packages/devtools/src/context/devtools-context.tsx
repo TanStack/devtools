@@ -78,7 +78,10 @@ const getSettings = () => {
   }
 }
 
-const generatePluginId = (plugin: TanStackDevtoolsPlugin, index: number) => {
+export const generatePluginId = (
+  plugin: TanStackDevtoolsPlugin,
+  index: number,
+) => {
   // if set by user, return the plugin id
   if (plugin.id) {
     return plugin.id

@@ -1,4 +1,4 @@
-import { For, createEffect } from 'solid-js'
+import { For, createEffect, createMemo, createSignal } from 'solid-js'
 import clsx from 'clsx'
 import { useDrawContext } from '../context/draw-context'
 import { usePlugins } from '../context/use-devtools-context'
@@ -6,19 +6,28 @@ import { useStyles } from '../styles/use-styles'
 import { PLUGIN_CONTAINER_ID, PLUGIN_TITLE_CONTAINER_ID } from '../constants'
 
 export const PluginsTab = () => {
-  const { plugins, activePlugin, setActivePlugin } = usePlugins()
+  const { plugins, activePlugins, toggleActivePlugins } = usePlugins()
   const { expanded, hoverUtils, animationMs } = useDrawContext()
-  let activePluginRef: HTMLDivElement | undefined
+
+  const [pluginRefs, setPluginRefs] = createSignal(
+    new Map<string, HTMLDivElement>(),
+  )
+
+  const styles = useStyles()
 
   createEffect(() => {
-    const currentActivePlugin = plugins()?.find(
-      (plugin) => plugin.id === activePlugin(),
+    const currentActivePlugins = plugins()?.filter((plugin) =>
+      activePlugins().includes(plugin.id!),
     )
-    if (activePluginRef && currentActivePlugin) {
-      currentActivePlugin.render(activePluginRef)
-    }
+
+    currentActivePlugins?.forEach((plugin) => {
+      const ref = pluginRefs().get(plugin.id!)
+
+      if (ref) {
+        plugin.render(ref)
+      }
+    })
   })
-  const styles = useStyles()
 
   return (
     <div class={styles().pluginsTabPanel}>
@@ -30,12 +39,8 @@ export const PluginsTab = () => {
           },
           styles().pluginsTabDrawTransition(animationMs),
         )}
-        onMouseEnter={() => {
-          hoverUtils.enter()
-        }}
-        onMouseLeave={() => {
-          hoverUtils.leave()
-        }}
+        onMouseEnter={() => hoverUtils.enter()}
+        onMouseLeave={() => hoverUtils.leave()}
       >
         <div
           class={clsx(
@@ -49,6 +54,7 @@ export const PluginsTab = () => {
           <For each={plugins()}>
             {(plugin) => {
               let pluginHeading: HTMLHeadingElement | undefined
+
               createEffect(() => {
                 if (pluginHeading) {
                   typeof plugin.name === 'string'
@@ -56,14 +62,24 @@ export const PluginsTab = () => {
                     : plugin.name(pluginHeading)
                 }
               })
+
+              const isActive = createMemo(() =>
+                activePlugins().includes(plugin.id!),
+              )
+
               return (
                 <div
-                  onClick={() => setActivePlugin(plugin.id!)}
+                  onClick={() => {
+                    toggleActivePlugins(plugin.id!)
+                  }}
                   class={clsx(styles().pluginName, {
-                    active: activePlugin() === plugin.id,
+                    active: isActive(),
                   })}
                 >
-                  <h3 id={PLUGIN_TITLE_CONTAINER_ID} ref={pluginHeading} />
+                  <h3
+                    id={`${PLUGIN_TITLE_CONTAINER_ID}-${plugin.id}`}
+                    ref={pluginHeading}
+                  />
                 </div>
               )
             }}
@@ -71,11 +87,21 @@ export const PluginsTab = () => {
         </div>
       </div>
 
-      <div
-        id={PLUGIN_CONTAINER_ID}
-        ref={activePluginRef}
-        class={styles().pluginsTabContent}
-      ></div>
+      <For each={activePlugins()}>
+        {(pluginId) => (
+          <div
+            id={`${PLUGIN_CONTAINER_ID}-${pluginId}`}
+            ref={(el) => {
+              setPluginRefs((prev) => {
+                const updated = new Map(prev)
+                updated.set(pluginId, el)
+                return updated
+              })
+            }}
+            class={styles().pluginsTabContent}
+          />
+        )}
+      </For>
     </div>
   )
 }

@@ -3,6 +3,7 @@ import {
   PLUGIN_CONTAINER_ID,
   PLUGIN_TITLE_CONTAINER_ID,
   TanStackDevtoolsCore,
+  generatePluginId,
 } from '@tanstack/devtools'
 import { createPortal } from 'react-dom'
 import type { JSX, ReactElement } from 'react'
@@ -103,20 +104,21 @@ export const TanStackDevtools = ({
   eventBusConfig,
 }: TanStackDevtoolsReactInit): ReactElement | null => {
   const devToolRef = useRef<HTMLDivElement>(null)
-  const [pluginContainer, setPluginContainer] = useState<HTMLElement | null>(
-    null,
+  const [pluginContainers, setPluginContainers] = useState<Array<HTMLElement>>(
+    [],
   )
-  const [titleContainer, setTitleContainer] = useState<HTMLElement | null>(null)
-  const [PluginComponent, setPluginComponent] = useState<JSX.Element | null>(
-    null,
+  const [titleContainers, setTitleContainers] = useState<Array<HTMLElement>>([])
+  const [PluginComponents, setPluginComponents] = useState<Array<JSX.Element>>(
+    [],
   )
-  const [TitleComponent, setTitleComponent] = useState<JSX.Element | null>(null)
+  const [TitleComponents, setTitleComponents] = useState<Array<JSX.Element>>([])
+
   const [devtools] = useState(
     () =>
       new TanStackDevtoolsCore({
         config,
         eventBusConfig,
-        plugins: plugins?.map((plugin) => {
+        plugins: plugins?.map((plugin, index) => {
           return {
             ...plugin,
             name:
@@ -124,26 +126,37 @@ export const TanStackDevtools = ({
                 ? plugin.name
                 : // The check above confirms that `plugin.name` is of Render type
                   (e) => {
-                    setTitleContainer(
-                      e.ownerDocument.getElementById(
-                        PLUGIN_TITLE_CONTAINER_ID,
-                      ) || null,
+                    const target = e.ownerDocument.getElementById(
+                      // @ts-ignore just testing
+                      `${PLUGIN_TITLE_CONTAINER_ID}-${generatePluginId(plugin, index)}`,
                     )
-                    convertRender(
-                      plugin.name as PluginRender,
-                      setTitleComponent,
+                    if (target) {
+                      setTitleContainers((prev) => [...prev, target])
+                    }
+                    convertRender(plugin.name as PluginRender, (newVal) =>
+                      // @ts-ignore just testing
+                      setTitleComponents((prev) => [...prev, newVal]),
                     )
                   },
             render: (e) => {
-              setPluginContainer(
-                e.ownerDocument.getElementById(PLUGIN_CONTAINER_ID) || null,
+              const target = e.ownerDocument.getElementById(
+                // @ts-ignore just testing
+                `${PLUGIN_CONTAINER_ID}-${generatePluginId(plugin, index)}`,
               )
-              convertRender(plugin.render, setPluginComponent)
+              if (target) {
+                setPluginContainers((prev) => [...prev, target])
+              }
+
+              convertRender(plugin.render, (newVal) =>
+                // @ts-ignore just testing
+                setPluginComponents((prev) => [...prev, newVal]),
+              )
             },
           }
         }),
       }),
   )
+
   useEffect(() => {
     if (devToolRef.current) {
       devtools.mount(devToolRef.current)
@@ -155,11 +168,17 @@ export const TanStackDevtools = ({
   return (
     <>
       <div style={{ position: 'absolute' }} ref={devToolRef} />
-      {pluginContainer && PluginComponent
-        ? createPortal(<>{PluginComponent}</>, pluginContainer)
+
+      {pluginContainers.length > 0 && PluginComponents.length > 0
+        ? pluginContainers.map((pluginContainer, index) =>
+            createPortal(<>{PluginComponents[index]}</>, pluginContainer),
+          )
         : null}
-      {titleContainer && TitleComponent
-        ? createPortal(<>{TitleComponent}</>, titleContainer)
+
+      {titleContainers.length > 0 && TitleComponents.length > 0
+        ? titleContainers.map((titleContainer, index) =>
+            createPortal(<>{TitleComponents[index]}</>, titleContainer),
+          )
         : null}
     </>
   )
