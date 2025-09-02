@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.3.3
+
+### Patch Changes
+
+- improvements for tree view, added icons to devtools-ui, extracted components out of devtools core into ui, panel header ([#94](https://github.com/TanStack/devtools/pull/94))
+
 ## 0.3.2
 
 ### Patch Changes
