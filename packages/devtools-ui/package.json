@@ -48,11 +48,9 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@solid-primitives/keyed": "^1.4.0",
     "clsx": "^2.1.1",
     "goober": "^2.1.16",
-    "solid-js": "^1.9.7",
-    "superjson": "^2.2.2"
+    "solid-js": "^1.9.7"
   },
   "peerDependencies": {
     "solid-js": ">=1.9.7"

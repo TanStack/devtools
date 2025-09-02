@@ -13,4 +13,4 @@ export {
   SectionIcon,
 } from './components/section'
 export { Header, HeaderLogo } from './components/header'
-export { Explorer } from './components/explorer/explorer'
+export * from './components/icons'
