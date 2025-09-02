@@ -27,6 +27,12 @@
         "default": "./dist/esm/index.js"
       }
     },
+    "./icons": {
+      "import": {
+        "types": "./dist/esm/icons.d.ts",
+        "default": "./dist/esm/icons.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,

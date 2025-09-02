@@ -113,7 +113,7 @@ function JsonValue(props: {
       {(() => {
         if (typeof value === 'string') {
           return (
-            <span contentEditable class={styles().tree.valueString}>&quot;{value}&quot;</span>
+            <span class={styles().tree.valueString}>&quot;{value}&quot;</span>
           )
         }
         if (typeof value === 'number') {

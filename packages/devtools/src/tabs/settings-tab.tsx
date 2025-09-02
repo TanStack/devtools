@@ -2,7 +2,6 @@ import { Show, createMemo } from 'solid-js'
 import {
   Button,
   Checkbox,
-  Explorer,
   Input,
   MainPanel,
   Section,
@@ -11,6 +10,7 @@ import {
   SectionTitle,
   Select,
 } from '@tanstack/devtools-ui'
+import { GeoTag, Keyboard, Link, SettingsCog } from "@tanstack/devtools-ui/icons"
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'
@@ -39,25 +39,11 @@ export const SettingsTab = () => {
   }
   return (
     <MainPanel withPadding>
-      <Explorer label='test' editable itemsDeletable value={settings()} />
       {/* General Settings */}
       <Section>
         <SectionTitle>
           <SectionIcon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
+            <SettingsCog />
           </SectionIcon>
           General
         </SectionTitle>
@@ -88,21 +74,7 @@ export const SettingsTab = () => {
       <Section>
         <SectionTitle>
           <SectionIcon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M9 17H7A5 5 0 0 1 7 7h2" />
-              <path d="M15 7h2a5 5 0 1 1 0 10h-2" />
-              <line x1="8" x2="16" y1="12" y2="12" />
-            </svg>
+            <Link />
           </SectionIcon>
           URL Configuration
         </SectionTitle>
@@ -142,27 +114,7 @@ export const SettingsTab = () => {
       <Section>
         <SectionTitle>
           <SectionIcon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M10 8h.01" />
-              <path d="M12 12h.01" />
-              <path d="M14 8h.01" />
-              <path d="M16 12h.01" />
-              <path d="M18 8h.01" />
-              <path d="M6 8h.01" />
-              <path d="M7 16h10" />
-              <path d="M8 12h.01" />
-              <rect width="20" height="16" x="2" y="4" rx="2" />
-            </svg>
+            <Keyboard />
           </SectionIcon>
           Keyboard
         </SectionTitle>
@@ -241,20 +193,7 @@ export const SettingsTab = () => {
       <Section>
         <SectionTitle>
           <SectionIcon>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
+            <GeoTag />
           </SectionIcon>
           Position
         </SectionTitle>
