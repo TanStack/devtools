@@ -354,61 +354,61 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
     },
     tree: {
       info: css`
-      color: ${t(colors.gray[500], colors.gray[500])};
-      font-size: ${font.size.xs};
-      margin-right: ${size[1]};
-      /* outline: 1px solid ${colors.yellow[400]}; */
-    `,
+        color: ${t(colors.gray[500], colors.gray[500])};
+        font-size: ${font.size.xs};
+        margin-right: ${size[1]};
+        /* outline: 1px solid ${colors.yellow[400]}; */
+      `,
       actionButton: css`
-      background-color: transparent;
-      color: ${t(colors.gray[500], colors.gray[500])};
-      border: none;
-      display: inline-flex;
-      padding: 0px;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      width: ${size[3]};
-      height: ${size[3]};
-      position: relative;
-      z-index: 1;
+        background-color: transparent;
+        color: ${t(colors.gray[500], colors.gray[500])};
+        border: none;
+        display: inline-flex;
+        padding: 0px;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        width: ${size[3]};
+        height: ${size[3]};
+        position: relative;
+        z-index: 1;
 
-      &:hover svg {
-        color: ${t(colors.gray[600], colors.gray[400])};
-      }
+        &:hover svg {
+          color: ${t(colors.gray[600], colors.gray[400])};
+        }
 
-      &:focus-visible {
-        border-radius: ${border.radius.xs};
-        outline: 2px solid ${colors.blue[800]};
-        outline-offset: 2px;
-      }
-    `,
+        &:focus-visible {
+          border-radius: ${border.radius.xs};
+          outline: 2px solid ${colors.blue[800]};
+          outline-offset: 2px;
+        }
+      `,
       expanderContainer: css`
         position: relative;
       `,
       expander: css`
-          position: absolute;
-    left: -16px;
-    top: 3px;
-      & path {
-        stroke: ${colors.blue[300]};
-      }
-      & svg {
-        width: ${size[3]};
-        height: ${size[3]};
-      }
-         
-      display: inline-flex;
-      align-items: center;
-      transition: all 0.1s ease;
-      /* outline: 1px solid ${colors.blue[400]}; */
-    `,
+        position: absolute;
+        left: -16px;
+        top: 3px;
+        & path {
+          stroke: ${colors.blue[300]};
+        }
+        & svg {
+          width: ${size[3]};
+          height: ${size[3]};
+        }
+
+        display: inline-flex;
+        align-items: center;
+        transition: all 0.1s ease;
+        /* outline: 1px solid ${colors.blue[400]}; */
+      `,
       expandedLine: (hasBorder: boolean) => css`
-      display: block;
-      padding-left: 0.75rem;
-      margin-left: -0.7rem;
-      ${hasBorder ? `border-left: 1px solid ${colors.blue[300]};` : ''}
-    `,
+        display: block;
+        padding-left: 0.75rem;
+        margin-left: -0.7rem;
+        ${hasBorder ? `border-left: 1px solid ${colors.blue[300]};` : ''}
+      `,
       collapsible: css`
         cursor: pointer;
         transition: all 0.2s ease;
@@ -419,15 +419,15 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         }
       `,
       actions: css`
-      display: inline-flex;
-      margin-left: ${size[2]};
-      gap: ${size[2]};
-      align-items: center;
-      & svg {
-      height: 12px;
-      width: 12px;
-      }
-    `,
+        display: inline-flex;
+        margin-left: ${size[2]};
+        gap: ${size[2]};
+        align-items: center;
+        & svg {
+          height: 12px;
+          width: 12px;
+        }
+      `,
       valueCollapsed: css`
         color: ${colors.gray[400]};
       `,
@@ -468,65 +468,61 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
     },
     header: {
       row: css`
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: ${tokens.size[2]} ${tokens.size[2.5]};
-      gap: ${tokens.size[2.5]};
-      border-bottom: ${t(colors.gray[300], colors.darkGray[500])} 1px solid;
-      align-items: center;
-     
-    `,
-      logoAndToggleContainer: css`
-      display: flex;
-      gap: ${tokens.size[3]};
-      align-items: center;
-       & > button {
-        padding: 0;
-        background: transparent;
-        border: none;
         display: flex;
-        gap: ${size[0.5]};
-        flex-direction: column;
-      }
-    `,
+        justify-content: space-between;
+        align-items: center;
+        padding: ${tokens.size[2]} ${tokens.size[2.5]};
+        gap: ${tokens.size[2.5]};
+        border-bottom: ${t(colors.gray[300], colors.darkGray[500])} 1px solid;
+        align-items: center;
+      `,
+      logoAndToggleContainer: css`
+        display: flex;
+        gap: ${tokens.size[3]};
+        align-items: center;
+        & > button {
+          padding: 0;
+          background: transparent;
+          border: none;
+          display: flex;
+          gap: ${size[0.5]};
+          flex-direction: column;
+        }
+      `,
       logo: css`
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      background-color: transparent;
-      border: none;
-      gap: ${tokens.size[0.5]};
-      padding: 0px;
-      &:hover {
-        opacity: 0.7;
-      }
-      &:focus-visible {
-        outline-offset: 4px;
-        border-radius: ${border.radius.xs};
-        outline: 2px solid ${colors.blue[800]};
-      }
-    `,
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        background-color: transparent;
+        border: none;
+        gap: ${tokens.size[0.5]};
+        padding: 0px;
+        &:hover {
+          opacity: 0.7;
+        }
+        &:focus-visible {
+          outline-offset: 4px;
+          border-radius: ${border.radius.xs};
+          outline: 2px solid ${colors.blue[800]};
+        }
+      `,
       tanstackLogo: css`
-      font-size: ${font.size.md};
-      font-weight: ${font.weight.bold};
-      line-height: ${font.lineHeight.xs};
-      white-space: nowrap;
-      color: ${t(colors.gray[600], colors.gray[300])};
-    `,
+        font-size: ${font.size.md};
+        font-weight: ${font.weight.bold};
+        line-height: ${font.lineHeight.xs};
+        white-space: nowrap;
+        color: ${t(colors.gray[600], colors.gray[300])};
+      `,
       flavorLogo: (flavorLight: string, flavorDark: string) => css`
-      font-weight: ${font.weight.semibold};
-      font-size: ${font.size.xs};
-      background: linear-gradient(
-        to right,
-        ${t(flavorLight, flavorDark)}
-      );
-      background-clip: text;
-      -webkit-background-clip: text;
-      line-height: 1;
-      -webkit-text-fill-color: transparent;
-      white-space: nowrap;
-    `,
+        font-weight: ${font.weight.semibold};
+        font-size: ${font.size.xs};
+        background: linear-gradient(to right, ${t(flavorLight, flavorDark)});
+        background-clip: text;
+        -webkit-background-clip: text;
+        line-height: 1;
+        -webkit-text-fill-color: transparent;
+        white-space: nowrap;
+      `,
     },
     section: {
       main: css`
@@ -577,7 +573,6 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         padding: ${tokens.size[4]};
       `,
     },
-
   }
 }
 

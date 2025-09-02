@@ -13,4 +13,3 @@ export {
   SectionIcon,
 } from './components/section'
 export { Header, HeaderLogo } from './components/header'
-

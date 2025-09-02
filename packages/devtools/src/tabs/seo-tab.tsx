@@ -6,7 +6,7 @@ import {
   SectionIcon,
   SectionTitle,
 } from '@tanstack/devtools-ui'
-import { SocialBubble } from "@tanstack/devtools-ui/icons"
+import { SocialBubble } from '@tanstack/devtools-ui/icons'
 import { useStyles } from '../styles/use-styles'
 import { useHeadChanges } from '../hooks/use-head-changes'
 

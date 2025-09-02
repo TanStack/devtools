@@ -10,7 +10,12 @@ import {
   SectionTitle,
   Select,
 } from '@tanstack/devtools-ui'
-import { GeoTag, Keyboard, Link, SettingsCog } from "@tanstack/devtools-ui/icons"
+import {
+  GeoTag,
+  Keyboard,
+  Link,
+  SettingsCog,
+} from '@tanstack/devtools-ui/icons'
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'

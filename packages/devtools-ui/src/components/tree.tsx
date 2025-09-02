@@ -3,45 +3,47 @@ import clsx from 'clsx'
 import { css, useStyles } from '../styles/use-styles'
 import { CopiedCopier, Copier, ErrorCopier } from './icons'
 
-export function JsonTree(props: { value: any, copyable?: boolean }) {
+export function JsonTree(props: { value: any; copyable?: boolean }) {
   return <JsonValue isRoot value={props.value} copyable={props.copyable} />
 }
 type CopyState = 'NoCopy' | 'SuccessCopy' | 'ErrorCopy'
 
 const CopyButton = (props: { value: unknown }) => {
-
-  const styles = useStyles();
+  const styles = useStyles()
   const [copyState, setCopyState] = createSignal<CopyState>('NoCopy')
 
   return (
     <button
       class={styles().tree.actionButton}
       title="Copy object to clipboard"
-      aria-label={`${copyState() === 'NoCopy'
-        ? 'Copy object to clipboard'
-        : copyState() === 'SuccessCopy'
-          ? 'Object copied to clipboard'
-          : 'Error copying object to clipboard'
-        }`}
+      aria-label={`${
+        copyState() === 'NoCopy'
+          ? 'Copy object to clipboard'
+          : copyState() === 'SuccessCopy'
+            ? 'Object copied to clipboard'
+            : 'Error copying object to clipboard'
+      }`}
       onClick={
         copyState() === 'NoCopy'
           ? () => {
-            navigator.clipboard.writeText(JSON.stringify(props.value, null, 2)).then(
-              () => {
-                setCopyState('SuccessCopy')
-                setTimeout(() => {
-                  setCopyState('NoCopy')
-                }, 1500)
-              },
-              (err) => {
-                console.error('Failed to copy: ', err)
-                setCopyState('ErrorCopy')
-                setTimeout(() => {
-                  setCopyState('NoCopy')
-                }, 1500)
-              },
-            )
-          }
+              navigator.clipboard
+                .writeText(JSON.stringify(props.value, null, 2))
+                .then(
+                  () => {
+                    setCopyState('SuccessCopy')
+                    setTimeout(() => {
+                      setCopyState('NoCopy')
+                    }, 1500)
+                  },
+                  (err) => {
+                    console.error('Failed to copy: ', err)
+                    setCopyState('ErrorCopy')
+                    setTimeout(() => {
+                      setCopyState('NoCopy')
+                    }, 1500)
+                  },
+                )
+            }
           : undefined
       }
     >
@@ -50,7 +52,7 @@ const CopyButton = (props: { value: unknown }) => {
           <Copier />
         </Match>
         <Match when={copyState() === 'SuccessCopy'}>
-          <CopiedCopier theme={"dark"} />
+          <CopiedCopier theme={'dark'} />
         </Match>
         <Match when={copyState() === 'ErrorCopy'}>
           <ErrorCopier />
@@ -61,7 +63,7 @@ const CopyButton = (props: { value: unknown }) => {
 }
 
 const Expander = (props: { expanded: boolean }) => {
-  const styles = useStyles();
+  const styles = useStyles()
   return (
     <span
       class={clsx(
@@ -70,7 +72,7 @@ const Expander = (props: { expanded: boolean }) => {
           transform: rotate(${props.expanded ? 90 : 0}deg);
         `,
         props.expanded &&
-        css`
+          css`
             & svg {
               top: -1px;
             }
@@ -134,15 +136,22 @@ function JsonValue(props: {
           )
         }
         if (Array.isArray(value)) {
-          return <ArrayValue copyable={copyable} keyName={keyName} value={value} />
+          return (
+            <ArrayValue copyable={copyable} keyName={keyName} value={value} />
+          )
         }
         if (typeof value === 'object') {
-          return <ObjectValue copyable={copyable} keyName={keyName} value={value} />
+          return (
+            <ObjectValue copyable={copyable} keyName={keyName} value={value} />
+          )
         }
         return <span />
       })()}
-      {copyable && <div class={clsx(styles().tree.actions, "actions")}>
-        <CopyButton value={value} /></div>}
+      {copyable && (
+        <div class={clsx(styles().tree.actions, 'actions')}>
+          <CopyButton value={value} />
+        </div>
+      )}
       {isLastKey || isRoot ? '' : <span>,</span>}
     </span>
   )
@@ -151,10 +160,10 @@ function JsonValue(props: {
 const ArrayValue = ({
   value,
   keyName,
-  copyable
+  copyable,
 }: {
-  value: Array<any>,
-  copyable?: boolean,
+  value: Array<any>
+  copyable?: boolean
   keyName?: string
 }) => {
   const styles = useStyles()
@@ -171,8 +180,8 @@ const ArrayValue = ({
           }}
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
-
-          &quot;{keyName}&quot;:{' '}<span class={styles().tree.info}>{value.length} items</span>
+          &quot;{keyName}&quot;:{' '}
+          <span class={styles().tree.info}>{value.length} items</span>
         </span>
       )}
       <span class={styles().tree.valueBraces}>[</span>
@@ -182,10 +191,13 @@ const ArrayValue = ({
             {(item, i) => {
               const isLastKey = i() === value.length - 1
               return (
-                <JsonValue copyable={copyable} value={item} isLastKey={isLastKey} />
+                <JsonValue
+                  copyable={copyable}
+                  value={item}
+                  isLastKey={isLastKey}
+                />
               )
             }}
-
           </For>
         </span>
       </Show>
@@ -209,7 +221,7 @@ const ArrayValue = ({
 const ObjectValue = ({
   value,
   keyName,
-  copyable
+  copyable,
 }: {
   value: Record<string, any>
   keyName?: string
