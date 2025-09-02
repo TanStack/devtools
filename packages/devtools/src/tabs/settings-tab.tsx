@@ -44,7 +44,6 @@ export const SettingsTab = () => {
   }
   return (
     <MainPanel withPadding>
-      {/* General Settings */}
       <Section>
         <SectionTitle>
           <SectionIcon>
@@ -71,6 +70,19 @@ export const SettingsTab = () => {
               setSettings({ hideUntilHover: !settings().hideUntilHover })
             }
             checked={settings().hideUntilHover}
+          />
+          <Select
+            label="Theme"
+            description="Choose the theme for the devtools panel"
+            value={settings().theme}
+            options={[
+              { label: "Dark", value: "dark" },
+              { label: "Light", value: "light" },
+
+            ]}
+            onChange={(value) =>
+              setSettings({ theme: value })
+            }
           />
         </div>
       </Section>

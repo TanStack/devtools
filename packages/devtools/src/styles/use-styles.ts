@@ -1,24 +1,27 @@
 import * as goober from 'goober'
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
+import { useTheme } from '../context/use-devtools-context'
 import { tokens } from './tokens'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 import type { Accessor } from 'solid-js'
+import type { DevtoolsStore } from '../context/devtools-store'
 
 const mSecondsToCssSeconds = (mSeconds: number) =>
   `${(mSeconds / 1000).toFixed(2)}s`
 
-const stylesFactory = () => {
-  const { colors, font, size, alpha, border } = tokens
+const stylesFactory = (theme: DevtoolsStore["settings"]["theme"]) => {
+  const { colors, font, size, border } = tokens
   const { fontFamily, size: fontSize } = font
   const css = goober.css
+  const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
   return {
     seoTabContainer: css`
       padding: 0;
       margin: 0 auto;
-      background: ${colors.darkGray[700]};
+      background: ${t(colors.white, colors.darkGray[700])};
       border-radius: 12px;
-      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 16px ${t('rgba(0, 0, 0, 0.04)', 'rgba(0, 0, 0, 0.08)')};
       overflow-y: auto;
       height: 100%;
       display: flex;
@@ -30,16 +33,16 @@ const stylesFactory = () => {
     seoTabTitle: css`
       font-size: 1.25rem;
       font-weight: 600;
-      color: ${colors.purple[400]};
+      color: ${t(colors.purple[500], colors.purple[400])};
       margin: 0;
       padding: 1rem 1.5rem 0.5rem 1.5rem;
       text-align: left;
-      border-bottom: 1px solid ${colors.gray[700]};
+      border-bottom: 1px solid ${t(colors.gray[300], colors.gray[700])};
     `,
     seoTabSection: css`
       padding: 1.5rem;
-      background: ${colors.darkGray[800]};
-      border: 1px solid ${colors.gray[700]};
+      background: ${t(colors.gray[100], colors.gray[800])};
+      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -58,12 +61,12 @@ const stylesFactory = () => {
       padding-bottom: 0.5rem;
     `,
     seoPreviewCard: css`
-      border: 1px solid ${colors.gray[700]};
+      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
       border-radius: 8px;
       padding: 12px 10px;
-      background: ${colors.darkGray[900]};
+      background: ${t(colors.white, colors.darkGray[900])};
       margin-bottom: 0;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 1px 4px ${t('rgba(0,0,0,0.02)', 'rgba(0,0,0,0.04)')};
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -76,28 +79,28 @@ const stylesFactory = () => {
       font-size: 1rem;
       font-weight: 500;
       margin-bottom: 6px;
-      color: ${colors.purple[400]};
+      color: ${t(colors.purple[500], colors.purple[400])};
     `,
     seoPreviewImage: css`
       max-width: 100%;
       border-radius: 6px;
       margin-bottom: 6px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.03)', 'rgba(0,0,0,0.06)')};
       height: 160px;
     `,
     seoPreviewTitle: css`
       font-size: 1rem;
       font-weight: 600;
       margin-bottom: 2px;
-      color: ${colors.gray[100]};
+      color: ${t(colors.gray[900], colors.gray[100])};
     `,
     seoPreviewDesc: css`
-      color: ${colors.gray[300]};
+      color: ${t(colors.gray[700], colors.gray[300])};
       margin-bottom: 2px;
       font-size: 0.95rem;
     `,
     seoPreviewUrl: css`
-      color: ${colors.gray[500]};
+      color: ${t(colors.gray[500], colors.gray[500])};
       font-size: 0.9rem;
       margin-bottom: 2px;
       word-break: break-all;
@@ -105,7 +108,7 @@ const stylesFactory = () => {
     seoMissingTagsSection: css`
       margin-top: 4px;
       font-size: 0.95rem;
-      color: ${colors.red[400]};
+      color: ${t(colors.red[400], colors.red[400])};
     `,
     seoMissingTagsList: css`
       margin: 4px 0 0 0;
@@ -117,15 +120,15 @@ const stylesFactory = () => {
       max-width: 240px;
     `,
     seoMissingTag: css`
-      background: ${colors.red[500]}22;
-      color: ${colors.red[500]};
+      background: ${t(colors.red[100], colors.red[500] + '22')};
+      color: ${t(colors.red[700], colors.red[500])};
       border-radius: 4px;
       padding: 1px 6px;
       font-size: 0.9rem;
       font-weight: 500;
     `,
     seoAllTagsFound: css`
-      color: ${colors.green[500]};
+      color: ${t(colors.green[700], colors.green[500])};
       font-weight: 500;
       margin-left: 6px;
       font-size: 0.95rem;
@@ -143,7 +146,7 @@ const stylesFactory = () => {
       z-index: 99999;
       width: 100%;
       ${isDetached ? '' : 'max-height: 90%;'}
-      border-top: 1px solid ${colors.gray[700]};
+      border-top: 1px solid ${t(colors.gray[300], colors.gray[700])};
       transform-origin: top;
     `,
     devtoolsPanelContainerVisibility: (isOpen: boolean) => {
@@ -179,8 +182,8 @@ const stylesFactory = () => {
       display: flex;
       font-size: ${fontSize.sm};
       font-family: ${fontFamily.sans};
-      background-color: ${colors.darkGray[700]};
-      color: ${colors.gray[300]};
+      background-color: ${t(colors.white, colors.darkGray[700])};
+      color: ${t(colors.gray[900], colors.gray[300])};
       width: w-screen;
       flex-direction: row;
       overflow-x: hidden;
@@ -197,7 +200,7 @@ const stylesFactory = () => {
       user-select: none;
       z-index: 100000;
       &:hover {
-        background-color: ${colors.purple[400]}${alpha[90]};
+        background-color: ${t(colors.purple[700], colors.purple[400])};
       }
     `,
 
@@ -228,7 +231,7 @@ const stylesFactory = () => {
       &:focus-visible {
         outline-offset: 2px;
         border-radius: ${border.radius.full};
-        outline: 2px solid ${colors.blue[800]};
+        outline: 2px solid ${t(colors.blue[700], colors.blue[800])};
       }
     `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
@@ -280,9 +283,9 @@ const stylesFactory = () => {
       align-items: center;
       justify-content: flex-start;
       height: 100%;
-      background-color: ${colors.darkGray[800]};
-      border-right: 1px solid ${colors.gray[700]};
-      box-shadow: 0 1px 0 ${colors.gray[700]};
+      background-color: ${t(colors.gray[100], colors.darkGray[800])};
+      border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      box-shadow: 0 1px 0 ${t(colors.gray[200], colors.gray[700])};
       position: relative;
       width: ${size[10]};
     `,
@@ -296,39 +299,38 @@ const stylesFactory = () => {
       cursor: pointer;
       font-size: ${fontSize.sm};
       font-family: ${fontFamily.sans};
-      color: ${colors.gray[300]};
+      color: ${t(colors.gray[700], colors.gray[300])};
       background-color: transparent;
       border: none;
       transition: all 0.2s ease-in-out;
       border-left: 2px solid transparent;
       &:hover:not(.close):not(.active):not(.detach) {
-        background-color: ${colors.gray[700]};
-        color: ${colors.gray[100]};
-        border-left: 2px solid ${colors.purple[500]};
+        background-color: ${t(colors.gray[200], colors.gray[700])};
+        color: ${t(colors.gray[900], colors.gray[100])};
+        border-left: 2px solid ${t(colors.purple[700], colors.purple[500])};
       }
       &.active {
-        background-color: ${colors.purple[500]};
-        color: ${colors.gray[100]};
-        border-left: 2px solid ${colors.purple[500]};
+        background-color: ${t(colors.purple[200], colors.purple[500])};
+        color: ${t(colors.gray[900], colors.gray[100])};
+        border-left: 2px solid ${t(colors.purple[700], colors.purple[500])};
       }
       &.detach {
         &:hover {
-          background-color: ${colors.gray[700]};
+          background-color: ${t(colors.gray[200], colors.gray[700])};
         }
         &:hover {
-          color: ${colors.green[500]};
+          color: ${t(colors.green[700], colors.green[500])};
         }
       }
       &.close {
         margin-top: auto;
         &:hover {
-          background-color: ${colors.gray[700]};
+          background-color: ${t(colors.gray[200], colors.gray[700])};
         }
         &:hover {
-          color: ${colors.red[500]};
+          color: ${t(colors.red[700], colors.red[500])};
         }
       }
-
       &.disabled {
         cursor: not-allowed;
         opacity: 0.2;
@@ -352,15 +354,16 @@ const stylesFactory = () => {
       overflow: hidden;
     `,
 
-    pluginsTabDraw: css`
-      width: 0px;
+    pluginsTabDraw: (isExpanded: boolean) => css`
+      width: ${isExpanded ? size[48] : 0};
       height: 100%;
-      background-color: ${colors.darkGray[800]};
+      background-color: ${t(colors.white, colors.darkGray[800])};
       box-shadow: 0 1px 0 ${colors.gray[700]};
+      ${isExpanded ? `border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};` : ""}
     `,
     pluginsTabDrawExpanded: css`
       width: ${size[48]};
-      border-right: 1px solid ${colors.gray[700]};
+      border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};
     `,
     pluginsTabDrawTransition: (mSeconds: number) => {
       return css`
@@ -368,14 +371,12 @@ const stylesFactory = () => {
       `
     },
 
-    pluginsTabSidebar: css`
+    pluginsTabSidebar: (isExpanded: boolean) => css`
       width: ${size[48]};
       overflow-y: auto;
-      transform: translateX(-100%);
+      transform: ${isExpanded ? 'translateX(0)' : 'translateX(-100%)'};
     `,
-    pluginsTabSidebarExpanded: css`
-      transform: translateX(0);
-    `,
+
     pluginsTabSidebarTransition: (mSeconds: number) => {
       return css`
         transition: transform ${mSecondsToCssSeconds(mSeconds)} ease;
@@ -385,19 +386,19 @@ const stylesFactory = () => {
     pluginName: css`
       font-size: ${fontSize.xs};
       font-family: ${fontFamily.sans};
-      color: ${colors.gray[300]};
+      color: ${t(colors.gray[700], colors.gray[300])};
       padding: ${size[2]};
       cursor: pointer;
       text-align: center;
       transition: all 0.2s ease-in-out;
       &:hover {
-        background-color: ${colors.gray[700]};
-        color: ${colors.gray[100]};
+        background-color: ${t(colors.gray[200], colors.gray[700])};
+        color: ${t(colors.gray[900], colors.gray[100])};
         padding: ${size[2]};
       }
       &.active {
-        background-color: ${colors.purple[500]};
-        color: ${colors.gray[100]};
+        background-color: ${t(colors.purple[200], colors.purple[500])};
+        color: ${t(colors.gray[900], colors.gray[100])};
       }
     `,
     pluginsTabContent: css`
@@ -414,8 +415,8 @@ const stylesFactory = () => {
     conditionalSetting: css`
       margin-left: 1.5rem;
       padding-left: 1rem;
-      border-left: 2px solid ${colors.purple[400]};
-      background-color: ${colors.darkGray[800]};
+      border-left: 2px solid ${t(colors.purple[600], colors.purple[400])};
+      background-color: ${t(colors.gray[100], colors.darkGray[800])};
       padding: 1rem;
       border-radius: 0.5rem;
       margin-top: 0.5rem;
@@ -437,6 +438,10 @@ const stylesFactory = () => {
 }
 
 export function useStyles() {
-  const [_styles] = createSignal(stylesFactory())
-  return _styles
+  const { theme } = useTheme()
+  const [styles, setStyles] = createSignal(stylesFactory(theme()))
+  createEffect(() => {
+    setStyles(stylesFactory(theme()))
+  })
+  return styles
 }

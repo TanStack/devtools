@@ -15,11 +15,10 @@ export const MainPanel = ({
   withPadding,
 }: PanelProps) => {
   const styles = useStyles()
+
   return (
     <div
-      class={clsx(styles().mainPanel.panel, className, classStyles, {
-        [styles().mainPanel.withPadding]: withPadding,
-      })}
+      class={clsx(styles().mainPanel.panel(Boolean(withPadding)), className, classStyles)}
     >
       {children}
     </div>

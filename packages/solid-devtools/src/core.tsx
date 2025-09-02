@@ -8,13 +8,14 @@ import type {
   TanStackDevtoolsPlugin,
 } from '@tanstack/devtools'
 
-type SolidPluginRender = JSX.Element | (() => JSX.Element)
+type SolidPluginRender = JSX.Element | ((el: HTMLDivElement | HTMLHeadingElement, theme: "dark" | "light") => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
+  theme: "dark" | "light"
 ) => (
   <Portal mount={el}>
-    {typeof Component === 'function' ? <Component /> : Component}
+    {typeof Component === 'function' ? Component(el, theme) : Component}
   </Portal>
 )
 
@@ -108,8 +109,8 @@ export default function SolidDevtoolsCore({
           typeof plugin.name === 'string'
             ? plugin.name
             : // The check above confirms that `plugin.name` is of Render type
-              (el) => convertRender(el, plugin.name as SolidPluginRender),
-        render: (el: HTMLDivElement) => convertRender(el, plugin.render),
+            (el, theme) => convertRender(el, plugin.name as SolidPluginRender, theme),
+        render: (el: HTMLDivElement, theme: "dark" | "light") => convertRender(el, plugin.render, theme),
       })),
     }),
   )

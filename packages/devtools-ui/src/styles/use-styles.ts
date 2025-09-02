@@ -1,7 +1,9 @@
 import * as goober from 'goober'
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
+import { useTheme } from '../components/theme'
 import { tokens } from './tokens'
 import type { ButtonVariant } from '../components/button'
+import type { Theme, } from '../components/theme';
 
 const buttonVariantColors: Record<
   ButtonVariant,
@@ -51,7 +53,7 @@ const buttonVariantColors: Record<
   },
 }
 export const css = goober.css
-const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
+const stylesFactory = (theme: Theme = 'dark') => {
   const { colors, font, size, alpha, border } = tokens
   const { fontFamily } = font
 
@@ -87,12 +89,12 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
     selectLabel: css`
       font-size: 0.875rem;
       font-weight: 500;
-      color: ${colors.gray[100]};
+      color: ${t(colors.gray[900], colors.gray[100])};
       text-align: left;
     `,
     selectDescription: css`
       font-size: 0.8rem;
-      color: ${colors.gray[400]};
+      color: ${t(colors.gray[500], colors.gray[400])};
       margin: 0;
       line-height: 1.3;
       text-align: left;
@@ -102,9 +104,9 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       width: 100%;
       padding: 0.75rem 3rem 0.75rem 0.75rem;
       border-radius: 0.5rem;
-      background-color: ${colors.darkGray[800]};
-      color: ${colors.gray[100]};
-      border: 1px solid ${colors.gray[700]};
+      background-color: ${t(colors.gray[50], colors.darkGray[800])};
+      color: ${t(colors.gray[900], colors.gray[100])};
+      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
       font-size: 0.875rem;
       transition: all 0.2s ease;
       cursor: pointer;
@@ -116,7 +118,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       background-size: 1.25rem;
 
       &:hover {
-        border-color: ${colors.gray[600]};
+        border-color: ${t(colors.gray[400], colors.gray[600])};
       }
 
       &:focus {
@@ -138,12 +140,12 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
     inputLabel: css`
       font-size: 0.875rem;
       font-weight: 500;
-      color: ${colors.gray[100]};
+      color: ${t(colors.gray[900], colors.gray[100])};
       text-align: left;
     `,
     inputDescription: css`
       font-size: 0.8rem;
-      color: ${colors.gray[400]};
+      color: ${t(colors.gray[500], colors.gray[400])};
       margin: 0;
       line-height: 1.3;
       text-align: left;
@@ -153,25 +155,25 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       width: 100%;
       padding: 0.75rem;
       border-radius: 0.5rem;
-      background-color: ${colors.darkGray[800]};
-      color: ${colors.gray[100]};
-      border: 1px solid ${colors.gray[700]};
+      background-color: ${t(colors.gray[50], colors.darkGray[800])};
+      color: ${t(colors.gray[900], colors.gray[100])};
+      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
       font-size: 0.875rem;
       font-family: ${fontFamily.mono};
       transition: all 0.2s ease;
 
       &::placeholder {
-        color: ${colors.gray[500]};
+        color: ${t(colors.gray[400], colors.gray[500])};
       }
 
       &:hover {
-        border-color: ${colors.gray[600]};
+        border-color: ${t(colors.gray[400], colors.gray[600])};
       }
 
       &:focus {
         outline: none;
-        border-color: ${colors.purple[400]};
-        box-shadow: 0 0 0 3px ${colors.purple[400]}${alpha[20]};
+        border-color: ${t(colors.purple[500], colors.purple[400])};
+        box-shadow: 0 0 0 3px ${t(colors.purple[100] + alpha[20], colors.purple[400] + alpha[20])};
       }
     `,
     checkboxWrapper: css`
@@ -185,7 +187,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       transition: background-color 0.2s ease;
 
       &:hover {
-        background-color: ${colors.darkGray[800]};
+        background-color: ${t(colors.gray[100], colors.darkGray[800])};
       }
     `,
     checkboxContainer: css`
@@ -201,9 +203,9 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       appearance: none;
       width: 1.25rem;
       height: 1.25rem;
-      border: 2px solid ${colors.gray[700]};
+      border: 2px solid ${t(colors.gray[300], colors.gray[700])};
       border-radius: 0.375rem;
-      background-color: ${colors.darkGray[800]};
+      background-color: ${t(colors.gray[50], colors.darkGray[800])};
       display: grid;
       place-items: center;
       transition: all 0.2s ease;
@@ -211,33 +213,33 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       margin-top: 0.125rem;
 
       &:hover {
-        border-color: ${colors.purple[400]};
+        border-color: ${t(colors.purple[500], colors.purple[400])};
       }
 
       &:checked {
-        background-color: ${colors.purple[500]};
-        border-color: ${colors.purple[500]};
+        background-color: ${t(colors.purple[500], colors.purple[700])};
+        border-color: ${t(colors.purple[500], colors.purple[700])};
       }
 
       &:checked::after {
         content: '';
         width: 0.4rem;
         height: 0.6rem;
-        border: solid white;
+        border: solid ${t('#fff', colors.gray[100])};
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
         margin-top: -3px;
       }
     `,
     checkboxLabel: css`
-      color: ${colors.gray[100]};
+      color: ${t(colors.gray[900], colors.gray[100])};
       font-size: 0.875rem;
       font-weight: 500;
       line-height: 1.4;
       text-align: left;
     `,
     checkboxDescription: css`
-      color: ${colors.gray[400]};
+      color: ${t(colors.gray[500], colors.gray[400])};
       font-size: 0.8rem;
       line-height: 1.3;
       text-align: left;
@@ -267,43 +269,43 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         if (ghost) {
           return css`
             background: transparent;
-            color: ${v.bg};
+            color: ${t(v.bg, v.bg)};
             border-color: transparent;
             &:hover {
-              background: ${tokens.colors.purple[100]};
+              background: ${t(colors.purple[100], colors.darkGray[700])};
             }
             &:active {
-              background: ${tokens.colors.purple[200]};
+              background: ${t(colors.purple[200], colors.darkGray[800])};
             }
           `
         }
         if (outline) {
           return css`
             background: transparent;
-            color: ${v.bg};
-            border-color: ${v.bg};
+            color: ${t(v.bg, v.bg)};
+            border-color: ${t(v.bg, v.bg)};
             &:hover {
-              background: ${tokens.colors.purple[100]};
-              border-color: ${v.hover};
+              background: ${t(colors.purple[100], colors.darkGray[700])};
+              border-color: ${t(v.hover, v.hover)};
             }
             &:active {
-              background: ${tokens.colors.purple[200]};
-              border-color: ${v.active};
+              background: ${t(colors.purple[200], colors.darkGray[800])};
+              border-color: ${t(v.active, v.active)};
             }
           `
         }
         // Default solid button
         return css`
-          background: ${v.bg};
-          color: ${v.text};
-          border-color: ${v.border};
+          background: ${t(v.bg, v.bg)};
+          color: ${t(v.text, v.text)};
+          border-color: ${t(v.border, v.border)};
           &:hover {
-            background: ${v.hover};
-            border-color: ${v.hover};
+            background: ${t(v.hover, v.hover)};
+            border-color: ${t(v.hover, v.hover)};
           }
           &:active {
-            background: ${v.active};
-            border-color: ${v.active};
+            background: ${t(v.active, v.active)};
+            border-color: ${t(v.active, v.active)};
           }
         `
       },
@@ -313,7 +315,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         width: ${tokens.size[1.5]};
         height: ${tokens.size[1.5]};
         border-radius: ${tokens.border.radius.full};
-        background-color: ${tokens.colors[color][500]};
+        background-color: ${t(tokens.colors[color][500], tokens.colors[color][500])};
       `,
       base: css`
         display: flex;
@@ -333,7 +335,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         position: relative;
         &:focus-visible {
           outline-offset: 2px;
-          outline: 2px solid ${colors.blue[800]};
+          outline: 2px solid ${t(colors.blue[700], colors.blue[800])};
         }
       `,
       label: css`
@@ -357,7 +359,6 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         color: ${t(colors.gray[500], colors.gray[500])};
         font-size: ${font.size.xs};
         margin-right: ${size[1]};
-        /* outline: 1px solid ${colors.yellow[400]}; */
       `,
       actionButton: css`
         background-color: transparent;
@@ -379,7 +380,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
 
         &:focus-visible {
           border-radius: ${border.radius.xs};
-          outline: 2px solid ${colors.blue[800]};
+          outline: 2px solid ${t(colors.blue[700], colors.blue[800])};
           outline-offset: 2px;
         }
       `,
@@ -391,7 +392,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         left: -16px;
         top: 3px;
         & path {
-          stroke: ${colors.blue[300]};
+          stroke: ${t(colors.blue[400], colors.blue[300])};
         }
         & svg {
           width: ${size[3]};
@@ -401,19 +402,18 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         display: inline-flex;
         align-items: center;
         transition: all 0.1s ease;
-        /* outline: 1px solid ${colors.blue[400]}; */
       `,
       expandedLine: (hasBorder: boolean) => css`
         display: block;
         padding-left: 0.75rem;
         margin-left: -0.7rem;
-        ${hasBorder ? `border-left: 1px solid ${colors.blue[300]};` : ''}
+        ${hasBorder ? `border-left: 1px solid ${t(colors.blue[400], colors.blue[300])};` : ''}
       `,
       collapsible: css`
         cursor: pointer;
         transition: all 0.2s ease;
         &:hover {
-          background-color: ${colors.darkGray[700]};
+          background-color: ${t(colors.gray[100], colors.darkGray[700])};
           border-radius: ${tokens.border.radius.sm};
           padding: 0 ${tokens.size[1]};
         }
@@ -429,26 +429,26 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         }
       `,
       valueCollapsed: css`
-        color: ${colors.gray[400]};
+        color: ${t(colors.gray[500], colors.gray[400])};
       `,
       valueFunction: css`
-        color: ${colors.cyan[400]};
+        color: ${t(colors.cyan[500], colors.cyan[400])};
       `,
       valueString: css`
-        color: ${colors.green[400]};
+        color: ${t(colors.green[500], colors.green[400])};
       `,
       valueNumber: css`
-        color: ${colors.yellow[400]};
+        color: ${t(colors.yellow[500], colors.yellow[400])};
       `,
       valueBoolean: css`
-        color: ${colors.pink[400]};
+        color: ${t(colors.pink[500], colors.pink[400])};
       `,
       valueNull: css`
-        color: ${colors.gray[400]};
+        color: ${t(colors.gray[500], colors.gray[400])};
         font-style: italic;
       `,
       valueKey: css`
-        color: ${colors.blue[300]};
+        color: ${t(colors.blue[400], colors.blue[300])};
       `,
       valueBraces: css`
         color: ${colors.gray[500]};
@@ -511,7 +511,7 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
         font-weight: ${font.weight.bold};
         line-height: ${font.lineHeight.xs};
         white-space: nowrap;
-        color: ${t(colors.gray[600], colors.gray[300])};
+        color: ${t(colors.gray[700], colors.gray[300])};
       `,
       flavorLogo: (flavorLight: string, flavorDark: string) => css`
         font-weight: ${font.weight.semibold};
@@ -528,18 +528,18 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       main: css`
         margin-bottom: 2rem;
         padding: 1.5rem;
-        background-color: ${colors.darkGray[800]};
-        border: 1px solid ${colors.gray[700]};
+        background-color: ${t(colors.gray[50], colors.darkGray[800])};
+        border: 1px solid ${t(colors.gray[300], colors.gray[700])};
         border-radius: 0.75rem;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: ${t('0 1px 3px rgba(0,0,0,0.06)', '0 1px 3px rgba(0,0,0,0.18)')};
       `,
       title: css`
         font-size: 1.125rem;
         font-weight: 600;
-        color: ${colors.gray[100]};
+        color: ${t(colors.gray[900], colors.gray[100])};
         margin: 0 0 1rem 0;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid ${colors.gray[700]};
+        border-bottom: 1px solid ${t(colors.gray[300], colors.gray[700])};
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -552,10 +552,10 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
           height: 100%;
           width: 100%;
         }
-        color: ${colors.purple[400]};
+        color: ${t(colors.purple[500], colors.purple[400])};
       `,
       description: css`
-        color: ${colors.gray[400]};
+        color: ${t(colors.gray[500], colors.gray[400])};
         font-size: 0.875rem;
         margin: 0 0 1.5rem 0;
         line-height: 1.5;
@@ -563,20 +563,22 @@ const stylesFactory = (theme: 'light' | 'dark' = 'dark') => {
       `,
     },
     mainPanel: {
-      panel: css`
-        padding: 0;
-        background: ${colors.darkGray[700]};
+      panel: (withPadding: boolean) => css`
+        padding: ${withPadding ? tokens.size[4] : 0};
+        background: ${t(colors.gray[50], colors.darkGray[700])};
         overflow-y: auto;
         height: 100%;
-      `,
-      withPadding: css`
-        padding: ${tokens.size[4]};
-      `,
+      `
+
     },
   }
 }
 
 export function useStyles() {
-  const [_styles] = createSignal(stylesFactory())
-  return _styles
+  const { theme } = useTheme()
+  const [styles, setStyles] = createSignal(stylesFactory(theme()))
+  createEffect(() => {
+    setStyles(stylesFactory(theme()))
+  })
+  return styles
 }

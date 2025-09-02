@@ -18,6 +18,12 @@ const useDevtoolsContext = () => {
   return context
 }
 
+export function useTheme() {
+  const { settings, setSettings } = useDevtoolsSettings()
+  const theme = createMemo(() => settings().theme);
+  return { theme, setTheme: (theme: DevtoolsStore["settings"]["theme"]) => setSettings({ theme }) }
+}
+
 export const usePlugins = () => {
   const { store, setStore } = useDevtoolsContext()
   const { setForceExpand } = useDrawContext()
