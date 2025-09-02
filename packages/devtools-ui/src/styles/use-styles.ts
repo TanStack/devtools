@@ -3,7 +3,7 @@ import { createEffect, createSignal } from 'solid-js'
 import { useTheme } from '../components/theme'
 import { tokens } from './tokens'
 import type { ButtonVariant } from '../components/button'
-import type { Theme, } from '../components/theme';
+import type { Theme } from '../components/theme'
 
 const buttonVariantColors: Record<
   ButtonVariant,
@@ -173,7 +173,8 @@ const stylesFactory = (theme: Theme = 'dark') => {
       &:focus {
         outline: none;
         border-color: ${t(colors.purple[500], colors.purple[400])};
-        box-shadow: 0 0 0 3px ${t(colors.purple[100] + alpha[20], colors.purple[400] + alpha[20])};
+        box-shadow: 0 0 0 3px
+          ${t(colors.purple[100] + alpha[20], colors.purple[400] + alpha[20])};
       }
     `,
     checkboxWrapper: css`
@@ -315,7 +316,10 @@ const stylesFactory = (theme: Theme = 'dark') => {
         width: ${tokens.size[1.5]};
         height: ${tokens.size[1.5]};
         border-radius: ${tokens.border.radius.full};
-        background-color: ${t(tokens.colors[color][500], tokens.colors[color][500])};
+        background-color: ${t(
+          tokens.colors[color][500],
+          tokens.colors[color][500],
+        )};
       `,
       base: css`
         display: flex;
@@ -407,7 +411,9 @@ const stylesFactory = (theme: Theme = 'dark') => {
         display: block;
         padding-left: 0.75rem;
         margin-left: -0.7rem;
-        ${hasBorder ? `border-left: 1px solid ${t(colors.blue[400], colors.blue[300])};` : ''}
+        ${hasBorder
+          ? `border-left: 1px solid ${t(colors.blue[400], colors.blue[300])};`
+          : ''}
       `,
       collapsible: css`
         cursor: pointer;
@@ -531,7 +537,10 @@ const stylesFactory = (theme: Theme = 'dark') => {
         background-color: ${t(colors.gray[50], colors.darkGray[800])};
         border: 1px solid ${t(colors.gray[300], colors.gray[700])};
         border-radius: 0.75rem;
-        box-shadow: ${t('0 1px 3px rgba(0,0,0,0.06)', '0 1px 3px rgba(0,0,0,0.18)')};
+        box-shadow: ${t(
+          '0 1px 3px rgba(0,0,0,0.06)',
+          '0 1px 3px rgba(0,0,0,0.18)',
+        )};
       `,
       title: css`
         font-size: 1.125rem;
@@ -568,8 +577,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
         background: ${t(colors.gray[50], colors.darkGray[700])};
         overflow-y: auto;
         height: 100%;
-      `
-
+      `,
     },
   }
 }

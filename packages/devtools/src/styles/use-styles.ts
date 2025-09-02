@@ -9,7 +9,7 @@ import type { DevtoolsStore } from '../context/devtools-store'
 const mSecondsToCssSeconds = (mSeconds: number) =>
   `${(mSeconds / 1000).toFixed(2)}s`
 
-const stylesFactory = (theme: DevtoolsStore["settings"]["theme"]) => {
+const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
   const { colors, font, size, border } = tokens
   const { fontFamily, size: fontSize } = font
   const css = goober.css
@@ -359,7 +359,9 @@ const stylesFactory = (theme: DevtoolsStore["settings"]["theme"]) => {
       height: 100%;
       background-color: ${t(colors.white, colors.darkGray[800])};
       box-shadow: 0 1px 0 ${colors.gray[700]};
-      ${isExpanded ? `border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};` : ""}
+      ${isExpanded
+        ? `border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};`
+        : ''}
     `,
     pluginsTabDrawExpanded: css`
       width: ${size[48]};

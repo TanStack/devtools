@@ -20,8 +20,12 @@ const useDevtoolsContext = () => {
 
 export function useTheme() {
   const { settings, setSettings } = useDevtoolsSettings()
-  const theme = createMemo(() => settings().theme);
-  return { theme, setTheme: (theme: DevtoolsStore["settings"]["theme"]) => setSettings({ theme }) }
+  const theme = createMemo(() => settings().theme)
+  return {
+    theme,
+    setTheme: (theme: DevtoolsStore['settings']['theme']) =>
+      setSettings({ theme }),
+  }
 }
 
 export const usePlugins = () => {

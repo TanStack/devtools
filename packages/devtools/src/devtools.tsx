@@ -1,7 +1,7 @@
 import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
-import { ThemeContextProvider } from "@tanstack/devtools-ui"
+import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import {
   useDevtoolsSettings,
   useHeight,
@@ -99,10 +99,10 @@ export default function DevTools() {
       run()
 
       if (typeof window !== 'undefined') {
-        ; (pip().pipWindow ?? window).addEventListener('resize', run)
+        ;(pip().pipWindow ?? window).addEventListener('resize', run)
 
         return () => {
-          ; (pip().pipWindow ?? window).removeEventListener('resize', run)
+          ;(pip().pipWindow ?? window).removeEventListener('resize', run)
           if (rootEl()?.parentElement && typeof previousValue === 'string') {
             setRootEl((prev) => {
               // prev!.parentElement!.style.paddingBottom = previousValue
@@ -175,7 +175,7 @@ export default function DevTools() {
           e.stopPropagation()
           fetch(
             `http://localhost:__TSD_PORT__/__tsd/open-source?source=${dataSource}`,
-          ).catch(() => { })
+          ).catch(() => {})
         }
       }
     }

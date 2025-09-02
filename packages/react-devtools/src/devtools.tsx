@@ -12,7 +12,9 @@ import type {
   TanStackDevtoolsPlugin,
 } from '@tanstack/devtools'
 
-type PluginRender = JSX.Element | ((el: HTMLElement, theme: "dark" | "light") => JSX.Element)
+type PluginRender =
+  | JSX.Element
+  | ((el: HTMLElement, theme: 'dark' | 'light') => JSX.Element)
 
 export type TanStackDevtoolsReactPlugin = Omit<
   TanStackDevtoolsPlugin,
@@ -94,9 +96,11 @@ const convertRender = (
   Component: PluginRender,
   setComponent: React.Dispatch<React.SetStateAction<JSX.Element | null>>,
   e: HTMLElement,
-  theme: "dark" | "light"
+  theme: 'dark' | 'light',
 ) => {
-  setComponent(typeof Component === 'function' ? Component(e, theme) : Component)
+  setComponent(
+    typeof Component === 'function' ? Component(e, theme) : Component,
+  )
 }
 
 export const TanStackDevtools = ({
@@ -125,18 +129,19 @@ export const TanStackDevtools = ({
               typeof plugin.name === 'string'
                 ? plugin.name
                 : // The check above confirms that `plugin.name` is of Render type
-                (e, theme) => {
-                  setTitleContainer(
-                    e.ownerDocument.getElementById(
-                      PLUGIN_TITLE_CONTAINER_ID,
-                    ) || null,
-                  )
-                  convertRender(
-                    plugin.name as PluginRender,
-                    setTitleComponent,
-                    e, theme
-                  )
-                },
+                  (e, theme) => {
+                    setTitleContainer(
+                      e.ownerDocument.getElementById(
+                        PLUGIN_TITLE_CONTAINER_ID,
+                      ) || null,
+                    )
+                    convertRender(
+                      plugin.name as PluginRender,
+                      setTitleComponent,
+                      e,
+                      theme,
+                    )
+                  },
             render: (e, theme) => {
               setPluginContainer(
                 e.ownerDocument.getElementById(PLUGIN_CONTAINER_ID) || null,

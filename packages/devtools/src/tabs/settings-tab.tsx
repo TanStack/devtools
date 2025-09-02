@@ -76,13 +76,10 @@ export const SettingsTab = () => {
             description="Choose the theme for the devtools panel"
             value={settings().theme}
             options={[
-              { label: "Dark", value: "dark" },
-              { label: "Light", value: "light" },
-
+              { label: 'Dark', value: 'dark' },
+              { label: 'Light', value: 'light' },
             ]}
-            onChange={(value) =>
-              setSettings({ theme: value })
-            }
+            onChange={(value) => setSettings({ theme: value })}
           />
         </div>
       </Section>

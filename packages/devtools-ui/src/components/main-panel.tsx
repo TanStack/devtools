@@ -18,7 +18,11 @@ export const MainPanel = ({
 
   return (
     <div
-      class={clsx(styles().mainPanel.panel(Boolean(withPadding)), className, classStyles)}
+      class={clsx(
+        styles().mainPanel.panel(Boolean(withPadding)),
+        className,
+        classStyles,
+      )}
     >
       {children}
     </div>
