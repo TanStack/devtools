@@ -8,19 +8,19 @@ export const tabs = [
     name: 'Plugins',
     id: 'plugins',
     component: () => <PluginsTab />,
-    icon: <List />,
+    icon: () => <List />,
   },
   {
     name: 'SEO',
     id: 'seo',
     component: () => <SeoTab />,
-    icon: <PageSearch />,
+    icon: () => <PageSearch />,
   },
   {
     name: 'Settings',
     id: 'settings',
     component: () => <SettingsTab />,
-    icon: <Cogs />,
+    icon: () => <Cogs />,
   },
 ] as const
 

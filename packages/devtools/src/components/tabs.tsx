@@ -37,7 +37,7 @@ export const Tabs = (props: TabsProps) => {
               if (tab.id === 'plugins') hoverUtils.leave()
             }}
           >
-            {tab.icon}
+            {tab.icon()}
           </button>
         )}
       </For>
