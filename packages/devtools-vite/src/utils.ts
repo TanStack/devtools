@@ -15,7 +15,8 @@ export const handleDevToolsViteRequest = (
     if (!source) {
       return
     }
-    const [file, line, column] = source.split(':')
+    const parts = source.match(/^(.*?):(\d+):(\d+)$/)
+    const [, file, line, column] = parts
 
     cb({
       type: 'open-source',
