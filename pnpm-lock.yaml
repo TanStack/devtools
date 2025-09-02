@@ -373,9 +373,6 @@ importers:
 
   packages/devtools-ui:
     dependencies:
-      '@solid-primitives/keyed':
-        specifier: ^1.4.0
-        version: 1.5.2(solid-js@1.9.7)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -385,9 +382,6 @@ importers:
       solid-js:
         specifier: ^1.9.7
         version: 1.9.7
-      superjson:
-        specifier: ^2.2.2
-        version: 2.2.2
     devDependencies:
       vite-plugin-solid:
         specifier: ^2.11.6
@@ -2166,11 +2160,6 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/keyed@1.5.2':
-    resolution: {integrity: sha512-BgoEdqPw48URnI+L5sZIHdF4ua4Las1eWEBBPaoSFs42kkhnHue+rwCBPL2Z9ebOyQ75sUhUfOETdJfmv0D6Kg==}
-    peerDependencies:
-      solid-js: ^1.6.12
-
   '@solid-primitives/media@2.3.3':
     resolution: {integrity: sha512-hQ4hLOGvfbugQi5Eu1BFWAIJGIAzztq9x0h02xgBGl2l0Jaa3h7tg6bz5tV1NSuNYVGio4rPoa7zVQQLkkx9dA==}
     peerDependencies:
@@ -3547,10 +3536,6 @@ packages:
   cookie@1.0.2:
     resolution: {integrity: sha512-9Kr/j4O16ISv8zBBhJoi4bXOYNTkFLOqSL3UDB0njXxCXNezjeyVrJyGOWtgfs/q2km1gwBcfH8q1yEGoMYunA==}
     engines: {node: '>=18'}
-
-  copy-anything@3.0.5:
-    resolution: {integrity: sha512-yCEafptTtb4bk7GLEQoM8KVJpxAfdBJYaXyzQEgQQQgYrZiDp8SJmGKlYza6CYjEDNstAdNdKA3UuoULlEbS6w==}
-    engines: {node: '>=12.13'}
 
   copy-file@11.0.0:
     resolution: {integrity: sha512-mFsNh/DIANLqFt5VHZoGirdg7bK5+oTWlhnGu6tgRhzBlnEKWaPX2xrFaLltii/6rmhqFMJqffUgknuRdpYlHw==}
@@ -6223,10 +6208,6 @@ packages:
   strip-literal@3.0.0:
     resolution: {integrity: sha512-TcccoMhJOM3OebGhSBEmp3UZ2SfDMZUEBdRA/9ynfLi8yYajyWX3JiXArcJt4Umh4vISpspkQIY8ZZoCqjbviA==}
 
-  superjson@2.2.2:
-    resolution: {integrity: sha512-5JRxVqC8I8NuOUjzBbvVJAKNM8qoVuH0O77h4WInc/qC2q5IreqKxYwgkga3PfA22OayK2ikceb/B26dztPl+Q==}
-    engines: {node: '>=16'}
-
   supports-color@10.0.0:
     resolution: {integrity: sha512-HRVVSbCCMbj7/kdWF9Q+bbckjBHLtHMEoJWlkmYzzdwhYMkjkOwubLM6t7NbWKjgKamGDrWL1++KrjUO1t9oAQ==}
     engines: {node: '>=18'}
@@ -8794,10 +8775,6 @@ snapshots:
       '@solid-primitives/utils': 6.3.2(solid-js@1.9.7)
       solid-js: 1.9.7
 
-  '@solid-primitives/keyed@1.5.2(solid-js@1.9.7)':
-    dependencies:
-      solid-js: 1.9.7
-
   '@solid-primitives/media@2.3.3(solid-js@1.9.7)':
     dependencies:
       '@solid-primitives/event-listener': 2.4.3(solid-js@1.9.7)
@@ -10640,10 +10617,6 @@ snapshots:
   cookie-es@2.0.0: {}
 
   cookie@1.0.2: {}
-
-  copy-anything@3.0.5:
-    dependencies:
-      is-what: 4.1.16
 
   copy-file@11.0.0:
     dependencies:
@@ -13571,10 +13544,6 @@ snapshots:
   strip-literal@3.0.0:
     dependencies:
       js-tokens: 9.0.1
-
-  superjson@2.2.2:
-    dependencies:
-      copy-anything: 3.0.5
 
   supports-color@10.0.0: {}
 
