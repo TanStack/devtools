@@ -56,8 +56,8 @@
     "solid-js": "^1.9.7"
   },
   "peerDependencies": {
-    "solid-js": ">=1.9.7",
-    "@tanstack/devtools-ui": "workspace:*"
+    "@tanstack/devtools-ui": "workspace:*",
+    "solid-js": ">=1.9.7"
   },
   "devDependencies": {
     "vite-plugin-solid": "^2.11.6"
