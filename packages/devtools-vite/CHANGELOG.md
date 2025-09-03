@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.11
+
+### Patch Changes
+
+- fix bug with https server ([#100](https://github.com/TanStack/devtools/pull/100))
+
 ## 0.2.10
 
 ### Patch Changes

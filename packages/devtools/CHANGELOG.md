@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.5
+
+### Patch Changes
+
+- fix bug with https server ([#100](https://github.com/TanStack/devtools/pull/100))
+
 ## 0.6.4
 
 ### Patch Changes
