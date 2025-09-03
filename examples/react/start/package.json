@@ -7,7 +7,7 @@
     "start": "node .output/server/index.mjs",
     "serve": "vite preview",
     "test": "vitest run",
-    "preview": "vite preview",
+    "preview": "vite build && vite preview",
     "db:migrate": "prisma migrate dev --name init",
     "db:reset": " prisma migrate reset",
     "db:gen": "prisma generate",
@@ -45,6 +45,7 @@
     "jsdom": "^26.1.0",
     "typescript": "5.8.3",
     "vite": "^7.0.6",
+    "vite-plugin-inspect": "11.3.2",
     "vitest": "^3.1.2",
     "web-vitals": "^4.2.4"
   }
