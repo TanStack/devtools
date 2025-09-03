@@ -16,7 +16,6 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "vite-plugin-inspect": "11.3.2",
     "@tanstack/devtools-vite": "0.2.11",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.12",
@@ -25,6 +24,7 @@
     "drizzle-orm": "^0.44.4",
     "pg": "^8.16.3",
     "typescript": "5.8.3",
-    "vite": "^7.0.6"
+    "vite": "^7.0.6",
+    "vite-plugin-inspect": "11.3.2"
   }
 }
