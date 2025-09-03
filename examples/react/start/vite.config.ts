@@ -6,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite'
 import { devtools } from '@tanstack/devtools-vite'
 import Inspect from 'vite-plugin-inspect'
 
-
 const config = defineConfig({
   plugins: [
     devtools({
