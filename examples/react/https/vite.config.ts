@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { devtools } from '@tanstack/devtools-vite'
 import Inspect from 'vite-plugin-inspect'
-import mkcert from "vite-plugin-mkcert"
+import mkcert from 'vite-plugin-mkcert'
 
 // https://vite.dev/config/
 export default defineConfig({

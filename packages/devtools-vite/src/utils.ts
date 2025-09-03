@@ -49,7 +49,7 @@ export const handleDevToolsViteRequest = (
     try {
       const parsedData = JSON.parse(dataToParse.toString())
       cb(parsedData)
-    } catch (e) { }
+    } catch (e) {}
     res.write('OK')
   })
 }
