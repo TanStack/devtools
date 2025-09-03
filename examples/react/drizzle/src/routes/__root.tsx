@@ -28,7 +28,6 @@ function RootComponent() {
   return (
     <RootDocument>
       <Outlet />
-
     </RootDocument>
   )
 }
