@@ -1,7 +1,7 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import { defineConfig } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
-import Inspect from "vite-plugin-inspect";
+import Inspect from 'vite-plugin-inspect'
 
 export default defineConfig({
   server: {

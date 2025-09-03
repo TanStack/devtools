@@ -80,9 +80,11 @@ export const initialState: DevtoolsStore = {
     openHotkey: ['Shift', 'A'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
-    theme: typeof window !== "undefined" && window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light',
+    theme:
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light',
   },
   state: {
     activeTab: 'plugins',
