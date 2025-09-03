@@ -16,6 +16,10 @@ export const handleDevToolsViteRequest = (
       return
     }
     const parts = source.match(/^(.*?):(\d+):(\d+)$/)
+    if (!parts) {
+      return
+    }
+
     const [, file, line, column] = parts
 
     cb({
