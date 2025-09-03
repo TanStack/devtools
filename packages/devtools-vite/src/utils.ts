@@ -54,9 +54,7 @@ export const handleDevToolsViteRequest = (
   })
 }
 
-export const parseOpenSourceParam = (
-  source: string,
-) => {
+export const parseOpenSourceParam = (source: string) => {
   // Capture everything up to the last two colon-separated numeric parts as the file.
   // This supports filenames that may themselves contain colons.
   const parts = source.match(/^(.+):(\d+):(\d+)$/)
@@ -87,4 +85,3 @@ export const tryParseJson = (jsonString: string) => {
     return null
   }
 } */
-

@@ -110,9 +110,9 @@ describe('handleDevToolsViteRequest', () => {
 
     // simulate streaming body
     const chunks = [Buffer.from('{"foo":'), Buffer.from('1}')]
-    ;(req).emit('data', chunks[0])
-    ;(req).emit('data', chunks[1])
-    ;(req).emit('end')
+    req.emit('data', chunks[0])
+    req.emit('data', chunks[1])
+    req.emit('end')
 
     expect(cb).toHaveBeenCalledTimes(1)
     expect(cb).toHaveBeenCalledWith({ foo: 1 })
@@ -129,9 +129,8 @@ describe('handleDevToolsViteRequest', () => {
     const res = createMockRes()
 
     handleDevToolsViteRequest(req, res as any, next as any, cb as any)
-
-    ;(req).emit('data', Buffer.from('{ invalid json'))
-    ;(req).emit('end')
+    req.emit('data', Buffer.from('{ invalid json'))
+    req.emit('end')
 
     expect(cb).not.toHaveBeenCalled()
     expect(res.write).toHaveBeenCalledWith('OK')
@@ -151,4 +150,3 @@ describe('parseOpenSourceParam', () => {
     expect(parsed).toEqual({ file: 'bar:baz.tsx', line: '3', column: '7' })
   })
 })
-
