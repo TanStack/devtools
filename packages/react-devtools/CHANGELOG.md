@@ -1,5 +1,12 @@
 # @tanstack/react-devtools
 
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [[`2fe02f9`](https://github.com/TanStack/devtools/commit/2fe02f906e6e9118c87efbb95508c8f030abfd5d), [`2fe02f9`](https://github.com/TanStack/devtools/commit/2fe02f906e6e9118c87efbb95508c8f030abfd5d)]:
+  - @tanstack/devtools@0.6.6
+
 ## 0.6.1
 
 ### Patch Changes

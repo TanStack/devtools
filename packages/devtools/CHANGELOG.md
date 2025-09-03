@@ -1,5 +1,13 @@
 # @tanstack/devtools
 
+## 0.6.6
+
+### Patch Changes
+
+- add peer dep to devtools ([#103](https://github.com/TanStack/devtools/pull/103))
+
+- fix issue with window not defined ([#103](https://github.com/TanStack/devtools/pull/103))
+
 ## 0.6.5
 
 ### Patch Changes
