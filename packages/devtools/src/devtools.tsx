@@ -99,10 +99,10 @@ export default function DevTools() {
       run()
 
       if (typeof window !== 'undefined') {
-        ;(pip().pipWindow ?? window).addEventListener('resize', run)
+        ; (pip().pipWindow ?? window).addEventListener('resize', run)
 
         return () => {
-          ;(pip().pipWindow ?? window).removeEventListener('resize', run)
+          ; (pip().pipWindow ?? window).removeEventListener('resize', run)
           if (rootEl()?.parentElement && typeof previousValue === 'string') {
             setRootEl((prev) => {
               // prev!.parentElement!.style.paddingBottom = previousValue
@@ -174,8 +174,8 @@ export default function DevTools() {
           e.preventDefault()
           e.stopPropagation()
           fetch(
-            `http://localhost:__TSD_PORT__/__tsd/open-source?source=${encodeURIComponent(dataSource)}`,
-          ).catch(() => {})
+            `__TSD_HOST__://localhost:__TSD_PORT__/__tsd/open-source?source=${encodeURIComponent(dataSource)}`,
+          ).catch(() => { })
         }
       }
     }
