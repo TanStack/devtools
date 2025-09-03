@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.3.4
+
+### Patch Changes
+
+- added support for dark/light mode ([#96](https://github.com/TanStack/devtools/pull/96))
+
 ## 0.3.3
 
 ### Patch Changes
