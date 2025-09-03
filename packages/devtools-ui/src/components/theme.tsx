@@ -3,7 +3,7 @@ import type { Accessor, JSX } from 'solid-js'
 
 export type Theme = 'light' | 'dark'
 
-export type ThemeContextValue = {
+type ThemeContextValue = {
   theme: Accessor<Theme>
   setTheme: (theme: Theme) => void
 }
