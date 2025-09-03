@@ -16,6 +16,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "vite-plugin-inspect": "11.3.2",
     "@tanstack/devtools-vite": "0.2.11",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.12",

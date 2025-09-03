@@ -72,6 +72,10 @@ export default function DevtoolsExample() {
             name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
+          /* {
+            name: "The actual app",
+            render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
+          } */
         ]}
       />
       <RouterProvider router={router} />
