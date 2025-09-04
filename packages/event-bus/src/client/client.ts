@@ -94,7 +94,7 @@ export class ClientEventBus {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json,
-      }).catch(() => { })
+      }).catch(() => {})
     }
   }
   start() {
@@ -187,6 +187,6 @@ export class ClientEventBus {
     try {
       const event = JSON.parse(data) as TanStackDevtoolsEvent<string, any>
       this.emitToClients(event)
-    } catch { }
+    } catch {}
   }
 }
