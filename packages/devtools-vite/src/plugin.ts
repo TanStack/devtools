@@ -115,7 +115,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }),
         )
       },
-
     },
     {
       name: '@tanstack/devtools:better-console-logs',

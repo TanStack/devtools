@@ -85,7 +85,12 @@ export const SettingsTab = () => {
             label="Editor"
             description="Select your preferred code editor for opening source links"
             value={settings().editor}
-            options={[{ label: 'VS Code', value: 'vscode' }, { label: 'Cursor', value: 'cursor' }, { label: 'Windsurf', value: 'windsurf' }, { label: 'Zed', value: 'zed' }]}
+            options={[
+              { label: 'VS Code', value: 'vscode' },
+              { label: 'Cursor', value: 'cursor' },
+              { label: 'Windsurf', value: 'windsurf' },
+              { label: 'Zed', value: 'zed' },
+            ]}
             onChange={(value) => setSettings({ editor: value })}
           />
         </div>

@@ -85,10 +85,10 @@ export const initialState: DevtoolsStore = {
     openHotkey: ['Shift', 'A'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
-    editor: "vscode",
+    editor: 'vscode',
     theme:
       typeof window !== 'undefined' &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
+      window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
   },
