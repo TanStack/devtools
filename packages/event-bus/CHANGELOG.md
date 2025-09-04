@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-bus
 
+## 0.3.2
+
+### Patch Changes
+
+- fix issue with broadcast channel not emitting functions properly and failing ([#106](https://github.com/TanStack/devtools/pull/106))
+
 ## 0.3.1
 
 ### Patch Changes

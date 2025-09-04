@@ -1,5 +1,12 @@
 # @tanstack/solid-devtools
 
+## 0.6.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.6.7
+
 ## 0.6.2
 
 ### Patch Changes
