@@ -52,6 +52,11 @@ export type DevtoolsStore = {
      */
     requireUrlFlag: boolean
     /**
+     * The editor to use when clicking on a source link
+     * @default "vscode"
+     */
+    editor: 'vscode' | 'cursor' | 'windsurf' | 'zed'
+    /**
      * The URL flag to open the dev tools, used in conjunction with requireUrlFlag (if set to true)
      * @default "tanstack-devtools"
      */
@@ -80,9 +85,10 @@ export const initialState: DevtoolsStore = {
     openHotkey: ['Shift', 'A'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
+    editor: "vscode",
     theme:
       typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches
+        window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
   },

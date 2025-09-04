@@ -173,8 +173,7 @@ export default function DevTools() {
         if (dataSource) {
           e.preventDefault()
           e.stopPropagation()
-          window.open(`vscode://file/${dataSource}`)
-
+          window.open(`${settings().editor}://file/${dataSource}`)
         }
       }
     }
