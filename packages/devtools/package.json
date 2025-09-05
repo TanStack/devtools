@@ -18,21 +18,23 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
   "exports": {
     "browser": {
       "development": {
-        "types": "./types/index.d.ts",
+        "types": "./dist/index.d.ts",
         "import": "./dist/dev.js"
       },
-      "types": "./types/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
     "node": {
-      "types": "./types/index.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/server.js"
-    }
+    },
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
   },
   "sideEffects": false,
   "engines": {
