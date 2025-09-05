@@ -61,6 +61,9 @@ export class TanStackDevtoolsCore {
   }
 
   mount<T extends HTMLElement>(el: T) {
+    //  tsup-preset-solid statically replaces this variable during build, which eliminates this code from server bundle
+    if (import.meta.env.SSR) return
+
     if (this.#isMounted) {
       throw new Error('Devtools is already mounted')
     }

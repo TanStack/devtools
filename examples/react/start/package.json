@@ -11,7 +11,8 @@
     "db:migrate": "prisma migrate dev --name init",
     "db:reset": " prisma migrate reset",
     "db:gen": "prisma generate",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "build": "vite build"
   },
   "dependencies": {
     "@prisma/client": "^6.13.0",
