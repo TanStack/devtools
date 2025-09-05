@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.8
+
+### Patch Changes
+
+- Changed package.json exports to allow safe usage in ssr environments ([#109](https://github.com/TanStack/devtools/pull/109))
+
 ## 0.6.7
 
 ### Patch Changes

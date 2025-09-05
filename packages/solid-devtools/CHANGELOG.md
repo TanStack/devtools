@@ -1,5 +1,12 @@
 # @tanstack/solid-devtools
 
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies [[`6447ab2`](https://github.com/TanStack/devtools/commit/6447ab20d6f479b9a71be2c727d70a441d09222b)]:
+  - @tanstack/devtools@0.6.8
+
 ## 0.6.3
 
 ### Patch Changes
