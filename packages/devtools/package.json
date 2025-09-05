@@ -27,8 +27,7 @@
         "import": "./dist/dev.js"
       },
       "types": "./types/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/web.cjs"
+      "import": "./dist/index.js"
     },
     "node": {
       "types": "./types/index.d.ts",
