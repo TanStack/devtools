@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "drizzle-kit studio & vite dev",
+    "build": "vite build",
     "start": "vite start"
   },
   "dependencies": {

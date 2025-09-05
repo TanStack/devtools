@@ -18,16 +18,26 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
   "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      }
+    "node": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/server.js"
     },
-    "./package.json": "./package.json"
+    "browser": {
+      "development": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/dev.js"
+      },
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "types": "./dist/index.d.ts",
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
   },
   "sideEffects": false,
   "engines": {
@@ -45,7 +55,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build"
+    "build": "tsup"
   },
   "dependencies": {
     "@solid-primitives/keyboard": "^1.2.8",
@@ -60,6 +70,8 @@
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.6"
   }
 }
