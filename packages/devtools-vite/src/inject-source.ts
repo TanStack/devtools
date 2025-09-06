@@ -1,4 +1,4 @@
-import { normalizePath } from 'vite'
+// import { normalizePath } from 'vite'
 import { gen, parse, t, trav } from './babel'
 import type { types as Babel, NodePath } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
@@ -218,8 +218,7 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
 
 export function addSourceToJsx(code: string, id: string) {
   const [filePath] = id.split('?')
-  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const location = filePath?.replace(normalizePath(process.cwd()), '')!
+  const location = filePath!
 
   try {
     const ast = parse(code, {

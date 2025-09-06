@@ -44,7 +44,6 @@ export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
 
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
-  let host = 'http'
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const bus = new ServerEventBus(args?.eventBusConfig)
@@ -71,9 +70,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
     {
       enforce: 'pre',
       name: '@tanstack/devtools:custom-server',
-      configResolved(config) {
-        host = config.server.https?.cert ? 'https' : 'http'
-      },
       apply(config) {
         // Custom server is only needed in development for piping events to the client
         return config.mode === 'development'
@@ -118,15 +114,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
             return
           }),
         )
-      },
-      transform(code) {
-        if (code.includes('__TSD_PORT__')) {
-          code = code.replace('__TSD_PORT__', String(port))
-        }
-        if (code.includes('__TSD_HOST__')) {
-          code = code.replace('__TSD_HOST__', host)
-        }
-        return code
       },
     },
     {

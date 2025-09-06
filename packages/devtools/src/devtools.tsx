@@ -173,9 +173,7 @@ export default function DevTools() {
         if (dataSource) {
           e.preventDefault()
           e.stopPropagation()
-          fetch(
-            `__TSD_HOST__://localhost:__TSD_PORT__/__tsd/open-source?source=${encodeURIComponent(dataSource)}`,
-          ).catch(() => {})
+          window.open(`${settings().editor}://file/${dataSource}`)
         }
       }
     }
