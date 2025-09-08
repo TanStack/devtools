@@ -218,6 +218,14 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: ${font.size.xs};
       cursor: pointer;
       transition: all 0.25s ease-out;
+      & > img {
+        width: 56px;
+        height: 56px;
+        transition: all 0.3s ease;
+         outline-offset: 2px;
+        border-radius: ${border.radius.full};
+        outline: 2px solid transparent;
+      }
       &:hide-until-hover {
         opacity: 0;
         pointer-events: none;
@@ -228,10 +236,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         pointer-events: auto;
         visibility: visible;
       }
-      &:focus-visible {
-        outline-offset: 2px;
-        border-radius: ${border.radius.full};
-        outline: 2px solid ${t(colors.blue[700], colors.blue[800])};
+      & > img:focus-visible, img:hover { 
+        outline: 2px solid ${t(colors.black, colors.black)};
       }
     `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {

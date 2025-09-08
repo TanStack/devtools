@@ -1,4 +1,4 @@
-import { defineConfig } from 'tsup'
+import { defineConfig, } from 'tsup'
 import { generateTsupOptions, parsePresetOptions } from 'tsup-preset-solid'
 
 const preset_options = {
@@ -15,5 +15,10 @@ export default defineConfig(() => {
   const parsed_data = parsePresetOptions(preset_options)
   const tsup_options = generateTsupOptions(parsed_data)
 
-  return tsup_options
+  return tsup_options.map(option => ({
+    ...option,
+    loader: {
+      '.png': 'dataurl',
+    }
+  }))
 })

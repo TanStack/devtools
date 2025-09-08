@@ -1,8 +1,8 @@
 import { createMemo } from 'solid-js'
 import clsx from 'clsx'
-import { TanStackLogo } from '@tanstack/devtools-ui'
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
+import TanStackLogo from './tanstack-logo.png'
 import type { Accessor } from 'solid-js'
 
 export const Trigger = ({
@@ -28,7 +28,7 @@ export const Trigger = ({
       class={buttonStyle()}
       onClick={() => setIsOpen(!isOpen())}
     >
-      <TanStackLogo />
+      <img src={TanStackLogo} alt="TanStack Logo" />
     </button>
   )
 }
