@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.9
+
+### Patch Changes
+
+- add new tantack logo ([#113](https://github.com/TanStack/devtools/pull/113))
+
 ## 0.6.8
 
 ### Patch Changes
