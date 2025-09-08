@@ -63,7 +63,6 @@
     "solid-js": "^1.9.7"
   },
   "peerDependencies": {
-    "@tanstack/devtools-ui": "workspace:*",
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
