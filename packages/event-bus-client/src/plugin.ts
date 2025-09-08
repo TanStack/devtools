@@ -15,10 +15,10 @@ type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
 export class EventClient<
   TEventMap extends Record<string, any>,
   TPluginId extends string = TEventMap extends Record<infer P, any>
-    ? P extends `${infer Id}:${string}`
-      ? Id
-      : never
-    : never,
+  ? P extends `${infer Id}:${string}`
+  ? Id
+  : never
+  : never,
 > {
   #pluginId: TPluginId
   #eventTarget: () => EventTarget
@@ -119,9 +119,21 @@ export class EventClient<
 
       return window
     }
+    // Protect against non-web environments like react-native
+    const eventTarget = typeof EventTarget !== "undefined" ? new EventTarget() : undefined
+
+    // For non-web environments like react-native
+    if (typeof eventTarget === "undefined" || typeof eventTarget.addEventListener === "undefined") {
+      this.debugLog('No event mechanism available, running in non-web environment')
+      return {
+        addEventListener: () => { },
+        removeEventListener: () => { },
+        dispatchEvent: () => false,
+      }
+    }
 
     this.debugLog('Using new EventTarget as fallback')
-    return new EventTarget()
+    return eventTarget
   }
 
   getPluginId() {
@@ -140,8 +152,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-      ? S
-      : never,
+    ? S
+    : never,
   >(
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
@@ -168,8 +180,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-      ? S
-      : never,
+    ? S
+    : never,
   >(
     eventSuffix: TSuffix,
     cb: (
