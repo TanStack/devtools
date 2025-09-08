@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.10
+
+### Patch Changes
+
+- remove peer dep on devtools-ui ([#119](https://github.com/TanStack/devtools/pull/119))
+
 ## 0.6.9
 
 ### Patch Changes
