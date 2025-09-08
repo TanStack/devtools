@@ -222,7 +222,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         width: 56px;
         height: 56px;
         transition: all 0.3s ease;
-         outline-offset: 2px;
+        outline-offset: 2px;
         border-radius: ${border.radius.full};
         outline: 2px solid transparent;
       }
@@ -236,7 +236,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         pointer-events: auto;
         visibility: visible;
       }
-      & > img:focus-visible, img:hover { 
+      & > img:focus-visible,
+      img:hover {
         outline: 2px solid ${t(colors.black, colors.black)};
       }
     `,
