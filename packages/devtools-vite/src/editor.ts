@@ -32,9 +32,8 @@ export const DEFAULT_EDITOR_CONFIG: EditorConfig = {
       undefined,
       (filename, err) => {
         console.warn(`Failed to open ${filename} in editor: ${err}`)
-      }
+      },
     )
-
   },
 }
 
