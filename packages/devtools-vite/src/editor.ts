@@ -28,7 +28,7 @@ export const DEFAULT_EDITOR_CONFIG: EditorConfig = {
   open: async (path, lineNumber, columnNumber) => {
     const launch = (await import('launch-editor')).default
     launch(
-      `${path}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}`,
+      `${path.replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}`,
       undefined,
       (filename, err) => {
         console.warn(`Failed to open ${filename} in editor: ${err}`)
