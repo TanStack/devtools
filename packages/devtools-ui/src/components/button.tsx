@@ -52,7 +52,14 @@ export interface ButtonWebComponentProps
 export const registerButtonComponent = (elName: string = 'tsd-button') =>
   customElement<ButtonWebComponentProps>(
     elName,
-    { variant: 'primary', outline: false, ghost: false, text: '', disabled: false, autofocus: false },
+    {
+      variant: 'primary',
+      outline: false,
+      ghost: false,
+      text: '',
+      disabled: false,
+      autofocus: false,
+    },
     (props, { element }) => {
       noShadowDOM()
       const [buttonProps, setButtonProps] = createSignal(props)
