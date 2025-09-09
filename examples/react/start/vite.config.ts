@@ -4,7 +4,7 @@ import viteReact from '@vitejs/plugin-react'
 import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
 import { devtools } from '@tanstack/devtools-vite'
-//import { devtoolsServer } from './src/server-setup'
+import Inspect from 'vite-plugin-inspect'
 
 const config = defineConfig({
   plugins: [
@@ -20,7 +20,7 @@ const config = defineConfig({
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
-
+    Inspect(),
     tailwindcss(),
     tanstackStart({
       customViteReactPlugin: true,

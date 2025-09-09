@@ -1,5 +1,101 @@
 # @tanstack/devtools
 
+## 0.6.10
+
+### Patch Changes
+
+- remove peer dep on devtools-ui ([#119](https://github.com/TanStack/devtools/pull/119))
+
+## 0.6.9
+
+### Patch Changes
+
+- add new tantack logo ([#113](https://github.com/TanStack/devtools/pull/113))
+
+## 0.6.8
+
+### Patch Changes
+
+- Changed package.json exports to allow safe usage in ssr environments ([#109](https://github.com/TanStack/devtools/pull/109))
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies [[`82a7617`](https://github.com/TanStack/devtools/commit/82a7617559777940cc6c96363112fd8c3d5d7dd5)]:
+  - @tanstack/devtools-event-bus@0.3.2
+
+## 0.6.6
+
+### Patch Changes
+
+- add peer dep to devtools ([#103](https://github.com/TanStack/devtools/pull/103))
+
+- fix issue with window not defined ([#103](https://github.com/TanStack/devtools/pull/103))
+
+## 0.6.5
+
+### Patch Changes
+
+- fix bug with https server ([#100](https://github.com/TanStack/devtools/pull/100))
+
+## 0.6.4
+
+### Patch Changes
+
+- added support for dark/light mode ([#96](https://github.com/TanStack/devtools/pull/96))
+
+- Updated dependencies [[`59ecdb6`](https://github.com/TanStack/devtools/commit/59ecdb663cb9410fabf507df684d767c1d4edf11)]:
+  - @tanstack/devtools-ui@0.3.4
+
+## 0.6.3
+
+### Patch Changes
+
+- improvements for tree view, added icons to devtools-ui, extracted components out of devtools core into ui, panel header ([#94](https://github.com/TanStack/devtools/pull/94))
+
+- Updated dependencies [[`442d2ce`](https://github.com/TanStack/devtools/commit/442d2ce1883b4517398e2890f4180b622765148d)]:
+  - @tanstack/devtools-ui@0.3.3
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [[`f85fcf5`](https://github.com/TanStack/devtools/commit/f85fcf5f73fdca80297707b8eb4211a7a1308aa1)]:
+  - @tanstack/devtools-event-bus@0.3.1
+
+## 0.6.1
+
+### Patch Changes
+
+- consolidate styles into devtools-ui ([#83](https://github.com/TanStack/devtools/pull/83))
+
+- Updated dependencies [[`fc02e84`](https://github.com/TanStack/devtools/commit/fc02e849dd4a00e2e96d867d4c78dabac9989610)]:
+  - @tanstack/devtools-ui@0.3.2
+
+## 0.6.0
+
+### Minor Changes
+
+- add seo tab and improve UX of plugins tab ([#80](https://github.com/TanStack/devtools/pull/80))
+
+## 0.5.1
+
+### Patch Changes
+
+- fix issue with react-router and delegated events ([#75](https://github.com/TanStack/devtools/pull/75))
+
+## 0.5.0
+
+### Minor Changes
+
+- removed CJS support, added detached mode to devtools ([#70](https://github.com/TanStack/devtools/pull/70))
+
+### Patch Changes
+
+- Updated dependencies [[`9feb9c3`](https://github.com/TanStack/devtools/commit/9feb9c33517bda2e515b00d423bedab2502c9981)]:
+  - @tanstack/devtools-event-bus@0.3.0
+
 ## 0.4.5
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools",
-  "version": "0.4.5",
+  "version": "0.6.10",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -18,21 +18,23 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "main": "dist/cjs/index.cjs",
-  "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
   "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
+    "browser": {
+      "development": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/dev.js"
       },
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
-      }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
-    "./package.json": "./package.json"
+    "node": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/server.js"
+    },
+    "types": "./dist/index.d.ts",
+    "import": "./dist/index.js"
   },
   "sideEffects": false,
   "engines": {
@@ -50,7 +52,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build"
+    "build": "tsup"
   },
   "dependencies": {
     "@solid-primitives/keyboard": "^1.2.8",
@@ -64,6 +66,8 @@
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.6"
   }
 }

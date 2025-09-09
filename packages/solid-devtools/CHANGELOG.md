@@ -1,5 +1,104 @@
 # @tanstack/solid-devtools
 
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies [[`784313b`](https://github.com/TanStack/devtools/commit/784313b8953184dcd65c008b0efabc2f5a532b27)]:
+  - @tanstack/devtools@0.6.10
+
+## 0.6.5
+
+### Patch Changes
+
+- Updated dependencies [[`42d883d`](https://github.com/TanStack/devtools/commit/42d883dff07e622c4f1c16e9559bf00fcdd27572)]:
+  - @tanstack/devtools@0.6.9
+
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies [[`6447ab2`](https://github.com/TanStack/devtools/commit/6447ab20d6f479b9a71be2c727d70a441d09222b)]:
+  - @tanstack/devtools@0.6.8
+
+## 0.6.3
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.6.7
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies [[`2fe02f9`](https://github.com/TanStack/devtools/commit/2fe02f906e6e9118c87efbb95508c8f030abfd5d), [`2fe02f9`](https://github.com/TanStack/devtools/commit/2fe02f906e6e9118c87efbb95508c8f030abfd5d)]:
+  - @tanstack/devtools@0.6.6
+
+## 0.6.1
+
+### Patch Changes
+
+- Updated dependencies [[`4119f73`](https://github.com/TanStack/devtools/commit/4119f73caa27dcaae1fe7cbca20a11f18b4d99b8)]:
+  - @tanstack/devtools@0.6.5
+
+## 0.6.0
+
+### Minor Changes
+
+- added support for dark/light mode ([#96](https://github.com/TanStack/devtools/pull/96))
+
+### Patch Changes
+
+- Updated dependencies [[`59ecdb6`](https://github.com/TanStack/devtools/commit/59ecdb663cb9410fabf507df684d767c1d4edf11)]:
+  - @tanstack/devtools@0.6.4
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies [[`442d2ce`](https://github.com/TanStack/devtools/commit/442d2ce1883b4517398e2890f4180b622765148d)]:
+  - @tanstack/devtools@0.6.3
+
+## 0.5.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.6.2
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies [[`fc02e84`](https://github.com/TanStack/devtools/commit/fc02e849dd4a00e2e96d867d4c78dabac9989610)]:
+  - @tanstack/devtools@0.6.1
+
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies [[`a7c95fa`](https://github.com/TanStack/devtools/commit/a7c95fab9bea2371f77a0c47fc4d0dc2908a6c37)]:
+  - @tanstack/devtools@0.6.0
+
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [[`544d7af`](https://github.com/TanStack/devtools/commit/544d7af30b163b52923dc678602645bb098b3009)]:
+  - @tanstack/devtools@0.5.1
+
+## 0.5.0
+
+### Minor Changes
+
+- removed CJS support, added detached mode to devtools ([#70](https://github.com/TanStack/devtools/pull/70))
+
+### Patch Changes
+
+- Updated dependencies [[`9feb9c3`](https://github.com/TanStack/devtools/commit/9feb9c33517bda2e515b00d423bedab2502c9981)]:
+  - @tanstack/devtools@0.5.0
+
 ## 0.4.6
 
 ### Patch Changes

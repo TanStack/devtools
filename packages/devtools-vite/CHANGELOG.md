@@ -1,5 +1,40 @@
 # @tanstack/devtools-event-client
 
+## 0.2.12
+
+### Patch Changes
+
+- Updated dependencies [[`82a7617`](https://github.com/TanStack/devtools/commit/82a7617559777940cc6c96363112fd8c3d5d7dd5)]:
+  - @tanstack/devtools-event-bus@0.3.2
+
+## 0.2.11
+
+### Patch Changes
+
+- fix bug with https server ([#100](https://github.com/TanStack/devtools/pull/100))
+
+## 0.2.10
+
+### Patch Changes
+
+- fix a bug for server event bus not connecting with clients properly ([#88](https://github.com/TanStack/devtools/pull/88))
+
+- Updated dependencies [[`f85fcf5`](https://github.com/TanStack/devtools/commit/f85fcf5f73fdca80297707b8eb4211a7a1308aa1)]:
+  - @tanstack/devtools-event-bus@0.3.1
+
+## 0.2.9
+
+### Patch Changes
+
+- fix issue with ast transform ([#73](https://github.com/TanStack/devtools/pull/73))
+
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies [[`9feb9c3`](https://github.com/TanStack/devtools/commit/9feb9c33517bda2e515b00d423bedab2502c9981)]:
+  - @tanstack/devtools-event-bus@0.3.0
+
 ## 0.2.7
 
 ### Patch Changes

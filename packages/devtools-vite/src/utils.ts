@@ -1,4 +1,5 @@
 import { normalizePath } from 'vite'
+// import fs from 'node:fs/promises'
 import type { Connect } from 'vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
@@ -14,7 +15,12 @@ export const handleDevToolsViteRequest = (
     if (!source) {
       return
     }
-    const [file, line, column] = source.split(':')
+
+    const parsed = parseOpenSourceParam(source)
+    if (!parsed) {
+      return
+    }
+    const { file, line, column } = parsed
 
     cb({
       type: 'open-source',
@@ -47,3 +53,35 @@ export const handleDevToolsViteRequest = (
     res.write('OK')
   })
 }
+
+export const parseOpenSourceParam = (source: string) => {
+  // Capture everything up to the last two colon-separated numeric parts as the file.
+  // This supports filenames that may themselves contain colons.
+  const parts = source.match(/^(.+):(\d+):(\d+)$/)
+
+  if (!parts) return null
+
+  const [, file, line, column] = parts
+  return { file, line, column }
+}
+
+/* export const tryReadFile = async (
+  filePath: string
+) => {
+  try {
+    const data = await fs.readFile(filePath, 'utf-8')
+    return data
+  } catch (error) {
+
+    return null
+  }
+}
+
+export const tryParseJson = (jsonString: string) => {
+  try {
+    const result = JSON.parse(jsonString)
+    return result
+  } catch (error) {
+    return null
+  }
+} */

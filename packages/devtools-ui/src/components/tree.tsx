@@ -1,10 +1,100 @@
-import { For, Show, createEffect, createSignal } from 'solid-js'
+import { For, Match, Show, Switch, createEffect, createSignal } from 'solid-js'
 import clsx from 'clsx'
 import { customElement, noShadowDOM } from 'solid-element'
-import { useStyles } from '../styles/use-styles'
+import { css, useStyles } from '../styles/use-styles'
+import { CopiedCopier, Copier, ErrorCopier } from './icons'
 
-export function JsonTree(props: { value: any }) {
-  return <JsonValue isRoot value={props.value} />
+export function JsonTree(props: { value: any; copyable?: boolean }) {
+  return <JsonValue isRoot value={props.value} copyable={props.copyable} />
+}
+type CopyState = 'NoCopy' | 'SuccessCopy' | 'ErrorCopy'
+
+const CopyButton = (props: { value: unknown }) => {
+  const styles = useStyles()
+  const [copyState, setCopyState] = createSignal<CopyState>('NoCopy')
+
+  return (
+    <button
+      class={styles().tree.actionButton}
+      title="Copy object to clipboard"
+      aria-label={`${copyState() === 'NoCopy'
+        ? 'Copy object to clipboard'
+        : copyState() === 'SuccessCopy'
+          ? 'Object copied to clipboard'
+          : 'Error copying object to clipboard'
+        }`}
+      onClick={
+        copyState() === 'NoCopy'
+          ? () => {
+            navigator.clipboard
+              .writeText(JSON.stringify(props.value, null, 2))
+              .then(
+                () => {
+                  setCopyState('SuccessCopy')
+                  setTimeout(() => {
+                    setCopyState('NoCopy')
+                  }, 1500)
+                },
+                (err) => {
+                  console.error('Failed to copy: ', err)
+                  setCopyState('ErrorCopy')
+                  setTimeout(() => {
+                    setCopyState('NoCopy')
+                  }, 1500)
+                },
+              )
+          }
+          : undefined
+      }
+    >
+      <Switch>
+        <Match when={copyState() === 'NoCopy'}>
+          <Copier />
+        </Match>
+        <Match when={copyState() === 'SuccessCopy'}>
+          <CopiedCopier theme={'dark'} />
+        </Match>
+        <Match when={copyState() === 'ErrorCopy'}>
+          <ErrorCopier />
+        </Match>
+      </Switch>
+    </button>
+  )
+}
+
+const Expander = (props: { expanded: boolean }) => {
+  const styles = useStyles()
+  return (
+    <span
+      class={clsx(
+        styles().tree.expander,
+        css`
+          transform: rotate(${props.expanded ? 90 : 0}deg);
+        `,
+        props.expanded &&
+        css`
+            & svg {
+              top: -1px;
+            }
+          `,
+      )}
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M6 12L10 8L6 4"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </span>
+  )
 }
 
 function JsonValue(props: {
@@ -12,8 +102,9 @@ function JsonValue(props: {
   keyName?: string
   isRoot?: boolean
   isLastKey?: boolean
+  copyable?: boolean
 }) {
-  const { value, keyName, isRoot = false, isLastKey } = props
+  const { value, keyName, isRoot = false, isLastKey, copyable } = props
   const styles = useStyles()
 
   return (
@@ -45,13 +136,22 @@ function JsonValue(props: {
           )
         }
         if (Array.isArray(value)) {
-          return <ArrayValue keyName={keyName} value={value} />
+          return (
+            <ArrayValue copyable={copyable} keyName={keyName} value={value} />
+          )
         }
         if (typeof value === 'object') {
-          return <ObjectValue keyName={keyName} value={value} />
+          return (
+            <ObjectValue copyable={copyable} keyName={keyName} value={value} />
+          )
         }
         return <span />
       })()}
+      {copyable && (
+        <div class={clsx(styles().tree.actions, 'actions')}>
+          <CopyButton value={value} />
+        </div>
+      )}
       {isLastKey || isRoot ? '' : <span>,</span>}
     </span>
   )
@@ -60,14 +160,17 @@ function JsonValue(props: {
 const ArrayValue = ({
   value,
   keyName,
+  copyable,
 }: {
   value: Array<any>
+  copyable?: boolean
   keyName?: string
 }) => {
   const styles = useStyles()
   const [expanded, setExpanded] = createSignal(true)
   return (
-    <span>
+    <span class={styles().tree.expanderContainer}>
+      <Expander expanded={expanded()} />
       {keyName && (
         <span
           onclick={(e) => {
@@ -78,20 +181,25 @@ const ArrayValue = ({
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
           &quot;{keyName}&quot;:{' '}
+          <span class={styles().tree.info}>{value.length} items</span>
         </span>
       )}
       <span class={styles().tree.valueBraces}>[</span>
       <Show when={expanded()}>
-        <For each={value}>
-          {(item, i) => {
-            const isLastKey = i() === value.length - 1
-            return (
-              <>
-                <JsonValue value={item} isLastKey={isLastKey} />
-              </>
-            )
-          }}
-        </For>
+        <span class={styles().tree.expandedLine(Boolean(keyName))}>
+          <For each={value}>
+            {(item, i) => {
+              const isLastKey = i() === value.length - 1
+              return (
+                <JsonValue
+                  copyable={copyable}
+                  value={item}
+                  isLastKey={isLastKey}
+                />
+              )
+            }}
+          </For>
+        </span>
       </Show>
       <Show when={!expanded()}>
         <span
@@ -102,7 +210,7 @@ const ArrayValue = ({
           }}
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
-          {`... ${value.length} more`}
+          {`...`}
         </span>
       </Show>
       <span class={styles().tree.valueBraces}>]</span>
@@ -113,9 +221,11 @@ const ArrayValue = ({
 const ObjectValue = ({
   value,
   keyName,
+  copyable,
 }: {
   value: Record<string, any>
   keyName?: string
+  copyable?: boolean
 }) => {
   const styles = useStyles()
   const [expanded, setExpanded] = createSignal(true)
@@ -123,7 +233,8 @@ const ObjectValue = ({
   const lastKeyName = keys[keys.length - 1]
 
   return (
-    <span>
+    <span class={styles().tree.expanderContainer}>
+      {keyName && <Expander expanded={expanded()} />}
       {keyName && (
         <span
           onClick={(e) => {
@@ -134,21 +245,25 @@ const ObjectValue = ({
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
           &quot;{keyName}&quot;:{' '}
+          <span class={styles().tree.info}>{keys.length} items</span>
         </span>
       )}
       <span class={styles().tree.valueBraces}>{'{'}</span>
       <Show when={expanded()}>
-        <For each={keys}>
-          {(k) => (
-            <>
-              <JsonValue
-                value={value[k]}
-                keyName={k}
-                isLastKey={lastKeyName === k}
-              />
-            </>
-          )}
-        </For>
+        <span class={styles().tree.expandedLine(Boolean(keyName))}>
+          <For each={keys}>
+            {(k) => (
+              <>
+                <JsonValue
+                  value={value[k]}
+                  keyName={k}
+                  isLastKey={lastKeyName === k}
+                  copyable={copyable}
+                />
+              </>
+            )}
+          </For>
+        </span>
       </Show>
       <Show when={!expanded()}>
         <span
@@ -159,7 +274,7 @@ const ObjectValue = ({
           }}
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
-          {`... ${keys.length} more`}
+          {`...`}
         </span>
       </Show>
       <span class={styles().tree.valueBraces}>{'}'}</span>

@@ -56,6 +56,11 @@ export type DevtoolsStore = {
      * @default "tanstack-devtools"
      */
     urlFlag: string
+    /**
+     * The theme of the dev tools
+     * @default "dark"
+     */
+    theme: 'light' | 'dark'
   }
   state: {
     activeTab: TabName
@@ -75,6 +80,11 @@ export const initialState: DevtoolsStore = {
     openHotkey: ['Shift', 'A'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
+    theme:
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light',
   },
   state: {
     activeTab: 'plugins',

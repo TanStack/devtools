@@ -35,7 +35,8 @@ Currently TanStack offers:
 
 - `QueryDevtools`
 - `RouterDevtools`
-- `FormDevtools`
+- `PacerDevtools`
+- `FormDevtools` [coming soon](https://github.com/TanStack/form/pull/1692)
 
 ```tsx
 import { createRoot } from 'react-dom/client'
@@ -44,7 +45,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { ReactFormDevtoolsPanel } from '@tanstack/react-form'
+import { ReactFormDevtoolsPanel } from '@tanstack/react-form-devtools'
 
 
 import App from './App'

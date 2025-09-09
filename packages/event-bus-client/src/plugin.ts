@@ -42,11 +42,16 @@ export class EventClient<
     )
   }
   #connectFunction = () => {
+    this.#eventTarget().addEventListener(
+      'tanstack-connect-success',
+      this.#onConnected,
+    )
     if (this.#retryCount < this.#maxRetries) {
       this.#retryCount++
       this.#eventTarget().dispatchEvent(new CustomEvent('tanstack-connect'))
       return
     }
+
     this.#eventTarget().removeEventListener(
       'tanstack-connect',
       this.#connectFunction,
@@ -71,10 +76,6 @@ export class EventClient<
     this.#connectIntervalId = null
     this.#connectEveryMs = 500
 
-    this.#eventTarget().addEventListener(
-      'tanstack-connect-success',
-      this.#onConnected,
-    )
     this.#connectFunction()
     this.startConnectLoop()
   }
@@ -118,9 +119,27 @@ export class EventClient<
 
       return window
     }
+    // Protect against non-web environments like react-native
+    const eventTarget =
+      typeof EventTarget !== 'undefined' ? new EventTarget() : undefined
+
+    // For non-web environments like react-native
+    if (
+      typeof eventTarget === 'undefined' ||
+      typeof eventTarget.addEventListener === 'undefined'
+    ) {
+      this.debugLog(
+        'No event mechanism available, running in non-web environment',
+      )
+      return {
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        dispatchEvent: () => false,
+      }
+    }
 
     this.debugLog('Using new EventTarget as fallback')
-    return new EventTarget()
+    return eventTarget
   }
 
   getPluginId() {

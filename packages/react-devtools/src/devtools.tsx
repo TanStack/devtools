@@ -12,7 +12,9 @@ import type {
   TanStackDevtoolsPlugin,
 } from '@tanstack/devtools'
 
-type PluginRender = JSX.Element | (() => JSX.Element)
+type PluginRender =
+  | JSX.Element
+  | ((el: HTMLElement, theme: 'dark' | 'light') => JSX.Element)
 
 export type TanStackDevtoolsReactPlugin = Omit<
   TanStackDevtoolsPlugin,
@@ -93,8 +95,12 @@ export interface TanStackDevtoolsReactInit {
 const convertRender = (
   Component: PluginRender,
   setComponent: React.Dispatch<React.SetStateAction<JSX.Element | null>>,
+  e: HTMLElement,
+  theme: 'dark' | 'light',
 ) => {
-  setComponent(typeof Component === 'function' ? Component() : Component)
+  setComponent(
+    typeof Component === 'function' ? Component(e, theme) : Component,
+  )
 }
 
 export const TanStackDevtools = ({
@@ -123,21 +129,24 @@ export const TanStackDevtools = ({
               typeof plugin.name === 'string'
                 ? plugin.name
                 : // The check above confirms that `plugin.name` is of Render type
-                  () => {
+                  (e, theme) => {
                     setTitleContainer(
-                      document.getElementById(PLUGIN_TITLE_CONTAINER_ID) ||
-                        null,
+                      e.ownerDocument.getElementById(
+                        PLUGIN_TITLE_CONTAINER_ID,
+                      ) || null,
                     )
                     convertRender(
                       plugin.name as PluginRender,
                       setTitleComponent,
+                      e,
+                      theme,
                     )
                   },
-            render: () => {
+            render: (e, theme) => {
               setPluginContainer(
-                document.getElementById(PLUGIN_CONTAINER_ID) || null,
+                e.ownerDocument.getElementById(PLUGIN_CONTAINER_ID) || null,
               )
-              convertRender(plugin.render, setPluginComponent)
+              convertRender(plugin.render, setPluginComponent, e, theme)
             },
           }
         }),

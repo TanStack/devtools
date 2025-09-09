@@ -38,7 +38,12 @@ export interface TanStackDevtoolsPlugin {
    *   }
    * ```
    */
-  name: string | ((el: HTMLHeadingElement) => void)
+  name:
+    | string
+    | ((
+        el: HTMLHeadingElement,
+        theme: DevtoolsStore['settings']['theme'],
+      ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
@@ -57,7 +62,10 @@ export interface TanStackDevtoolsPlugin {
    *   }
    * ```
    */
-  render: (el: HTMLDivElement) => void
+  render: (
+    el: HTMLDivElement,
+    theme: DevtoolsStore['settings']['theme'],
+  ) => void
 }
 export const DevtoolsContext = createContext<{
   store: DevtoolsStore

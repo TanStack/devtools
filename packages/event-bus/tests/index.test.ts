@@ -1,6 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { ClientEventBus } from '../src/client'
 
+vi.stubGlobal(
+  'BroadcastChannel',
+  class {
+    postMessage = vi.fn()
+    addEventListener = vi.fn()
+    removeEventListener = vi.fn()
+    close = vi.fn()
+  },
+)
 describe('ClientEventBus', () => {
   describe('debug', () => {
     afterEach(() => {

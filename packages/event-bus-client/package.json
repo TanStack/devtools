@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-event-client",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "TanStack Event Client is a lightweight event client for TanStack Devtools event bus.",
   "author": "Tanner Linsley",
   "license": "MIT",

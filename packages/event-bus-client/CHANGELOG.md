@@ -1,5 +1,17 @@
 # @tanstack/devtools-event-client
 
+## 0.2.4
+
+### Patch Changes
+
+- fix issue for react-native and non-web native environments for event-client ([#117](https://github.com/TanStack/devtools/pull/117))
+
+## 0.2.3
+
+### Patch Changes
+
+- fix a bug for server event bus not connecting with clients properly ([#88](https://github.com/TanStack/devtools/pull/88))
+
 ## 0.2.2
 
 ### Patch Changes

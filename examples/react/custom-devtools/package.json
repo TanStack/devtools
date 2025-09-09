@@ -9,13 +9,13 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "^0.2.2",
-    "@tanstack/react-devtools": "^0.4.6",
+    "@tanstack/devtools-event-client": "^0.2.4",
+    "@tanstack/react-devtools": "^0.6.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@types/react": "19.1.10",
+    "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.5.2",
     "vite": "^7.0.6"

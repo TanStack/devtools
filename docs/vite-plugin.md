@@ -71,7 +71,7 @@ export default {
 
 ### editor
  
-> [!IMPORTANT] `editor` is only needed for editors that are NOT VS Code, by default this works OOTB with VS Code.
+> [!IMPORTANT] `editor` is only needed for editors that are NOT VS Code, by default this works OOTB with VS Code. If you don't have `code` available in your terminal you need to set it up though, if you don't know how to do that you can follow this guide: https://stackoverflow.com/questions/29955500/code-is-not-working-in-on-the-command-line-for-visual-studio-code-on-os-x-ma
  
 
 The open in editor configuration which has two fields, `name` and `open`,

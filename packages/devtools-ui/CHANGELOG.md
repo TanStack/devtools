@@ -1,5 +1,23 @@
 # @tanstack/devtools-ui
 
+## 0.3.4
+
+### Patch Changes
+
+- added support for dark/light mode ([#96](https://github.com/TanStack/devtools/pull/96))
+
+## 0.3.3
+
+### Patch Changes
+
+- improvements for tree view, added icons to devtools-ui, extracted components out of devtools core into ui, panel header ([#94](https://github.com/TanStack/devtools/pull/94))
+
+## 0.3.2
+
+### Patch Changes
+
+- consolidate styles into devtools-ui ([#83](https://github.com/TanStack/devtools/pull/83))
+
 ## 0.3.1
 
 ### Patch Changes
