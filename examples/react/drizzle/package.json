@@ -16,7 +16,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "0.2.12",
+    "@tanstack/devtools-vite": "0.2.13",
     "@types/node": "^22.15.2",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.2",

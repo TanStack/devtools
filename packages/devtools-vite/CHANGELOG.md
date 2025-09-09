@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.13
+
+### Patch Changes
+
+- improve open-source by using a 3rd party package ([#121](https://github.com/TanStack/devtools/pull/121))
+
 ## 0.2.12
 
 ### Patch Changes

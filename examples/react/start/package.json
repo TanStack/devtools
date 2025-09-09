@@ -37,7 +37,7 @@
     "zod": "^4.0.14"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "0.2.12",
+    "@tanstack/devtools-vite": "0.2.13",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/react": "^19.1.12",
