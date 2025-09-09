@@ -71,8 +71,7 @@ export default {
 
 ### editor
  
-> [!IMPORTANT] `editor` is only needed for editors that are NOT VS Code, by default this works OOTB with VS Code. If you don't have `code` available in your terminal you need to set it up though, if you don't know how to do that you can follow this guide: https://stackoverflow.com/questions/29955500/code-is-not-working-in-on-the-command-line-for-visual-studio-code-on-os-x-ma
- 
+> [!IMPORTANT] `editor` is used as an escape hatch to implement your own go-to-source functionality if your system/editor does not work OOTB. We use `launch-editor` under the hood which supports a lot of editors but not all. If your editor is not supported you can implement your own version here. Here is the list of supported editors: https://github.com/yyx990803/launch-editor?tab=readme-ov-file#supported-editors
 
 The open in editor configuration which has two fields, `name` and `open`,
 `name` is the name of your editor, and `open` is a function that opens the editor with the given file and line number. You can implement your version for your editor as follows:
