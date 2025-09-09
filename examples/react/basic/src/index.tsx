@@ -55,9 +55,9 @@ function Posts({
                       // ones that are cached
                       queryClient.getQueryData(['post', post.id])
                         ? {
-                          fontWeight: 'bold',
-                          color: 'green',
-                        }
+                            fontWeight: 'bold',
+                            color: 'green',
+                          }
                         : {}
                     }
                   >
@@ -134,7 +134,7 @@ function usePosts() {
 const Context = createContext<{
   count: number
   setCount: (count: number) => void
-}>({ count: 0, setCount: () => { } })
+}>({ count: 0, setCount: () => {} })
 
 setTimeout(() => {
   queryPlugin.emit('test', {
