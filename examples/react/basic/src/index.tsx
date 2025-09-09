@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   QueryClient,
@@ -167,6 +167,17 @@ function App() {
   const [state, setState] = useState(1)
   const [win, setWin] = useState<Window | null>(null)
   const [postId, setPostId] = useState(-1)
+  const [value, setValue] = useState<any>({
+    initial: 'value',
+    should: 'change',
+    in: 2,
+    array: [1, 2, 3],
+  })
+  useEffect(() => {
+    setTimeout(() => {
+      setValue({ title: 'Test Event', description: 'This is a test event.' })
+    }, 2000)
+  }, [])
   return (
     <div>
       <Context.Provider value={{ count: state, setCount: setState }}>
@@ -177,6 +188,15 @@ function App() {
           <Button onClick={() => setWin(window.open('', '', 'popup'))}>
             Click me to open new window
           </Button>
+          <tsd-json-tree value={value} />
+          <tsd-button
+            text="test"
+            ghost={true}
+            disabled
+            value="test"
+            variant="secondary"
+            onClick={() => console.log('Button clicked!')}
+          />
           {win && createPortal(<Mounted />, win.document.body)}
           <Feature />
           <p>
