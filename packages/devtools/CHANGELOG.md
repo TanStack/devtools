@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.11
+
+### Patch Changes
+
+- Adds split panel functionality to the devtools panel, allowing multiple instances of devtools to be shown. ([#90](https://github.com/TanStack/devtools/pull/90))
+
 ## 0.6.10
 
 ### Patch Changes
