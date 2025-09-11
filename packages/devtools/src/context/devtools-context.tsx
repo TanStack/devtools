@@ -39,11 +39,11 @@ export interface TanStackDevtoolsPlugin {
    * ```
    */
   name:
-    | string
-    | ((
-        el: HTMLHeadingElement,
-        theme: DevtoolsStore['settings']['theme'],
-      ) => void)
+  | string
+  | ((
+    el: HTMLHeadingElement,
+    theme: DevtoolsStore['settings']['theme'],
+  ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
@@ -99,11 +99,34 @@ const generatePluginId = (plugin: TanStackDevtoolsPlugin, index: number) => {
   return index.toString()
 }
 
+export function getStateFromLocalStorage(plugins?: Array<TanStackDevtoolsPlugin>) {
+  const existingStateString = getStorageItem(TANSTACK_DEVTOOLS_STATE)
+  const existingState = tryParseJson<DevtoolsStore["state"]>(existingStateString)
+  const pluginIds = plugins?.map((plugin, i) => generatePluginId(plugin, i)) || []
+  if (existingState?.activePlugins) {
+    const originalLength = existingState.activePlugins.length
+    // Filter out any active plugins that are no longer available
+    existingState.activePlugins = existingState.activePlugins.filter((id) =>
+      pluginIds.includes(id),
+    )
+
+    if (existingState.activePlugins.length !== originalLength) {
+      // If any active plugins were removed, update local storage
+      setStorageItem(
+        TANSTACK_DEVTOOLS_STATE,
+        JSON.stringify(existingState),
+      )
+    }
+  }
+
+  return existingState
+}
+
 const getExistingStateFromStorage = (
   config?: TanStackDevtoolsConfig,
   plugins?: Array<TanStackDevtoolsPlugin>,
 ) => {
-  const existingState = getStorageItem(TANSTACK_DEVTOOLS_STATE)
+  const existingState = getStateFromLocalStorage()
   const settings = getSettings()
 
   const state: DevtoolsStore = {
@@ -118,7 +141,7 @@ const getExistingStateFromStorage = (
       }) || [],
     state: {
       ...initialState.state,
-      ...(existingState ? JSON.parse(existingState) : {}),
+      ...existingState,
     },
     settings: {
       ...initialState.settings,
