@@ -1,7 +1,6 @@
-import { beforeEach, describe, expect, it, } from "vitest";
-import { TANSTACK_DEVTOOLS_STATE } from "../utils/storage";
-import { getStateFromLocalStorage } from "./devtools-context";
-
+import { beforeEach, describe, expect, it } from 'vitest'
+import { TANSTACK_DEVTOOLS_STATE } from '../utils/storage'
+import { getStateFromLocalStorage } from './devtools-context'
 
 describe('getStateFromLocalStorage', () => {
   beforeEach(() => {
@@ -22,7 +21,7 @@ describe('getStateFromLocalStorage', () => {
     const state = getStateFromLocalStorage([
       {
         id: 'plugin1',
-        render: () => { },
+        render: () => {},
         name: 'Plugin 1',
       },
     ])
@@ -36,7 +35,7 @@ describe('getStateFromLocalStorage', () => {
       },
     }
     localStorage.setItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(mockState))
-    const plugins = [{ id: 'plugin1', render: () => { }, name: 'Plugin 1' }]
+    const plugins = [{ id: 'plugin1', render: () => {}, name: 'Plugin 1' }]
     const state = getStateFromLocalStorage(plugins)
     expect(state?.activePlugins).toEqual(['plugin1'])
   })
@@ -48,7 +47,7 @@ describe('getStateFromLocalStorage', () => {
       },
     }
     localStorage.setItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(mockState))
-    const plugins = [{ id: 'plugin3', render: () => { }, name: 'Plugin 3' }]
+    const plugins = [{ id: 'plugin3', render: () => {}, name: 'Plugin 3' }]
     const state = getStateFromLocalStorage(plugins)
     expect(state?.activePlugins).toEqual([])
   })
