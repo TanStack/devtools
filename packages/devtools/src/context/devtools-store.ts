@@ -81,8 +81,9 @@ export const initialState: DevtoolsStore = {
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     theme:
-      typeof window !== 'undefined' && typeof window.matchMedia !== "undefined" &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia !== 'undefined' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
   },
