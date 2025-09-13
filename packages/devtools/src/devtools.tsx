@@ -174,7 +174,9 @@ export default function DevTools() {
           e.preventDefault()
           e.stopPropagation()
           fetch(
-            `__TSD_HOST__://localhost:__TSD_PORT__/__tsd/open-source?source=${encodeURIComponent(dataSource)}`,
+            `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
+              dataSource,
+            )}`,
           ).catch(() => {})
         }
       }

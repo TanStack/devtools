@@ -119,15 +119,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }),
         )
       },
-      transform(code) {
-        if (code.includes('__TSD_PORT__')) {
-          code = code.replace('__TSD_PORT__', String(port))
-        }
-        if (code.includes('__TSD_HOST__')) {
-          code = code.replace('__TSD_HOST__', host)
-        }
-        return code
-      },
     },
     {
       name: '@tanstack/devtools:better-console-logs',
