@@ -5,12 +5,12 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { StudioPlugin } from './prisma-plugin'
 import ClientPlugin from './client-plugin'
 
-import { DevtoolsPanel, useAIDevtools, } from "@ai-sdk-tools/devtools";
+import { DevtoolsPanel, useAIDevtools } from '@ai-sdk-tools/devtools'
 
 const queryClient = new QueryClient()
 
 export default function DevtoolsExample() {
-  const { events, isCapturing, clearEvents, toggleCapturing } = useAIDevtools();
+  const { events, isCapturing, clearEvents, toggleCapturing } = useAIDevtools()
   return (
     <>
       <QueryClientProvider client={queryClient}>
@@ -30,7 +30,21 @@ export default function DevtoolsExample() {
             },
             {
               name: 'AI SDK',
-              render: <DevtoolsPanel onClose={() => { }} onTogglePosition={() => { }} config={{ enabled: true, maxEvents: 1000, position: "bottom" }} events={events} isCapturing={isCapturing} onClearEvents={clearEvents} onToggleCapturing={toggleCapturing} />,
+              render: (
+                <DevtoolsPanel
+                  onClose={() => {}}
+                  onTogglePosition={() => {}}
+                  config={{
+                    enabled: true,
+                    maxEvents: 1000,
+                    position: 'bottom',
+                  }}
+                  events={events}
+                  isCapturing={isCapturing}
+                  onClearEvents={clearEvents}
+                  onToggleCapturing={toggleCapturing}
+                />
+              ),
             },
             {
               name: 'Prisma Studio',
