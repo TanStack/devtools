@@ -59,6 +59,8 @@ const stylesFactory = (theme: Theme = 'dark') => {
 
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
+  const wrapperSize = 320;
+
   return {
     logo: css`
       cursor: pointer;
@@ -78,7 +80,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
 
     selectWrapper: css`
       width: 100%;
-      max-width: 300px;
+      max-width: ${wrapperSize}px;
       display: flex;
       flex-direction: column;
       gap: 0.375rem;
@@ -129,7 +131,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
     `,
     inputWrapper: css`
       width: 100%;
-      max-width: 300px;
+      max-width: ${wrapperSize}px;
       display: flex;
       flex-direction: column;
       gap: 0.375rem;
@@ -152,6 +154,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
     `,
     input: css`
       appearance: none;
+      box-sizing: border-box;
       width: 100%;
       padding: 0.75rem;
       border-radius: 0.5rem;
