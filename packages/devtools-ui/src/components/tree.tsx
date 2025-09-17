@@ -3,10 +3,21 @@ import clsx from 'clsx'
 import { css, useStyles } from '../styles/use-styles'
 import { CopiedCopier, Copier, ErrorCopier } from './icons'
 
-export function JsonTree(props: { value: any; copyable?: boolean, defaultExpansionDepth?: number }) {
-  return <JsonValue isRoot value={props.value} copyable={props.copyable} depth={0} defaultExpansionDepth={props.defaultExpansionDepth ?? 1} />
+export function JsonTree(props: {
+  value: any
+  copyable?: boolean
+  defaultExpansionDepth?: number
+}) {
+  return (
+    <JsonValue
+      isRoot
+      value={props.value}
+      copyable={props.copyable}
+      depth={0}
+      defaultExpansionDepth={props.defaultExpansionDepth ?? 1}
+    />
+  )
 }
-
 
 function JsonValue(props: {
   value: any
@@ -17,7 +28,15 @@ function JsonValue(props: {
   defaultExpansionDepth: number
   depth: number
 }) {
-  const { value, keyName, isRoot = false, isLastKey, copyable, defaultExpansionDepth, depth } = props
+  const {
+    value,
+    keyName,
+    isRoot = false,
+    isLastKey,
+    copyable,
+    defaultExpansionDepth,
+    depth,
+  } = props
   const styles = useStyles()
 
   return (
@@ -50,12 +69,24 @@ function JsonValue(props: {
         }
         if (Array.isArray(value)) {
           return (
-            <ArrayValue defaultExpansionDepth={defaultExpansionDepth} depth={depth} copyable={copyable} keyName={keyName} value={value} />
+            <ArrayValue
+              defaultExpansionDepth={defaultExpansionDepth}
+              depth={depth}
+              copyable={copyable}
+              keyName={keyName}
+              value={value}
+            />
           )
         }
         if (typeof value === 'object') {
           return (
-            <ObjectValue defaultExpansionDepth={defaultExpansionDepth} depth={depth} copyable={copyable} keyName={keyName} value={value} />
+            <ObjectValue
+              defaultExpansionDepth={defaultExpansionDepth}
+              depth={depth}
+              copyable={copyable}
+              keyName={keyName}
+              value={value}
+            />
           )
         }
         return <span />
@@ -75,7 +106,7 @@ const ArrayValue = ({
   keyName,
   copyable,
   defaultExpansionDepth,
-  depth
+  depth,
 }: {
   value: Array<any>
   copyable?: boolean
@@ -87,19 +118,23 @@ const ArrayValue = ({
   const [expanded, setExpanded] = createSignal(depth <= defaultExpansionDepth)
 
   if (value.length === 0) {
-    return (<span class={styles().tree.expanderContainer}>
-      {keyName && <span
-
-        class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-      >
-        &quot;{keyName}&quot;:{' '}
-      </span>}
-      <span class={styles().tree.valueBraces}>[]</span>
-    </span>)
+    return (
+      <span class={styles().tree.expanderContainer}>
+        {keyName && (
+          <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+            &quot;{keyName}&quot;:{' '}
+          </span>
+        )}
+        <span class={styles().tree.valueBraces}>[]</span>
+      </span>
+    )
   }
   return (
     <span class={styles().tree.expanderContainer}>
-      <Expander onClick={() => setExpanded(!expanded())} expanded={expanded()} />
+      <Expander
+        onClick={() => setExpanded(!expanded())}
+        expanded={expanded()}
+      />
       {keyName && (
         <span
           onclick={(e) => {
@@ -154,7 +189,7 @@ const ObjectValue = ({
   keyName,
   copyable,
   defaultExpansionDepth,
-  depth
+  depth,
 }: {
   value: Record<string, any>
   keyName?: string
@@ -168,16 +203,25 @@ const ObjectValue = ({
   const lastKeyName = keys[keys.length - 1]
 
   if (keys.length === 0) {
-    return (<span class={styles().tree.expanderContainer}>
-      {keyName && <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
-        &quot;{keyName}&quot;:{' '}
-      </span>}
-      <span class={styles().tree.valueBraces}>{"{}"}</span>
-    </span>)
+    return (
+      <span class={styles().tree.expanderContainer}>
+        {keyName && (
+          <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+            &quot;{keyName}&quot;:{' '}
+          </span>
+        )}
+        <span class={styles().tree.valueBraces}>{'{}'}</span>
+      </span>
+    )
   }
   return (
     <span class={styles().tree.expanderContainer}>
-      {keyName && <Expander onClick={() => setExpanded(!expanded())} expanded={expanded()} />}
+      {keyName && (
+        <Expander
+          onClick={() => setExpanded(!expanded())}
+          expanded={expanded()}
+        />
+      )}
       {keyName && (
         <span
           onClick={(e) => {
@@ -237,33 +281,34 @@ const CopyButton = (props: { value: unknown }) => {
     <button
       class={styles().tree.actionButton}
       title="Copy object to clipboard"
-      aria-label={`${copyState() === 'NoCopy'
-        ? 'Copy object to clipboard'
-        : copyState() === 'SuccessCopy'
-          ? 'Object copied to clipboard'
-          : 'Error copying object to clipboard'
-        }`}
+      aria-label={`${
+        copyState() === 'NoCopy'
+          ? 'Copy object to clipboard'
+          : copyState() === 'SuccessCopy'
+            ? 'Object copied to clipboard'
+            : 'Error copying object to clipboard'
+      }`}
       onClick={
         copyState() === 'NoCopy'
           ? () => {
-            navigator.clipboard
-              .writeText(JSON.stringify(props.value, null, 2))
-              .then(
-                () => {
-                  setCopyState('SuccessCopy')
-                  setTimeout(() => {
-                    setCopyState('NoCopy')
-                  }, 1500)
-                },
-                (err) => {
-                  console.error('Failed to copy: ', err)
-                  setCopyState('ErrorCopy')
-                  setTimeout(() => {
-                    setCopyState('NoCopy')
-                  }, 1500)
-                },
-              )
-          }
+              navigator.clipboard
+                .writeText(JSON.stringify(props.value, null, 2))
+                .then(
+                  () => {
+                    setCopyState('SuccessCopy')
+                    setTimeout(() => {
+                      setCopyState('NoCopy')
+                    }, 1500)
+                  },
+                  (err) => {
+                    console.error('Failed to copy: ', err)
+                    setCopyState('ErrorCopy')
+                    setTimeout(() => {
+                      setCopyState('NoCopy')
+                    }, 1500)
+                  },
+                )
+            }
           : undefined
       }
     >
@@ -282,7 +327,7 @@ const CopyButton = (props: { value: unknown }) => {
   )
 }
 
-const Expander = (props: { expanded: boolean, onClick: () => void }) => {
+const Expander = (props: { expanded: boolean; onClick: () => void }) => {
   const styles = useStyles()
   return (
     <span
@@ -293,7 +338,7 @@ const Expander = (props: { expanded: boolean, onClick: () => void }) => {
           transform: rotate(${props.expanded ? 90 : 0}deg);
         `,
         props.expanded &&
-        css`
+          css`
             & svg {
               top: -1px;
             }

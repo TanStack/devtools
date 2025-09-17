@@ -317,9 +317,9 @@ const stylesFactory = (theme: Theme = 'dark') => {
         height: ${tokens.size[1.5]};
         border-radius: ${tokens.border.radius.full};
         background-color: ${t(
-        tokens.colors[color][500],
-        tokens.colors[color][500],
-      )};
+          tokens.colors[color][500],
+          tokens.colors[color][500],
+        )};
       `,
       base: css`
         display: flex;
@@ -539,9 +539,9 @@ const stylesFactory = (theme: Theme = 'dark') => {
         border: 1px solid ${t(colors.gray[300], colors.gray[700])};
         border-radius: 0.75rem;
         box-shadow: ${t(
-        '0 1px 3px rgba(0,0,0,0.06)',
-        '0 1px 3px rgba(0,0,0,0.18)',
-      )};
+          '0 1px 3px rgba(0,0,0,0.06)',
+          '0 1px 3px rgba(0,0,0,0.18)',
+        )};
       `,
       title: css`
         font-size: 1.125rem;
