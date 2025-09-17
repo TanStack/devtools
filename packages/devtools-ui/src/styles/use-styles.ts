@@ -59,7 +59,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
 
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
-  const wrapperSize = 320;
+  const wrapperSize = 320
 
   return {
     logo: css`

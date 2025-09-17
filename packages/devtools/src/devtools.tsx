@@ -201,7 +201,11 @@ export default function DevTools() {
                   : true
             }
           >
-            <Trigger isOpen={isOpen} setIsOpen={toggleOpen} image={settings().triggerImage} />
+            <Trigger
+              isOpen={isOpen}
+              setIsOpen={toggleOpen}
+              image={settings().triggerImage}
+            />
             <MainPanel isResizing={isResizing} isOpen={isOpen}>
               <ContentPanel
                 ref={(ref) => (panelRef = ref)}

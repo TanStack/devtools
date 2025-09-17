@@ -91,7 +91,7 @@ export const initialState: DevtoolsStore = {
       window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
-    triggerImage: "",
+    triggerImage: '',
   },
   state: {
     activeTab: 'plugins',
