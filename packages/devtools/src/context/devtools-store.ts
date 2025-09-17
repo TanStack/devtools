@@ -61,6 +61,11 @@ export type DevtoolsStore = {
      * @default "dark"
      */
     theme: 'light' | 'dark'
+    /**
+     * The image used for the dev tools trigger
+     * @default TanStackLogo
+     */
+    triggerImage: string
   }
   state: {
     activeTab: TabName
@@ -86,6 +91,7 @@ export const initialState: DevtoolsStore = {
       window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
+    triggerImage: "",
   },
   state: {
     activeTab: 'plugins',

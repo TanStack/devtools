@@ -8,9 +8,11 @@ import type { Accessor } from 'solid-js'
 export const Trigger = ({
   isOpen,
   setIsOpen,
+  image = TanStackLogo,
 }: {
   isOpen: Accessor<boolean>
   setIsOpen: (isOpen: boolean) => void
+  image: string
 }) => {
   const { settings } = useDevtoolsSettings()
   const styles = useStyles()
@@ -28,7 +30,7 @@ export const Trigger = ({
       class={buttonStyle()}
       onClick={() => setIsOpen(!isOpen())}
     >
-      <img src={TanStackLogo} alt="TanStack Logo" />
+      <img src={image || TanStackLogo} alt="TanStack Devtools" />
     </button>
   )
 }

@@ -71,6 +71,13 @@ export const SettingsTab = () => {
             }
             checked={settings().hideUntilHover}
           />
+          <Input
+            label="Trigger Image"
+            description="Specify the URL of the image to use for the trigger"
+            value={settings().triggerImage}
+            placeholder="Default TanStack Logo"
+            onChange={(value) => setSettings({ triggerImage: value })}
+          />
           <Select
             label="Theme"
             description="Choose the theme for the devtools panel"
