@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.14
+
+### Patch Changes
+
+- improve open-source by using location origin ([#132](https://github.com/TanStack/devtools/pull/132))
+
 ## 0.2.13
 
 ### Patch Changes
