@@ -28,6 +28,10 @@
         {
           "label": "Vite plugin",
           "to": "vite-plugin"
+        },
+        {
+          "label": "Production",
+          "to": "production"
         }
       ],
       "frameworks": [

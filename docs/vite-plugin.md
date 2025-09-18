@@ -118,6 +118,22 @@ export default {
 }
 ```
 
+### removeDevtoolsOnBuild
+ 
+Whether to remove devtools from the production build. Defaults to true.
+  
+```ts
+import { devtools } from '@tanstack/devtools-vite'
+export default {
+  plugins: [
+    devtools({
+      removeDevtoolsOnBuild: true
+    }),
+    // ... rest of your plugins here
+  ],
+}
+```
+
 ### injectSource 
 
 Configuration for source injection. Defaults to enabled.
