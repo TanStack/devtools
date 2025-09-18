@@ -68,7 +68,6 @@ It is built with a plugin architecture, allowing for easy extension and customiz
 - Go-to-source functionality for easy debugging
 - Works seamlessly with TanStack Query, Router, and other TanStack libraries
 
-
 ## Installation
 
 Install one of the following packages based on your framework of choice:
