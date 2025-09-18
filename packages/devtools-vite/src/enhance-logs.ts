@@ -4,8 +4,11 @@ import { gen, parse, t, trav } from './babel'
 import type { types as Babel } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
 
-
-const transform = (ast: ParseResult<Babel.File>, filePath: string, port: number) => {
+const transform = (
+  ast: ParseResult<Babel.File>,
+  filePath: string,
+  port: number,
+) => {
   let didTransform = false
 
   trav(ast, {
@@ -17,22 +20,27 @@ const transform = (ast: ParseResult<Babel.File>, filePath: string, port: number)
         callee.object.type === 'Identifier' &&
         callee.object.name === 'console' &&
         callee.property.type === 'Identifier' &&
-        (callee.property.name === 'log' || callee.property.name === "error")
+        (callee.property.name === 'log' || callee.property.name === 'error')
       ) {
         const location = path.node.loc
         if (!location) {
           return
         }
-        const [lineNumber, column] = [location.start.line, location.start.column]
+        const [lineNumber, column] = [
+          location.start.line,
+          location.start.column,
+        ]
         // Insert a first argument if not already present
         // (You can customize this string as needed)
         const finalPath = `${filePath}:${lineNumber}:${column + 1}`
         path.node.arguments.unshift(
-          t.stringLiteral(`${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `)
+          t.stringLiteral(
+            `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `,
+          ),
         )
         didTransform = true
       }
-    }
+    },
   })
 
   return didTransform

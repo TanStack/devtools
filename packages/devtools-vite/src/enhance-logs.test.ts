@@ -13,7 +13,7 @@ describe('remove-devtools', () => {
         console.log('This is a log')
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -30,7 +30,7 @@ describe('remove-devtools', () => {
         console.log 
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -47,7 +47,7 @@ describe('remove-devtools', () => {
         // console.log('This is a log')
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -66,7 +66,7 @@ describe('remove-devtools', () => {
         */
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -78,8 +78,6 @@ describe('remove-devtools', () => {
     )
   })
 
-
-
   test('it does not add enhanced console.error to console.error that is inside a comment', () => {
     const output = removeEmptySpace(
       enhanceConsoleLog(
@@ -87,7 +85,7 @@ describe('remove-devtools', () => {
         // console.error('This is a log')
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -106,7 +104,7 @@ describe('remove-devtools', () => {
         */
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -118,7 +116,6 @@ describe('remove-devtools', () => {
     )
   })
 
-
   test('it adds enhanced console.error to console.error()', () => {
     const output = removeEmptySpace(
       enhanceConsoleLog(
@@ -126,7 +123,7 @@ describe('remove-devtools', () => {
         console.error('This is a log')
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -143,7 +140,7 @@ describe('remove-devtools', () => {
         console.log 
         `,
         'test.jsx',
-        3000
+        3000,
       ).code,
     )
     expect(output).toBe(
@@ -152,6 +149,4 @@ describe('remove-devtools', () => {
         `),
     )
   })
-
-
 })

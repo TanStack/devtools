@@ -1,4 +1,3 @@
-
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { handleDevToolsViteRequest } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
@@ -56,7 +55,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
-
     {
       enforce: 'pre',
       name: '@tanstack/devtools:inject-source',
