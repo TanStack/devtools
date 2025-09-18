@@ -9,7 +9,6 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import emblem from "/emblem-light.svg";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -56,7 +55,7 @@ const aboutRoute = createRoute({
 const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
 
 const router = createRouter({ routeTree })
-console.log(emblem)
+
 export default function DevtoolsExample() {
   return (
     <>
