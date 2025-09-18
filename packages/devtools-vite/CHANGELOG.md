@@ -1,5 +1,15 @@
 # @tanstack/devtools-event-client
 
+## 0.3.0
+
+### Minor Changes
+
+- Allow the vite plugin to remove the devtools completely from the build output bundle for 0 production footprint ([#136](https://github.com/TanStack/devtools/pull/136))
+
+### Patch Changes
+
+- downgrade vite peer dep to support v6 ([#138](https://github.com/TanStack/devtools/pull/138))
+
 ## 0.2.14
 
 ### Patch Changes

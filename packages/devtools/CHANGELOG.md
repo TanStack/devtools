@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.13
+
+### Patch Changes
+
+- add option to change trigger image ([#138](https://github.com/TanStack/devtools/pull/138))
+
 ## 0.6.12
 
 ### Patch Changes
