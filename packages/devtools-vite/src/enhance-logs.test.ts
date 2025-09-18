@@ -16,8 +16,12 @@ describe('remove-devtools', () => {
         3000,
       ).code,
     )
-    expect(output.includes("http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192")).toEqual(true)
-    expect(output.includes("test.jsx:2:9")).toEqual(true)
+    expect(
+      output.includes(
+        'http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192',
+      ),
+    ).toEqual(true)
+    expect(output.includes('test.jsx:2:9')).toEqual(true)
     expect(output.includes(removeEmptySpace("'This is a log'"))).toEqual(true)
   })
 
@@ -124,8 +128,12 @@ describe('remove-devtools', () => {
         3000,
       ).code,
     )
-    expect(output.includes("http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192")).toEqual(true)
-    expect(output.includes("test.jsx:2:9")).toEqual(true)
+    expect(
+      output.includes(
+        'http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192',
+      ),
+    ).toEqual(true)
+    expect(output.includes('test.jsx:2:9')).toEqual(true)
     expect(output.includes(removeEmptySpace("'This is a log'"))).toEqual(true)
   })
 
