@@ -128,7 +128,7 @@ describe('remove-devtools', () => {
         3000,
       ).code,
     )
-    console.log("output", output);
+    console.log('output', output)
     expect(
       output.includes(
         'http://localhost:3000/__tsd/open-source?source=test.jsx',
