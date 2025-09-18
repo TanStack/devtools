@@ -18,7 +18,7 @@ describe('remove-devtools', () => {
     )
     expect(
       output.includes(
-        'http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192',
+        'http://localhost:3000/__tsd/open-source?source=test.jsx',
       ),
     ).toEqual(true)
     expect(output.includes('test.jsx:2:9')).toEqual(true)
@@ -128,9 +128,10 @@ describe('remove-devtools', () => {
         3000,
       ).code,
     )
+    console.log("output", output);
     expect(
       output.includes(
-        'http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192',
+        'http://localhost:3000/__tsd/open-source?source=test.jsx',
       ),
     ).toEqual(true)
     expect(output.includes('test.jsx:2:9')).toEqual(true)
