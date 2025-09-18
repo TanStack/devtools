@@ -11,6 +11,7 @@ export const handleDevToolsViteRequest = (
 ) => {
   if (req.url?.includes('__tsd/open-source')) {
     const searchParams = new URLSearchParams(req.url.split('?')[1])
+
     const source = searchParams.get('source')
     if (!source) {
       return
@@ -49,7 +50,7 @@ export const handleDevToolsViteRequest = (
     try {
       const parsedData = JSON.parse(dataToParse.toString())
       cb(parsedData)
-    } catch (e) {}
+    } catch (e) { }
     res.write('OK')
   })
 }

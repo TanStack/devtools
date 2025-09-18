@@ -1,10 +1,10 @@
-import { normalizePath } from 'vite'
-import chalk from 'chalk'
+
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { handleDevToolsViteRequest } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
 import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
+import { enhanceConsoleLog } from './enhance-logs'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
 import type { Plugin } from 'vite'
@@ -56,6 +56,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
+
     {
       enforce: 'pre',
       name: '@tanstack/devtools:inject-source',
@@ -160,38 +161,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         if (!code.includes('console.')) {
           return code
         }
-        const lines = code.split('\n')
-        return lines
-          .map((line, lineNumber) => {
-            if (
-              line.trim().startsWith('//') ||
-              line.trim().startsWith('/**') ||
-              line.trim().startsWith('*')
-            ) {
-              return line
-            }
-            // Do not add for arrow functions or return statements
-            if (
-              line.replaceAll(' ', '').includes('=>console.') ||
-              line.includes('return console.')
-            ) {
-              return line
-            }
-
-            const column = line.indexOf('console.')
-            const location = `${id.replace(normalizePath(process.cwd()), '')}:${lineNumber + 1}:${column + 1}`
-            const logMessage = `'${chalk.magenta('LOG')} ${chalk.blueBright(`${location} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(id.replace(normalizePath(process.cwd()), ''))}&line=${lineNumber + 1}&column=${column + 1}`)}\\n → '`
-            if (line.includes('console.log(')) {
-              const newLine = `console.log(${logMessage},`
-              return line.replace('console.log(', newLine)
-            }
-            if (line.includes('console.error(')) {
-              const newLine = `console.error(${logMessage},`
-              return line.replace('console.error(', newLine)
-            }
-            return line
-          })
-          .join('\n')
+        return enhanceConsoleLog(code, id, port)
       },
     },
   ]
