@@ -30,8 +30,6 @@ const transform = (
           location.start.line,
           location.start.column,
         ]
-        // Insert a first argument if not already present
-        // (You can customize this string as needed)
         const finalPath = `${filePath}:${lineNumber}:${column + 1}`
         path.node.arguments.unshift(
           t.stringLiteral(
