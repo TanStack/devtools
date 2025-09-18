@@ -9,7 +9,7 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import emblem from "/emblem-light.svg";
+import emblem from '/emblem-light.svg'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -63,9 +63,7 @@ export default function DevtoolsExample() {
       <TanStackDevtools
         eventBusConfig={{
           connectToServerBus: true,
-
         }}
-
         plugins={[
           {
             name: 'TanStack Query',
