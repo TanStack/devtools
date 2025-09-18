@@ -1,131 +1,106 @@
-![TanStack Devtools Header](https://github.com/tanstack/devtools/raw/main/media/repo-header.png)
+<div align="center">
+  <img src="./media/header_devtools.png" >
+</div>
 
-# [TanStack](https://tanstack.com) Devtools v0
+<br />
 
-Coming soon...
-
-<a href="https://twitter.com/intent/tweet?button_hashtag=TanStack" target="\_parent">
-  <img alt="#TanStack" src="https://img.shields.io/twitter/url?color=%2308a0e9&label=%23TanStack&style=social&url=https%3A%2F%2Ftwitter.com%2Fintent%2Ftweet%3Fbutton_hashtag%3DTanStack" />
-</a>
-<!-- <a href="https://github.com/tanstack/devtools/actions?devtools=workflow%3A%22react-devtools+tests%22">
-  <img src="https://github.com/tanstack/devtools/workflows/react-devtools%20tests/badge.svg" />
-</a> -->
+<div align="center">
 <a href="https://npmjs.com/package/@tanstack/devtools" target="\_parent">
   <img alt="" src="https://img.shields.io/npm/dm/@tanstack/react-devtools.svg" />
+</a>
+<a href="https://github.com/TanStack/devtools" target="\_parent">
+	  <img alt="" src="https://img.shields.io/github/stars/TanStack/devtools.svg?style=social&label=Star" alt="GitHub stars" />
 </a>
 <a href="https://bundlephobia.com/result?p=@tanstack/react-devtools@latest" target="\_parent">
   <img alt="" src="https://badgen.net/bundlephobia/minzip/@tanstack/react-devtools@latest" />
 </a>
+</div>
+
+<div align="center">
 <a href="#badge">
   <img alt="semantic-release" src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg">
 </a>
-<a href="https://github.com/tanstack/devtools/discussions">
-  <img alt="Join the discussion on Github" src="https://img.shields.io/badge/Github%20Discussions%20%26%20Support-Chat%20now!-blue" />
+	<a href="#badge">
+		<img src="https://img.shields.io/github/v/release/tanstack/devtools" alt="Release"/>
+	</a>
+<a href="https://twitter.com/tan_stack">
+  <img src="https://img.shields.io/twitter/follow/tan_stack.svg?style=social" alt="Follow @TanStack"/>
 </a>
-<a href="https://github.com/tanstack/devtools" target="\_parent">
-  <img alt="" src="https://img.shields.io/github/stars/tanstack/react-devtools.svg?style=social&label=Star" />
-</a>
-<a href="https://twitter.com/tannerlinsley" target="\_parent">
-  <img alt="" src="https://img.shields.io/twitter/follow/tannerlinsley.svg?style=social&label=Follow" />
-</a>
+</div>
 
-## Enjoy this library?
+<div align="center">
+  
+### [Become a Sponsor!](https://github.com/sponsors/tannerlinsley/)
+</div>
 
-Try other [TanStack](https://tanstack.com) libraries:
+# TanStack Devtools
 
-- [TanStack Router](https://github.com/TanStack/router) <img alt="" src="https://img.shields.io/github/stars/tanstack/router.svg" />
-- [TanStack Query](https://github.com/TanStack/query) <img alt="" src="https://img.shields.io/github/stars/tanstack/query.svg" />
-- [TanSack Table](https://github.com/TanStack/table) <img alt="" src="https://img.shields.io/github/stars/tanstack/table.svg" />
-- [TanStack Virtual](https://github.com/TanStack/virtual) <img alt="" src="https://img.shields.io/github/stars/tanstack/virtual.svg" />
-- [TanStack Form](https://github.com/TanStack/form) <img alt="" src="https://img.shields.io/github/stars/tanstack/form.svg" />
-- [TanStack Store](https://github.com/TanStack/store) <img alt="" src="https://img.shields.io/github/stars/tanstack/store.svg" />
-- [TanStack Ranger](https://github.com/TanStack/ranger) <img alt="" src="https://img.shields.io/github/stars/tanstack/ranger.svg" />
-- [TanStack Pacer](https://github.com/TanStack/pacer) <img alt="" src="https://img.shields.io/github/stars/tanstack/pacer.svg" />
-- [TanStack Devtools](https://github.com/TanStack/devtools) <img alt="" src="https://img.shields.io/github/stars/tanstack/devtools.svg" />
-- [TanStack Config](https://github.com/TanStack/config) <img alt="" src="https://img.shields.io/github/stars/tanstack/config.svg" />
+A debugging toolkit that provides a unified interface for inspecting, monitoring, and extending your applications.
 
-## Visit [tanstack.com/devtools](https://tanstack.com/devtools) for docs, guides, API and more!
+- Inspect and debug state and behavior in real time  
+- Works with React, Solid, Vanilla JS, and more  
+- Extensible plugin architecture with customizable UI  
+- Seamless integration with TanStack Query, Router, and other libraries
 
-You may know **TanSack Devtools** by our adapter names, too!
 
-- [**React Devtools**](https://tanstack.com/devtools/latest/docs/framework/react/basic-setup)
-- [**Solid Devtools**](https://tanstack.com/devtools/latest/docs/framework/solid/basic-setup)
+### <a href="https://tanstack.com/devtools">Read the docs →</b></a>
 
-## Summary
+## Get Involved
 
-TanStack Devtools is a powerful set of tools designed to help developers inspect and debug applications built with various frameworks, including React, Solid, and Vanilla JS. It provides a unified interface to monitor application state, track changes, and identify issues in real-time.
+- We welcome issues and pull requests!
+- Participate in [GitHub discussions](https://github.com/TanStack/devtools/discussions)
+- Chat with the community on [Discord](https://discord.com/invite/WrRKjPJ)
+- See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions
 
-It is built with a plugin architecture, allowing for easy extension and customization. The devtools vite plugin can be integrated into your application, which enhances the development experience by providing better console logs, a server event bus, and improved debugging capabilities.
 
-## Quick Features
+## Partners
 
-- Inspect and debug your application's state and behavior in real-time
-- Support for multiple frameworks (React, Solid, Vanilla JS, etc.)
-- Plugin architecture to extend functionality
-- Production mode support with tree-shaking to remove devtools code
-- Customizable UI
-- Event bus for communication between the devtools and your application
-- Go-to-source functionality for easy debugging
-- Works seamlessly with TanStack Query, Router, and other TanStack libraries
+<table align="center">
+  <tr>
+    <td>
+      <a href="https://www.coderabbit.ai/?via=tanstack&dub_id=aCcEEdAOqqutX6OS" >
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://tanstack.com/assets/coderabbit-dark-CMcuvjEy.svg" height="40" />
+          <source media="(prefers-color-scheme: light)" srcset="https://tanstack.com/assets/coderabbit-light-DVMJ2jHi.svg" height="40" />
+          <img src="https://tanstack.com/assets/coderabbit-light-DVMJ2jHi.svg" height="40" alt="CodeRabbit" />
+        </picture>
+      </a>
+    </td>
+    <td>
+      <a href="https://www.cloudflare.com?utm_source=tanstack">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="https://tanstack.com/assets/cloudflare-white-DQDB7UaL.svg" height="60" />
+          <source media="(prefers-color-scheme: light)" srcset="https://tanstack.com/assets/cloudflare-black-CPufaW0B.svg" height="60" />
+          <img src="https://tanstack.com/assets/cloudflare-black-CPufaW0B.svg" height="60" alt="Cloudflare" />
+        </picture>
+      </a>
+    </td>
+  </tr>
+</table>
 
-## Installation
 
-Install one of the following packages based on your framework of choice:
+<div align="center">
+<img src="./media/partner_logo.svg" alt="Devtools & you?" height="65">
+<p>
+We're looking for TanStack Devtools Partners to join our mission! Partner with us to push the boundaries of TanStack Devtools and build amazing things together.
+</p>
+<a href="mailto:partners@tanstack.com?subject=TanStack Devtools Partnership"><b>LET'S CHAT</b></a>
+</div>
 
-```bash
-# Npm
-npm install @tanstack/react-devtools
-npm install @tanstack/solid-devtools
-npm install @tanstack/devtools # no framework, just vanilla js
-```
+## Explore the TanStack Ecosystem
 
-## Usage
+- <a href="https://github.com/tanstack/config"><b>TanStack Config</b></a> – Tooling for JS/TS packages
+- <a href="https://github.com/tanstack/db"><b>TanStack DB</b></a> – Reactive sync client store
+- <a href="https://github.com/tanstack/form"><b>TanStack Form</b></a> – Type‑safe form state
+- <a href="https://github.com/tanstack/pacer"><b>TanStack Pacer</b></a> – Debouncing, throttling, batching
+- <a href="https://github.com/tanstack/query"><b>TanStack Query</b></a> – Async state & caching
+- <a href="https://github.com/tanstack/ranger"><b>TanStack Ranger</b></a> – Range & slider primitives
+- <a href="https://github.com/tanstack/router"><b>TanStack Router</b></a> – Type‑safe routing, caching & URL state
+- <a href="https://github.com/tanstack/router"><b>TanStack Start</b></a> – Full‑stack SSR & streaming
+- <a href="https://github.com/tanstack/store"><b>TanStack Store</b></a> – Reactive data store
+- <a href="https://github.com/tanstack/table"><b>TanStack Table</b></a> – Headless datagrids
+- <a href="https://github.com/tanstack/virtual"><b>TanStack Virtual</b></a> – Virtualized rendering
 
-### React
-
-```tsx
-import { TanStackDevtools } from '@tanstack/react-devtools'
-import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-
-function App() {
-  return (
-    <div>
-      <h1>My App</h1>
-      <TanStackDevtools
-        plugins={[
-          {
-            name: 'TanStack Query',
-            render: <ReactQueryDevtoolsPanel />,
-          },
-          {
-            name: 'TanStack Router',
-            render: <TanStackRouterDevtoolsPanel router={router} />,
-          },
-        ]}
-      />
-    </div>
-  )
-}
-```
-
-## Development
-
-To contribute to the development of TanStack Devtools, you can clone the repository and run the following commands:
-
-```bash
-pnpm install
-pnpm dev
-```
-
-Then go to any of the example directories and run:
-
-```bash
-pnpm dev
-```
-
-## How to help?
-
-### [Become a Sponsor](https://github.com/sponsors/tannerlinsley/)
+… and more at <a href="https://tanstack.com"><b>TanStack.com »</b></a>
 
 <!-- USE THE FORCE LUKE -->
