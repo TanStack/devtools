@@ -37,11 +37,10 @@
 
 A debugging toolkit that provides a unified interface for inspecting, monitoring, and extending your applications.
 
-- Inspect and debug state and behavior in real time  
-- Works with React, Solid, Vanilla JS, and more  
-- Extensible plugin architecture with customizable UI  
+- Inspect and debug state and behavior in real time
+- Works with React, Solid, Vanilla JS, and more
+- Extensible plugin architecture with customizable UI
 - Seamless integration with TanStack Query, Router, and other libraries
-
 
 ### <a href="https://tanstack.com/devtools">Read the docs →</b></a>
 
@@ -51,7 +50,6 @@ A debugging toolkit that provides a unified interface for inspecting, monitoring
 - Participate in [GitHub discussions](https://github.com/TanStack/devtools/discussions)
 - Chat with the community on [Discord](https://discord.com/invite/WrRKjPJ)
 - See [CONTRIBUTING.md](./CONTRIBUTING.md) for setup instructions
-
 
 ## Partners
 
@@ -77,7 +75,6 @@ A debugging toolkit that provides a unified interface for inspecting, monitoring
     </td>
   </tr>
 </table>
-
 
 <div align="center">
 <img src="./media/partner_logo.svg" alt="Devtools & you?" height="65">
