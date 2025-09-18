@@ -7,10 +7,10 @@ Coming soon...
 <a href="https://twitter.com/intent/tweet?button_hashtag=TanStack" target="\_parent">
   <img alt="#TanStack" src="https://img.shields.io/twitter/url?color=%2308a0e9&label=%23TanStack&style=social&url=https%3A%2F%2Ftwitter.com%2Fintent%2Ftweet%3Fbutton_hashtag%3DTanStack" />
 </a>
-<a href="https://github.com/tanstack/devtools/actions?devtools=workflow%3A%22react-devtools+tests%22">
+<!-- <a href="https://github.com/tanstack/devtools/actions?devtools=workflow%3A%22react-devtools+tests%22">
   <img src="https://github.com/tanstack/devtools/workflows/react-devtools%20tests/badge.svg" />
-</a>
-<a href="https://npmjs.com/package/@tanstack/react-devtools" target="\_parent">
+</a> -->
+<a href="https://npmjs.com/package/@tanstack/devtools" target="\_parent">
   <img alt="" src="https://img.shields.io/npm/dm/@tanstack/react-devtools.svg" />
 </a>
 <a href="https://bundlephobia.com/result?p=@tanstack/react-devtools@latest" target="\_parent">
@@ -48,15 +48,26 @@ Try other [TanStack](https://tanstack.com) libraries:
 
 You may know **TanSack Devtools** by our adapter names, too!
 
-- [**React Devtools**](https://tanstack.com/devtools/latest/docs/framework/react/react-devtools)
+- [**React Devtools**](https://tanstack.com/devtools/latest/docs/framework/react/basic-setup)
+- [**Solid Devtools**](https://tanstack.com/devtools/latest/docs/framework/solid/basic-setup)
 
 ## Summary
 
-Coming soon...
+TanStack Devtools is a powerful set of tools designed to help developers inspect and debug applications built with various frameworks, including React, Solid, and Vanilla JS. It provides a unified interface to monitor application state, track changes, and identify issues in real-time.
+
+It is built with a plugin architecture, allowing for easy extension and customization. The devtools vite plugin can be integrated into your application, which enhances the development experience by providing better console logs, a server event bus, and improved debugging capabilities.
 
 ## Quick Features
 
-Coming soon...
+- Inspect and debug your application's state and behavior in real-time
+- Support for multiple frameworks (React, Solid, Vanilla JS, etc.)
+- Plugin architecture to extend functionality
+- Production mode support with tree-shaking to remove devtools code
+- Customizable UI
+- Event bus for communication between the devtools and your application
+- Go-to-source functionality for easy debugging
+- Works seamlessly with TanStack Query, Router, and other TanStack libraries
+
 
 ## Installation
 
