@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addSourceToJsx } from '../src/inject-source'
+import { addSourceToJsx } from './inject-source'
 
 const removeEmptySpace = (str: string) => {
   return str.replace(/\s/g, '').trim()

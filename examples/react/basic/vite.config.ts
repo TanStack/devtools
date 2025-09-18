@@ -6,7 +6,9 @@ import Inspect from 'vite-plugin-inspect'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    devtools(),
+    devtools({
+      removeDevtoolsOnBuild: true
+    }),
     Inspect(),
     react({
       // babel: {

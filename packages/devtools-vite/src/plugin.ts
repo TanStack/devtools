@@ -3,6 +3,7 @@ import chalk from 'chalk'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { handleDevToolsViteRequest } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
+import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
@@ -28,6 +29,11 @@ export type TanStackDevtoolsViteConfig = {
     enabled: boolean
   }
   /**
+   * Whether to remove devtools from the production build.
+   * @default true
+   */
+  removeDevtoolsOnBuild?: boolean
+  /**
    * Configuration for source injection.
    */
   injectSource?: {
@@ -46,6 +52,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
+  const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
@@ -114,6 +121,24 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
             return
           }),
         )
+      },
+    },
+    {
+      name: '@tanstack/devtools:remove-devtools-on-build',
+      apply(_, { command }) {
+        return command === 'build' && removeDevtoolsOnBuild
+      },
+      enforce: "pre",
+      transform(code, id) {
+        if (
+          id.includes('node_modules') ||
+          id.includes('?raw') ||
+          id.includes('dist') ||
+          id.includes('build')
+        )
+          return code
+
+        return removeDevtools(code, id)
       },
     },
     {
