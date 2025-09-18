@@ -15,10 +15,10 @@ type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
 export class EventClient<
   TEventMap extends Record<string, any>,
   TPluginId extends string = TEventMap extends Record<infer P, any>
-  ? P extends `${infer Id}:${string}`
-  ? Id
-  : never
-  : never,
+    ? P extends `${infer Id}:${string}`
+      ? Id
+      : never
+    : never,
 > {
   #pluginId: TPluginId
   #eventTarget: () => EventTarget
@@ -76,7 +76,7 @@ export class EventClient<
     this.#connectIntervalId = null
     this.#connectEveryMs = 500
 
-    if (typeof CustomEvent !== "undefined") {
+    if (typeof CustomEvent !== 'undefined') {
       this.#connectFunction()
       this.startConnectLoop()
     }
@@ -116,7 +116,10 @@ export class EventClient<
       return globalThis.__TANSTACK_EVENT_TARGET__
     }
     // CLient event target is the browser window object
-    if (typeof window !== 'undefined' && typeof window.addEventListener !== 'undefined') {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.addEventListener !== 'undefined'
+    ) {
       this.debugLog('Using window as event target')
 
       return window
@@ -134,8 +137,8 @@ export class EventClient<
         'No event mechanism available, running in non-web environment',
       )
       return {
-        addEventListener: () => { },
-        removeEventListener: () => { },
+        addEventListener: () => {},
+        removeEventListener: () => {},
         dispatchEvent: () => false,
       }
     }
@@ -160,8 +163,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-    ? S
-    : never,
+      ? S
+      : never,
   >(
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
@@ -188,8 +191,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-    ? S
-    : never,
+      ? S
+      : never,
   >(
     eventSuffix: TSuffix,
     cb: (
