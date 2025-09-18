@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.1
+
+### Patch Changes
+
+- improved accuracy of go to source to go to exact column and also improved accuracy of enhanced console logs to go to exact console log location ([#139](https://github.com/TanStack/devtools/pull/139))
+
 ## 0.3.0
 
 ### Minor Changes

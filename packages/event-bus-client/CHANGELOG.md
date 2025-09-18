@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.2.5
+
+### Patch Changes
+
+- fix issue with the client not working in react native ([#139](https://github.com/TanStack/devtools/pull/139))
+
 ## 0.2.4
 
 ### Patch Changes

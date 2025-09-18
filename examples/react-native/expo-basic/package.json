@@ -1,7 +1,7 @@
 {
   "name": "expo-basic",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "expo start",
@@ -16,7 +16,7 @@
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
-    "@tanstack/devtools-event-client": "0.2.4",
+    "@tanstack/devtools-event-client": "0.2.5",
     "expo": "~54.0.8",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.8",

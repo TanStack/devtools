@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-vite",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",
