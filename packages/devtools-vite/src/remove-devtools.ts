@@ -1,17 +1,18 @@
-
 import { gen, parse, trav } from './babel'
-import type { t } from './babel';
-import type { types as Babel, } from '@babel/core'
+import type { t } from './babel'
+import type { types as Babel } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
 
 const isTanStackDevtoolsImport = (source: string) =>
-  source === '@tanstack/react-devtools' || source === "@tanstack/devtools" || source === "@tanstack/solid-devtools"
+  source === '@tanstack/react-devtools' ||
+  source === '@tanstack/devtools' ||
+  source === '@tanstack/solid-devtools'
 
 const getImportedNames = (importDecl: t.ImportDeclaration) => {
   return importDecl.specifiers.map((spec) => spec.local.name)
 }
 
-const transform = (ast: ParseResult<Babel.File>,) => {
+const transform = (ast: ParseResult<Babel.File>) => {
   let didTransform = false
   const devtoolsComponentNames = new Set()
 
@@ -19,7 +20,9 @@ const transform = (ast: ParseResult<Babel.File>,) => {
     ImportDeclaration(path) {
       const importSource = path.node.source.value
       if (isTanStackDevtoolsImport(importSource)) {
-        getImportedNames(path.node).forEach((name) => devtoolsComponentNames.add(name))
+        getImportedNames(path.node).forEach((name) =>
+          devtoolsComponentNames.add(name),
+        )
         path.remove()
         didTransform = true
       }
@@ -34,14 +37,15 @@ const transform = (ast: ParseResult<Babel.File>,) => {
         didTransform = true
       }
 
-      if (opening.name.type === 'JSXMemberExpression' &&
+      if (
+        opening.name.type === 'JSXMemberExpression' &&
         opening.name.object.type === 'JSXIdentifier' &&
         devtoolsComponentNames.has(opening.name.object.name)
       ) {
         path.remove()
         didTransform = true
       }
-    }
+    },
   })
 
   return didTransform
@@ -55,7 +59,7 @@ export function removeDevtools(code: string, id: string) {
       sourceType: 'module',
       plugins: ['jsx', 'typescript'],
     })
-    const didTransform = transform(ast,)
+    const didTransform = transform(ast)
     if (!didTransform) {
       return { code }
     }

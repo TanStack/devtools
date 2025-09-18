@@ -128,7 +128,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(_, { command }) {
         return command === 'build' && removeDevtoolsOnBuild
       },
-      enforce: "pre",
+      enforce: 'pre',
       transform(code, id) {
         if (
           id.includes('node_modules') ||

@@ -1,12 +1,12 @@
-import { describe, expect, test } from "vitest";
-import { removeDevtools } from "./remove-devtools";
+import { describe, expect, test } from 'vitest'
+import { removeDevtools } from './remove-devtools'
 
 const removeEmptySpace = (str: string) => {
   return str.replace(/\s/g, '').trim()
 }
 
-describe("remove-devtools", () => {
-  test("it removes devtools if Imported directly", () => {
+describe('remove-devtools', () => {
+  test('it removes devtools if Imported directly', () => {
     const output = removeEmptySpace(
       removeDevtools(
         `
@@ -78,7 +78,7 @@ export default function DevtoolsExample() {
 
         `),
     )
-  });
+  })
 
   test("it removes devtools if Imported and renamed with 'as' ", () => {
     const output = removeEmptySpace(
@@ -152,9 +152,9 @@ export default function DevtoolsExample() {
 
         `),
     )
-  });
+  })
 
-  test("it removes devtools if Imported as * then used as a subcomponent ", () => {
+  test('it removes devtools if Imported as * then used as a subcomponent ', () => {
     const output = removeEmptySpace(
       removeDevtools(
         `
@@ -226,5 +226,5 @@ export default function DevtoolsExample() {
 
         `),
     )
-  });
+  })
 })
