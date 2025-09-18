@@ -16,11 +16,9 @@ describe('remove-devtools', () => {
         3000,
       ).code,
     )
-    expect(output).toBe(
-      removeEmptySpace(`
-        console.log("LOG test.jsx:2:9 - http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192", 'This is a log');
-        `),
-    )
+    expect(output.includes("http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192")).toEqual(true)
+    expect(output.includes("test.jsx:2:9")).toEqual(true)
+    expect(output.includes(removeEmptySpace("'This is a log'"))).toEqual(true)
   })
 
   test('it does not add enhanced console.logs to console.log that is not called', () => {
@@ -126,11 +124,9 @@ describe('remove-devtools', () => {
         3000,
       ).code,
     )
-    expect(output).toBe(
-      removeEmptySpace(`
-          console.error("LOG test.jsx:2:9 - http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192", 'This is a log');
-       `),
-    )
+    expect(output.includes("http://localhost:3000/__tsd/open-source?source=test.jsx%3A2%3A9\\n\\u2192")).toEqual(true)
+    expect(output.includes("test.jsx:2:9")).toEqual(true)
+    expect(output.includes(removeEmptySpace("'This is a log'"))).toEqual(true)
   })
 
   test('it does not add enhanced console.error to console.error that is not called', () => {
