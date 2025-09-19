@@ -57,6 +57,7 @@ export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
 
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
+  const logging = args?.logging ?? true
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
@@ -146,7 +147,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           return
         const transform = removeDevtools(code, id)
         if (!transform) return
-        if (args?.logging) {
+        if (logging) {
           console.log(
             `\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`,
           )
