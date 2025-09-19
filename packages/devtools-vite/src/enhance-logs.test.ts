@@ -33,9 +33,7 @@ describe('remove-devtools', () => {
       'test.jsx',
       3000,
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
 
   test('it does not add enhanced console.logs to console.log that is inside a comment', () => {
@@ -46,9 +44,7 @@ describe('remove-devtools', () => {
       'test.jsx',
       3000,
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
 
   test('it does not add enhanced console.logs to console.log that is inside a multiline comment', () => {
@@ -61,9 +57,7 @@ describe('remove-devtools', () => {
       'test.jsx',
       3000,
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
 
   test('it does not add enhanced console.error to console.error that is inside a comment', () => {
@@ -74,9 +68,7 @@ describe('remove-devtools', () => {
       'test.jsx',
       3000,
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
 
   test('it does not add enhanced console.error to console.error that is inside a multiline comment', () => {
@@ -89,9 +81,7 @@ describe('remove-devtools', () => {
       'test.jsx',
       3000,
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
 
   test('it adds enhanced console.error to console.error()', () => {
@@ -122,7 +112,6 @@ describe('remove-devtools', () => {
       'test.jsx',
       3000,
     )
-    expect(output).toBe(
-      undefined)
+    expect(output).toBe(undefined)
   })
 })

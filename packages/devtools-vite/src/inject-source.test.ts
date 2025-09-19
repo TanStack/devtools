@@ -15,9 +15,7 @@ describe('inject source', () => {
         `,
       'test.jsx',
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
 
   it("shouldn't augment react fragments if they start with Fragment ", () => {
@@ -29,9 +27,7 @@ describe('inject source', () => {
         `,
       'test.jsx',
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
   it("shouldn't augment react fragments if they start with React.Fragment ", () => {
     const output = addSourceToJsx(
@@ -42,9 +38,7 @@ describe('inject source', () => {
         `,
       'test.jsx',
     )
-    expect(output).toBe(
-      undefined
-    )
+    expect(output).toBe(undefined)
   })
   describe('FunctionExpression', () => {
     it('should work with deeply nested custom JSX syntax', () => {
@@ -76,9 +70,7 @@ describe('inject source', () => {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread', () => {
@@ -90,9 +82,7 @@ describe('inject source', () => {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread with a different name', () => {
@@ -104,9 +94,7 @@ describe('inject source', () => {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props spread and other normal elements', () => {
@@ -160,9 +148,7 @@ describe('inject source', () => {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread', () => {
@@ -174,9 +160,7 @@ describe('inject source', () => {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread with a different name', () => {
@@ -188,9 +172,7 @@ describe('inject source', () => {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props spread and other normal elements', () => {
@@ -291,9 +273,7 @@ function test(props) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it("doesn't transform when props are spread across the element but applies to other elements without any props", () => {
@@ -377,9 +357,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it(' props destructured and collected', () => {
@@ -411,9 +389,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components', () => {
@@ -445,9 +421,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components even if exported', () => {
@@ -500,9 +474,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it("doesn't transform when props are spread across the element but applies to other elements without any props", () => {
@@ -586,8 +558,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it(' props destructured and collected', () => {
@@ -619,8 +590,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components', () => {
@@ -861,9 +831,7 @@ function test({...rest}) {
         `,
         'test.jsx',
       )
-      expect(output).toBe(
-        undefined
-      )
+      expect(output).toBe(undefined)
     })
 
     it('works with arrow function and props destructured and collected even on custom components even if exported', () => {
