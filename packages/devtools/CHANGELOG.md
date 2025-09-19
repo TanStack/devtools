@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.14
+
+### Patch Changes
+
+- improve devtools removal and fix issues with css ([#148](https://github.com/TanStack/devtools/pull/148))
+
 ## 0.6.13
 
 ### Patch Changes

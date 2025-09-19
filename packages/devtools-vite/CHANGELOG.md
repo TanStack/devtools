@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.2
+
+### Patch Changes
+
+- improve devtools removal and fix issues with css ([#148](https://github.com/TanStack/devtools/pull/148))
+
 ## 0.3.1
 
 ### Patch Changes
