@@ -15,7 +15,7 @@ describe('inject source', () => {
       })
         `,
         'test.jsx',
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -35,7 +35,7 @@ describe('inject source', () => {
       })
         `,
         'test.jsx',
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -54,7 +54,7 @@ describe('inject source', () => {
       })
         `,
         'test.jsx',
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -74,7 +74,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -94,7 +94,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -114,7 +114,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -134,7 +134,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -154,7 +154,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -176,7 +176,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -196,7 +196,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -216,7 +216,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -236,7 +236,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -256,7 +256,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -280,7 +280,7 @@ describe('inject source', () => {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -305,7 +305,7 @@ function test({...props })  {
 }
   `,
           'test.tsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -325,7 +325,7 @@ function test({...props })  {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -345,7 +345,7 @@ function test(props) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -367,7 +367,7 @@ function test(props) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -391,7 +391,7 @@ function test(props) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -415,7 +415,7 @@ function test({...props}) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -437,7 +437,7 @@ function test({...rest}) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -457,7 +457,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -477,7 +477,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -497,7 +497,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -517,7 +517,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -537,7 +537,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -558,7 +558,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -578,7 +578,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -600,7 +600,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -624,7 +624,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -648,7 +648,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -670,7 +670,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -690,7 +690,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -710,7 +710,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -730,7 +730,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -750,7 +750,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -770,7 +770,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -791,7 +791,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -811,7 +811,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -833,7 +833,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -857,7 +857,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -881,7 +881,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -903,7 +903,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -923,7 +923,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -943,7 +943,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -963,7 +963,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -983,7 +983,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -1003,7 +1003,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`

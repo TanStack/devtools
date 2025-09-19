@@ -53,7 +53,7 @@ export default function DevtoolsExample() {
 
         `,
         'test.jsx',
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -125,7 +125,7 @@ export default function DevtoolsExample() {
 
         `,
         'test.jsx',
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -197,7 +197,7 @@ export default function DevtoolsExample() {
 
         `,
         'test.jsx',
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -268,7 +268,7 @@ export default function DevtoolsExample() {
   )
 }`,
         'test.jsx',
-      ).code,
+      )!.code,
     )
 
     expect(output).toBe(
@@ -325,7 +325,7 @@ export default function DevtoolsExample() {
   )
 }`,
           'test.jsx',
-        ).code,
+        )!.code,
       )
 
       expect(output).toBe(
@@ -372,7 +372,7 @@ export default function DevtoolsExample() {
   )
 }`,
           'test.jsx',
-        ).code,
+        )!.code,
       )
 
       expect(output).toBe(
@@ -416,7 +416,7 @@ export default function DevtoolsExample() {
   )
 }`,
           'test.jsx',
-        ).code,
+        )!.code,
       )
 
       expect(output).toBe(
@@ -458,7 +458,7 @@ export default function DevtoolsExample() {
   )
 }`,
           'test.jsx',
-        ).code,
+        )!.code,
       )
 
       expect(output).toBe(
@@ -500,7 +500,7 @@ export default function DevtoolsExample() {
   )
 }`,
           'test.jsx',
-        ).code,
+        )!.code,
       )
 
       expect(output).toBe(
@@ -542,7 +542,7 @@ export default function DevtoolsExample() {
   )
 }`,
           'test.jsx',
-        ).code,
+        )!.code,
       )
 
       expect(output).toBe(

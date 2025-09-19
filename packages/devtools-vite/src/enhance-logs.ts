@@ -56,7 +56,7 @@ export function enhanceConsoleLog(code: string, id: string, port: number) {
     })
     const didTransform = transform(ast, location, port)
     if (!didTransform) {
-      return { code }
+      return
     }
     return gen(ast, {
       sourceMaps: true,
@@ -65,6 +65,6 @@ export function enhanceConsoleLog(code: string, id: string, port: number) {
       sourceFileName: filePath,
     })
   } catch (e) {
-    return { code }
+    return
   }
 }

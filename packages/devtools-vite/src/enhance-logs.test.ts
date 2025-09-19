@@ -14,7 +14,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(
       output.includes(
@@ -33,7 +33,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -50,7 +50,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -69,7 +69,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -88,7 +88,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -107,7 +107,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`
@@ -126,7 +126,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     console.log('output', output)
     expect(
@@ -146,7 +146,7 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-      ).code,
+      )!.code,
     )
     expect(output).toBe(
       removeEmptySpace(`

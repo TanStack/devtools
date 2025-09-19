@@ -6,7 +6,8 @@ import { addSourceToJsx } from './inject-source'
 import { enhanceConsoleLog } from './enhance-logs'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
-import type { Plugin } from 'vite'
+import { normalizePath, type Plugin } from 'vite'
+import chalk from 'chalk'
 
 export type TanStackDevtoolsViteConfig = {
   /**
@@ -32,6 +33,12 @@ export type TanStackDevtoolsViteConfig = {
    * @default true
    */
   removeDevtoolsOnBuild?: boolean
+
+  /**
+   * Whether to log information to the console.
+   * @default true
+   */
+  logging?: boolean
   /**
    * Configuration for source injection.
    */
@@ -68,7 +75,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('dist') ||
           id.includes('build')
         )
-          return code
+          return
 
         return addSourceToJsx(code, id)
       },
@@ -135,9 +142,13 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('dist') ||
           id.includes('build')
         )
-          return code
-
-        return removeDevtools(code, id)
+          return
+        const transform = removeDevtools(code, id)
+        if (!transform) return
+        if (args?.logging) {
+          console.log(`\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`);
+        }
+        return transform;
       },
     },
     {
@@ -152,13 +163,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('node_modules') ||
           id.includes('?raw') ||
           id.includes('dist') ||
-          id.includes('build')
+          id.includes('build') ||
+          !code.includes('console.')
         )
-          return code
+          return
 
-        if (!code.includes('console.')) {
-          return code
-        }
+
         return enhanceConsoleLog(code, id, port)
       },
     },
