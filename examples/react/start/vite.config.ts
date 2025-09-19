@@ -23,7 +23,6 @@ const config = defineConfig({
     Inspect(),
     tailwindcss(),
     tanstackStart({
-      customViteReactPlugin: true,
     }),
     viteReact(),
   ],
