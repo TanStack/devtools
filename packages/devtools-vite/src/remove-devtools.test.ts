@@ -222,8 +222,10 @@ export default function DevtoolsExample() {
     )
   })
 
-  test("it removes devtools and all possible variations of the plugins", () => {
-    const output = removeEmptySpace(removeDevtools(` 
+  test('it removes devtools and all possible variations of the plugins', () => {
+    const output = removeEmptySpace(
+      removeDevtools(
+        ` 
       import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import {
@@ -264,7 +266,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+        'test.jsx',
+      ).code,
+    )
 
     expect(output).toBe(
       removeEmptySpace(` 
@@ -286,13 +291,15 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
     )
   })
 
-  describe("removing plugin imports", () => {
-    test("it removes the plugin import from the import array if multiple import identifiers exist", () => {
-      const output = removeEmptySpace(removeDevtools(` 
+  describe('removing plugin imports', () => {
+    test('it removes the plugin import from the import array if multiple import identifiers exist', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          ` 
       import { ReactQueryDevtoolsPanel, test } from '@tanstack/react-query-devtools'
  
 import * as Tools from '@tanstack/react-devtools'
@@ -316,7 +323,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+          'test.jsx',
+        ).code,
+      )
 
       expect(output).toBe(
         removeEmptySpace(`   
@@ -329,14 +339,14 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
       )
-
-
     })
 
     test("it doesn't remove the whole import if imported with * as", () => {
-      const output = removeEmptySpace(removeDevtools(` 
+      const output = removeEmptySpace(
+        removeDevtools(
+          ` 
       import * as Stuff from '@tanstack/react-query-devtools'
  
 import * as Tools from '@tanstack/react-devtools'
@@ -360,7 +370,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+          'test.jsx',
+        ).code,
+      )
 
       expect(output).toBe(
         removeEmptySpace(`   
@@ -373,14 +386,14 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
       )
-
-
     })
 
-    test("it removes the import completely if nothing is left", () => {
-      const output = removeEmptySpace(removeDevtools(` 
+    test('it removes the import completely if nothing is left', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          ` 
       import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools' 
 import * as Tools from '@tanstack/react-devtools' 
  
@@ -401,7 +414,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+          'test.jsx',
+        ).code,
+      )
 
       expect(output).toBe(
         removeEmptySpace(`    
@@ -412,14 +428,14 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
       )
-
-
     })
 
-    test("it removes the import completely even if used as a function instead of jsx", () => {
-      const output = removeEmptySpace(removeDevtools(` 
+    test('it removes the import completely even if used as a function instead of jsx', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          ` 
       import { plugin } from '@tanstack/react-query-devtools' 
 import * as Tools from '@tanstack/react-devtools' 
  
@@ -440,7 +456,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+          'test.jsx',
+        ).code,
+      )
 
       expect(output).toBe(
         removeEmptySpace(`    
@@ -451,14 +470,14 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
       )
-
-
     })
 
-    test("it removes the import completely even if used as a function inside of render", () => {
-      const output = removeEmptySpace(removeDevtools(` 
+    test('it removes the import completely even if used as a function inside of render', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          ` 
       import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools' 
 import * as Tools from '@tanstack/react-devtools' 
  
@@ -479,7 +498,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+          'test.jsx',
+        ).code,
+      )
 
       expect(output).toBe(
         removeEmptySpace(`    
@@ -490,14 +512,14 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
       )
-
-
     })
 
-    test("it removes the import completely even if used as a reference inside of render", () => {
-      const output = removeEmptySpace(removeDevtools(` 
+    test('it removes the import completely even if used as a reference inside of render', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          ` 
       import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools' 
 import * as Tools from '@tanstack/react-devtools' 
  
@@ -518,7 +540,10 @@ export default function DevtoolsExample() {
       <RouterProvider router={router} />
     </>
   )
-}`, 'test.jsx').code)
+}`,
+          'test.jsx',
+        ).code,
+      )
 
       expect(output).toBe(
         removeEmptySpace(`    
@@ -529,11 +554,8 @@ export default function DevtoolsExample() {
     </>
   );
 }
-          `)
+          `),
       )
-
-
     })
-
   })
 })

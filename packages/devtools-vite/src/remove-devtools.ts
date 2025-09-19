@@ -16,57 +16,80 @@ const getLeftoverImports = (node: NodePath<t.JSXElement>) => {
   const finalReferences: Array<string> = []
   node.traverse({
     JSXAttribute(path) {
-      const node = path.node;
-      const propName = typeof node.name.name === "string" ? node.name.name : node.name.name.name;
+      const node = path.node
+      const propName =
+        typeof node.name.name === 'string'
+          ? node.name.name
+          : node.name.name.name
 
-      if (propName === 'plugins' && node.value?.type === "JSXExpressionContainer" && node.value.expression.type === "ArrayExpression") {
-        const elements = node.value.expression.elements;
+      if (
+        propName === 'plugins' &&
+        node.value?.type === 'JSXExpressionContainer' &&
+        node.value.expression.type === 'ArrayExpression'
+      ) {
+        const elements = node.value.expression.elements
 
         elements.forEach((el) => {
-          if (el?.type === "ObjectExpression") {
+          if (el?.type === 'ObjectExpression') {
             // { name: "something", render: ()=> <Component /> }
-            const props = el.properties;
-            const referencesToRemove = props.map((prop) => {
-              if (prop.type === "ObjectProperty" && prop.key.type === "Identifier" && prop.key.name === "render") {
-                const value = prop.value;
-                // handle <ReactRouterPanel />
-                if (value.type === "JSXElement" && value.openingElement.name.type === "JSXIdentifier") {
-                  const elementName = value.openingElement.name.name;
-                  return elementName
-                }
-                // handle () => <ReactRouterPanel /> or function() { return <ReactRouterPanel /> }
-                if (value.type === "ArrowFunctionExpression" || value.type === "FunctionExpression") {
-                  const body = value.body;
-                  if (body.type === "JSXElement" && body.openingElement.name.type === "JSXIdentifier") {
-                    const elementName = body.openingElement.name.name;
+            const props = el.properties
+            const referencesToRemove = props
+              .map((prop) => {
+                if (
+                  prop.type === 'ObjectProperty' &&
+                  prop.key.type === 'Identifier' &&
+                  prop.key.name === 'render'
+                ) {
+                  const value = prop.value
+                  // handle <ReactRouterPanel />
+                  if (
+                    value.type === 'JSXElement' &&
+                    value.openingElement.name.type === 'JSXIdentifier'
+                  ) {
+                    const elementName = value.openingElement.name.name
                     return elementName
                   }
-                }
-                // handle render: SomeComponent
-                if (value.type === "Identifier") {
-                  const elementName = value.name;
-                  return elementName
-                }
+                  // handle () => <ReactRouterPanel /> or function() { return <ReactRouterPanel /> }
+                  if (
+                    value.type === 'ArrowFunctionExpression' ||
+                    value.type === 'FunctionExpression'
+                  ) {
+                    const body = value.body
+                    if (
+                      body.type === 'JSXElement' &&
+                      body.openingElement.name.type === 'JSXIdentifier'
+                    ) {
+                      const elementName = body.openingElement.name.name
+                      return elementName
+                    }
+                  }
+                  // handle render: SomeComponent
+                  if (value.type === 'Identifier') {
+                    const elementName = value.name
+                    return elementName
+                  }
 
-                // handle render: someFunction()
-                if (value.type === "CallExpression" && value.callee.type === "Identifier") {
-                  const elementName = value.callee.name;
-                  return elementName
-                }
+                  // handle render: someFunction()
+                  if (
+                    value.type === 'CallExpression' &&
+                    value.callee.type === 'Identifier'
+                  ) {
+                    const elementName = value.callee.name
+                    return elementName
+                  }
 
-                return "";
-              }
-              return "";
-            }).filter(Boolean);
+                  return ''
+                }
+                return ''
+              })
+              .filter(Boolean)
             finalReferences.push(...referencesToRemove)
-
           }
-        });
-
+        })
       }
     },
   })
-  return finalReferences;
+  return finalReferences
 }
 
 const transform = (ast: ParseResult<Babel.File>) => {
@@ -120,31 +143,27 @@ const transform = (ast: ParseResult<Babel.File>) => {
     },
   })
 
-
   trav(ast, {
     ImportDeclaration(path) {
       const imports = path.node.specifiers
       for (const imported of imports) {
-        if (imported.type === "ImportSpecifier") {
+        if (imported.type === 'ImportSpecifier') {
           if (finalReferences.includes(imported.local.name)) {
             transformations.push(() => {
               // remove the specifier
               path.node.specifiers = path.node.specifiers.filter(
-                (spec) => spec !== imported
+                (spec) => spec !== imported,
               )
               // remove whole import if nothing is left
               if (path.node.specifiers.length === 0) {
                 path.remove()
-
               }
             })
           }
         }
       }
-
     },
   })
-
 
   transformations.forEach((fn) => fn())
 
