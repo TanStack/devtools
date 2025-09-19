@@ -42,11 +42,6 @@ If you want to have the devtools in production builds, you can install the core 
 npm install @tanstack/devtools
 npm install -D @tanstack/devtools-vite
 ```
-
-And then import from the `/production` subpath:
-
-```ts
-import { TanStackDevtools } from '@tanstack/devtools/production'
-```
+ 
 
 Read more about using the devtools in production in our [Production docs](https://tanstack.com/devtools/latest/docs/production).
