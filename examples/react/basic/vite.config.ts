@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { devtools } from '@tanstack/devtools-vite'
 import Inspect from 'vite-plugin-inspect'
-import sonda from "sonda/vite";
+import sonda from 'sonda/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -20,5 +20,5 @@ export default defineConfig({
   ],
   build: {
     sourcemap: true,
-  }
+  },
 })

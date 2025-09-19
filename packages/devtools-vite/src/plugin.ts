@@ -146,9 +146,11 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         const transform = removeDevtools(code, id)
         if (!transform) return
         if (args?.logging) {
-          console.log(`\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`);
+          console.log(
+            `\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`,
+          )
         }
-        return transform;
+        return transform
       },
     },
     {
@@ -167,7 +169,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           !code.includes('console.')
         )
           return
-
 
         return enhanceConsoleLog(code, id, port)
       },
