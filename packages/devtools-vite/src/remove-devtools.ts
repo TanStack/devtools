@@ -180,7 +180,7 @@ export function removeDevtools(code: string, id: string) {
     })
     const didTransform = transform(ast)
     if (!didTransform) {
-      return { code }
+      return
     }
     return gen(ast, {
       sourceMaps: true,
@@ -189,6 +189,6 @@ export function removeDevtools(code: string, id: string) {
       sourceFileName: filePath,
     })
   } catch (e) {
-    return { code }
+    return
   }
 }

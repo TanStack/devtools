@@ -7,62 +7,38 @@ const removeEmptySpace = (str: string) => {
 
 describe('inject source', () => {
   it("shouldn't augment react fragments", () => {
-    const output = removeEmptySpace(
-      addSourceToJsx(
-        `
+    const output = addSourceToJsx(
+      `
       export const Route = createFileRoute("/test")({
       component: function() { return <>Hello World</> },
       })
         `,
-        'test.jsx',
-      ).code,
+      'test.jsx',
     )
-    expect(output).toBe(
-      removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function() { return <>Hello World</> },
-      })
-        `),
-    )
+    expect(output).toBe(undefined)
   })
 
   it("shouldn't augment react fragments if they start with Fragment ", () => {
-    const output = removeEmptySpace(
-      addSourceToJsx(
-        `
+    const output = addSourceToJsx(
+      `
       export const Route = createFileRoute("/test")({
       component: function() { return <Fragment>Hello World</Fragment> },
       })
         `,
-        'test.jsx',
-      ).code,
+      'test.jsx',
     )
-    expect(output).toBe(
-      removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function() { return <Fragment>Hello World</Fragment> },
-      })
-        `),
-    )
+    expect(output).toBe(undefined)
   })
   it("shouldn't augment react fragments if they start with React.Fragment ", () => {
-    const output = removeEmptySpace(
-      addSourceToJsx(
-        `
+    const output = addSourceToJsx(
+      `
       export const Route = createFileRoute("/test")({
       component: function() { return <React.Fragment>Hello World</React.Fragment> },
       })
         `,
-        'test.jsx',
-      ).code,
+      'test.jsx',
     )
-    expect(output).toBe(
-      removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function() { return <React.Fragment>Hello World</React.Fragment> },
-      })
-        `),
-    )
+    expect(output).toBe(undefined)
   })
   describe('FunctionExpression', () => {
     it('should work with deeply nested custom JSX syntax', () => {
@@ -74,7 +50,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -86,63 +62,39 @@ describe('inject source', () => {
     })
 
     it('should work with props not destructured and spread', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const Route = createFileRoute("/test")({
       component: function(props) { return <div {...props}>Hello World</div> },
       })
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function(props) { return <div {...props}>Hello World</div> },
-      })
-        `),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const Route = createFileRoute("/test")({
       component: function({...props}) { return <div {...props}>Hello World</div> },
       })
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function({...props}) { return <div {...props}>Hello World</div> },
-      })
-        `),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread with a different name', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const Route = createFileRoute("/test")({
       component: function({...rest}) { return <div {...rest}>Hello World</div> },
       })
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function({...rest}) { return <div {...rest}>Hello World</div> },
-      })
-        `),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props spread and other normal elements', () => {
@@ -154,7 +106,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -176,7 +128,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -188,63 +140,39 @@ describe('inject source', () => {
     })
 
     it('should work with props not destructured and spread', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const Route = createFileRoute("/test")({
       component: (props) => <div {...props}>Hello World</div>,
       })
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: (props) => <div {...props}>Hello World</div>,
-      })
-        `),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const Route = createFileRoute("/test")({
       component: ({...props}) => <div {...props}>Hello World</div>,
       })
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: ({...props}) => <div {...props}>Hello World</div>,
-      })
-        `),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props destructured and spread with a different name', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const Route = createFileRoute("/test")({
       component: ({...rest}) => <div {...rest}>Hello World</div>, 
       })
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: ({...rest}) => <div {...rest}>Hello World</div>,
-      })
-        `),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('should work with props spread and other normal elements', () => {
@@ -256,7 +184,7 @@ describe('inject source', () => {
       })
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -280,7 +208,7 @@ describe('inject source', () => {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -305,7 +233,7 @@ function test({...props })  {
 }
   `,
           'test.tsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -325,7 +253,7 @@ function test({...props })  {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -337,23 +265,15 @@ function test(props) {
     })
 
     it("doesn't transform when props are spread across the element", () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
     function test(props) {
         return <button {...props} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-function test(props) {
-        return <button {...props}  />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it("doesn't transform when props are spread across the element but applies to other elements without any props", () => {
@@ -367,7 +287,7 @@ function test(props) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -391,7 +311,7 @@ function test(props) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -415,7 +335,7 @@ function test({...props}) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -429,23 +349,15 @@ function test({...rest}) {
     })
 
     it(' props destructured and collected with a different name', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
     function test({ children, ...rest }) {
         return <button children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-function test({ children, ...rest }) {
-        return <button  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it(' props destructured and collected', () => {
@@ -457,7 +369,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -469,23 +381,15 @@ function test({ children, ...rest }) {
     })
 
     it('props destructured and collected with a different name even on custom components', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
     function test({ children, ...rest }) {
         return <CustomButton children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-function test({ children, ...rest }) {
-        return <CustomButton  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components', () => {
@@ -497,7 +401,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -509,23 +413,15 @@ function test({ children, ...rest }) {
     })
 
     it('props destructured and collected with a different name even on custom components even if exported', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       function test({ children, ...rest }) {
         return <CustomButton children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  function test({ children, ...rest }) {
-        return <CustomButton  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components even if exported', () => {
@@ -537,7 +433,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -558,7 +454,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -570,23 +466,15 @@ function test({ children, ...rest }) {
     })
 
     it("doesn't transform when props are spread across the element", () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       const ButtonWithProps = function test(props) {
         return <button {...props} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  const ButtonWithProps = function test(props) {
-        return <button {...props}  />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it("doesn't transform when props are spread across the element but applies to other elements without any props", () => {
@@ -600,7 +488,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -624,7 +512,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -648,7 +536,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -662,23 +550,15 @@ function test({ children, ...rest }) {
     })
 
     it(' props destructured and collected with a different name', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       const ButtonWithProps = function test({ children, ...rest }) {
         return <button children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  const ButtonWithProps = function test({ children, ...rest }) {
-        return <button  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it(' props destructured and collected', () => {
@@ -690,7 +570,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -702,23 +582,15 @@ function test({ children, ...rest }) {
     })
 
     it('props destructured and collected with a different name even on custom components', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       const ButtonWithProps = function test({ children, ...rest }) {
         return <CustomButton children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  const ButtonWithProps = function test({ children, ...rest }) {
-        return <CustomButton  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components', () => {
@@ -730,7 +602,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -742,23 +614,15 @@ function test({ children, ...rest }) {
     })
 
     it('props destructured and collected with a different name even on custom components even if exported', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const ButtonWithProps = function test({ children, ...rest }) {
         return <CustomButton children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  export const ButtonWithProps = function test({ children, ...rest }) {
-        return <CustomButton  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('props destructured and collected even on custom components even if exported', () => {
@@ -770,7 +634,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -791,7 +655,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -803,23 +667,15 @@ function test({ children, ...rest }) {
     })
 
     it("doesn't transform when props are spread across the element", () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       const ButtonWithProps = (props) => {
         return <button {...props} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  const ButtonWithProps = (props) => {
-        return <button {...props}  />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it("doesn't transform when props are spread across the element but applies to other elements without any props", () => {
@@ -833,7 +689,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -857,7 +713,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -881,7 +737,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -903,7 +759,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -923,7 +779,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -935,23 +791,15 @@ function test({ children, ...rest }) {
     })
 
     it('works with arrow function and props destructured and collected with a different name even on custom components', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       const ButtonWithProps = ({ children, ...rest }) => {
         return <CustomButton children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  const ButtonWithProps = ({ children, ...rest }) => {
-        return <CustomButton  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('works with arrow function and props destructured and collected even on custom components', () => {
@@ -963,7 +811,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`
@@ -975,23 +823,15 @@ function test({ children, ...rest }) {
     })
 
     it('works with arrow function and props destructured and collected with a different name even on custom components even if exported', () => {
-      const output = removeEmptySpace(
-        addSourceToJsx(
-          `
+      const output = addSourceToJsx(
+        `
       export const ButtonWithProps = ({ children, ...rest }) => {
         return <CustomButton children={children} {...rest} />
       }
         `,
-          'test.jsx',
-        ).code,
+        'test.jsx',
       )
-      expect(output).toBe(
-        removeEmptySpace(`
-  export const ButtonWithProps = ({ children, ...rest }) => {
-        return <CustomButton  children={children} {...rest} />
-      }
-`),
-      )
+      expect(output).toBe(undefined)
     })
 
     it('works with arrow function and props destructured and collected even on custom components even if exported', () => {
@@ -1003,7 +843,7 @@ function test({ children, ...rest }) {
       }
         `,
           'test.jsx',
-        ).code,
+        )!.code,
       )
       expect(output).toBe(
         removeEmptySpace(`

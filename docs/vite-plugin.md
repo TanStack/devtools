@@ -134,6 +134,22 @@ export default {
 }
 ```
 
+### logging
+  Whether to log information to the console. Defaults to true.
+  
+```ts
+import { devtools } from '@tanstack/devtools-vite'
+
+export default {
+  plugins: [
+    devtools({
+      logging: true
+    }),
+    // ... rest of your plugins here
+  ],
+}
+```
+
 ### injectSource 
 
 Configuration for source injection. Defaults to enabled.

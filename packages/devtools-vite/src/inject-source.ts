@@ -228,7 +228,7 @@ export function addSourceToJsx(code: string, id: string) {
     })
     const didTransform = transform(ast, location)
     if (!didTransform) {
-      return { code }
+      return
     }
     return gen(ast, {
       sourceMaps: true,
@@ -237,6 +237,6 @@ export function addSourceToJsx(code: string, id: string) {
       sourceFileName: filePath,
     })
   } catch (e) {
-    return { code }
+    return
   }
 }
