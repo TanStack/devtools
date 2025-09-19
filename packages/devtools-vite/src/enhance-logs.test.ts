@@ -26,95 +26,71 @@ describe('remove-devtools', () => {
   })
 
   test('it does not add enhanced console.logs to console.log that is not called', () => {
-    const output = removeEmptySpace(
-      enhanceConsoleLog(
-        `
+    const output = enhanceConsoleLog(
+      `
         console.log 
         `,
-        'test.jsx',
-        3000,
-      )!.code,
+      'test.jsx',
+      3000,
     )
     expect(output).toBe(
-      removeEmptySpace(`
-        console.log 
-        `),
+      undefined
     )
   })
 
   test('it does not add enhanced console.logs to console.log that is inside a comment', () => {
-    const output = removeEmptySpace(
-      enhanceConsoleLog(
-        `
+    const output = enhanceConsoleLog(
+      `
         // console.log('This is a log')
         `,
-        'test.jsx',
-        3000,
-      )!.code,
+      'test.jsx',
+      3000,
     )
     expect(output).toBe(
-      removeEmptySpace(`
-         // console.log('This is a log')
-        `),
+      undefined
     )
   })
 
   test('it does not add enhanced console.logs to console.log that is inside a multiline comment', () => {
-    const output = removeEmptySpace(
-      enhanceConsoleLog(
-        `
+    const output = enhanceConsoleLog(
+      `
         /*
         console.log('This is a log')
         */
         `,
-        'test.jsx',
-        3000,
-      )!.code,
+      'test.jsx',
+      3000,
     )
     expect(output).toBe(
-      removeEmptySpace(`
-          /*
-        console.log('This is a log')
-        */
-        `),
+      undefined
     )
   })
 
   test('it does not add enhanced console.error to console.error that is inside a comment', () => {
-    const output = removeEmptySpace(
-      enhanceConsoleLog(
-        `
+    const output = enhanceConsoleLog(
+      `
         // console.error('This is a log')
         `,
-        'test.jsx',
-        3000,
-      )!.code,
+      'test.jsx',
+      3000,
     )
     expect(output).toBe(
-      removeEmptySpace(`
-         // console.error('This is a log')
-        `),
+      undefined
     )
   })
 
   test('it does not add enhanced console.error to console.error that is inside a multiline comment', () => {
-    const output = removeEmptySpace(
-      enhanceConsoleLog(
-        `
+    const output = enhanceConsoleLog(
+      `
         /*
         console.error('This is a log')
         */
         `,
-        'test.jsx',
-        3000,
-      )!.code,
+      'test.jsx',
+      3000,
     )
     expect(output).toBe(
-      removeEmptySpace(`
-          /*
-        console.error('This is a log')
-        */
-        `),
+      undefined
     )
   })
 
@@ -139,19 +115,14 @@ describe('remove-devtools', () => {
   })
 
   test('it does not add enhanced console.error to console.error that is not called', () => {
-    const output = removeEmptySpace(
-      enhanceConsoleLog(
-        `
+    const output = enhanceConsoleLog(
+      `
         console.log 
         `,
-        'test.jsx',
-        3000,
-      )!.code,
+      'test.jsx',
+      3000,
     )
     expect(output).toBe(
-      removeEmptySpace(`
-        console.log 
-        `),
-    )
+      undefined)
   })
 })
