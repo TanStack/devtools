@@ -30,18 +30,23 @@ This will include the devtools and all it's plugins in the production build.
 
 If you're running devtools in a non-vite project you will have to manually exclude the devtools from your production build. You can do this by using environment variables or any other method you prefer.
 
+We would recommend you create a separate file for the devtools import and then conditionally import that file in your main application file depending on the environment.
+
 Here's an example using environment variables:
 
 ```tsx
 // devtools-setup.tsx
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-export function Devtools(){
-  return process.env.NODE_ENV === 'development' ? <TanStackDevtools /> : null
+export default function Devtools(){
+  return   <TanStackDevtools plugins={[
+    // Add your custom plugins here
+  ]} />  
 }
 
 // App.tsx
-import { Devtools } from './devtools-setup'
+const Devtools = process.env.NODE_ENV === 'development' ? await import('./devtools-setup') : () => null
+
 function App() {
   return (
     <>
