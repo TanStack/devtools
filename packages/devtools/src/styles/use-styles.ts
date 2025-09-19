@@ -166,7 +166,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         transition: all 0.4s ease;
       `
     },
-    devtoolsPanelContainerAnimation: (isOpen: boolean, height: number, panelLocation: TanStackDevtoolsConfig['panelLocation']) => {
+    devtoolsPanelContainerAnimation: (
+      isOpen: boolean,
+      height: number,
+      panelLocation: TanStackDevtoolsConfig['panelLocation'],
+    ) => {
       if (isOpen) {
         return css`
           pointer-events: auto;
