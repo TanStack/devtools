@@ -27,7 +27,11 @@ export const MainPanel = (props: {
           settings().panelLocation,
           Boolean(pip().pipWindow),
         ),
-        styles().devtoolsPanelContainerAnimation(props.isOpen(), height()),
+        styles().devtoolsPanelContainerAnimation(
+          props.isOpen(),
+          height(),
+          settings().panelLocation,
+        ),
         styles().devtoolsPanelContainerVisibility(props.isOpen()),
         styles().devtoolsPanelContainerResizing(props.isResizing),
       )}
