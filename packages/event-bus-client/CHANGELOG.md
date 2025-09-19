@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.0
+
+### Minor Changes
+
+- remove the production subexport in favor of always exporting the exports ([#150](https://github.com/TanStack/devtools/pull/150))
+
 ## 0.2.5
 
 ### Patch Changes

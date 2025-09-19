@@ -9,7 +9,7 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/solid-devtools": "^0.6.10",
+    "@tanstack/solid-devtools": "^0.7.0",
     "@tanstack/solid-query": "^5.87.1",
     "@tanstack/solid-query-devtools": "^5.87.1",
     "@tanstack/solid-router": "^1.129.8",

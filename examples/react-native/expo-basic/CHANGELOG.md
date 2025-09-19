@@ -1,5 +1,12 @@
 # expo-basic
 
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`0735d5b`](https://github.com/TanStack/devtools/commit/0735d5b19305ba2c804674ad4f70e86af3dda45c)]:
+  - @tanstack/devtools-event-client@0.3.0
+
 ## 1.0.1
 
 ### Patch Changes
