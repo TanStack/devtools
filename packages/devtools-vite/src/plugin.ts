@@ -1,13 +1,14 @@
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
+import {  normalizePath } from 'vite'
+import chalk from 'chalk'
 import { handleDevToolsViteRequest } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
 import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
 import { enhanceConsoleLog } from './enhance-logs'
+import type {Plugin} from 'vite';
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
-import { normalizePath, type Plugin } from 'vite'
-import chalk from 'chalk'
 
 export type TanStackDevtoolsViteConfig = {
   /**
