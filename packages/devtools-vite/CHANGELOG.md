@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.3
+
+### Patch Changes
+
+- fix issue with sourcemaps and vite plugin ([#151](https://github.com/TanStack/devtools/pull/151))
+
 ## 0.3.2
 
 ### Patch Changes
