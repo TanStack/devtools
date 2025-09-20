@@ -83,18 +83,20 @@ export function createCounter() {
     getCount: () => count,
     increment: () => {
       history.push(count)
+      count++
 
       // The emit eventSuffix must match that of the EventMap defined in eventClient.ts
       DevtoolsEventClient.emit('counter-state', {
-        count: count++,
+        count: count,
         history: history,
       })
     },
     decrement: () => {
       history.push(count)
+      count--
 
       DevtoolsEventClient.emit('counter-state', {
-        count: count--,
+        count: count,
         history: history,
       })
     },
@@ -160,7 +162,7 @@ createRoot(document.getElementById('root')!).render(
 
 ## Debugging
 
-Both the TansTack `TanStackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
+Both the `TanStackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
 
 TanStackDevtool's debugging mode can be activated like so:
 ```tsx
