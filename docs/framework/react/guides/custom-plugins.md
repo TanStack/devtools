@@ -119,7 +119,7 @@ export function DevtoolPanel() {
 
   useEffect(() => {
     // subscribe to the emitted event
-    const cleanup = client.on("counter-state", e => setState(e.payload)
+    const cleanup = DevtoolsEventClient.on("counter-state", e => setState(e.payload)
     return cleanup
   }, []);
 
