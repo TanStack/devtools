@@ -106,7 +106,7 @@ createRoot(document.getElementById('root')!).render(
     <App />
 
     <TanStackDevtools
-      config={{ hideUntilHover: true,  }}
+      config={{ hideUntilHover: true }}
       eventBusConfig={{ debug: true }}
       plugins={[
         {
