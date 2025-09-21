@@ -14,18 +14,18 @@ This is our library code:
 counter.ts
 ```tsx
 export function createCounter() {
-  let count = 0;
-  const history = [];
+  let count = 0
+  const history = []
 
   return {
     getCount: () => count,
     increment: () => {
-      history.push(count);
-      count++;
+      history.push(count)
+      count++
     },
     decrement: () => {
-      history.push(count);
-      count--;
+      history.push(count)
+      count--
     },
   };
 }
@@ -49,11 +49,11 @@ import { EventClient } from '@tanstack/devtools-event-client'
 type EventMap = {
   // The key of the event map is a combination of {pluginId}:{eventSuffix}
   // The value is the expected type of the event payload
-  'custom-devtools:counter-state': { count: number, history: number[], }
+  'custom-devtools:counter-state': { count: number, history: number[] }
 }
 
 class CustomEventClient extends EventClient<EventMap> {
-constructor() {
+  constructor() {
     super({
       // The pluginId must match that of the event map key
       pluginId: 'custom-devtools',
@@ -115,13 +115,13 @@ DevtoolsPanel.ts
 import { DevtoolsEventClient } from './eventClient.ts'
 
 export function DevtoolPanel() {
-  const [state,setState] = useState();
+  const [state,setState] = useState()
 
   useEffect(() => {
     // subscribe to the emitted event
     const cleanup = client.on("counter-state", e => setState(e.payload)
     return cleanup
-  }, []);
+  }, [])
 
   return (
     <div>
