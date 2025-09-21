@@ -65,7 +65,7 @@ render(() => (
       ]}
     />
   </>
-), document.getElementById('root')!);
+), document.getElementById('root')!)
 ```
 
 Finally add any additional configuration you desire to the `TanStackDevtools` component, more information can be found under the [TanStack Devtools Configuration](../../../configuration.md) section.
