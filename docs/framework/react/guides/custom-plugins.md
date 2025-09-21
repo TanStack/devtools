@@ -115,7 +115,7 @@ DevtoolsPanel.ts
 import { DevtoolsEventClient } from './eventClient.ts'
 
 export function DevtoolPanel() {
-  const [state,setState] = useState()
+  const [state, setState] = useState()
 
   useEffect(() => {
     // subscribe to the emitted event
