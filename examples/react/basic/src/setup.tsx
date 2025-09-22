@@ -9,6 +9,7 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { PackageJsonPanel } from './package-json-panel'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -71,6 +72,10 @@ export default function DevtoolsExample() {
           {
             name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
+          },
+          {
+            name: 'Package.json',
+            render: () => <PackageJsonPanel />,
           },
           /* {
             name: "The actual app",

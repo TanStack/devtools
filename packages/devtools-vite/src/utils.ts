@@ -1,5 +1,5 @@
 import { normalizePath } from 'vite'
-// import fs from 'node:fs/promises'
+import fs from 'node:fs/promises'
 import type { Connect } from 'vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
@@ -66,23 +66,26 @@ export const parseOpenSourceParam = (source: string) => {
   return { file, line, column }
 }
 
-/* export const tryReadFile = async (
-  filePath: string
-) => {
+export const tryReadFile = async (filePath: string) => {
   try {
     const data = await fs.readFile(filePath, 'utf-8')
     return data
   } catch (error) {
-
     return null
   }
 }
 
-export const tryParseJson = (jsonString: string) => {
+export const tryParseJson = (jsonString: string | null | undefined) => {
+  if (!jsonString) {
+    return null
+  }
   try {
     const result = JSON.parse(jsonString)
     return result
   } catch (error) {
     return null
   }
-} */
+}
+
+export const readPackageJson = async () =>
+  await tryParseJson(await tryReadFile(process.cwd() + '/package.json'))

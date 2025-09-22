@@ -10,6 +10,7 @@ export default defineConfig({
     devtools({
       removeDevtoolsOnBuild: true,
     }),
+
     Inspect(),
     sonda(),
     react({
