@@ -1,5 +1,6 @@
-import { For, Match, Show, Switch, createSignal } from 'solid-js'
+import { For, Match, Show, Switch, createEffect, createSignal } from 'solid-js'
 import clsx from 'clsx'
+import { customElement, noShadowDOM } from 'solid-element'
 import { css, useStyles } from '../styles/use-styles'
 import { CopiedCopier, Copier, ErrorCopier } from './icons'
 
@@ -362,3 +363,42 @@ const Expander = (props: { expanded: boolean; onClick: () => void }) => {
     </span>
   )
 }
+
+export interface JsonTreeWebComponentProps {
+  value: any
+}
+
+export const registerJsonTreeComponent = (elName: string = 'tsd-json-tree') =>
+  customElement<JsonTreeWebComponentProps>(
+    elName,
+    { value: {} },
+    (props, { element }) => {
+      noShadowDOM()
+      function getValue(value: any) {
+        if (typeof value === 'string') {
+          try {
+            const parsedValue = JSON.parse(value)
+            return parsedValue
+          } catch (e) {
+            return value
+          }
+        }
+        return value
+      }
+      const [value, setValue] = createSignal(getValue(props.value))
+
+      createEffect(() => {
+        element.addPropertyChangedCallback((name, value) => {
+          if (name === 'value') {
+            const finalValue = getValue(value)
+            setValue(finalValue)
+          }
+        })
+      })
+      return (
+        <Show keyed when={value()}>
+          <JsonTree value={value()} />
+        </Show>
+      )
+    },
+  )

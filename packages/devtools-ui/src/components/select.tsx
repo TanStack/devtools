@@ -1,4 +1,5 @@
-import { createSignal } from 'solid-js'
+import { Show, createEffect, createSignal } from 'solid-js'
+import { customElement, noShadowDOM } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 
 interface SelectOption<T extends string | number> {
@@ -6,7 +7,7 @@ interface SelectOption<T extends string | number> {
   label: string
 }
 
-interface SelectProps<T extends string | number> {
+export interface SelectProps<T extends string | number> {
   label?: string
   options: Array<SelectOption<T>>
   value?: T
@@ -48,3 +49,30 @@ export function Select<T extends string | number>(props: SelectProps<T>) {
     </div>
   )
 }
+
+export const registerSelectComponent = (elName: string = 'tsd-select') =>
+  customElement<SelectProps<string | number>>(
+    elName,
+    {
+      label: '',
+      options: [],
+      value: undefined,
+      description: '',
+    },
+    (props, { element }) => {
+      noShadowDOM()
+      const [selectProps, setSelectProps] = createSignal(props)
+
+      createEffect(() => {
+        element.addPropertyChangedCallback((name, value) => {
+          setSelectProps((prev) => ({ ...prev, [name]: value }))
+        })
+      })
+
+      return (
+        <Show keyed when={selectProps()}>
+          <Select {...selectProps()} />
+        </Show>
+      )
+    },
+  )

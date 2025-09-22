@@ -1,6 +1,21 @@
 import { lazy } from 'solid-js'
 import { Portal, render } from 'solid-js/web'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
+import {
+  registerButtonComponent,
+  registerCheckboxComponent,
+  registerHeaderComponent,
+  registerHeaderLogoComponent,
+  registerInputComponent,
+  registerJsonTreeComponent,
+  registerMainPanelComponent,
+  registerSectionComponent,
+  registerSectionDescriptionComponent,
+  registerSectionIconComponent,
+  registerSectionTitleComponent,
+  registerSelectComponent,
+  registerTagComponent,
+} from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from './context/devtools-context'
 import { initialState } from './context/devtools-store'
 import { PiPProvider } from './context/pip-context'
@@ -39,7 +54,19 @@ export interface TanStackDevtoolsInit {
   plugins?: Array<TanStackDevtoolsPlugin>
   eventBusConfig?: ClientEventBusConfig
 }
-
+registerJsonTreeComponent()
+registerButtonComponent()
+registerTagComponent()
+registerMainPanelComponent()
+registerSectionComponent()
+registerSectionTitleComponent()
+registerSectionDescriptionComponent()
+registerSectionIconComponent()
+registerHeaderComponent()
+registerHeaderLogoComponent()
+registerCheckboxComponent()
+registerInputComponent()
+registerSelectComponent()
 export class TanStackDevtoolsCore {
   #config: TanStackDevtoolsConfig = {
     ...initialState.settings,
@@ -73,6 +100,7 @@ export class TanStackDevtoolsCore {
       const Devtools = this.#Component
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
+
       return (
         <DevtoolsProvider plugins={this.#plugins} config={this.#config}>
           <PiPProvider>
@@ -93,6 +121,7 @@ export class TanStackDevtoolsCore {
       throw new Error('Devtools is not mounted')
     }
     this.#eventBus?.stop()
+
     this.#dispose?.()
     this.#isMounted = false
   }

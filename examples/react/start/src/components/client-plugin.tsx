@@ -17,6 +17,7 @@ export default function ClientPlugin() {
     <div>
       <h1>Client Plugin Initialized</h1>
       <p>Devtools Client is connected.</p>
+
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded"
         onClick={() => {
