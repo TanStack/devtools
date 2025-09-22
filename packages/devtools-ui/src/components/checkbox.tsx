@@ -1,5 +1,5 @@
 import { Show, createEffect, createSignal } from 'solid-js'
-import { customElement, noShadowDOM } from 'solid-element'
+import { customElement, } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 
 export interface CheckboxProps {
@@ -7,6 +7,7 @@ export interface CheckboxProps {
   checked?: boolean
   onChange?: (checked: boolean) => void
   description?: string
+  children?: any
 }
 
 export function Checkbox(props: CheckboxProps) {
@@ -49,10 +50,10 @@ export const registerCheckboxComponent = (elName: string = 'tsd-checkbox') =>
     {
       checked: false,
       label: '',
-      description: '',
+      description: ''
     },
     (props, { element }) => {
-      noShadowDOM()
+      // noShadowDOM()
       const [checkboxProps, setCheckboxProps] = createSignal(props)
 
       createEffect(() => {
@@ -64,6 +65,9 @@ export const registerCheckboxComponent = (elName: string = 'tsd-checkbox') =>
       return (
         <Show keyed when={checkboxProps()}>
           <Checkbox {...checkboxProps()} />
+          <span>
+            <slot />
+          </span>
         </Show>
       )
     },

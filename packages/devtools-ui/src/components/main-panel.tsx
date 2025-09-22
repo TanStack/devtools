@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { createEffect, createSignal } from 'solid-js'
-import { customElement, noShadowDOM } from 'solid-element'
+import { customElement, } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
@@ -36,7 +36,7 @@ export const registerMainPanelComponent = (elName: string = 'tsd-main-panel') =>
     elName,
     { className: '', withPadding: false },
     (props, { element }) => {
-      noShadowDOM()
+
       const [panelProps, setPanelProps] = createSignal(props)
       createEffect(() => {
         element.addPropertyChangedCallback((name, value) => {

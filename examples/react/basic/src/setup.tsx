@@ -9,6 +9,7 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { useState, useEffect } from 'react'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -26,7 +27,69 @@ const rootRoute = createRootRoute({
     </>
   ),
 })
-
+function MyDevtools() {
+  const [value, setValue] = useState<any>({
+    initial: 'value',
+    should: 'change',
+    in: 2,
+    array: [1, 2, 3],
+  })
+  const [counter, setCounter] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCounter((c) => c + 1)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
+  useEffect(() => {
+    setTimeout(() => {
+      setValue({ title: 'Test Event', description: 'This is a test event.' })
+    }, 2000)
+  }, [])
+  return (
+    <tsd-main-panel>
+      <tsd-json-tree value={value} />
+      <tsd-button
+        text="test"
+        value="test"
+        variant="secondary"
+        onClick={() => console.log('Button clicked!')}
+      />
+      <tsd-checkbox checked label="test">
+        {counter}
+      </tsd-checkbox>
+      <tsd-section>
+        <tsd-section-title>Test Title</tsd-section-title>
+        <tsd-section-description>
+          Test Description
+        </tsd-section-description>
+        <tsd-section-icon>🔥</tsd-section-icon>
+      </tsd-section>
+      <tsd-select
+        options={[
+          {
+            value: '1',
+            label: '1',
+          },
+          {
+            value: '2',
+            label: '2',
+          },
+        ]}
+      />
+      <tsd-header>
+        <tsd-header-logo
+          flavor={{
+            light: 'red',
+            dark: 'red',
+          }}
+        >
+          test
+        </tsd-header-logo>
+      </tsd-header>
+    </tsd-main-panel>
+  )
+}
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
@@ -72,6 +135,10 @@ export default function DevtoolsExample() {
             name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
+          {
+            render: <MyDevtools />,
+            name: 'My Devtools',
+          }
           /* {
             name: "The actual app",
             render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,

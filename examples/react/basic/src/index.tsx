@@ -55,9 +55,9 @@ function Posts({
                       // ones that are cached
                       queryClient.getQueryData(['post', post.id])
                         ? {
-                            fontWeight: 'bold',
-                            color: 'green',
-                          }
+                          fontWeight: 'bold',
+                          color: 'green',
+                        }
                         : {}
                     }
                   >
@@ -134,7 +134,7 @@ function usePosts() {
 const Context = createContext<{
   count: number
   setCount: (count: number) => void
-}>({ count: 0, setCount: () => {} })
+}>({ count: 0, setCount: () => { } })
 
 setTimeout(() => {
   queryPlugin.emit('test', {
@@ -163,21 +163,13 @@ function Mounted() {
   )
 }
 
+
+
 function App() {
   const [state, setState] = useState(1)
   const [win, setWin] = useState<Window | null>(null)
   const [postId, setPostId] = useState(-1)
-  const [value, setValue] = useState<any>({
-    initial: 'value',
-    should: 'change',
-    in: 2,
-    array: [1, 2, 3],
-  })
-  useEffect(() => {
-    setTimeout(() => {
-      setValue({ title: 'Test Event', description: 'This is a test event.' })
-    }, 2000)
-  }, [])
+
   return (
     <div>
       <Context.Provider value={{ count: state, setCount: setState }}>
@@ -188,45 +180,7 @@ function App() {
           <Button onClick={() => setWin(window.open('', '', 'popup'))}>
             Click me to open new window
           </Button>
-          <tsd-main-panel>
-            <tsd-json-tree value={value} />
-            <tsd-button
-              text="test"
-              value="test"
-              variant="secondary"
-              onClick={() => console.log('Button clicked!')}
-            />
-            <tsd-checkbox checked label="test"></tsd-checkbox>
-            <tsd-section>
-              <tsd-section-title>Test Title</tsd-section-title>
-              <tsd-section-description>
-                Test Description
-              </tsd-section-description>
-              <tsd-section-icon>🔥</tsd-section-icon>
-            </tsd-section>
-            <tsd-select
-              options={[
-                {
-                  value: '1',
-                  label: '1',
-                },
-                {
-                  value: '2',
-                  label: '2',
-                },
-              ]}
-            />
-            <tsd-header>
-              <tsd-header-logo
-                flavor={{
-                  light: 'red',
-                  dark: 'red',
-                }}
-              >
-                test
-              </tsd-header-logo>
-            </tsd-header>
-          </tsd-main-panel>
+
           {win && createPortal(<Mounted />, win.document.body)}
           <Feature />
           <p>
