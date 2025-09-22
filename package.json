@@ -67,7 +67,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "jsdom": "^26.1.0",
     "knip": "^5.50.5",
-    "nx": "^20.8.1",
+    "nx": "^21.5.3",
     "premove": "^4.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^3.3.3",
