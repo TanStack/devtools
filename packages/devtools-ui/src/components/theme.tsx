@@ -29,7 +29,7 @@ export function useTheme() {
   if (!context) {
     return {
       theme: () => 'dark' as Theme,
-      setTheme: () => { },
+      setTheme: () => {},
     }
   }
 

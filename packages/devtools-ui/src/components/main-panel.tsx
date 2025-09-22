@@ -4,12 +4,11 @@ import { customElement, noShadowDOM } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
-export type PanelProps = Omit<JSX.IntrinsicElements['div'], "children"> & {
+export type PanelProps = Omit<JSX.IntrinsicElements['div'], 'children'> & {
   children?: any
   className?: string
   withPadding?: boolean
 }
-
 
 export const MainPanel = ({
   className,
@@ -45,10 +44,6 @@ export const registerMainPanelComponent = (elName: string = 'tsd-main-panel') =>
         })
       })
 
-      return (
-        <MainPanel {...panelProps()} >
-          {panelProps().children}
-        </MainPanel>
-      )
-    }
+      return <MainPanel {...panelProps()}>{panelProps().children}</MainPanel>
+    },
   )

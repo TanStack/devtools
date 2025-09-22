@@ -4,16 +4,12 @@ import { createEffect, createSignal } from 'solid-js'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
-export type HeaderProps = Omit<JSX.IntrinsicElements['header'], "children"> & {
+export type HeaderProps = Omit<JSX.IntrinsicElements['header'], 'children'> & {
   className?: string
   children?: any
 }
 
-export function Header({
-  children,
-  class: className,
-  ...rest
-}: HeaderProps) {
+export function Header({ children, class: className, ...rest }: HeaderProps) {
   const styles = useStyles()
   return (
     <header
@@ -33,10 +29,7 @@ export type HeaderLogoProps = {
   }
 }
 
-export function HeaderLogo({
-  children,
-  flavor,
-}: HeaderLogoProps) {
+export function HeaderLogo({ children, flavor }: HeaderLogoProps) {
   const styles = useStyles()
   return (
     <div class={styles().header.logoAndToggleContainer}>
@@ -64,15 +57,13 @@ export const registerHeaderComponent = (elName: string = 'tsd-header') =>
           setHeaderProps((prev) => ({ ...prev, [name]: value }))
         })
       })
-      return (
-        <Header {...headerProps()} >
-          {headerProps().children}
-        </Header>
-      )
-    }
+      return <Header {...headerProps()}>{headerProps().children}</Header>
+    },
   )
 
-export const registerHeaderLogoComponent = (elName: string = 'tsd-header-logo') =>
+export const registerHeaderLogoComponent = (
+  elName: string = 'tsd-header-logo',
+) =>
   customElement<HeaderLogoProps>(
     elName,
     { flavor: { light: '', dark: '' } },
@@ -84,11 +75,6 @@ export const registerHeaderLogoComponent = (elName: string = 'tsd-header-logo') 
           setLogoProps((prev) => ({ ...prev, [name]: value }))
         })
       })
-      return (
-        <HeaderLogo {...logoProps()} >
-          {logoProps().children}
-        </HeaderLogo>
-      )
-    }
+      return <HeaderLogo {...logoProps()}>{logoProps().children}</HeaderLogo>
+    },
   )
-

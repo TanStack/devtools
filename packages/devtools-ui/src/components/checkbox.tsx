@@ -43,7 +43,6 @@ export function Checkbox(props: CheckboxProps) {
   )
 }
 
-
 export const registerCheckboxComponent = (elName: string = 'tsd-checkbox') =>
   customElement<CheckboxProps>(
     elName,

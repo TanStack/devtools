@@ -14,9 +14,14 @@ export {
   registerSectionComponent,
   registerSectionTitleComponent,
   registerSectionDescriptionComponent,
-  registerSectionIconComponent
+  registerSectionIconComponent,
 } from './components/section'
-export { Header, HeaderLogo, registerHeaderComponent, registerHeaderLogoComponent } from './components/header'
+export {
+  Header,
+  HeaderLogo,
+  registerHeaderComponent,
+  registerHeaderLogoComponent,
+} from './components/header'
 export { useTheme, ThemeContextProvider } from './components/theme'
 
 export type { JsonTreeWebComponentProps } from './components/tree'

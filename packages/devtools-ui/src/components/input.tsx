@@ -56,5 +56,5 @@ export const registerInputComponent = (elName: string = 'tsd-input') =>
       })
 
       return <Input {...inputProps()} />
-    }
+    },
   )

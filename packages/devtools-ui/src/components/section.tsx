@@ -4,14 +4,14 @@ import { createEffect, createSignal } from 'solid-js'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
-export type SectionProps = Omit<JSX.IntrinsicElements['section'], "children"> & {
+export type SectionProps = Omit<
+  JSX.IntrinsicElements['section'],
+  'children'
+> & {
   children?: any
 }
 
-export const Section = ({
-  children,
-  ...rest
-}: SectionProps) => {
+export const Section = ({ children, ...rest }: SectionProps) => {
   const styles = useStyles()
   return (
     <section class={clsx(styles().section.main, rest.class)} {...rest}>
@@ -20,14 +20,14 @@ export const Section = ({
   )
 }
 
-export type SectionTitleProps = Omit<JSX.IntrinsicElements['h3'], "children"> & {
+export type SectionTitleProps = Omit<
+  JSX.IntrinsicElements['h3'],
+  'children'
+> & {
   children?: any
 }
 
-export const SectionTitle = ({
-  children,
-  ...rest
-}: SectionTitleProps) => {
+export const SectionTitle = ({ children, ...rest }: SectionTitleProps) => {
   const styles = useStyles()
   return (
     <h3 class={clsx(styles().section.title, rest.class)} {...rest}>
@@ -36,7 +36,10 @@ export const SectionTitle = ({
   )
 }
 
-export type SectionDescriptionProps = Omit<JSX.IntrinsicElements['p'], "children"> & {
+export type SectionDescriptionProps = Omit<
+  JSX.IntrinsicElements['p'],
+  'children'
+> & {
   children?: any
 }
 
@@ -52,14 +55,14 @@ export const SectionDescription = ({
   )
 }
 
-export type SectionIconProps = Omit<JSX.IntrinsicElements['span'], "children"> & {
+export type SectionIconProps = Omit<
+  JSX.IntrinsicElements['span'],
+  'children'
+> & {
   children?: any
 }
 
-export const SectionIcon = ({
-  children,
-  ...rest
-}: SectionIconProps) => {
+export const SectionIcon = ({ children, ...rest }: SectionIconProps) => {
   const styles = useStyles()
   return (
     <span class={clsx(styles().section.icon, rest.class)} {...rest}>
@@ -68,11 +71,8 @@ export const SectionIcon = ({
   )
 }
 
-export const registerSectionComponent = (elName: string = 'tsd-section') => customElement<SectionProps>(
-  elName,
-  {},
-  (props, { element }) => {
-
+export const registerSectionComponent = (elName: string = 'tsd-section') =>
+  customElement<SectionProps>(elName, {}, (props, { element }) => {
     noShadowDOM()
     const [sectionProps, setSectionProps] = createSignal(props)
 
@@ -81,17 +81,13 @@ export const registerSectionComponent = (elName: string = 'tsd-section') => cust
         setSectionProps((prev) => ({ ...prev, [name]: value }))
       })
     })
-    return (<Section {...props}>
-      {sectionProps().children}
-    </Section>
-    )
-  }
-)
+    return <Section {...props}>{sectionProps().children}</Section>
+  })
 
-export const registerSectionTitleComponent = (elName: string = 'tsd-section-title') => customElement<SectionTitleProps>(
-  elName,
-  {},
-  (props, { element }) => {
+export const registerSectionTitleComponent = (
+  elName: string = 'tsd-section-title',
+) =>
+  customElement<SectionTitleProps>(elName, {}, (props, { element }) => {
     noShadowDOM()
     const [titleProps, setTitleProps] = createSignal(props)
     createEffect(() => {
@@ -99,17 +95,15 @@ export const registerSectionTitleComponent = (elName: string = 'tsd-section-titl
         setTitleProps((prev) => ({ ...prev, [name]: value }))
       })
     })
-    return (<SectionTitle {...titleProps()}>
-      {titleProps().children}
-    </SectionTitle>
+    return (
+      <SectionTitle {...titleProps()}>{titleProps().children}</SectionTitle>
     )
-  }
-)
+  })
 
-export const registerSectionDescriptionComponent = (elName: string = 'tsd-section-description') => customElement<SectionDescriptionProps>(
-  elName,
-  {},
-  (props, { element }) => {
+export const registerSectionDescriptionComponent = (
+  elName: string = 'tsd-section-description',
+) =>
+  customElement<SectionDescriptionProps>(elName, {}, (props, { element }) => {
     noShadowDOM()
     const [descriptionProps, setDescriptionProps] = createSignal(props)
     createEffect(() => {
@@ -117,16 +111,16 @@ export const registerSectionDescriptionComponent = (elName: string = 'tsd-sectio
         setDescriptionProps((prev) => ({ ...prev, [name]: value }))
       })
     })
-    return (<SectionDescription {...descriptionProps()}>
-      {descriptionProps().children}
-    </SectionDescription>
+    return (
+      <SectionDescription {...descriptionProps()}>
+        {descriptionProps().children}
+      </SectionDescription>
     )
-  }
-)
-export const registerSectionIconComponent = (elName: string = 'tsd-section-icon') => customElement<SectionIconProps>(
-  elName,
-  {},
-  (props, { element }) => {
+  })
+export const registerSectionIconComponent = (
+  elName: string = 'tsd-section-icon',
+) =>
+  customElement<SectionIconProps>(elName, {}, (props, { element }) => {
     noShadowDOM()
     const [iconProps, setIconProps] = createSignal(props)
     createEffect(() => {
@@ -134,9 +128,5 @@ export const registerSectionIconComponent = (elName: string = 'tsd-section-icon'
         setIconProps((prev) => ({ ...prev, [name]: value }))
       })
     })
-    return (<SectionIcon {...iconProps()}>
-      {iconProps().children}
-    </SectionIcon>
-    )
-  }
-)
+    return <SectionIcon {...iconProps()}>{iconProps().children}</SectionIcon>
+  })

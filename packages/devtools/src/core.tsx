@@ -14,7 +14,7 @@ import {
   registerSectionIconComponent,
   registerSectionTitleComponent,
   registerSelectComponent,
-  registerTagComponent
+  registerTagComponent,
 } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from './context/devtools-context'
 import { initialState } from './context/devtools-store'

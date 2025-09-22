@@ -3,7 +3,6 @@ import { customElement, noShadowDOM } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 import type { tokens } from '../styles/tokens'
 
-
 export interface TagProps {
   color: keyof typeof tokens.colors
   label: string
@@ -28,7 +27,7 @@ export const registerTagComponent = (elName: string = 'tsd-tag') =>
   customElement<TagProps>(
     elName,
     {
-      color: "blue",
+      color: 'blue',
       label: '',
       count: undefined,
       disabled: false,
