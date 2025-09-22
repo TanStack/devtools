@@ -282,33 +282,34 @@ const CopyButton = (props: { value: unknown }) => {
     <button
       class={styles().tree.actionButton}
       title="Copy object to clipboard"
-      aria-label={`${copyState() === 'NoCopy'
+      aria-label={`${
+        copyState() === 'NoCopy'
           ? 'Copy object to clipboard'
           : copyState() === 'SuccessCopy'
             ? 'Object copied to clipboard'
             : 'Error copying object to clipboard'
-        }`}
+      }`}
       onClick={
         copyState() === 'NoCopy'
           ? () => {
-            navigator.clipboard
-              .writeText(JSON.stringify(props.value, null, 2))
-              .then(
-                () => {
-                  setCopyState('SuccessCopy')
-                  setTimeout(() => {
-                    setCopyState('NoCopy')
-                  }, 1500)
-                },
-                (err) => {
-                  console.error('Failed to copy: ', err)
-                  setCopyState('ErrorCopy')
-                  setTimeout(() => {
-                    setCopyState('NoCopy')
-                  }, 1500)
-                },
-              )
-          }
+              navigator.clipboard
+                .writeText(JSON.stringify(props.value, null, 2))
+                .then(
+                  () => {
+                    setCopyState('SuccessCopy')
+                    setTimeout(() => {
+                      setCopyState('NoCopy')
+                    }, 1500)
+                  },
+                  (err) => {
+                    console.error('Failed to copy: ', err)
+                    setCopyState('ErrorCopy')
+                    setTimeout(() => {
+                      setCopyState('NoCopy')
+                    }, 1500)
+                  },
+                )
+            }
           : undefined
       }
     >
@@ -338,7 +339,7 @@ const Expander = (props: { expanded: boolean; onClick: () => void }) => {
           transform: rotate(${props.expanded ? 90 : 0}deg);
         `,
         props.expanded &&
-        css`
+          css`
             & svg {
               top: -1px;
             }
@@ -362,7 +363,6 @@ const Expander = (props: { expanded: boolean; onClick: () => void }) => {
     </span>
   )
 }
-
 
 export interface JsonTreeWebComponentProps {
   value: any
