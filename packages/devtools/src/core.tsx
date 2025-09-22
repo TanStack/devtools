@@ -3,7 +3,18 @@ import { Portal, render } from 'solid-js/web'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import {
   registerButtonComponent,
+  registerCheckboxComponent,
+  registerHeaderComponent,
+  registerHeaderLogoComponent,
+  registerInputComponent,
   registerJsonTreeComponent,
+  registerMainPanelComponent,
+  registerSectionComponent,
+  registerSectionDescriptionComponent,
+  registerSectionIconComponent,
+  registerSectionTitleComponent,
+  registerSelectComponent,
+  registerTagComponent
 } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from './context/devtools-context'
 import { initialState } from './context/devtools-store'
@@ -43,7 +54,19 @@ export interface TanStackDevtoolsInit {
   plugins?: Array<TanStackDevtoolsPlugin>
   eventBusConfig?: ClientEventBusConfig
 }
-
+registerJsonTreeComponent()
+registerButtonComponent()
+registerTagComponent()
+registerMainPanelComponent()
+registerSectionComponent()
+registerSectionTitleComponent()
+registerSectionDescriptionComponent()
+registerSectionIconComponent()
+registerHeaderComponent()
+registerHeaderLogoComponent()
+registerCheckboxComponent()
+registerInputComponent()
+registerSelectComponent()
 export class TanStackDevtoolsCore {
   #config: TanStackDevtoolsConfig = {
     ...initialState.settings,
@@ -77,8 +100,7 @@ export class TanStackDevtoolsCore {
       const Devtools = this.#Component
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
-      registerJsonTreeComponent()
-      registerButtonComponent()
+
       return (
         <DevtoolsProvider plugins={this.#plugins} config={this.#config}>
           <PiPProvider>

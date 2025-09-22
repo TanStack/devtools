@@ -1,7 +1,8 @@
 import { createSignal } from 'solid-js'
+import { customElement, noShadowDOM } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 
-interface InputProps {
+export interface InputProps {
   label?: string
   type?: 'text' | 'number' | 'password' | 'email'
   value?: string
@@ -40,3 +41,20 @@ export function Input(props: InputProps) {
     </div>
   )
 }
+
+export const registerInputComponent = (elName: string = 'tsd-input') =>
+  customElement<InputProps>(
+    elName,
+    { label: '', type: 'text', value: '', placeholder: '', description: '' },
+    (props, { element }) => {
+      noShadowDOM()
+      const [inputProps, setInputProps] = createSignal(props)
+      createSignal(() => {
+        element.addPropertyChangedCallback((name, value) => {
+          setInputProps((prev) => ({ ...prev, [name]: value }))
+        })
+      })
+
+      return <Input {...inputProps()} />
+    }
+  )

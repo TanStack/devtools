@@ -1,7 +1,8 @@
-import { createSignal } from 'solid-js'
+import { Show, createEffect, createSignal } from 'solid-js'
+import { customElement, noShadowDOM } from 'solid-element'
 import { useStyles } from '../styles/use-styles'
 
-interface CheckboxProps {
+export interface CheckboxProps {
   label?: string
   checked?: boolean
   onChange?: (checked: boolean) => void
@@ -41,3 +42,30 @@ export function Checkbox(props: CheckboxProps) {
     </div>
   )
 }
+
+
+export const registerCheckboxComponent = (elName: string = 'tsd-checkbox') =>
+  customElement<CheckboxProps>(
+    elName,
+    {
+      checked: false,
+      label: '',
+      description: '',
+    },
+    (props, { element }) => {
+      noShadowDOM()
+      const [checkboxProps, setCheckboxProps] = createSignal(props)
+
+      createEffect(() => {
+        element.addPropertyChangedCallback((name, value) => {
+          setCheckboxProps((prev) => ({ ...prev, [name]: value }))
+        })
+      })
+
+      return (
+        <Show keyed when={checkboxProps()}>
+          <Checkbox {...checkboxProps()} />
+        </Show>
+      )
+    },
+  )

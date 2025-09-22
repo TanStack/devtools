@@ -1,16 +1,23 @@
 import clsx from 'clsx'
+import { customElement, noShadowDOM } from 'solid-element'
+import { createEffect, createSignal } from 'solid-js'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
+
+export type HeaderProps = Omit<JSX.IntrinsicElements['header'], "children"> & {
+  className?: string
+  children?: any
+}
 
 export function Header({
   children,
   class: className,
   ...rest
-}: JSX.IntrinsicElements['header']) {
+}: HeaderProps) {
   const styles = useStyles()
   return (
     <header
-      class={clsx(styles().header.row, 'tsqd-header', className)}
+      class={clsx(styles().header.row, 'tsd-header', className)}
       {...rest}
     >
       {children}
@@ -18,16 +25,18 @@ export function Header({
   )
 }
 
-export function HeaderLogo({
-  children,
-  flavor,
-}: {
-  children: JSX.Element
+export type HeaderLogoProps = {
+  children?: any
   flavor: {
     light: string
     dark: string
   }
-}) {
+}
+
+export function HeaderLogo({
+  children,
+  flavor,
+}: HeaderLogoProps) {
   const styles = useStyles()
   return (
     <div class={styles().header.logoAndToggleContainer}>
@@ -42,3 +51,44 @@ export function HeaderLogo({
     </div>
   )
 }
+
+export const registerHeaderComponent = (elName: string = 'tsd-header') =>
+  customElement<HeaderProps>(
+    elName,
+    { className: '' },
+    (props, { element }) => {
+      noShadowDOM()
+      const [headerProps, setHeaderProps] = createSignal(props)
+      createEffect(() => {
+        element.addPropertyChangedCallback((name, value) => {
+          setHeaderProps((prev) => ({ ...prev, [name]: value }))
+        })
+      })
+      return (
+        <Header {...headerProps()} >
+          {headerProps().children}
+        </Header>
+      )
+    }
+  )
+
+export const registerHeaderLogoComponent = (elName: string = 'tsd-header-logo') =>
+  customElement<HeaderLogoProps>(
+    elName,
+    { flavor: { light: '', dark: '' } },
+    (props, { element }) => {
+      noShadowDOM()
+      const [logoProps, setLogoProps] = createSignal(props)
+      createEffect(() => {
+        element.addPropertyChangedCallback((name, value) => {
+          setLogoProps((prev) => ({ ...prev, [name]: value }))
+        })
+      })
+      return (
+        <HeaderLogo {...logoProps()} >
+          {logoProps().children}
+        </HeaderLogo>
+      )
+    }
+  )
+

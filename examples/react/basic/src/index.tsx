@@ -55,9 +55,9 @@ function Posts({
                       // ones that are cached
                       queryClient.getQueryData(['post', post.id])
                         ? {
-                            fontWeight: 'bold',
-                            color: 'green',
-                          }
+                          fontWeight: 'bold',
+                          color: 'green',
+                        }
                         : {}
                     }
                   >
@@ -134,7 +134,7 @@ function usePosts() {
 const Context = createContext<{
   count: number
   setCount: (count: number) => void
-}>({ count: 0, setCount: () => {} })
+}>({ count: 0, setCount: () => { } })
 
 setTimeout(() => {
   queryPlugin.emit('test', {
@@ -188,15 +188,40 @@ function App() {
           <Button onClick={() => setWin(window.open('', '', 'popup'))}>
             Click me to open new window
           </Button>
-          <tsd-json-tree value={value} />
-          <tsd-button
-            text="test"
-            ghost={true}
-            disabled
-            value="test"
-            variant="secondary"
-            onClick={() => console.log('Button clicked!')}
-          />
+          <tsd-main-panel  >
+
+            <tsd-json-tree value={value} />
+            <tsd-button
+              text="test"
+              value="test"
+              variant="secondary"
+              onClick={() => console.log('Button clicked!')}
+            />
+            <tsd-checkbox checked label='test'></tsd-checkbox>
+            <tsd-section>
+              <tsd-section-title>Test Title</tsd-section-title>
+              <tsd-section-description>
+                Test Description
+              </tsd-section-description>
+              <tsd-section-icon>🔥</tsd-section-icon>
+            </tsd-section>
+            <tsd-select options={[{
+              value: '1', label: '1'
+            }, {
+              value: '2', label: '2'
+            }]} />
+            <tsd-header>
+              <tsd-header-logo
+                flavor={{
+                  light: 'red',
+                  dark: 'red',
+                }}
+              >
+                test
+              </tsd-header-logo>
+            </tsd-header>
+
+          </tsd-main-panel>
           {win && createPortal(<Mounted />, win.document.body)}
           <Feature />
           <p>
