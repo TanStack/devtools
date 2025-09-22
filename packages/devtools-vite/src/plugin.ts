@@ -1,7 +1,11 @@
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { normalizePath } from 'vite'
 import chalk from 'chalk'
-import { handleDevToolsViteRequest, readPackageJson, tryParseJson, } from './utils'
+import {
+  handleDevToolsViteRequest,
+  readPackageJson,
+  tryParseJson,
+} from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
 import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
@@ -57,7 +61,9 @@ export type TanStackDevtoolsViteConfig = {
 export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
   config
 
-export const devtools = async (args?: TanStackDevtoolsViteConfig): Promise<Array<Plugin>> => {
+export const devtools = async (
+  args?: TanStackDevtoolsViteConfig,
+): Promise<Array<Plugin>> => {
   let port = 5173
   const logging = args?.logging ?? true
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
@@ -65,21 +71,21 @@ export const devtools = async (args?: TanStackDevtoolsViteConfig): Promise<Array
   const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const bus = new ServerEventBus(args?.eventBusConfig)
   const packageJson = await readPackageJson()
-  let outdatedDeps: any = null;
+  let outdatedDeps: any = null
   exec('npm outdated --json', (_, stdout) => {
     // npm outdated exits with code 1 if there are outdated packages, but still outputs valid JSON
     if (stdout) {
-      outdatedDeps = tryParseJson(stdout);
-      devtoolsEventClient.emit("ready", {
+      outdatedDeps = tryParseJson(stdout)
+      devtoolsEventClient.emit('ready', {
         packageJson,
-        outdatedDeps
+        outdatedDeps,
       })
     }
-  });
-  devtoolsEventClient.on("mounted", () => {
-    devtoolsEventClient.emit("ready", {
+  })
+  devtoolsEventClient.on('mounted', () => {
+    devtoolsEventClient.emit('ready', {
       packageJson,
-      outdatedDeps
+      outdatedDeps,
     })
   })
   return [
@@ -175,15 +181,15 @@ export const devtools = async (args?: TanStackDevtoolsViteConfig): Promise<Array
       },
     },
     {
-      name: "@tanstack/devtools:listener",
+      name: '@tanstack/devtools:listener',
       async handleHotUpdate({ file }) {
-        if (file.endsWith("package.json")) {
+        if (file.endsWith('package.json')) {
           console.log(packageJson)
-          const newPackageJson = await readPackageJson();
+          const newPackageJson = await readPackageJson()
           console.log(newPackageJson)
           //console.log("package.json changed, you might want to restart the dev server")
         }
-      }
+      },
     },
     {
       name: '@tanstack/devtools:better-console-logs',

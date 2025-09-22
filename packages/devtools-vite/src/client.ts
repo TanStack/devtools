@@ -1,1 +1,1 @@
-export { devtoolsEventClient } from "./event"
+export { devtoolsEventClient } from './event'
