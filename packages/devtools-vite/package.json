@@ -27,6 +27,12 @@
         "default": "./dist/esm/index.js"
       }
     },
+    "./client": {
+      "import": {
+        "types": "./dist/esm/client.d.ts",
+        "default": "./dist/esm/client.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -56,6 +62,7 @@
     "@babel/parser": "^7.28.3",
     "@babel/traverse": "^7.28.3",
     "@babel/types": "^7.28.2",
+    "@tanstack/devtools-event-client": "workspace:*",
     "@tanstack/devtools-event-bus": "workspace:*",
     "chalk": "^5.6.0",
     "launch-editor": "^2.11.1"

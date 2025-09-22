@@ -1,5 +1,5 @@
 import { normalizePath } from 'vite'
-// import fs from 'node:fs/promises'
+import fs from 'node:fs/promises'
 import type { Connect } from 'vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 
@@ -50,7 +50,7 @@ export const handleDevToolsViteRequest = (
     try {
       const parsedData = JSON.parse(dataToParse.toString())
       cb(parsedData)
-    } catch (e) {}
+    } catch (e) { }
     res.write('OK')
   })
 }
@@ -66,7 +66,7 @@ export const parseOpenSourceParam = (source: string) => {
   return { file, line, column }
 }
 
-/* export const tryReadFile = async (
+export const tryReadFile = async (
   filePath: string
 ) => {
   try {
@@ -78,11 +78,16 @@ export const parseOpenSourceParam = (source: string) => {
   }
 }
 
-export const tryParseJson = (jsonString: string) => {
+export const tryParseJson = (jsonString: string | null | undefined) => {
+  if (!jsonString) {
+    return null
+  }
   try {
     const result = JSON.parse(jsonString)
     return result
   } catch (error) {
     return null
   }
-} */
+}
+
+export const readPackageJson = async () => await tryParseJson(await tryReadFile(process.cwd() + '/package.json'))
