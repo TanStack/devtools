@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import {
-  PLUGIN_CONTAINER_ID,
-  PLUGIN_TITLE_CONTAINER_ID,
-  TanStackDevtoolsCore,
-} from '@tanstack/devtools'
+import { TanStackDevtoolsCore } from '@tanstack/devtools'
 import { createPortal } from 'react-dom'
 import type { JSX, ReactElement } from 'react'
 import type {
@@ -94,13 +90,19 @@ export interface TanStackDevtoolsReactInit {
 
 const convertRender = (
   Component: PluginRender,
-  setComponent: React.Dispatch<React.SetStateAction<JSX.Element | null>>,
+  setComponents: React.Dispatch<
+    React.SetStateAction<Record<string, JSX.Element>>
+  >,
   e: HTMLElement,
   theme: 'dark' | 'light',
 ) => {
-  setComponent(
-    typeof Component === 'function' ? Component(e, theme) : Component,
-  )
+  const element =
+    typeof Component === 'function' ? Component(e, theme) : Component
+
+  setComponents((prev) => ({
+    ...prev,
+    [e.getAttribute('id') as string]: element,
+  }))
 }
 
 export const TanStackDevtools = ({
@@ -109,14 +111,21 @@ export const TanStackDevtools = ({
   eventBusConfig,
 }: TanStackDevtoolsReactInit): ReactElement | null => {
   const devToolRef = useRef<HTMLDivElement>(null)
-  const [pluginContainer, setPluginContainer] = useState<HTMLElement | null>(
-    null,
-  )
-  const [titleContainer, setTitleContainer] = useState<HTMLElement | null>(null)
-  const [PluginComponent, setPluginComponent] = useState<JSX.Element | null>(
-    null,
-  )
-  const [TitleComponent, setTitleComponent] = useState<JSX.Element | null>(null)
+
+  const [pluginContainers, setPluginContainers] = useState<
+    Record<string, HTMLElement>
+  >({})
+  const [titleContainers, setTitleContainers] = useState<
+    Record<string, HTMLElement>
+  >({})
+
+  const [PluginComponents, setPluginComponents] = useState<
+    Record<string, JSX.Element>
+  >({})
+  const [TitleComponents, setTitleComponents] = useState<
+    Record<string, JSX.Element>
+  >({})
+
   const [devtools] = useState(
     () =>
       new TanStackDevtoolsCore({
@@ -128,30 +137,42 @@ export const TanStackDevtools = ({
             name:
               typeof plugin.name === 'string'
                 ? plugin.name
-                : // The check above confirms that `plugin.name` is of Render type
-                  (e, theme) => {
-                    setTitleContainer(
-                      e.ownerDocument.getElementById(
-                        PLUGIN_TITLE_CONTAINER_ID,
-                      ) || null,
-                    )
+                : (e, theme) => {
+                    const id = e.getAttribute('id')!
+                    const target = e.ownerDocument.getElementById(id)
+
+                    if (target) {
+                      setTitleContainers((prev) => ({
+                        ...prev,
+                        [id]: e,
+                      }))
+                    }
+
                     convertRender(
                       plugin.name as PluginRender,
-                      setTitleComponent,
+                      setTitleComponents,
                       e,
                       theme,
                     )
                   },
             render: (e, theme) => {
-              setPluginContainer(
-                e.ownerDocument.getElementById(PLUGIN_CONTAINER_ID) || null,
-              )
-              convertRender(plugin.render, setPluginComponent, e, theme)
+              const id = e.getAttribute('id')!
+              const target = e.ownerDocument.getElementById(id)
+
+              if (target) {
+                setPluginContainers((prev) => ({
+                  ...prev,
+                  [id]: e,
+                }))
+              }
+
+              convertRender(plugin.render, setPluginComponents, e, theme)
             },
           }
         }),
       }),
   )
+
   useEffect(() => {
     if (devToolRef.current) {
       devtools.mount(devToolRef.current)
@@ -160,14 +181,27 @@ export const TanStackDevtools = ({
     return () => devtools.unmount()
   }, [devtools])
 
+  const hasPlugins =
+    Object.values(pluginContainers).length > 0 &&
+    Object.values(PluginComponents).length > 0
+  const hasTitles =
+    Object.values(titleContainers).length > 0 &&
+    Object.values(TitleComponents).length > 0
+
   return (
     <>
       <div style={{ position: 'absolute' }} ref={devToolRef} />
-      {pluginContainer && PluginComponent
-        ? createPortal(<>{PluginComponent}</>, pluginContainer)
+
+      {hasPlugins
+        ? Object.entries(pluginContainers).map(([key, pluginContainer]) =>
+            createPortal(<>{PluginComponents[key]}</>, pluginContainer),
+          )
         : null}
-      {titleContainer && TitleComponent
-        ? createPortal(<>{TitleComponent}</>, titleContainer)
+
+      {hasTitles
+        ? Object.entries(titleContainers).map(([key, titleContainer]) =>
+            createPortal(<>{TitleComponents[key]}</>, titleContainer),
+          )
         : null}
     </>
   )

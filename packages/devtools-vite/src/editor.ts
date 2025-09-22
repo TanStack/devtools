@@ -26,9 +26,13 @@ export type EditorConfig = {
 export const DEFAULT_EDITOR_CONFIG: EditorConfig = {
   name: 'VSCode',
   open: async (path, lineNumber, columnNumber) => {
-    const { exec } = await import('node:child_process')
-    exec(
-      `code -g "${path.replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`,
+    const launch = (await import('launch-editor')).default
+    launch(
+      `${path.replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}`,
+      undefined,
+      (filename, err) => {
+        console.warn(`Failed to open ${filename} in editor: ${err}`)
+      },
     )
   },
 }

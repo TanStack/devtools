@@ -76,8 +76,10 @@ export class EventClient<
     this.#connectIntervalId = null
     this.#connectEveryMs = 500
 
-    this.#connectFunction()
-    this.startConnectLoop()
+    if (typeof CustomEvent !== 'undefined') {
+      this.#connectFunction()
+      this.startConnectLoop()
+    }
   }
 
   private startConnectLoop() {
@@ -113,8 +115,11 @@ export class EventClient<
       this.debugLog('Using global event target')
       return globalThis.__TANSTACK_EVENT_TARGET__
     }
-    // CLient event target is the window object
-    if (typeof window !== 'undefined') {
+    // CLient event target is the browser window object
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.addEventListener !== 'undefined'
+    ) {
       this.debugLog('Using window as event target')
 
       return window

@@ -1,5 +1,39 @@
 # @tanstack/solid-devtools
 
+## 0.7.0
+
+### Minor Changes
+
+- remove the production subexport in favor of always exporting the exports ([#150](https://github.com/TanStack/devtools/pull/150))
+
+## 0.6.10
+
+### Patch Changes
+
+- Updated dependencies [[`6b6aa45`](https://github.com/TanStack/devtools/commit/6b6aa45e10ba08cc9465d3c73c9b1454a9966170)]:
+  - @tanstack/devtools@0.6.14
+
+## 0.6.9
+
+### Patch Changes
+
+- Updated dependencies [[`a18b77e`](https://github.com/TanStack/devtools/commit/a18b77e1017e814cc0393d2e4f44acd80abf99a6)]:
+  - @tanstack/devtools@0.6.13
+
+## 0.6.8
+
+### Patch Changes
+
+- Updated dependencies [[`c463e10`](https://github.com/TanStack/devtools/commit/c463e1083771b8fce2ea30aa999aa36ea4040f7f)]:
+  - @tanstack/devtools@0.6.12
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies [[`c591da3`](https://github.com/TanStack/devtools/commit/c591da3a6e258d943f4c0d1b5b3f5cdd1111f37c)]:
+  - @tanstack/devtools@0.6.11
+
 ## 0.6.6
 
 ### Patch Changes

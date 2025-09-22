@@ -166,7 +166,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         transition: all 0.4s ease;
       `
     },
-    devtoolsPanelContainerAnimation: (isOpen: boolean, height: number) => {
+    devtoolsPanelContainerAnimation: (
+      isOpen: boolean,
+      height: number,
+      panelLocation: TanStackDevtoolsConfig['panelLocation'],
+    ) => {
       if (isOpen) {
         return css`
           pointer-events: auto;
@@ -175,7 +179,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
       return css`
         pointer-events: none;
-        transform: translateY(${height}px);
+        transform: translateY(${panelLocation === 'top' ? -height : height}px);
       `
     },
     devtoolsPanel: css`

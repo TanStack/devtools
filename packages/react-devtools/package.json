@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/react-devtools",
-  "version": "0.6.6",
+  "version": "0.7.0",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your React application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -26,12 +26,6 @@
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
-      }
-    },
-    "./production": {
-      "import": {
-        "types": "./dist/esm/production.d.ts",
-        "default": "./dist/esm/production.js"
       }
     },
     "./package.json": "./package.json"
@@ -63,7 +57,7 @@
     "@vitejs/plugin-react": "^4.5.2",
     "eslint-plugin-react-compiler": "19.1.0-rc.1",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "react": "^19.1.0"
+    "react": "19.1.0"
   },
   "peerDependencies": {
     "@types/react": ">=16.8",

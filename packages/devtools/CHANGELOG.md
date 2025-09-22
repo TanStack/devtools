@@ -1,5 +1,32 @@
 # @tanstack/devtools
 
+## 0.6.14
+
+### Patch Changes
+
+- improve devtools removal and fix issues with css ([#148](https://github.com/TanStack/devtools/pull/148))
+
+## 0.6.13
+
+### Patch Changes
+
+- add option to change trigger image ([#138](https://github.com/TanStack/devtools/pull/138))
+
+## 0.6.12
+
+### Patch Changes
+
+- improve open-source by using location origin ([#132](https://github.com/TanStack/devtools/pull/132))
+
+- Updated dependencies [[`c463e10`](https://github.com/TanStack/devtools/commit/c463e1083771b8fce2ea30aa999aa36ea4040f7f)]:
+  - @tanstack/devtools-ui@0.3.5
+
+## 0.6.11
+
+### Patch Changes
+
+- Adds split panel functionality to the devtools panel, allowing multiple instances of devtools to be shown. ([#90](https://github.com/TanStack/devtools/pull/90))
+
 ## 0.6.10
 
 ### Patch Changes

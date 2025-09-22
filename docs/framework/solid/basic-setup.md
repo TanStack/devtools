@@ -65,9 +65,9 @@ render(() => (
       ]}
     />
   </>
-), document.getElementById('root')!);
+), document.getElementById('root')!)
 ```
 
-Finally add any additional configuration you desire to the `TanStackDevtools` component, more information can be found under the [TanStack Devtools Configuration](https://tanstack.com/devtools/) section.
+Finally add any additional configuration you desire to the `TanStackDevtools` component, more information can be found under the [TanStack Devtools Configuration](../../../configuration.md) section.
 
 A complete working example can be found in our [examples section](https://tanstack.com/devtools/latest/docs/framework/solid/examples).

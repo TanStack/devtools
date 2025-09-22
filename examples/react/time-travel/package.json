@@ -10,13 +10,13 @@
   },
   "dependencies": {
     "@tanstack/devtools-event-client": "workspace:^",
-    "@tanstack/react-devtools": "^0.6.6",
+    "@tanstack/react-devtools": "^0.7.0",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-query-devtools": "^5.83.0",
     "@tanstack/react-router": "^1.131.2",
     "@tanstack/react-router-devtools": "^1.131.2",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "zod": "^4.0.14",
     "zustand": "^5.0.7"
   },

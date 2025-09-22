@@ -9,15 +9,15 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/solid-devtools": "^0.6.6",
-    "@tanstack/solid-query": "^5.83.0",
-    "@tanstack/solid-query-devtools": "^5.83.0",
+    "@tanstack/solid-devtools": "^0.7.0",
+    "@tanstack/solid-query": "^5.87.1",
+    "@tanstack/solid-query-devtools": "^5.87.1",
     "@tanstack/solid-router": "^1.129.8",
     "@tanstack/solid-router-devtools": "^1.129.8",
     "solid-js": "^1.9.7"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "0.2.12",
+    "@tanstack/devtools-vite": "0.3.3",
     "vite": "^7.0.6",
     "vite-plugin-inspect": "11.3.2",
     "vite-plugin-solid": "^2.11.6"

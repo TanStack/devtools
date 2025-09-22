@@ -1,6 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
-import { SolidQueryDevtools } from '@tanstack/solid-query-devtools'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'
+import { Match, Switch } from 'solid-js'
+// query imports
+import { useQuery } from '@tanstack/solid-query'
+
+// router imports
 import {
   Link,
   Outlet,
@@ -9,7 +11,6 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/solid-router'
-import { TanStackDevtools } from '@tanstack/solid-devtools'
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -17,7 +18,8 @@ const rootRoute = createRootRoute({
       <div class="p-2 flex gap-2">
         <Link to="/" class="[&.active]:font-bold">
           Home
-        </Link>{' '}
+        </Link>
+
         <Link to="/about" class="[&.active]:font-bold">
           About
         </Link>
@@ -37,57 +39,62 @@ const rootRoute = createRootRoute({
   ),
 })
 
+/*
+/ demo route
+*/
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   component: function Index() {
+    /*
+    / demo query resolves after three seconds and returns string
+    */
+    const exampleQuery = useQuery<string>(() => ({
+      queryKey: ['example-query'],
+      queryFn: () => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            resolve('fetched data')
+          }, 3000)
+        })
+      },
+    }))
+
     return (
       <div class="p-2">
         <h3>Welcome Home!</h3>
+        <Switch>
+          <Match when={exampleQuery.isLoading}>
+            <p>Loading...</p>
+          </Match>
+
+          <Match when={exampleQuery.data}>
+            <p>{exampleQuery.data}</p>
+          </Match>
+        </Switch>
       </div>
     )
   },
 })
-function About() {
-  return (
-    <div class="p-2">
-      <h3>Hello from About!</h3>
-    </div>
-  )
-}
 
+/*
+/ demo route
+*/
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/about',
-  component: About,
+  component: function About() {
+    return (
+      <div class="p-2">
+        <h3>Hello from About!</h3>
+      </div>
+    )
+  },
 })
 
 const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
+export const router = createRouter({ routeTree })
 
-const router = createRouter({ routeTree })
-
-const queryClient = new QueryClient()
-
-export default function DevtoolsExample() {
-  return (
-    <>
-      <TanStackDevtools
-        plugins={[
-          {
-            name: 'TanStack Query',
-            render: (
-              <QueryClientProvider client={queryClient}>
-                <SolidQueryDevtools />
-              </QueryClientProvider>
-            ),
-          },
-          {
-            name: 'TanStack Router',
-            render: <TanStackRouterDevtoolsPanel router={router} />,
-          },
-        ]}
-      />
-      <RouterProvider router={router} />
-    </>
-  )
+export default function Router() {
+  return <RouterProvider router={router} />
 }

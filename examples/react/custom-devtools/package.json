@@ -9,10 +9,10 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "^0.2.4",
-    "@tanstack/react-devtools": "^0.6.6",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "@tanstack/devtools-event-client": "0.3.0",
+    "@tanstack/react-devtools": "^0.7.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.12",

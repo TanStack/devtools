@@ -144,7 +144,7 @@ const transformJSX = (
   element.node.attributes.push(
     t.jsxAttribute(
       t.jsxIdentifier('data-tsd-source'),
-      t.stringLiteral(`${file}:${line}:${column}`),
+      t.stringLiteral(`${file}:${line}:${column + 1}`),
     ),
   )
 
@@ -228,14 +228,15 @@ export function addSourceToJsx(code: string, id: string) {
     })
     const didTransform = transform(ast, location)
     if (!didTransform) {
-      return { code }
+      return
     }
     return gen(ast, {
       sourceMaps: true,
+      retainLines: true,
       filename: id,
       sourceFileName: filePath,
     })
   } catch (e) {
-    return { code }
+    return
   }
 }

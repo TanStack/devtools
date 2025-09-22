@@ -174,7 +174,9 @@ export default function DevTools() {
           e.preventDefault()
           e.stopPropagation()
           fetch(
-            `__TSD_HOST__://localhost:__TSD_PORT__/__tsd/open-source?source=${encodeURIComponent(dataSource)}`,
+            `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
+              dataSource,
+            )}`,
           ).catch(() => {})
         }
       }
@@ -199,7 +201,11 @@ export default function DevTools() {
                   : true
             }
           >
-            <Trigger isOpen={isOpen} setIsOpen={toggleOpen} />
+            <Trigger
+              isOpen={isOpen}
+              setIsOpen={toggleOpen}
+              image={settings().triggerImage}
+            />
             <MainPanel isResizing={isResizing} isOpen={isOpen}>
               <ContentPanel
                 ref={(ref) => (panelRef = ref)}

@@ -17,6 +17,7 @@ import { Route as DemoStartServerFuncsRouteImport } from './routes/demo.start.se
 import { Route as DemoStartApiRequestRouteImport } from './routes/demo.start.api-request'
 import { ServerRoute as StudioServerRouteImport } from './routes/studio'
 import { ServerRoute as ApiDemoNamesServerRouteImport } from './routes/api.demo-names'
+import { ServerRoute as ApiChatServerRouteImport } from './routes/api.chat'
 
 const rootServerRouteImport = createServerRootRoute()
 
@@ -48,6 +49,11 @@ const StudioServerRoute = StudioServerRouteImport.update({
 const ApiDemoNamesServerRoute = ApiDemoNamesServerRouteImport.update({
   id: '/api/demo-names',
   path: '/api/demo-names',
+  getParentRoute: () => rootServerRouteImport,
+} as any)
+const ApiChatServerRoute = ApiChatServerRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
   getParentRoute: () => rootServerRouteImport,
 } as any)
 
@@ -95,27 +101,31 @@ export interface RootRouteChildren {
 }
 export interface FileServerRoutesByFullPath {
   '/studio': typeof StudioServerRoute
+  '/api/chat': typeof ApiChatServerRoute
   '/api/demo-names': typeof ApiDemoNamesServerRoute
 }
 export interface FileServerRoutesByTo {
   '/studio': typeof StudioServerRoute
+  '/api/chat': typeof ApiChatServerRoute
   '/api/demo-names': typeof ApiDemoNamesServerRoute
 }
 export interface FileServerRoutesById {
   __root__: typeof rootServerRouteImport
   '/studio': typeof StudioServerRoute
+  '/api/chat': typeof ApiChatServerRoute
   '/api/demo-names': typeof ApiDemoNamesServerRoute
 }
 export interface FileServerRouteTypes {
   fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/studio' | '/api/demo-names'
+  fullPaths: '/studio' | '/api/chat' | '/api/demo-names'
   fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/studio' | '/api/demo-names'
-  id: '__root__' | '/studio' | '/api/demo-names'
+  to: '/studio' | '/api/chat' | '/api/demo-names'
+  id: '__root__' | '/studio' | '/api/chat' | '/api/demo-names'
   fileServerRoutesById: FileServerRoutesById
 }
 export interface RootServerRouteChildren {
   StudioServerRoute: typeof StudioServerRoute
+  ApiChatServerRoute: typeof ApiChatServerRoute
   ApiDemoNamesServerRoute: typeof ApiDemoNamesServerRoute
 }
 
@@ -167,6 +177,13 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiDemoNamesServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatServerRouteImport
+      parentRoute: typeof rootServerRouteImport
+    }
   }
 }
 
@@ -181,6 +198,7 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 const rootServerRouteChildren: RootServerRouteChildren = {
   StudioServerRoute: StudioServerRoute,
+  ApiChatServerRoute: ApiChatServerRoute,
   ApiDemoNamesServerRoute: ApiDemoNamesServerRoute,
 }
 export const serverRouteTree = rootServerRouteImport

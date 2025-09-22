@@ -1,12 +1,14 @@
+import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { normalizePath } from 'vite'
 import chalk from 'chalk'
-import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { handleDevToolsViteRequest } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
+import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
+import { enhanceConsoleLog } from './enhance-logs'
+import type { Plugin } from 'vite'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
-import type { Plugin } from 'vite'
 
 export type TanStackDevtoolsViteConfig = {
   /**
@@ -28,6 +30,17 @@ export type TanStackDevtoolsViteConfig = {
     enabled: boolean
   }
   /**
+   * Whether to remove devtools from the production build.
+   * @default true
+   */
+  removeDevtoolsOnBuild?: boolean
+
+  /**
+   * Whether to log information to the console.
+   * @default true
+   */
+  logging?: boolean
+  /**
    * Configuration for source injection.
    */
   injectSource?: {
@@ -44,9 +57,10 @@ export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
 
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
-  let host = 'http'
+  const logging = args?.logging ?? true
   const enhancedLogsConfig = args?.enhancedLogs ?? { enabled: true }
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
+  const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const bus = new ServerEventBus(args?.eventBusConfig)
 
   return [
@@ -63,7 +77,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('dist') ||
           id.includes('build')
         )
-          return code
+          return
 
         return addSourceToJsx(code, id)
       },
@@ -71,9 +85,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
     {
       enforce: 'pre',
       name: '@tanstack/devtools:custom-server',
-      configResolved(config) {
-        host = config.server.https?.cert ? 'https' : 'http'
-      },
       apply(config) {
         // Custom server is only needed in development for piping events to the client
         return config.mode === 'development'
@@ -119,14 +130,29 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }),
         )
       },
-      transform(code) {
-        if (code.includes('__TSD_PORT__')) {
-          code = code.replace('__TSD_PORT__', String(port))
+    },
+    {
+      name: '@tanstack/devtools:remove-devtools-on-build',
+      apply(_, { command }) {
+        return command === 'build' && removeDevtoolsOnBuild
+      },
+      enforce: 'pre',
+      transform(code, id) {
+        if (
+          id.includes('node_modules') ||
+          id.includes('?raw') ||
+          id.includes('dist') ||
+          id.includes('build')
+        )
+          return
+        const transform = removeDevtools(code, id)
+        if (!transform) return
+        if (logging) {
+          console.log(
+            `\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`,
+          )
         }
-        if (code.includes('__TSD_HOST__')) {
-          code = code.replace('__TSD_HOST__', host)
-        }
-        return code
+        return transform
       },
     },
     {
@@ -141,45 +167,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('node_modules') ||
           id.includes('?raw') ||
           id.includes('dist') ||
-          id.includes('build')
+          id.includes('build') ||
+          !code.includes('console.')
         )
-          return code
+          return
 
-        if (!code.includes('console.')) {
-          return code
-        }
-        const lines = code.split('\n')
-        return lines
-          .map((line, lineNumber) => {
-            if (
-              line.trim().startsWith('//') ||
-              line.trim().startsWith('/**') ||
-              line.trim().startsWith('*')
-            ) {
-              return line
-            }
-            // Do not add for arrow functions or return statements
-            if (
-              line.replaceAll(' ', '').includes('=>console.') ||
-              line.includes('return console.')
-            ) {
-              return line
-            }
-
-            const column = line.indexOf('console.')
-            const location = `${id.replace(normalizePath(process.cwd()), '')}:${lineNumber + 1}:${column + 1}`
-            const logMessage = `'${chalk.magenta('LOG')} ${chalk.blueBright(`${location} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(id.replace(normalizePath(process.cwd()), ''))}&line=${lineNumber + 1}&column=${column + 1}`)}\\n → '`
-            if (line.includes('console.log(')) {
-              const newLine = `console.log(${logMessage},`
-              return line.replace('console.log(', newLine)
-            }
-            if (line.includes('console.error(')) {
-              const newLine = `console.error(${logMessage},`
-              return line.replace('console.error(', newLine)
-            }
-            return line
-          })
-          .join('\n')
+        return enhanceConsoleLog(code, id, port)
       },
     },
   ]

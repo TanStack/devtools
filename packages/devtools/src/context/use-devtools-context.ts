@@ -33,27 +33,35 @@ export const usePlugins = () => {
   const { setForceExpand } = useDrawContext()
 
   const plugins = createMemo(() => store.plugins)
-  const activePlugin = createMemo(() => store.state.activePlugin)
+  const activePlugins = createMemo(() => store.state.activePlugins)
 
   createEffect(() => {
-    if (activePlugin() == null) {
-      setForceExpand(false)
-    } else {
+    if (activePlugins().length === 0) {
       setForceExpand(true)
+    } else {
+      setForceExpand(false)
     }
   })
 
-  const setActivePlugin = (pluginId: string) => {
-    setStore((prev) => ({
-      ...prev,
-      state: {
-        ...prev.state,
-        activePlugin: pluginId,
-      },
-    }))
+  const toggleActivePlugins = (pluginId: string) => {
+    setStore((prev) => {
+      const isActive = prev.state.activePlugins.includes(pluginId)
+
+      const updatedPlugins = isActive
+        ? prev.state.activePlugins.filter((id) => id !== pluginId)
+        : [...prev.state.activePlugins, pluginId]
+      if (updatedPlugins.length > 3) return prev
+      return {
+        ...prev,
+        state: {
+          ...prev.state,
+          activePlugins: updatedPlugins,
+        },
+      }
+    })
   }
 
-  return { plugins, setActivePlugin, activePlugin }
+  return { plugins, toggleActivePlugins, activePlugins }
 }
 
 export const useDevtoolsState = () => {

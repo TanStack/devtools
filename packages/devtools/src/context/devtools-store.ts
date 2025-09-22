@@ -61,11 +61,16 @@ export type DevtoolsStore = {
      * @default "dark"
      */
     theme: 'light' | 'dark'
+    /**
+     * The image used for the dev tools trigger
+     * @default TanStackLogo
+     */
+    triggerImage: string
   }
   state: {
     activeTab: TabName
     height: number
-    activePlugin?: string | undefined
+    activePlugins: Array<string>
     persistOpen: boolean
   }
   plugins?: Array<TanStackDevtoolsPlugin>
@@ -82,14 +87,16 @@ export const initialState: DevtoolsStore = {
     urlFlag: 'tanstack-devtools',
     theme:
       typeof window !== 'undefined' &&
+      typeof window.matchMedia !== 'undefined' &&
       window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
+    triggerImage: '',
   },
   state: {
     activeTab: 'plugins',
     height: 400,
-    activePlugin: undefined,
+    activePlugins: [],
     persistOpen: false,
   },
 }

@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.3.5
+
+### Patch Changes
+
+- Improvements to the json tree component, now supports expansion length config ([#132](https://github.com/TanStack/devtools/pull/132))
+
 ## 0.3.4
 
 ### Patch Changes

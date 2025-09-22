@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/solid-devtools",
-  "version": "0.6.6",
+  "version": "0.7.0",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Solid application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -26,12 +26,6 @@
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"
-      }
-    },
-    "./production": {
-      "import": {
-        "types": "./dist/esm/production.d.ts",
-        "default": "./dist/esm/production.js"
       }
     },
     "./package.json": "./package.json"

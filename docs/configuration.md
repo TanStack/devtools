@@ -57,6 +57,13 @@ type KeyboardKey = ModifierKey | (string & {});
 
 ```
 
+- `triggerImage` - The image used for the dev tools trigger
+
+```ts
+{ triggerImage: string }
+
+```
+
 - `urlFlag` - The required flag that must be present in the url to enable devtools.
 
 ```ts
@@ -99,7 +106,7 @@ createRoot(document.getElementById('root')!).render(
     <App />
 
     <TanStackDevtools
-      config={{ hideUntilHover: true,  }}
+      config={{ hideUntilHover: true }}
       eventBusConfig={{ debug: true }}
       plugins={[
         {

@@ -1,5 +1,45 @@
 # @tanstack/devtools-event-client
 
+## 0.3.3
+
+### Patch Changes
+
+- fix issue with sourcemaps and vite plugin ([#151](https://github.com/TanStack/devtools/pull/151))
+
+## 0.3.2
+
+### Patch Changes
+
+- improve devtools removal and fix issues with css ([#148](https://github.com/TanStack/devtools/pull/148))
+
+## 0.3.1
+
+### Patch Changes
+
+- improved accuracy of go to source to go to exact column and also improved accuracy of enhanced console logs to go to exact console log location ([#139](https://github.com/TanStack/devtools/pull/139))
+
+## 0.3.0
+
+### Minor Changes
+
+- Allow the vite plugin to remove the devtools completely from the build output bundle for 0 production footprint ([#136](https://github.com/TanStack/devtools/pull/136))
+
+### Patch Changes
+
+- downgrade vite peer dep to support v6 ([#138](https://github.com/TanStack/devtools/pull/138))
+
+## 0.2.14
+
+### Patch Changes
+
+- improve open-source by using location origin ([#132](https://github.com/TanStack/devtools/pull/132))
+
+## 0.2.13
+
+### Patch Changes
+
+- improve open-source by using a 3rd party package ([#121](https://github.com/TanStack/devtools/pull/121))
+
 ## 0.2.12
 
 ### Patch Changes
