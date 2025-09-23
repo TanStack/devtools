@@ -18,7 +18,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
     #Component: any
     #ThemeProvider: any
 
-    constructor() {}
+    constructor() { }
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
       const { lazy } = await import('solid-js')
@@ -30,12 +30,13 @@ export function constructCoreClass(Component: () => JSX.Element) {
       const dispose = render(() => {
         // eslint-disable-next-line @typescript-eslint/require-await
         this.#Component = lazy(async () => ({ default: Component }))
-        const Devtools = this.#Component
+
         this.#ThemeProvider = lazy(() =>
           import('@tanstack/devtools-ui').then((mod) => ({
             default: mod.ThemeContextProvider,
           })),
         )
+        const Devtools = this.#Component
         const ThemeProvider = this.#ThemeProvider
 
         return (
@@ -64,8 +65,8 @@ export function constructCoreClass(Component: () => JSX.Element) {
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
-    unmount() {}
+    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') { }
+    unmount() { }
   }
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }
