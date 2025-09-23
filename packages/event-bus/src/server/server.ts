@@ -12,11 +12,10 @@ export interface TanStackDevtoolsEvent<
 }
 // Used so no new server starts up when HMR happens
 declare global {
-   
   var __TANSTACK_DEVTOOLS_SERVER__: http.Server | null
-   
+
   var __TANSTACK_DEVTOOLS_WSS_SERVER__: WebSocketServer | null
-   
+
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
 }
 

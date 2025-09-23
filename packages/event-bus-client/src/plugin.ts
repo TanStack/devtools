@@ -4,7 +4,6 @@ interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   pluginId?: string // Optional pluginId to filter events by plugin
 }
 declare global {
-   
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
 }
 
