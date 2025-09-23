@@ -1,14 +1,17 @@
 /** @jsxImportSource solid-js - we use Solid.js as JSX here */
 
-import type { JSX } from "solid-js";
-import type { DevtoolsPanelProps } from "./panel";
+import type { JSX } from 'solid-js'
+import type { DevtoolsPanelProps } from './panel'
 
-export function createSolidPlugin(name: string, Component: (props: DevtoolsPanelProps) => JSX.Element) {
+export function createSolidPlugin(
+  name: string,
+  Component: (props: DevtoolsPanelProps) => JSX.Element,
+) {
   function Plugin() {
     return {
       name: name,
       render: (_el: HTMLElement, theme: 'light' | 'dark') => {
-        return <Component theme={theme} />;
+        return <Component theme={theme} />
       },
     }
   }
