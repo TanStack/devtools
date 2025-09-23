@@ -1,7 +1,7 @@
 /** @jsxImportSource solid-js - we use Solid.js as JSX here */
 
 /**
- * Constructs the core class for the Devtools. 
+ * Constructs the core class for the Devtools.
  * This utility is used to construct a lazy loaded Solid component for the Devtools.
  * It returns a tuple containing the main DevtoolsCore class and a NoOpDevtoolsCore class.
  * The NoOpDevtoolsCore class is a no-op implementation that can be used for production if you want to explicitly exclude
@@ -16,8 +16,7 @@ export function constructCoreClass(importPath: string) {
     #Component: any
     #ThemeProvider: any
 
-    constructor() {
-    }
+    constructor() {}
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
       const { lazy } = await import('solid-js')
@@ -27,7 +26,7 @@ export function constructCoreClass(importPath: string) {
       }
       const mountTo = el
       const dispose = render(() => {
-        this.#Component = lazy(() => import(/** @vite-ignore */importPath))
+        this.#Component = lazy(() => import(/** @vite-ignore */ importPath))
         const Devtools = this.#Component
         this.#ThemeProvider = lazy(() =>
           import('@tanstack/devtools-ui').then((mod) => ({
@@ -62,8 +61,8 @@ export function constructCoreClass(importPath: string) {
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') { }
-    unmount() { }
+    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
+    unmount() {}
   }
   return [DevtoolsCore, NoOpDevtoolsCore] as const
-} 
+}

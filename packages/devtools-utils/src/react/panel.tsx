@@ -21,23 +21,28 @@ export interface DevtoolsPanelProps {
  * const [ReactDevtoolsPanel, NoOpReactDevtoolsPanel] = createReactPanel('@tanstack/devtools-react', 'DevtoolsCore')
  * ```
  */
-export function createReactPanel<TComponentProps extends DevtoolsPanelProps | undefined, TCoreDevtoolsClass extends {
-  mount: (el: HTMLElement, theme: 'light' | 'dark') => void
-  unmount: () => void
-}>(devtoolsPackageName: string, importName = 'default') {
+export function createReactPanel<
+  TComponentProps extends DevtoolsPanelProps | undefined,
+  TCoreDevtoolsClass extends {
+    mount: (el: HTMLElement, theme: 'light' | 'dark') => void
+    unmount: () => void
+  },
+>(devtoolsPackageName: string, importName = 'default') {
   function Panel(props: TComponentProps) {
     const devToolRef = useRef<HTMLDivElement>(null)
     const devtools = useRef<TCoreDevtoolsClass | null>(null)
     useEffect(() => {
       if (devtools.current) return
 
-      import(/* @vite-ignore */devtoolsPackageName).then(({ [importName]: Core }) => {
-        devtools.current = new Core()
+      import(/* @vite-ignore */ devtoolsPackageName).then(
+        ({ [importName]: Core }) => {
+          devtools.current = new Core()
 
-        if (devToolRef.current && devtools.current) {
-          devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
-        }
-      })
+          if (devToolRef.current && devtools.current) {
+            devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
+          }
+        },
+      )
 
       return () => {
         devtools.current?.unmount()
@@ -48,7 +53,7 @@ export function createReactPanel<TComponentProps extends DevtoolsPanelProps | un
   }
 
   function NoOpPanel() {
-    return null;
+    return null
   }
-  return [Panel, NoOpPanel] as const;
+  return [Panel, NoOpPanel] as const
 }

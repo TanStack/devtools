@@ -6,12 +6,16 @@ export interface DevtoolsPanelProps {
   theme?: 'light' | 'dark'
 }
 
-export function createSolidPanel<TComponentProps extends DevtoolsPanelProps | undefined>(importPath: string, importName = "default") {
+export function createSolidPanel<
+  TComponentProps extends DevtoolsPanelProps | undefined,
+>(importPath: string, importName = 'default') {
   function Panel(props: TComponentProps) {
     let devToolRef: HTMLDivElement | undefined
 
     onMount(async () => {
-      const devtools = await import(/* @vite-ignore */importPath).then(mod => new mod[importName]())
+      const devtools = await import(/* @vite-ignore */ importPath).then(
+        (mod) => new mod[importName](),
+      )
       if (devToolRef) {
         devtools.mount(devToolRef, props?.theme ?? 'dark')
 
@@ -25,9 +29,8 @@ export function createSolidPanel<TComponentProps extends DevtoolsPanelProps | un
   }
 
   function NoOpPanel() {
-    return null;
+    return null
   }
 
-  return [Panel, NoOpPanel] as const;
+  return [Panel, NoOpPanel] as const
 }
-

@@ -17,8 +17,8 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/react/index.ts', "./src/solid/index.ts"],
+    entry: ['./src/react/index.ts', './src/solid/index.ts'],
     srcDir: './src',
-    cjs: false
+    cjs: false,
   }),
 )
