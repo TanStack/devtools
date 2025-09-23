@@ -16,7 +16,7 @@ export function constructCoreClass(importPath: string) {
     #Component: any
     #ThemeProvider: any
 
-    constructor() {}
+    constructor() { }
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
       const { lazy } = await import('solid-js')
@@ -61,8 +61,10 @@ export function constructCoreClass(importPath: string) {
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
-    unmount() {}
+    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') { }
+    unmount() { }
   }
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }
+
+export type ClassType = ReturnType<typeof constructCoreClass>[0]

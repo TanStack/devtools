@@ -27,22 +27,21 @@ export function createReactPanel<
     mount: (el: HTMLElement, theme: 'light' | 'dark') => void
     unmount: () => void
   },
->(devtoolsPackageName: string, importName = 'default') {
+>(
+  CoreClass: new () => TCoreDevtoolsClass
+) {
   function Panel(props: TComponentProps) {
     const devToolRef = useRef<HTMLDivElement>(null)
     const devtools = useRef<TCoreDevtoolsClass | null>(null)
     useEffect(() => {
       if (devtools.current) return
 
-      import(/* @vite-ignore */ devtoolsPackageName).then(
-        ({ [importName]: Core }) => {
-          devtools.current = new Core()
+      devtools.current = new CoreClass()
 
-          if (devToolRef.current && devtools.current) {
-            devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
-          }
-        },
-      )
+      if (devToolRef.current) {
+        devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
+      }
+
 
       return () => {
         devtools.current?.unmount()

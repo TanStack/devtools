@@ -1,6 +1,7 @@
 /** @jsxImportSource solid-js - we use Solid.js as JSX here */
 
 import { onCleanup, onMount } from 'solid-js'
+import type { ClassType } from './class'
 
 export interface DevtoolsPanelProps {
   theme?: 'light' | 'dark'
@@ -8,14 +9,13 @@ export interface DevtoolsPanelProps {
 
 export function createSolidPanel<
   TComponentProps extends DevtoolsPanelProps | undefined,
->(importPath: string, importName = 'default') {
+>(CoreClass: ClassType) {
   function Panel(props: TComponentProps) {
     let devToolRef: HTMLDivElement | undefined
 
-    onMount(async () => {
-      const devtools = await import(/* @vite-ignore */ importPath).then(
-        (mod) => new mod[importName](),
-      )
+    onMount(() => {
+      const devtools = new CoreClass()
+
       if (devToolRef) {
         devtools.mount(devToolRef, props?.theme ?? 'dark')
 
