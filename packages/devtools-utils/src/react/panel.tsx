@@ -52,8 +52,8 @@ export function createReactPanel<
     return <div style={{ height: '100%' }} ref={devToolRef} />
   }
 
-  function NoOpPanel() {
-    return null
+  function NoOpPanel(_props: TComponentProps) {
+    return <></>
   }
   return [Panel, NoOpPanel] as const
 }

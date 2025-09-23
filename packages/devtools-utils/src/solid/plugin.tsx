@@ -18,7 +18,7 @@ export function createSolidPlugin(
   function NoOpPlugin() {
     return {
       name: name,
-      render: (_el: HTMLElement, _theme: 'light' | 'dark') => null,
+      render: (_el: HTMLElement, _theme: 'light' | 'dark') => <></>,
     }
   }
   return [Plugin, NoOpPlugin] as const
