@@ -1,6 +1,6 @@
 /** @jsxImportSource solid-js - we use Solid.js as JSX here */
 
-import type { JSX, } from 'solid-js'
+import type { JSX } from 'solid-js'
 
 /**
  * Constructs the core class for the Devtools.
@@ -18,7 +18,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
     #Component: any
     #ThemeProvider: any
 
-    constructor() { }
+    constructor() {}
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
       const { lazy } = await import('solid-js')
@@ -64,8 +64,8 @@ export function constructCoreClass(Component: () => JSX.Element) {
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') { }
-    unmount() { }
+    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
+    unmount() {}
   }
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }
