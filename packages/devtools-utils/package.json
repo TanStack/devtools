@@ -37,16 +37,15 @@
   "engines": {
     "node": ">=18"
   },
+  "dependencies": {
+    "@tanstack/devtools-ui": "workspace:^"
+  },
   "peerDependencies": {
     "@types/react": ">=19.0.0",
     "react": ">=19.0.0",
-    "solid-js": ">=1.9.7",
-    "@tanstack/devtools-ui": "workspace:^"
+    "solid-js": ">=1.9.7"
   },
   "peerDependenciesMeta": {
-    "@tanstack/devtools-ui": {
-      "optional": true
-    },
     "react": {
       "optional": true
     },
