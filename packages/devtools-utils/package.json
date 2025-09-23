@@ -18,18 +18,17 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "main": "dist/cjs/index.cjs",
-  "module": "dist/esm/index.js",
   "exports": {
-    ".": {
+    "./react": {
       "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
+        "types": "./dist/esm/react/index.d.ts",
+        "default": "./dist/esm/react/index.js"
+      }
+    },
+    "./solid": {
+      "import": {
+        "types": "./dist/esm/solid/index.d.ts",
+        "default": "./dist/esm/solid/index.js"
       }
     },
     "./package.json": "./package.json"
@@ -37,6 +36,25 @@
   "sideEffects": false,
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@tanstack/devtools-ui": "workspace:^"
+  },
+  "peerDependencies": {
+    "@types/react": ">=17.0.0",
+    "react": ">=17.0.0",
+    "solid-js": ">=1.9.7"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
   },
   "files": [
     "dist/",
