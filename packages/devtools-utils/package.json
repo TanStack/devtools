@@ -26,10 +26,20 @@
       }
     },
     "./solid": {
-      "import": {
+      "browser": {
+        "development": {
+          "types": "./dist/solid/esm/index.d.ts",
+          "import": "./dist/solid/esm/dev.js"
+        },
         "types": "./dist/solid/esm/index.d.ts",
-        "default": "./dist/solid/esm/index.js"
-      }
+        "import": "./dist/solid/esm/index.js"
+      },
+      "node": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
+      "types": "./dist/solid/esm/index.d.ts",
+      "import": "./dist/solid/esm/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -68,9 +78,11 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && vite build --config ./vite.config.solid.ts "
+    "build": "vite build && tsup "
   },
   "devDependencies": {
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.8"
   }
 }
