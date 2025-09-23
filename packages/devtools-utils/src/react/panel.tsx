@@ -27,9 +27,7 @@ export function createReactPanel<
     mount: (el: HTMLElement, theme: 'light' | 'dark') => void
     unmount: () => void
   },
->(
-  CoreClass: new () => TCoreDevtoolsClass
-) {
+>(CoreClass: new () => TCoreDevtoolsClass) {
   function Panel(props: TComponentProps) {
     const devToolRef = useRef<HTMLDivElement>(null)
     const devtools = useRef<TCoreDevtoolsClass | null>(null)
@@ -41,7 +39,6 @@ export function createReactPanel<
       if (devToolRef.current) {
         devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
       }
-
 
       return () => {
         devtools.current?.unmount()
