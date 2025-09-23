@@ -20,12 +20,12 @@ export function createCounter() {
   return {
     getCount: () => count,
     increment: () => {
-      history.push(count)
       count++
+      history.push(count)
     },
     decrement: () => {
-      history.push(count)
       count--
+      history.push(count)
     },
   };
 }
@@ -82,22 +82,22 @@ export function createCounter() {
   return {
     getCount: () => count,
     increment: () => {
-      history.push(count)
       count++
+      history.push(count)
 
       // The emit eventSuffix must match that of the EventMap defined in eventClient.ts
       DevtoolsEventClient.emit('counter-state', {
-        count: count,
-        history: history,
+        count,
+        history,
       })
     },
     decrement: () => {
-      history.push(count)
       count--
+      history.push(count)
 
       DevtoolsEventClient.emit('counter-state', {
-        count: count,
-        history: history,
+        count,
+        history,
       })
     },
   }
