@@ -41,7 +41,9 @@ export function createReactPanel<
       }
 
       return () => {
-        devtools.current?.unmount()
+        if (devToolRef.current) {
+          devtools.current?.unmount()
+        }
       }
     }, [props?.theme])
 
