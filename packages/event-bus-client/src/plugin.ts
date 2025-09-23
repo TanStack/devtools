@@ -4,7 +4,7 @@ interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   pluginId?: string // Optional pluginId to filter events by plugin
 }
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
 }
 

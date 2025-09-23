@@ -12,11 +12,11 @@ export interface TanStackDevtoolsEvent<
 }
 // Used so no new server starts up when HMR happens
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __TANSTACK_DEVTOOLS_SERVER__: http.Server | null
-  // eslint-disable-next-line no-var
+   
   var __TANSTACK_DEVTOOLS_WSS_SERVER__: WebSocketServer | null
-  // eslint-disable-next-line no-var
+   
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
 }
 
