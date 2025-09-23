@@ -618,10 +618,10 @@ importers:
         specifier: workspace:^
         version: link:../devtools-ui
       '@types/react':
-        specifier: '>=17.0.0'
+        specifier: '>=19.0.0'
         version: 19.1.13
       react:
-        specifier: '>=17.0.0'
+        specifier: '>=19.0.0'
         version: 19.1.1
       solid-js:
         specifier: '>=1.9.7'

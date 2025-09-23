@@ -21,14 +21,14 @@
   "exports": {
     "./react": {
       "import": {
-        "types": "./dist/esm/react/index.d.ts",
-        "default": "./dist/esm/react/index.js"
+        "types": "./dist/react/esm/index.d.ts",
+        "default": "./dist/react/esm/index.js"
       }
     },
     "./solid": {
       "import": {
-        "types": "./dist/esm/solid/index.d.ts",
-        "default": "./dist/esm/solid/index.js"
+        "types": "./dist/solid/esm/index.d.ts",
+        "default": "./dist/solid/esm/index.js"
       }
     },
     "./package.json": "./package.json"
@@ -41,8 +41,8 @@
     "@tanstack/devtools-ui": "workspace:^"
   },
   "peerDependencies": {
-    "@types/react": ">=17.0.0",
-    "react": ">=17.0.0",
+    "@types/react": ">=19.0.0",
+    "react": ">=19.0.0",
     "solid-js": ">=1.9.7"
   },
   "peerDependenciesMeta": {
@@ -68,6 +68,6 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build"
+    "build": "vite build && vite build --config ./vite.config.solid.ts"
   }
 }

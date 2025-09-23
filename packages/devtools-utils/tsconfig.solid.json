@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "react"
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
   },
   "extends": "../../tsconfig.json",
   "include": [
@@ -9,7 +9,6 @@
     "eslint.config.js",
     "vite.config.ts",
     "tests",
-    "src/server",
-    "vite.config.solid.ts"
+    "src/server"
   ]
 }
