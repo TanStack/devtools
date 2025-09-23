@@ -4,9 +4,7 @@
     "jsxImportSource": "react"
   },
   "extends": "../../tsconfig.json",
-  "exclude": [
-    "src/solid/**"
-  ],
+  "exclude": ["src/solid/**"],
   "include": [
     "src/react",
     "eslint.config.js",
