@@ -19,7 +19,6 @@ export default mergeConfig(
   tanstackViteConfig({
     entry: ['./src/react/index.ts'],
     srcDir: './src/react',
-    tsconfigPath: './tsconfig.json',
     outDir: './dist/react',
     cjs: false,
   }),

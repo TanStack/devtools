@@ -4,12 +4,14 @@
     "jsxImportSource": "react"
   },
   "extends": "../../tsconfig.json",
+  "exclude": [
+    "src/solid/**"
+  ],
   "include": [
-    "src",
+    "src/react",
     "eslint.config.js",
     "vite.config.ts",
     "tests",
-    "src/server",
     "vite.config.solid.ts"
   ]
 }

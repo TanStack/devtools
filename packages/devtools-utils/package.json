@@ -68,6 +68,9 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && vite build --config ./vite.config.solid.ts"
+    "build": "vite build && vite build --config ./vite.config.solid.ts "
+  },
+  "devDependencies": {
+    "vite-plugin-solid": "^2.11.8"
   }
 }
