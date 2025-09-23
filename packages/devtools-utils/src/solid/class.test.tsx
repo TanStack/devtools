@@ -1,3 +1,4 @@
+/** @jsxImportSource solid-js - we use Solid.js as JSX here */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { constructCoreClass } from './class'
 
@@ -28,7 +29,7 @@ describe('constructCoreClass', () => {
   })
   it('should export DevtoolsCore and NoOpDevtoolsCore classes and make no calls to Solid.js primitives', () => {
     const [DevtoolsCore, NoOpDevtoolsCore] = constructCoreClass(
-      '@test/devtools-mock-package',
+      () => <div>Test Component</div>,
     )
     expect(DevtoolsCore).toBeDefined()
     expect(NoOpDevtoolsCore).toBeDefined()
@@ -36,14 +37,14 @@ describe('constructCoreClass', () => {
   })
 
   it('DevtoolsCore should call solid primitives when mount is called', async () => {
-    const [DevtoolsCore, _] = constructCoreClass('@test/devtools-mock-package')
+    const [DevtoolsCore, _] = constructCoreClass(() => <div>Test Component</div>)
     const instance = new DevtoolsCore()
     await instance.mount(document.createElement('div'), 'dark')
     expect(renderMock).toHaveBeenCalled()
   })
 
   it('DevtoolsCore should throw if mount is called twice without unmounting', async () => {
-    const [DevtoolsCore, _] = constructCoreClass('@test/devtools-mock-package')
+    const [DevtoolsCore, _] = constructCoreClass(() => <div>Test Component</div>)
     const instance = new DevtoolsCore()
     await instance.mount(document.createElement('div'), 'dark')
     await expect(
@@ -52,13 +53,13 @@ describe('constructCoreClass', () => {
   })
 
   it('DevtoolsCore should throw if unmount is called before mount', () => {
-    const [DevtoolsCore, _] = constructCoreClass('@test/devtools-mock-package')
+    const [DevtoolsCore, _] = constructCoreClass(() => <div>Test Component</div>)
     const instance = new DevtoolsCore()
     expect(() => instance.unmount()).toThrow('Devtools is not mounted')
   })
 
   it('DevtoolsCore should allow mount after unmount', async () => {
-    const [DevtoolsCore, _] = constructCoreClass('@test/devtools-mock-package')
+    const [DevtoolsCore, _] = constructCoreClass(() => <div>Test Component</div>)
     const instance = new DevtoolsCore()
     await instance.mount(document.createElement('div'), 'dark')
     instance.unmount()
@@ -69,7 +70,7 @@ describe('constructCoreClass', () => {
 
   it('NoOpDevtoolsCore should not call any solid primitives when mount is called', async () => {
     const [_, NoOpDevtoolsCore] = constructCoreClass(
-      '@test/devtools-mock-package',
+      () => <div>Test Component</div>,
     )
     const noOpInstance = new NoOpDevtoolsCore()
     await noOpInstance.mount(document.createElement('div'), 'dark')
@@ -81,7 +82,7 @@ describe('constructCoreClass', () => {
 
   it('NoOpDevtoolsCore should not throw if mount is called multiple times', async () => {
     const [_, NoOpDevtoolsCore] = constructCoreClass(
-      '@test/devtools-mock-package',
+      () => <div>Test Component</div>,
     )
     const noOpInstance = new NoOpDevtoolsCore()
     await noOpInstance.mount(document.createElement('div'), 'dark')
@@ -92,7 +93,7 @@ describe('constructCoreClass', () => {
 
   it('NoOpDevtoolsCore should not throw if unmount is called before mount', () => {
     const [_, NoOpDevtoolsCore] = constructCoreClass(
-      '@test/devtools-mock-package',
+      () => <div>Test Component</div>,
     )
     const noOpInstance = new NoOpDevtoolsCore()
     expect(() => noOpInstance.unmount()).not.toThrow()
@@ -100,7 +101,7 @@ describe('constructCoreClass', () => {
 
   it('NoOpDevtoolsCore should not throw if unmount is called after mount', async () => {
     const [_, NoOpDevtoolsCore] = constructCoreClass(
-      '@test/devtools-mock-package',
+      () => <div>Test Component</div>,
     )
     const noOpInstance = new NoOpDevtoolsCore()
     await noOpInstance.mount(document.createElement('div'), 'dark')
