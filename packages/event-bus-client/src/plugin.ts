@@ -151,19 +151,13 @@ export class EventClient<
   }
 
   private dispatchCustomEventShim(eventName: string, detail: any) {
-    if (typeof document === 'undefined') {
-      this.debugLog('No document available, cannot dispatch event')
-      return false
-    }
-    // Fallback for environments that don't support CustomEvent constructor
-    const event = document.createEvent('CustomEvent')
-    event.initCustomEvent(eventName, false, false, detail)
     try {
-      const dispatch = this.#eventTarget().dispatchEvent(event)
-      return dispatch
+      const event = new Event(eventName, {
+        detail: detail
+      } as any)
+      this.#eventTarget().dispatchEvent(event)
     } catch (e) {
-      this.debugLog('Failed to dispatch event via shim', e)
-      return false
+      this.debugLog('Failed to dispatch shim event')
     }
   }
 
