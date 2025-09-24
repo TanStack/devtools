@@ -5,7 +5,6 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { StudioPlugin } from './prisma-plugin'
 import ClientPlugin from './client-plugin'
 
-
 const queryClient = new QueryClient()
 
 export default function DevtoolsExample() {

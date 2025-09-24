@@ -14,10 +14,10 @@ type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
 export class EventClient<
   TEventMap extends Record<string, any>,
   TPluginId extends string = TEventMap extends Record<infer P, any>
-  ? P extends `${infer Id}:${string}`
-  ? Id
-  : never
-  : never,
+    ? P extends `${infer Id}:${string}`
+      ? Id
+      : never
+    : never,
 > {
   #pluginId: TPluginId
   #eventTarget: () => EventTarget
@@ -136,8 +136,8 @@ export class EventClient<
         'No event mechanism available, running in non-web environment',
       )
       return {
-        addEventListener: () => { },
-        removeEventListener: () => { },
+        addEventListener: () => {},
+        removeEventListener: () => {},
         dispatchEvent: () => false,
       }
     }
@@ -153,7 +153,7 @@ export class EventClient<
   private dispatchCustomEventShim(eventName: string, detail: any) {
     try {
       const event = new Event(eventName, {
-        detail: detail
+        detail: detail,
       } as any)
       this.#eventTarget().dispatchEvent(event)
     } catch (e) {
@@ -163,18 +163,15 @@ export class EventClient<
 
   private dispatchCustomEvent(eventName: string, detail?: any) {
     try {
-      this.#eventTarget().dispatchEvent(
-        new CustomEvent(eventName, { detail }),
-      )
-    }
-    catch (e) {
+      this.#eventTarget().dispatchEvent(new CustomEvent(eventName, { detail }))
+    } catch (e) {
       this.dispatchCustomEventShim(eventName, detail)
     }
   }
 
   private emitEventToBus(event: TanStackDevtoolsEvent<string, any>) {
     this.debugLog('Emitting event to client bus', event)
-    this.dispatchCustomEvent("tanstack-dispatch-event", event)
+    this.dispatchCustomEvent('tanstack-dispatch-event', event)
   }
 
   emit<
@@ -182,8 +179,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-    ? S
-    : never,
+      ? S
+      : never,
   >(
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
@@ -210,8 +207,8 @@ export class EventClient<
       keyof TEventMap,
       `${TPluginId & string}:${string}`
     > extends `${TPluginId & string}:${infer S}`
-    ? S
-    : never,
+      ? S
+      : never,
   >(
     eventSuffix: TSuffix,
     cb: (
