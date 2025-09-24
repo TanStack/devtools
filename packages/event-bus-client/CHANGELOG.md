@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.1
+
+### Patch Changes
+
+- fixed an issue where custom events were not working in angular ([#174](https://github.com/TanStack/devtools/pull/174))
+
 ## 0.3.0
 
 ### Minor Changes
