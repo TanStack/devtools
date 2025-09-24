@@ -37,6 +37,7 @@ stats.html
 .vscode/settings.json
 .idea
 
+
 *.log
 .DS_Store
 .cache
@@ -57,3 +58,7 @@ vite.config.ts.timestamp-*
 .angular
 .nitro
 .sonda
+
+
+# temporary
+/examples/angular
