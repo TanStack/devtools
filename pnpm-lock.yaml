@@ -75,7 +75,7 @@ importers:
   examples/react/basic:
     dependencies:
       '@tanstack/devtools-event-client':
-        specifier: 0.3.1
+        specifier: 0.3.2
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
         specifier: ^0.7.0
@@ -130,7 +130,7 @@ importers:
   examples/react/custom-devtools:
     dependencies:
       '@tanstack/devtools-event-client':
-        specifier: 0.3.1
+        specifier: 0.3.2
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
         specifier: ^0.7.0
@@ -210,7 +210,7 @@ importers:
   examples/react/https:
     dependencies:
       '@tanstack/devtools-event-client':
-        specifier: 0.3.1
+        specifier: 0.3.2
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
         specifier: ^0.7.0
@@ -289,7 +289,7 @@ importers:
         specifier: ^0.3.2
         version: link:../../../packages/event-bus
       '@tanstack/devtools-event-client':
-        specifier: 0.3.1
+        specifier: 0.3.2
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
         specifier: ^0.7.0

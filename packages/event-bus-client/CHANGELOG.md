@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.2
+
+### Patch Changes
+
+- fix issue with constructor causing side-effects ([#178](https://github.com/TanStack/devtools/pull/178))
+
 ## 0.3.1
 
 ### Patch Changes
