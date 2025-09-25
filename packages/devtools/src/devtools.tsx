@@ -188,9 +188,30 @@ export default function DevTools() {
   })
   const { theme } = useTheme()
 
+  const [gooberCss, setGooberCss] = createSignal("");
+  createEffect(() => {
+    // Setup mutation observer for goober styles with id `_goober
+    const gooberStyles = document.querySelector('#_goober')
+    if (gooberStyles) {
+      setGooberCss(gooberStyles.textContent)
+      const observer = new MutationObserver(() => {
+        setGooberCss(gooberStyles.textContent)
+     })
+      observer.observe(gooberStyles, {
+        childList: true, // observe direct children
+        subtree: true, // and lower descendants too
+        characterDataOldValue: true, // pass old data to callback
+      })
+      onCleanup(() => {
+        observer.disconnect()
+      })
+    }
+  })
+
   return (
     <ThemeContextProvider theme={theme()}>
-      <Portal mount={(pip().pipWindow ?? window).document.body}>
+      <Portal mount={(pip().pipWindow ?? window).document.body} useShadow>
+        <style>{gooberCss()}</style>
         <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
           <Show
             when={
