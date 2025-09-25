@@ -74,11 +74,6 @@ export class EventClient<
     this.#connected = false
     this.#connectIntervalId = null
     this.#connectEveryMs = 500
-
-    if (typeof CustomEvent !== 'undefined') {
-      this.#connectFunction()
-      this.startConnectLoop()
-    }
   }
 
   private startConnectLoop() {
