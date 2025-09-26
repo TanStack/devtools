@@ -74,6 +74,7 @@
     "publint": "^0.3.13",
     "sherif": "^1.6.1",
     "size-limit": "^11.2.0",
+    "tinyglobby": "^0.2.15",
     "typescript": "~5.9.2",
     "vite": "^7.1.7",
     "vitest": "^3.2.4"
