@@ -188,7 +188,7 @@ export default function DevTools() {
   })
   const { theme } = useTheme()
 
-  const [gooberCss, setGooberCss] = createSignal("");
+  const [gooberCss, setGooberCss] = createSignal('')
   createEffect(() => {
     // Setup mutation observer for goober styles with id `_goober
     const gooberStyles = document.querySelector('#_goober')
@@ -196,7 +196,7 @@ export default function DevTools() {
       setGooberCss(gooberStyles.textContent)
       const observer = new MutationObserver(() => {
         setGooberCss(gooberStyles.textContent)
-     })
+      })
       observer.observe(gooberStyles, {
         childList: true, // observe direct children
         subtree: true, // and lower descendants too
