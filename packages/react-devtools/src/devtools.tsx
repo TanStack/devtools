@@ -157,15 +157,10 @@ export const TanStackDevtools = ({
                   },
             render: (e, theme) => {
               const id = e.getAttribute('id')!
-              const target = e.ownerDocument.getElementById(id)
-
-              if (target) {
-                setPluginContainers((prev) => ({
-                  ...prev,
-                  [id]: e,
-                }))
-              }
-
+              setPluginContainers((prev) => ({
+                ...prev,
+                [id]: e,
+              }))
               convertRender(plugin.render, setPluginComponents, e, theme)
             },
           }
