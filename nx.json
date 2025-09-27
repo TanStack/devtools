@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "defaultBase": "main",
+  "nxCloudId": "68d74dda9d18071f643ecda4",
   "useInferencePlugins": false,
   "parallel": 5,
   "namedInputs": {
@@ -56,6 +57,5 @@
       "cache": true,
       "inputs": ["{workspaceRoot}/**/package.json"]
     }
-  },
-  "nxCloudId": "68d74dda9d18071f643ecda4"
+  }
 }
