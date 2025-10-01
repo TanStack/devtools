@@ -121,7 +121,7 @@ export function DevtoolPanel() {
 
   useEffect(() => {
     // subscribe to the emitted event
-    const cleanup = DevtoolsEventClient.on("counter-state", e => setState(e.payload)
+    const cleanup = DevtoolsEventClient.on("counter-state", e => setState(e.payload))
     return cleanup
   }, [])
 
@@ -129,7 +129,7 @@ export function DevtoolPanel() {
     <div>
       <div>{state.count}</div>
       <div>{JSON.stringify(state.history)}</div>
-    <div/>
+    </div>
   )
 }
 ```
