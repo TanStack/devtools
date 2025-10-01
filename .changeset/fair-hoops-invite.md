@@ -2,4 +2,4 @@
 '@tanstack/devtools': minor
 ---
 
-add `workers` export
+add `workerd` export condition
