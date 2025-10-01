@@ -21,6 +21,10 @@
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "exports": {
+    "workerd": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/server.js"
+    },
     "browser": {
       "development": {
         "types": "./dist/index.d.ts",
