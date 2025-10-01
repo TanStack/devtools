@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.15
+
+### Patch Changes
+
+- add `workerd` export condition ([#193](https://github.com/TanStack/devtools/pull/193))
+
 ## 0.6.14
 
 ### Patch Changes
