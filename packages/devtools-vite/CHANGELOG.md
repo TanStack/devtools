@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.4
+
+### Patch Changes
+
+- dedupe solid deps for no issues in the console ([#200](https://github.com/TanStack/devtools/pull/200))
+
 ## 0.3.3
 
 ### Patch Changes
