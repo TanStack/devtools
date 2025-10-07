@@ -55,9 +55,7 @@ export const PiPProvider = (props: PiPProviderProps) => {
       )
     }
 
-    const meta = typeof import.meta !== 'undefined' ? import.meta : null
-
-    meta?.hot?.on('vite:beforeUpdate', () => {
+    import.meta.hot?.on('vite:beforeUpdate', () => {
       localStorage.setItem('pip_open', 'false')
       closePipWindow()
     })
