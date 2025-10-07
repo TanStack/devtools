@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.5
+
+### Patch Changes
+
+- revert fix for solid deduping ([#205](https://github.com/TanStack/devtools/pull/205))
+
 ## 0.3.4
 
 ### Patch Changes
