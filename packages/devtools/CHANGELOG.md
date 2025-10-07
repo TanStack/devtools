@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.6.17
+
+### Patch Changes
+
+- fix import.meta usage in rsbuild ([#203](https://github.com/TanStack/devtools/pull/203))
+
 ## 0.6.16
 
 ### Patch Changes
