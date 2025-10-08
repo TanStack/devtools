@@ -66,6 +66,16 @@ export type DevtoolsStore = {
      * @default TanStackLogo
      */
     triggerImage: string
+    /**
+     * Whether the SEO tab is enabled
+     * @default true
+     */
+    enableSeoTab: boolean
+    /**
+     * Whether the Settings tab is enabled
+     * @default true
+     */
+    enableSettingsTab: boolean
   }
   state: {
     activeTab: TabName
@@ -92,6 +102,8 @@ export const initialState: DevtoolsStore = {
         ? 'dark'
         : 'light',
     triggerImage: '',
+    enableSeoTab: true,
+    enableSettingsTab: true,
   },
   state: {
     activeTab: 'plugins',

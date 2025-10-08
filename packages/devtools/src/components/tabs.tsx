@@ -2,9 +2,9 @@ import clsx from 'clsx'
 import { For } from 'solid-js'
 import { PiP, X } from '@tanstack/devtools-ui/icons'
 import { useStyles } from '../styles/use-styles'
-import { useDevtoolsState } from '../context/use-devtools-context'
+import { useDevtoolsState, useDevtoolsSettings } from '../context/use-devtools-context'
 import { useDrawContext } from '../context/draw-context'
-import { tabs } from '../tabs'
+import { getTabs } from '../tabs'
 import { usePiPWindow } from '../context/pip-context'
 
 interface TabsProps {
@@ -14,6 +14,7 @@ interface TabsProps {
 export const Tabs = (props: TabsProps) => {
   const styles = useStyles()
   const { state, setState } = useDevtoolsState()
+  const { settings } = useDevtoolsSettings()
   const pipWindow = usePiPWindow()
   const handleDetachment = () => {
     pipWindow().requestPipWindow(
@@ -24,7 +25,7 @@ export const Tabs = (props: TabsProps) => {
 
   return (
     <div class={styles().tabContainer}>
-      <For each={tabs}>
+      <For each={getTabs(settings())}>
         {(tab) => (
           <button
             type="button"
