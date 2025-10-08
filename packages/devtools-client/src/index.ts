@@ -1,7 +1,7 @@
 import { EventClient } from '@tanstack/devtools-event-client'
 
 interface EventMap {
-  'tanstack-devtools-vite:ready': {
+  'tanstack-devtools-core:ready': {
     packageJson: {
       name?: string
       version?: string
@@ -21,13 +21,13 @@ interface EventMap {
       }
     > | null
   }
-  'tanstack-devtools-vite:mounted': void
+  'tanstack-devtools-core:mounted': void
 }
 
 export class DevtoolsEventClient extends EventClient<EventMap> {
   constructor() {
     super({
-      pluginId: 'tanstack-devtools-vite',
+      pluginId: 'tanstack-devtools-core',
     })
   }
 }

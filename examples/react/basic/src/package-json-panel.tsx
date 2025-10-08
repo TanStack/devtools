@@ -1,4 +1,4 @@
-import { devtoolsEventClient } from '@tanstack/devtools-vite/client'
+import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 
@@ -22,12 +22,10 @@ export const PackageJsonPanel = () => {
       setPackageJson(event.payload.packageJson)
       setOutdatedDeps(event.payload.outdatedDeps || {})
     })
-    return () => {
-      off?.()
-    }
+    return off
   }, [])
 
-  const hasOutdated = Object.keys(outdatedDeps || {}).length > 0
+  const hasOutdated = Object.keys(outdatedDeps).length > 0
 
   // Helpers
   const stripRange = (v?: string) => (v ?? '').replace(/^[~^><=v\s]*/, '')
@@ -120,7 +118,12 @@ export const PackageJsonPanel = () => {
     dep: string
     specified: string
   }) => {
-    const info = outdatedDeps[dep]
+    const info = outdatedDeps[dep] as {
+      current: string
+      wanted: string
+      latest: string
+      type?: 'dependencies' | 'devDependencies'
+    } | undefined
     const current = info?.current ?? specified
     const latest = info?.latest
     const dt = info ? diffType(current, latest) : null
@@ -140,7 +143,12 @@ export const PackageJsonPanel = () => {
   }
 
   const UpgradeRowActions = ({ name }: { name: string }) => {
-    const info = outdatedDeps[name]
+    const info = outdatedDeps[name] as {
+      current: string
+      wanted: string
+      latest: string
+      type?: 'dependencies' | 'devDependencies'
+    } | undefined
     if (!info) return null
     return (
       <div style={{ display: 'flex', gap: 6 }}>
@@ -163,7 +171,7 @@ export const PackageJsonPanel = () => {
     )
   }
 
-  const makeLists = (names?: string[]) => {
+  const makeLists = (names?: Array<string>) => {
     const entries = Object.entries(outdatedDeps).filter(
       ([n]) => !names || names.includes(n),
     )
@@ -178,7 +186,7 @@ export const PackageJsonPanel = () => {
     return { wantedList, latestList }
   }
 
-  const BulkActions = ({ names }: { names?: string[] }) => {
+  const BulkActions = ({ names }: { names?: Array<string> }) => {
     const { wantedList, latestList } = makeLists(names)
     if (wantedList.length === 0 && latestList.length === 0) return null
     return (
@@ -202,6 +210,7 @@ export const PackageJsonPanel = () => {
 
   const renderDeps = (title: string, deps?: Record<string, string>) => {
     const names = Object.keys(deps || {})
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const someOutdatedInSection = names.some((n) => !!outdatedDeps[n])
     return (
       <div style={sectionStyle}>
@@ -227,13 +236,18 @@ export const PackageJsonPanel = () => {
           </thead>
           <tbody>
             {Object.entries(deps || {}).map(([dep, version]) => {
-              const info = outdatedDeps[dep]
+              const info = outdatedDeps[dep] as {
+                current: string
+                wanted: string
+                latest: string
+                type?: 'dependencies' | 'devDependencies'
+              } | undefined
               const isOutdated = !!info && info.current !== info.latest
               return (
                 <tr key={dep}>
                   <td style={thtd}>{dep}</td>
                   <td style={thtd}>
-                    <VersionCell dep={dep} specified={version as string} />
+                    <VersionCell dep={dep} specified={version} />
                   </td>
                   <td style={thtd}>
                     {isOutdated

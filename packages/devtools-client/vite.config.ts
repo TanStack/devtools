@@ -8,7 +8,7 @@ const config = defineConfig({
     name: packageJson.name,
     dir: './',
     watch: false,
-    environment: 'happy-dom',
+    environment: 'jsdom',
     setupFiles: ['./tests/test-setup.ts'],
     globals: true,
   },
@@ -17,8 +17,8 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    cjs: false,
     entry: ['./src/index.ts'],
     srcDir: './src',
+    cjs: false,
   }),
 )

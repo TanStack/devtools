@@ -1,3 +1,5 @@
+import { exec } from 'node:child_process'
+import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { normalizePath } from 'vite'
 import chalk from 'chalk'
@@ -13,8 +15,6 @@ import { enhanceConsoleLog } from './enhance-logs'
 import type { Plugin } from 'vite'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
-import { exec } from 'node:child_process'
-import { devtoolsEventClient } from './event'
 
 export type TanStackDevtoolsViteConfig = {
   /**
@@ -214,7 +214,6 @@ export const devtools = async (
           console.log(packageJson)
           const newPackageJson = await readPackageJson()
           console.log(newPackageJson)
-          //console.log("package.json changed, you might want to restart the dev server")
         }
       },
     },

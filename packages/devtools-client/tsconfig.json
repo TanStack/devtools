@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
+  },
+  "extends": "../../tsconfig.json",
+  "include": [
+    "src",
+    "tsup.config.ts",
+    "eslint.config.js",
+    "vite.config.ts",
+    "tests",
+    "vite.config.solid.ts"
+  ]
+}
