@@ -14,18 +14,18 @@ This is our library code:
 counter.ts
 ```tsx
 export function createCounter() {
-  let count = 0;
-  const history = [];
+  let count = 0
+  const history = []
 
   return {
     getCount: () => count,
     increment: () => {
-      history.push(count);
-      count++;
+      count++
+      history.push(count)
     },
     decrement: () => {
-      history.push(count);
-      count--;
+      count--
+      history.push(count)
     },
   };
 }
@@ -49,11 +49,11 @@ import { EventClient } from '@tanstack/devtools-event-client'
 type EventMap = {
   // The key of the event map is a combination of {pluginId}:{eventSuffix}
   // The value is the expected type of the event payload
-  'custom-devtools:counter-state': { count: number, history: number[], }
+  'custom-devtools:counter-state': { count: number, history: number[] }
 }
 
 class CustomEventClient extends EventClient<EventMap> {
-constructor() {
+  constructor() {
     super({
       // The pluginId must match that of the event map key
       pluginId: 'custom-devtools',
@@ -82,20 +82,22 @@ export function createCounter() {
   return {
     getCount: () => count,
     increment: () => {
+      count++
       history.push(count)
 
       // The emit eventSuffix must match that of the EventMap defined in eventClient.ts
       DevtoolsEventClient.emit('counter-state', {
-        count: count++,
-        history: history,
+        count,
+        history,
       })
     },
     decrement: () => {
+      count--
       history.push(count)
 
       DevtoolsEventClient.emit('counter-state', {
-        count: count--,
-        history: history,
+        count,
+        history,
       })
     },
   }
@@ -115,19 +117,19 @@ DevtoolsPanel.ts
 import { DevtoolsEventClient } from './eventClient.ts'
 
 export function DevtoolPanel() {
-  const [state,setState] = useState();
+  const [state, setState] = useState()
 
   useEffect(() => {
     // subscribe to the emitted event
-    const cleanup = client.on("counter-state", e => setState(e.payload)
+    const cleanup = DevtoolsEventClient.on("counter-state", e => setState(e.payload))
     return cleanup
-  }, []);
+  }, [])
 
   return (
     <div>
       <div>{state.count}</div>
       <div>{JSON.stringify(state.history)}</div>
-    <div/>
+    </div>
   )
 }
 ```
@@ -160,7 +162,7 @@ createRoot(document.getElementById('root')!).render(
 
 ## Debugging
 
-Both the TansTack `TanStackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
+Both the `TanStackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
 
 TanStackDevtool's debugging mode can be activated like so:
 ```tsx

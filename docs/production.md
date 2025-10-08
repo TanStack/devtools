@@ -1,11 +1,11 @@
 ---
 title: Production
 id: production
---- 
- 
+---
+
 
 The whole point of devtools is to help you during development, so it's generally not recommended to include them in production builds, but if you know what you're doing, you can.
- 
+
 
 ## Vite Plugin Configuration
 
@@ -39,9 +39,9 @@ Here's an example using environment variables:
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 export default function Devtools(){
-  return   <TanStackDevtools plugins={[
+  return <TanStackDevtools plugins={[
     // Add your custom plugins here
-  ]} />  
+  ]} />
 }
 
 // App.tsx
@@ -55,7 +55,7 @@ function App() {
     </>
   )
 }
-``` 
+```
 
 ## Where to install the Devtools
 

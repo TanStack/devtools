@@ -108,6 +108,33 @@ export const devtools = async (
       },
     },
     {
+      name: '@tanstack/devtools:config',
+      enforce: 'pre',
+      config(_, { command }) {
+        // we do not apply any config changes for build
+        if (command !== 'serve') {
+          return
+        }
+
+        /*  const solidDedupeDeps = [
+          'solid-js',
+          'solid-js/web',
+          'solid-js/store',
+          'solid-js/html',
+          'solid-js/h',
+        ]
+
+        return {
+          resolve: {
+            dedupe: solidDedupeDeps,
+          },
+          optimizeDeps: {
+            include: solidDedupeDeps,
+          },
+        } */
+      },
+    },
+    {
       enforce: 'pre',
       name: '@tanstack/devtools:custom-server',
       apply(config) {

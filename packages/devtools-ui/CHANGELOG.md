@@ -1,5 +1,17 @@
 # @tanstack/devtools-ui
 
+## 0.4.1
+
+### Patch Changes
+
+- fix responsiveness in jsontree ([#207](https://github.com/TanStack/devtools/pull/207))
+
+## 0.4.0
+
+### Minor Changes
+
+- Adds collapsible path prop to devtools-ui, allowing an array of object paths to collapse by default. ([#196](https://github.com/TanStack/devtools/pull/196))
+
 ## 0.3.5
 
 ### Patch Changes

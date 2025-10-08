@@ -27,7 +27,7 @@ export default {
 }
 ```
 
-And you're done! 
+And you're done!
 
 ## Configuration
 
@@ -61,16 +61,16 @@ export default {
         port: 1234,
         // console log debug logs or not
         debug: false
-      }, 
+      },
     }),
     // ... rest of your plugins here
   ],
 }
- 
+
 ```
 
 ### editor
- 
+
 > [!IMPORTANT] `editor` is used as an escape hatch to implement your own go-to-source functionality if your system/editor does not work OOTB. We use `launch-editor` under the hood which supports a lot of editors but not all. If your editor is not supported you can implement your own version here. Here is the list of supported editors: https://github.com/yyx990803/launch-editor?tab=readme-ov-file#supported-editors
 
 The open in editor configuration which has two fields, `name` and `open`,
@@ -91,14 +91,14 @@ export default {
             `code -g "${(path).replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`,
           )
         },
-      }, 
+      },
     }),
     // ... rest of your plugins here
   ],
 }
- 
+
 ```
- 
+
 ### enhancedLogs
 
   Configuration for enhanced logging. Defaults to enabled.
@@ -119,11 +119,12 @@ export default {
 ```
 
 ### removeDevtoolsOnBuild
- 
+
 Whether to remove devtools from the production build. Defaults to true.
-  
+
 ```ts
 import { devtools } from '@tanstack/devtools-vite'
+
 export default {
   plugins: [
     devtools({
@@ -136,7 +137,7 @@ export default {
 
 ### logging
   Whether to log information to the console. Defaults to true.
-  
+
 ```ts
 import { devtools } from '@tanstack/devtools-vite'
 
@@ -150,7 +151,7 @@ export default {
 }
 ```
 
-### injectSource 
+### injectSource
 
 Configuration for source injection. Defaults to enabled.
 

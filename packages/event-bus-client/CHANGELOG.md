@@ -1,5 +1,17 @@
 # @tanstack/devtools-event-client
 
+## 0.3.2
+
+### Patch Changes
+
+- fix issue with constructor causing side-effects ([#178](https://github.com/TanStack/devtools/pull/178))
+
+## 0.3.1
+
+### Patch Changes
+
+- fixed an issue where custom events were not working in angular ([#174](https://github.com/TanStack/devtools/pull/174))
+
 ## 0.3.0
 
 ### Minor Changes
@@ -41,7 +53,6 @@
 ### Minor Changes
 
 - Added event bus functionality into @tanstack/devtools ([#11](https://github.com/TanStack/devtools/pull/11))
-
   - @tanstack/devtools now comes with an integrated Event Bus on the Client.
   - The Event Bus allows for seamless communication between different parts of your running application
     without tight coupling.

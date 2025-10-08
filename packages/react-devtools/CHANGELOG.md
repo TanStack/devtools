@@ -1,5 +1,33 @@
 # @tanstack/react-devtools
 
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.6.18
+
+## 0.7.3
+
+### Patch Changes
+
+- Updated dependencies [[`748d2e9`](https://github.com/TanStack/devtools/commit/748d2e9cdbbc079442bab7bf6da85ed2767a833d)]:
+  - @tanstack/devtools@0.6.17
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.6.16
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies [[`a97ed26`](https://github.com/TanStack/devtools/commit/a97ed2685b43c25d34e5e30cc5f07254b3e810bf)]:
+  - @tanstack/devtools@0.6.15
+
 ## 0.7.0
 
 ### Minor Changes
@@ -226,7 +254,6 @@
 ### Minor Changes
 
 - Added event bus functionality into @tanstack/devtools ([#11](https://github.com/TanStack/devtools/pull/11))
-
   - @tanstack/devtools now comes with an integrated Event Bus on the Client.
   - The Event Bus allows for seamless communication between different parts of your running application
     without tight coupling.

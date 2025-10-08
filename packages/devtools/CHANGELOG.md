@@ -1,5 +1,31 @@
 # @tanstack/devtools
 
+## 0.6.18
+
+### Patch Changes
+
+- Updated dependencies [[`d0ecf3e`](https://github.com/TanStack/devtools/commit/d0ecf3ec5b58b94d20d2a9131e0ffaff2ac72f7a)]:
+  - @tanstack/devtools-ui@0.4.1
+
+## 0.6.17
+
+### Patch Changes
+
+- fix import.meta usage in rsbuild ([#203](https://github.com/TanStack/devtools/pull/203))
+
+## 0.6.16
+
+### Patch Changes
+
+- Updated dependencies [[`d409810`](https://github.com/TanStack/devtools/commit/d40981035da7f7be1dceef3770aafad243921b46)]:
+  - @tanstack/devtools-ui@0.4.0
+
+## 0.6.15
+
+### Patch Changes
+
+- add `workerd` export condition ([#193](https://github.com/TanStack/devtools/pull/193))
+
 ## 0.6.14
 
 ### Patch Changes
@@ -197,7 +223,6 @@
 ### Minor Changes
 
 - Added event bus functionality into @tanstack/devtools ([#11](https://github.com/TanStack/devtools/pull/11))
-
   - @tanstack/devtools now comes with an integrated Event Bus on the Client.
   - The Event Bus allows for seamless communication between different parts of your running application
     without tight coupling.

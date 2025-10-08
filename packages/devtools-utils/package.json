@@ -1,0 +1,88 @@
+{
+  "name": "@tanstack/devtools-utils",
+  "version": "0.0.4",
+  "description": "TanStack Devtools utilities for creating your own devtools.",
+  "author": "Tanner Linsley",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TanStack/devtools.git",
+    "directory": "packages/devtools"
+  },
+  "homepage": "https://tanstack.com/devtools",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "devtools"
+  ],
+  "type": "module",
+  "exports": {
+    "./react": {
+      "import": {
+        "types": "./dist/react/esm/index.d.ts",
+        "default": "./dist/react/esm/index.js"
+      }
+    },
+    "./solid": {
+      "browser": {
+        "development": {
+          "types": "./dist/solid/esm/index.d.ts",
+          "import": "./dist/solid/esm/dev.js"
+        },
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/index.js"
+      },
+      "node": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
+      "types": "./dist/solid/esm/index.d.ts",
+      "import": "./dist/solid/esm/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@tanstack/devtools-ui": "workspace:^"
+  },
+  "peerDependencies": {
+    "@types/react": ">=19.0.0",
+    "react": ">=19.0.0",
+    "solid-js": ">=1.9.7"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    },
+    "@types/react": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    }
+  },
+  "files": [
+    "dist/",
+    "src"
+  ],
+  "scripts": {
+    "clean": "premove ./build ./dist",
+    "lint:fix": "eslint ./src --fix",
+    "test:eslint": "eslint ./src",
+    "test:lib": "vitest",
+    "test:lib:dev": "pnpm test:lib --watch",
+    "test:types": "tsc",
+    "test:build": "publint --strict",
+    "build": "vite build && tsup "
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
+    "vite-plugin-solid": "^2.11.8"
+  }
+}

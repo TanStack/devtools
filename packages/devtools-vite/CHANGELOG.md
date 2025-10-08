@@ -1,5 +1,17 @@
 # @tanstack/devtools-event-client
 
+## 0.3.5
+
+### Patch Changes
+
+- revert fix for solid deduping ([#205](https://github.com/TanStack/devtools/pull/205))
+
+## 0.3.4
+
+### Patch Changes
+
+- dedupe solid deps for no issues in the console ([#200](https://github.com/TanStack/devtools/pull/200))
+
 ## 0.3.3
 
 ### Patch Changes
@@ -125,7 +137,6 @@
 ### Minor Changes
 
 - Added event bus functionality into @tanstack/devtools ([#11](https://github.com/TanStack/devtools/pull/11))
-
   - @tanstack/devtools now comes with an integrated Event Bus on the Client.
   - The Event Bus allows for seamless communication between different parts of your running application
     without tight coupling.
