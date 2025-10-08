@@ -118,12 +118,14 @@ export const PackageJsonPanel = () => {
     dep: string
     specified: string
   }) => {
-    const info = outdatedDeps[dep] as {
-      current: string
-      wanted: string
-      latest: string
-      type?: 'dependencies' | 'devDependencies'
-    } | undefined
+    const info = outdatedDeps[dep] as
+      | {
+          current: string
+          wanted: string
+          latest: string
+          type?: 'dependencies' | 'devDependencies'
+        }
+      | undefined
     const current = info?.current ?? specified
     const latest = info?.latest
     const dt = info ? diffType(current, latest) : null
@@ -143,12 +145,14 @@ export const PackageJsonPanel = () => {
   }
 
   const UpgradeRowActions = ({ name }: { name: string }) => {
-    const info = outdatedDeps[name] as {
-      current: string
-      wanted: string
-      latest: string
-      type?: 'dependencies' | 'devDependencies'
-    } | undefined
+    const info = outdatedDeps[name] as
+      | {
+          current: string
+          wanted: string
+          latest: string
+          type?: 'dependencies' | 'devDependencies'
+        }
+      | undefined
     if (!info) return null
     return (
       <div style={{ display: 'flex', gap: 6 }}>
@@ -236,12 +240,14 @@ export const PackageJsonPanel = () => {
           </thead>
           <tbody>
             {Object.entries(deps || {}).map(([dep, version]) => {
-              const info = outdatedDeps[dep] as {
-                current: string
-                wanted: string
-                latest: string
-                type?: 'dependencies' | 'devDependencies'
-              } | undefined
+              const info = outdatedDeps[dep] as
+                | {
+                    current: string
+                    wanted: string
+                    latest: string
+                    type?: 'dependencies' | 'devDependencies'
+                  }
+                | undefined
               const isOutdated = !!info && info.current !== info.latest
               return (
                 <tr key={dep}>
