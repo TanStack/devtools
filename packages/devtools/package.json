@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools",
-  "version": "0.6.17",
+  "version": "0.6.18",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your application.",
   "author": "Tanner Linsley",
   "license": "MIT",

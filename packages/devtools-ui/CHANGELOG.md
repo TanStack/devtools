@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.4.1
+
+### Patch Changes
+
+- fix responsiveness in jsontree ([#207](https://github.com/TanStack/devtools/pull/207))
+
 ## 0.4.0
 
 ### Minor Changes
