@@ -20,8 +20,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 0;
       margin: 0 auto;
       background: ${t(colors.white, colors.darkGray[700])};
-      border-radius: 12px;
-      box-shadow: 0 2px 16px ${t('rgba(0, 0, 0, 0.04)', 'rgba(0, 0, 0, 0.08)')};
+      border-radius: 8px;
+      box-shadow: none;
       overflow-y: auto;
       height: 100%;
       display: flex;
@@ -33,16 +33,16 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     seoTabTitle: css`
       font-size: 1.25rem;
       font-weight: 600;
-      color: ${t(colors.purple[500], colors.purple[400])};
+      color: ${t(colors.gray[900], colors.gray[100])};
       margin: 0;
       padding: 1rem 1.5rem 0.5rem 1.5rem;
       text-align: left;
-      border-bottom: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
     `,
     seoTabSection: css`
       padding: 1.5rem;
-      background: ${t(colors.gray[100], colors.gray[800])};
-      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      background: ${t(colors.gray[50], colors.darkGray[800])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
       display: flex;
       flex-direction: column;
       gap: 0.5rem;
@@ -61,12 +61,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding-bottom: 0.5rem;
     `,
     seoPreviewCard: css`
-      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
       border-radius: 8px;
       padding: 12px 10px;
       background: ${t(colors.white, colors.darkGray[900])};
       margin-bottom: 0;
-      box-shadow: 0 1px 4px ${t('rgba(0,0,0,0.02)', 'rgba(0,0,0,0.04)')};
+      box-shadow: 0 1px 3px ${t('rgba(0,0,0,0.05)', 'rgba(0,0,0,0.1)')};
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -76,10 +76,10 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       gap: 4px;
     `,
     seoPreviewHeader: css`
-      font-size: 1rem;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: ${t(colors.purple[500], colors.purple[400])};
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0;
+      color: ${t(colors.gray[700], colors.gray[300])};
     `,
     seoPreviewImage: css`
       max-width: 100%;
@@ -87,28 +87,29 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin-bottom: 6px;
       box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.03)', 'rgba(0,0,0,0.06)')};
       height: 160px;
+      object-fit: cover;
     `,
     seoPreviewTitle: css`
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
       color: ${t(colors.gray[900], colors.gray[100])};
     `,
     seoPreviewDesc: css`
-      color: ${t(colors.gray[700], colors.gray[300])};
-      margin-bottom: 2px;
-      font-size: 0.95rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      margin-bottom: 4px;
+      font-size: 0.8rem;
     `,
     seoPreviewUrl: css`
       color: ${t(colors.gray[500], colors.gray[500])};
-      font-size: 0.9rem;
-      margin-bottom: 2px;
+      font-size: 0.75rem;
+      margin-bottom: 0;
       word-break: break-all;
     `,
     seoMissingTagsSection: css`
       margin-top: 4px;
-      font-size: 0.95rem;
-      color: ${t(colors.red[400], colors.red[400])};
+      font-size: 0.875rem;
+      color: ${t(colors.red[500], colors.red[400])};
     `,
     seoMissingTagsList: css`
       margin: 4px 0 0 0;
@@ -116,22 +117,23 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       list-style: none;
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 4px;
       max-width: 240px;
     `,
     seoMissingTag: css`
       background: ${t(colors.red[100], colors.red[500] + '22')};
       color: ${t(colors.red[700], colors.red[500])};
-      border-radius: 4px;
-      padding: 1px 6px;
-      font-size: 0.9rem;
+      border-radius: 3px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
       font-weight: 500;
     `,
     seoAllTagsFound: css`
       color: ${t(colors.green[700], colors.green[500])};
       font-weight: 500;
-      margin-left: 6px;
-      font-size: 0.95rem;
+      margin-left: 0;
+      padding: 0 10px 8px 10px;
+      font-size: 0.875rem;
     `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
@@ -146,7 +148,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       z-index: 99999;
       width: 100%;
       ${isDetached ? '' : 'max-height: 90%;'}
-      border-top: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border-top: 1px solid ${t(colors.gray[200], colors.gray[800])};
       transform-origin: top;
     `,
     devtoolsPanelContainerVisibility: (isOpen: boolean) => {
@@ -204,7 +206,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       user-select: none;
       z-index: 100000;
       &:hover {
-        background-color: ${t(colors.purple[700], colors.purple[400])};
+        background-color: ${t(colors.gray[400], colors.gray[500])};
       }
     `,
 
@@ -294,9 +296,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       align-items: center;
       justify-content: flex-start;
       height: 100%;
-      background-color: ${t(colors.gray[100], colors.darkGray[800])};
-      border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};
-      box-shadow: 0 1px 0 ${t(colors.gray[200], colors.gray[700])};
+      background-color: ${t(colors.gray[50], colors.darkGray[900])};
+      border-right: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      box-shadow: none;
       position: relative;
       width: ${size[10]};
     `,
@@ -310,24 +312,24 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       cursor: pointer;
       font-size: ${fontSize.sm};
       font-family: ${fontFamily.sans};
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${t(colors.gray[600], colors.gray[400])};
       background-color: transparent;
       border: none;
-      transition: all 0.2s ease-in-out;
+      transition: all 0.15s ease;
       border-left: 2px solid transparent;
       &:hover:not(.close):not(.active):not(.detach) {
-        background-color: ${t(colors.gray[200], colors.gray[700])};
+        background-color: ${t(colors.gray[100], colors.gray[800])};
         color: ${t(colors.gray[900], colors.gray[100])};
-        border-left: 2px solid ${t(colors.purple[700], colors.purple[500])};
+        border-left: 2px solid ${t(colors.gray[900], colors.gray[100])};
       }
       &.active {
-        background-color: ${t(colors.purple[200], colors.purple[500])};
+        background-color: ${t(colors.gray[100], colors.gray[800])};
         color: ${t(colors.gray[900], colors.gray[100])};
-        border-left: 2px solid ${t(colors.purple[700], colors.purple[500])};
+        border-left: 2px solid ${t(colors.gray[900], colors.gray[100])};
       }
       &.detach {
         &:hover {
-          background-color: ${t(colors.gray[200], colors.gray[700])};
+          background-color: ${t(colors.gray[100], colors.gray[800])};
         }
         &:hover {
           color: ${t(colors.green[700], colors.green[500])};
@@ -336,7 +338,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       &.close {
         margin-top: auto;
         &:hover {
-          background-color: ${t(colors.gray[200], colors.gray[700])};
+          background-color: ${t(colors.gray[100], colors.gray[800])};
         }
         &:hover {
           color: ${t(colors.red[700], colors.red[500])};
@@ -368,15 +370,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginsTabDraw: (isExpanded: boolean) => css`
       width: ${isExpanded ? size[48] : 0};
       height: 100%;
-      background-color: ${t(colors.white, colors.darkGray[800])};
-      box-shadow: 0 1px 0 ${colors.gray[700]};
+      background-color: ${t(colors.white, colors.darkGray[900])};
+      box-shadow: none;
       ${isExpanded
-        ? `border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};`
+        ? `border-right: 1px solid ${t(colors.gray[200], colors.gray[800])};`
         : ''}
     `,
     pluginsTabDrawExpanded: css`
       width: ${size[48]};
-      border-right: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border-right: 1px solid ${t(colors.gray[200], colors.gray[800])};
     `,
     pluginsTabDrawTransition: (mSeconds: number) => {
       return css`
@@ -399,39 +401,49 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginName: css`
       font-size: ${fontSize.xs};
       font-family: ${fontFamily.sans};
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${t(colors.gray[600], colors.gray[400])};
       padding: ${size[2]};
       cursor: pointer;
       text-align: center;
-      transition: all 0.2s ease-in-out;
+      transition: all 0.15s ease;
+      border-left: 2px solid transparent;
+
       &:hover {
-        background-color: ${t(colors.gray[200], colors.gray[700])};
+        background-color: ${t(colors.gray[100], colors.gray[800])};
         color: ${t(colors.gray[900], colors.gray[100])};
         padding: ${size[2]};
       }
       &.active {
-        background-color: ${t(colors.purple[200], colors.purple[500])};
+        background-color: ${t(colors.gray[100], colors.gray[800])};
         color: ${t(colors.gray[900], colors.gray[100])};
+        border-left: 2px solid ${t(colors.gray[900], colors.gray[100])};
+      }
+      &.active:hover {
+        background-color: ${t(colors.gray[200], colors.gray[700])};
       }
     `,
     pluginsTabContent: css`
       width: 100%;
       height: 100%;
       overflow-y: auto;
+
+      &:not(:last-child) {
+        border-right: 5px solid ${t(colors.purple[200], colors.purple[800])};
+      }
     `,
 
     settingsGroup: css`
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
     `,
     conditionalSetting: css`
       margin-left: 1.5rem;
       padding-left: 1rem;
-      border-left: 2px solid ${t(colors.purple[600], colors.purple[400])};
-      background-color: ${t(colors.gray[100], colors.darkGray[800])};
-      padding: 1rem;
-      border-radius: 0.5rem;
+      border-left: 2px solid ${t(colors.gray[300], colors.gray[600])};
+      background-color: ${t(colors.gray[50], colors.darkGray[900])};
+      padding: 0.75rem;
+      border-radius: 0.375rem;
       margin-top: 0.5rem;
     `,
     settingRow: css`

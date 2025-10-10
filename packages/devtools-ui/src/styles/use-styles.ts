@@ -10,18 +10,18 @@ const buttonVariantColors: Record<
   { bg: string; hover: string; active: string; text: string; border: string }
 > = {
   primary: {
-    bg: tokens.colors.purple[500],
-    hover: tokens.colors.purple[600],
-    active: tokens.colors.purple[700],
+    bg: tokens.colors.gray[900],
+    hover: tokens.colors.gray[800],
+    active: tokens.colors.gray[700],
     text: '#fff',
-    border: tokens.colors.purple[500],
+    border: tokens.colors.gray[900],
   },
   secondary: {
-    bg: tokens.colors.gray[800],
-    hover: tokens.colors.gray[700],
-    active: tokens.colors.gray[600],
-    text: tokens.colors.gray[100],
-    border: tokens.colors.gray[700],
+    bg: tokens.colors.gray[100],
+    hover: tokens.colors.gray[200],
+    active: tokens.colors.gray[300],
+    text: tokens.colors.gray[900],
+    border: tokens.colors.gray[300],
   },
   info: {
     bg: tokens.colors.blue[500],
@@ -54,7 +54,7 @@ const buttonVariantColors: Record<
 }
 export const css = goober.css
 const stylesFactory = (theme: Theme = 'dark') => {
-  const { colors, font, size, alpha, border } = tokens
+  const { colors, font, size, border } = tokens
   const { fontFamily } = font
 
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
@@ -104,13 +104,13 @@ const stylesFactory = (theme: Theme = 'dark') => {
     select: css`
       appearance: none;
       width: 100%;
-      padding: 0.75rem 3rem 0.75rem 0.75rem;
-      border-radius: 0.5rem;
+      padding: 0.5rem 3rem 0.5rem 0.75rem;
+      border-radius: 0.375rem;
       background-color: ${t(colors.gray[50], colors.darkGray[800])};
       color: ${t(colors.gray[900], colors.gray[100])};
-      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
       font-size: 0.875rem;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       cursor: pointer;
 
       /* Custom arrow */
@@ -120,13 +120,13 @@ const stylesFactory = (theme: Theme = 'dark') => {
       background-size: 1.25rem;
 
       &:hover {
-        border-color: ${t(colors.gray[400], colors.gray[600])};
+        border-color: ${t(colors.gray[300], colors.gray[700])};
       }
 
       &:focus {
         outline: none;
-        border-color: ${colors.purple[400]};
-        box-shadow: 0 0 0 3px ${colors.purple[400]}${alpha[20]};
+        border-color: ${colors.gray[400]};
+        box-shadow: 0 0 0 3px ${t(colors.gray[200], colors.gray[800])};
       }
     `,
     inputWrapper: css`
@@ -156,28 +156,27 @@ const stylesFactory = (theme: Theme = 'dark') => {
       appearance: none;
       box-sizing: border-box;
       width: 100%;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
       background-color: ${t(colors.gray[50], colors.darkGray[800])};
       color: ${t(colors.gray[900], colors.gray[100])};
-      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
       font-size: 0.875rem;
       font-family: ${fontFamily.mono};
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
 
       &::placeholder {
         color: ${t(colors.gray[400], colors.gray[500])};
       }
 
       &:hover {
-        border-color: ${t(colors.gray[400], colors.gray[600])};
+        border-color: ${t(colors.gray[300], colors.gray[700])};
       }
 
       &:focus {
         outline: none;
-        border-color: ${t(colors.purple[500], colors.purple[400])};
-        box-shadow: 0 0 0 3px
-          ${t(colors.purple[100] + alpha[20], colors.purple[400] + alpha[20])};
+        border-color: ${t(colors.gray[400], colors.gray[600])};
+        box-shadow: 0 0 0 3px ${t(colors.gray[200], colors.gray[800])};
       }
     `,
     checkboxWrapper: css`
@@ -186,12 +185,12 @@ const stylesFactory = (theme: Theme = 'dark') => {
       gap: 0.75rem;
       cursor: pointer;
       user-select: none;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      transition: background-color 0.2s ease;
+      padding: 0.375rem;
+      border-radius: 0.375rem;
+      transition: background-color 0.15s ease;
 
       &:hover {
-        background-color: ${t(colors.gray[100], colors.darkGray[800])};
+        background-color: ${t(colors.gray[50], colors.darkGray[900])};
       }
     `,
     checkboxContainer: css`
@@ -208,28 +207,28 @@ const stylesFactory = (theme: Theme = 'dark') => {
       width: 1.25rem;
       height: 1.25rem;
       border: 2px solid ${t(colors.gray[300], colors.gray[700])};
-      border-radius: 0.375rem;
+      border-radius: 0.25rem;
       background-color: ${t(colors.gray[50], colors.darkGray[800])};
       display: grid;
       place-items: center;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       flex-shrink: 0;
       margin-top: 0.125rem;
 
       &:hover {
-        border-color: ${t(colors.purple[500], colors.purple[400])};
+        border-color: ${t(colors.gray[400], colors.gray[600])};
       }
 
       &:checked {
-        background-color: ${t(colors.purple[500], colors.purple[700])};
-        border-color: ${t(colors.purple[500], colors.purple[700])};
+        background-color: ${t(colors.gray[900], colors.gray[100])};
+        border-color: ${t(colors.gray[900], colors.gray[100])};
       }
 
       &:checked::after {
         content: '';
         width: 0.4rem;
         height: 0.6rem;
-        border: solid ${t('#fff', colors.gray[100])};
+        border: solid ${t('#fff', colors.gray[900])};
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
         margin-top: -3px;
@@ -256,14 +255,14 @@ const stylesFactory = (theme: Theme = 'dark') => {
         font-family: ${tokens.font.fontFamily.sans};
         font-size: 0.8rem;
         font-weight: 500;
-        border-radius: 0.2rem;
-        padding: 0.2rem 0.6rem;
+        border-radius: 0.375rem;
+        padding: 0.375rem 0.75rem;
         cursor: pointer;
         transition:
-          background 0.2s,
-          color 0.2s,
-          border 0.2s,
-          box-shadow 0.2s;
+          background 0.15s,
+          color 0.15s,
+          border 0.15s,
+          box-shadow 0.15s;
         outline: none;
         border-width: 1px;
         border-style: solid;
@@ -276,10 +275,10 @@ const stylesFactory = (theme: Theme = 'dark') => {
             color: ${t(v.bg, v.bg)};
             border-color: transparent;
             &:hover {
-              background: ${t(colors.purple[100], colors.darkGray[700])};
+              background: ${t(colors.gray[100], colors.darkGray[800])};
             }
             &:active {
-              background: ${t(colors.purple[200], colors.darkGray[800])};
+              background: ${t(colors.gray[200], colors.darkGray[700])};
             }
           `
         }
@@ -289,11 +288,11 @@ const stylesFactory = (theme: Theme = 'dark') => {
             color: ${t(v.bg, v.bg)};
             border-color: ${t(v.bg, v.bg)};
             &:hover {
-              background: ${t(colors.purple[100], colors.darkGray[700])};
+              background: ${t(colors.gray[50], colors.darkGray[800])};
               border-color: ${t(v.hover, v.hover)};
             }
             &:active {
-              background: ${t(colors.purple[200], colors.darkGray[800])};
+              background: ${t(colors.gray[100], colors.darkGray[700])};
               border-color: ${t(v.active, v.active)};
             }
           `
@@ -536,48 +535,45 @@ const stylesFactory = (theme: Theme = 'dark') => {
     },
     section: {
       main: css`
-        margin-bottom: 2rem;
-        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
         background-color: ${t(colors.gray[50], colors.darkGray[800])};
-        border: 1px solid ${t(colors.gray[300], colors.gray[700])};
-        border-radius: 0.75rem;
-        box-shadow: ${t(
-          '0 1px 3px rgba(0,0,0,0.06)',
-          '0 1px 3px rgba(0,0,0,0.18)',
-        )};
+        border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+        border-radius: 0.5rem;
+        box-shadow: none;
       `,
       title: css`
-        font-size: 1.125rem;
+        font-size: 1rem;
         font-weight: 600;
         color: ${t(colors.gray[900], colors.gray[100])};
-        margin: 0 0 1rem 0;
+        margin: 0 0 0.75rem 0;
         padding-bottom: 0.5rem;
-        border-bottom: 1px solid ${t(colors.gray[300], colors.gray[700])};
+        border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
         display: flex;
         align-items: center;
         gap: 0.5rem;
         text-align: left;
       `,
       icon: css`
-        height: 20px;
-        width: 20px;
+        height: 18px;
+        width: 18px;
         & > svg {
           height: 100%;
           width: 100%;
         }
-        color: ${t(colors.purple[500], colors.purple[400])};
+        color: ${t(colors.gray[700], colors.gray[400])};
       `,
       description: css`
         color: ${t(colors.gray[500], colors.gray[400])};
-        font-size: 0.875rem;
-        margin: 0 0 1.5rem 0;
-        line-height: 1.5;
+        font-size: 0.8rem;
+        margin: 0 0 1rem 0;
+        line-height: 1.4;
         text-align: left;
       `,
     },
     mainPanel: {
       panel: (withPadding: boolean) => css`
-        padding: ${withPadding ? tokens.size[4] : 0};
+        padding: ${withPadding ? tokens.size[3] : 0};
         background: ${t(colors.gray[50], colors.darkGray[700])};
         overflow-y: auto;
         height: 100%;
