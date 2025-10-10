@@ -19,6 +19,7 @@ export class EventClient<
       : never
     : never,
 > {
+  #enabled = true
   #pluginId: TPluginId
   #eventTarget: () => EventTarget
   #debug: boolean
@@ -62,11 +63,15 @@ export class EventClient<
   constructor({
     pluginId,
     debug = false,
+    enabled = true,
   }: {
     pluginId: TPluginId
     debug?: boolean
+
+    enabled?: boolean
   }) {
     this.#pluginId = pluginId
+    this.#enabled = enabled
     this.#eventTarget = this.getGlobalTarget
     this.#debug = debug
     this.debugLog(' Initializing event subscription for plugin', this.#pluginId)
@@ -180,6 +185,14 @@ export class EventClient<
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
   ) {
+    if (!this.#enabled) {
+      this.debugLog(
+        'Event bus client is disabled, not emitting event',
+        eventSuffix,
+        payload,
+      )
+      return
+    }
     // wait to connect to the bus
     if (!this.#connected) {
       this.debugLog('Bus not available, will be pushed as soon as connected')
@@ -220,6 +233,13 @@ export class EventClient<
     ) => void,
   ) {
     const eventName = `${this.#pluginId}:${eventSuffix}` as const
+    if (!this.#enabled) {
+      this.debugLog(
+        'Event bus client is disabled, not registering event',
+        eventName,
+      )
+      return () => {}
+    }
     const handler = (e: Event) => {
       this.debugLog('Received event from bus', (e as CustomEvent).detail)
       cb((e as CustomEvent).detail)
@@ -232,6 +252,11 @@ export class EventClient<
   }
 
   onAll(cb: (event: TanStackDevtoolsEvent<string, any>) => void) {
+    if (!this.#enabled) {
+      this.debugLog('Event bus client is disabled, not registering event')
+      return () => {}
+    }
+
     const handler = (e: Event) => {
       const event = (e as CustomEvent).detail
 
@@ -245,6 +270,10 @@ export class EventClient<
       )
   }
   onAllPluginEvents(cb: (event: AllDevtoolsEvents<TEventMap>) => void) {
+    if (!this.#enabled) {
+      this.debugLog('Event bus client is disabled, not registering event')
+      return () => {}
+    }
     const handler = (e: Event) => {
       const event = (e as CustomEvent).detail
       if (this.#pluginId && event.pluginId !== this.#pluginId) {

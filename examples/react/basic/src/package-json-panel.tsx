@@ -18,11 +18,17 @@ export const PackageJsonPanel = () => {
 
   useEffect(() => {
     devtoolsEventClient.emit('mounted', undefined as any)
-    const off = devtoolsEventClient.on('ready', (event) => {
-      setPackageJson(event.payload.packageJson)
+    const cleanupOutdated = devtoolsEventClient.on("outdated-deps-read", (event) => {
       setOutdatedDeps(event.payload.outdatedDeps || {})
     })
-    return off
+    const cleanupPackageJson = devtoolsEventClient.on("package-json-read", (event) => {
+      console.log('package-json-read', event)
+      setPackageJson(event.payload.packageJson)
+    })
+    return () => {
+      cleanupOutdated()
+      cleanupPackageJson()
+    }
   }, [])
 
   const hasOutdated = Object.keys(outdatedDeps).length > 0
@@ -120,11 +126,11 @@ export const PackageJsonPanel = () => {
   }) => {
     const info = outdatedDeps[dep] as
       | {
-          current: string
-          wanted: string
-          latest: string
-          type?: 'dependencies' | 'devDependencies'
-        }
+        current: string
+        wanted: string
+        latest: string
+        type?: 'dependencies' | 'devDependencies'
+      }
       | undefined
     const current = info?.current ?? specified
     const latest = info?.latest
@@ -147,11 +153,11 @@ export const PackageJsonPanel = () => {
   const UpgradeRowActions = ({ name }: { name: string }) => {
     const info = outdatedDeps[name] as
       | {
-          current: string
-          wanted: string
-          latest: string
-          type?: 'dependencies' | 'devDependencies'
-        }
+        current: string
+        wanted: string
+        latest: string
+        type?: 'dependencies' | 'devDependencies'
+      }
       | undefined
     if (!info) return null
     return (
@@ -242,11 +248,11 @@ export const PackageJsonPanel = () => {
             {Object.entries(deps || {}).map(([dep, version]) => {
               const info = outdatedDeps[dep] as
                 | {
-                    current: string
-                    wanted: string
-                    latest: string
-                    type?: 'dependencies' | 'devDependencies'
-                  }
+                  current: string
+                  wanted: string
+                  latest: string
+                  type?: 'dependencies' | 'devDependencies'
+                }
                 | undefined
               const isOutdated = !!info && info.current !== info.latest
               return (

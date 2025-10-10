@@ -1,4 +1,4 @@
-import { createMemo } from 'solid-js'
+import { Show, createMemo } from 'solid-js'
 import clsx from 'clsx'
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
@@ -24,13 +24,15 @@ export const Trigger = ({
     )
   })
   return (
-    <button
-      type="button"
-      aria-label="Open TanStack Devtools"
-      class={buttonStyle()}
-      onClick={() => setIsOpen(!isOpen())}
-    >
-      <img src={image || TanStackLogo} alt="TanStack Devtools" />
-    </button>
+    <Show when={!settings().triggerHidden}>
+      <button
+        type="button"
+        aria-label="Open TanStack Devtools"
+        class={buttonStyle()}
+        onClick={() => setIsOpen(!isOpen())}
+      >
+        <img src={image || TanStackLogo} alt="TanStack Devtools" />
+      </button>
+    </Show>
   )
 }

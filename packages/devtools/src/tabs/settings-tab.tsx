@@ -71,6 +71,14 @@ export const SettingsTab = () => {
             }
             checked={settings().hideUntilHover}
           />
+          <Checkbox
+            label="Completely hide trigger"
+            description="Completely removes the trigger from the DOM (you can still open it with the hotkey)"
+            onChange={() =>
+              setSettings({ triggerHidden: !settings().triggerHidden })
+            }
+            checked={settings().triggerHidden}
+          />
           <Input
             label="Trigger Image"
             description="Specify the URL of the image to use for the trigger"

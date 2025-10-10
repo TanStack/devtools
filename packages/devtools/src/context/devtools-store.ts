@@ -66,6 +66,10 @@ export type DevtoolsStore = {
      * @default TanStackLogo
      */
     triggerImage: string
+    /**
+     * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
+     */
+    triggerHidden?: boolean
   }
   state: {
     activeTab: TabName
@@ -92,6 +96,7 @@ export const initialState: DevtoolsStore = {
         ? 'dark'
         : 'light',
     triggerImage: '',
+    triggerHidden: false,
   },
   state: {
     activeTab: 'plugins',

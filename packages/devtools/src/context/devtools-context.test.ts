@@ -7,7 +7,7 @@ describe('getStateFromLocalStorage', () => {
     localStorage.clear()
   })
   it('should return undefined when no data in localStorage', () => {
-    const state = getStateFromLocalStorage()
+    const state = getStateFromLocalStorage(undefined)
     expect(state).toEqual(undefined)
   })
   it('should return parsed state from localStorage and not remove valid plugins', () => {
@@ -53,7 +53,7 @@ describe('getStateFromLocalStorage', () => {
   })
   it('should handle invalid JSON in localStorage gracefully', () => {
     localStorage.setItem(TANSTACK_DEVTOOLS_STATE, 'invalid json')
-    const state = getStateFromLocalStorage()
+    const state = getStateFromLocalStorage(undefined)
     expect(state).toEqual(undefined)
   })
 })
