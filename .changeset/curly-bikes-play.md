@@ -5,8 +5,8 @@
 '@tanstack/devtools': patch
 ---
 
-
 Number of improvements to various parts of the DevTools:
+
 - Update event client to allow users to disable it
 - Allow trigger to be completely hidden
 - Add a new package `@tanstack/devtools-client` to allow users to listen to events we emit from Vite.
