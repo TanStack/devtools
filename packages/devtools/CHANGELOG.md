@@ -1,5 +1,14 @@
 # @tanstack/devtools
 
+## 0.6.20
+
+### Patch Changes
+
+- update UI appearance ([#211](https://github.com/TanStack/devtools/pull/211))
+
+- Updated dependencies [[`b2f8944`](https://github.com/TanStack/devtools/commit/b2f8944ebf3597179d60ce11fb0ef71b4858dc34)]:
+  - @tanstack/devtools-ui@0.4.2
+
 ## 0.6.19
 
 ### Patch Changes

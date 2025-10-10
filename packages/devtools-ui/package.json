@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-ui",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "TanStack Devtools UI is a set of UI components for building devtool panels for your application.",
   "author": "Tanner Linsley",
   "license": "MIT",

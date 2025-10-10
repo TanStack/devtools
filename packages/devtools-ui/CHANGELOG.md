@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.4.2
+
+### Patch Changes
+
+- update UI appearance ([#211](https://github.com/TanStack/devtools/pull/211))
+
 ## 0.4.1
 
 ### Patch Changes
