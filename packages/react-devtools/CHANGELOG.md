@@ -1,5 +1,12 @@
 # @tanstack/react-devtools
 
+## 0.7.5
+
+### Patch Changes
+
+- Updated dependencies [[`5362ab5`](https://github.com/TanStack/devtools/commit/5362ab51b8cb539b15d91435d106fb09703f388f)]:
+  - @tanstack/devtools@0.6.19
+
 ## 0.7.4
 
 ### Patch Changes

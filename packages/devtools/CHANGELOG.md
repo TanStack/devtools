@@ -1,5 +1,15 @@
 # @tanstack/devtools
 
+## 0.6.19
+
+### Patch Changes
+
+- Number of improvements to various parts of the DevTools: ([#162](https://github.com/TanStack/devtools/pull/162))
+  - Update event client to allow users to disable it
+  - Allow trigger to be completely hidden
+  - Add a new package `@tanstack/devtools-client` to allow users to listen to events we emit from Vite.
+  - Fix bugs inside of the DevTools like plugins being nuked on page refresh.
+
 ## 0.6.18
 
 ### Patch Changes
