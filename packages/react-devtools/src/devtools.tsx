@@ -12,6 +12,25 @@ type PluginRender =
   | JSX.Element
   | ((el: HTMLElement, theme: 'dark' | 'light') => JSX.Element)
 
+type TriggerProps = {
+  theme: 'dark' | 'light'
+  image: string
+  position:
+    | 'top-left'
+    | 'top-right'
+    | 'bottom-left'
+    | 'bottom-right'
+    | 'middle-left'
+    | 'middle-right'
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
+  hideUntilHover: boolean
+}
+
+type TriggerRender =
+  | JSX.Element
+  | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
+
 export type TanStackDevtoolsReactPlugin = Omit<
   TanStackDevtoolsPlugin,
   'render' | 'name'
@@ -57,6 +76,13 @@ export type TanStackDevtoolsReactPlugin = Omit<
   name: string | PluginRender
 }
 
+export type TanStackDevtoolsReactConfig = Omit<
+  Partial<TanStackDevtoolsConfig>,
+  'triggerComponent' | 'triggerContainerClass'
+> & {
+  triggerComponent?: TriggerRender
+}
+
 export interface TanStackDevtoolsReactInit {
   /**
    * Array of plugins to be used in the devtools.
@@ -81,7 +107,7 @@ export interface TanStackDevtoolsReactInit {
    * initial state of the devtools when it is started for the first time. Afterwards,
    * the settings are persisted in local storage and changed through the settings panel.
    */
-  config?: Partial<TanStackDevtoolsConfig>
+  config?: TanStackDevtoolsReactConfig
   /**
    * Configuration for the TanStack Devtools client event bus.
    */
@@ -105,6 +131,17 @@ const convertRender = (
   }))
 }
 
+const convertTrigger = (
+  Component: TriggerRender,
+  setComponent: React.Dispatch<React.SetStateAction<JSX.Element | null>>,
+  e: HTMLElement,
+  props: TriggerProps,
+) => {
+  const element =
+    typeof Component === 'function' ? Component(e, props) : Component
+  setComponent(element)
+}
+
 export const TanStackDevtools = ({
   plugins,
   config,
@@ -118,6 +155,9 @@ export const TanStackDevtools = ({
   const [titleContainers, setTitleContainers] = useState<
     Record<string, HTMLElement>
   >({})
+  const [triggerContainer, setTriggerContainer] = useState<HTMLElement | null>(
+    null,
+  )
 
   const [PluginComponents, setPluginComponents] = useState<
     Record<string, JSX.Element>
@@ -125,53 +165,67 @@ export const TanStackDevtools = ({
   const [TitleComponents, setTitleComponents] = useState<
     Record<string, JSX.Element>
   >({})
-
-  const [devtools] = useState(
-    () =>
-      new TanStackDevtoolsCore({
-        config,
-        eventBusConfig,
-        plugins: plugins?.map((plugin) => {
-          return {
-            ...plugin,
-            name:
-              typeof plugin.name === 'string'
-                ? plugin.name
-                : (e, theme) => {
-                    const id = e.getAttribute('id')!
-                    const target = e.ownerDocument.getElementById(id)
-
-                    if (target) {
-                      setTitleContainers((prev) => ({
-                        ...prev,
-                        [id]: e,
-                      }))
-                    }
-
-                    convertRender(
-                      plugin.name as PluginRender,
-                      setTitleComponents,
-                      e,
-                      theme,
-                    )
-                  },
-            render: (e, theme) => {
-              const id = e.getAttribute('id')!
-              const target = e.ownerDocument.getElementById(id)
-
-              if (target) {
-                setPluginContainers((prev) => ({
-                  ...prev,
-                  [id]: e,
-                }))
-              }
-
-              convertRender(plugin.render, setPluginComponents, e, theme)
-            },
-          }
-        }),
-      }),
+  const [TriggerComponent, setTriggerComponent] = useState<JSX.Element | null>(
+    null,
   )
+
+  const [devtools] = useState(() => {
+    const { triggerComponent, ...coreConfig } = config || {}
+    return new TanStackDevtoolsCore({
+      config: {
+        ...coreConfig,
+        triggerComponent: triggerComponent
+          ? (el, props) => {
+              setTriggerContainer(el)
+              convertTrigger(triggerComponent, setTriggerComponent, el, {
+                ...props,
+                isOpen: props.isOpen(),
+              })
+            }
+          : undefined,
+      },
+      eventBusConfig,
+      plugins: plugins?.map((plugin) => {
+        return {
+          ...plugin,
+          name:
+            typeof plugin.name === 'string'
+              ? plugin.name
+              : (e, theme) => {
+                  const id = e.getAttribute('id')!
+                  const target = e.ownerDocument.getElementById(id)
+
+                  if (target) {
+                    setTitleContainers((prev) => ({
+                      ...prev,
+                      [id]: e,
+                    }))
+                  }
+
+                  convertRender(
+                    plugin.name as PluginRender,
+                    setTitleComponents,
+                    e,
+                    theme,
+                  )
+                },
+          render: (e, theme) => {
+            const id = e.getAttribute('id')!
+            const target = e.ownerDocument.getElementById(id)
+
+            if (target) {
+              setPluginContainers((prev) => ({
+                ...prev,
+                [id]: e,
+              }))
+            }
+
+            convertRender(plugin.render, setPluginComponents, e, theme)
+          },
+        }
+      }),
+    })
+  })
 
   useEffect(() => {
     if (devToolRef.current) {
@@ -202,6 +256,10 @@ export const TanStackDevtools = ({
         ? Object.entries(titleContainers).map(([key, titleContainer]) =>
             createPortal(<>{TitleComponents[key]}</>, titleContainer),
           )
+        : null}
+
+      {triggerContainer && TriggerComponent
+        ? createPortal(<>{TriggerComponent}</>, triggerContainer)
         : null}
     </>
   )
