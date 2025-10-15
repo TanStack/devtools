@@ -92,3 +92,17 @@ export const tryParseJson = <T extends any>(
 
 export const readPackageJson = async () =>
   tryParseJson<PackageJson>(await tryReadFile(process.cwd() + '/package.json'))
+
+export const writePackageJson = async (packageJson: PackageJson) => {
+  try {
+    await fs.writeFile(
+      process.cwd() + '/package.json',
+      JSON.stringify(packageJson, null, 2) + '\n',
+      'utf-8',
+    )
+    return true
+  } catch (error) {
+    console.error('Failed to write package.json:', error)
+    return false
+  }
+}

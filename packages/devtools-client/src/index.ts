@@ -55,6 +55,17 @@ interface EventMap {
     packageJson: PackageJson | null
   }
   'tanstack-devtools-core:mounted': void
+  'tanstack-devtools-core:install-devtools': {
+    packageName: string
+  }
+  'tanstack-devtools-core:devtools-installed': {
+    packageName: string
+    success: boolean
+    error?: string
+  }
+  'tanstack-devtools-core:package-json-updated': {
+    packageJson: PackageJson | null
+  }
 }
 
 export class DevtoolsEventClient extends EventClient<EventMap> {

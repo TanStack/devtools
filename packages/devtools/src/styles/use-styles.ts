@@ -390,6 +390,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       width: ${size[48]};
       overflow-y: auto;
       transform: ${isExpanded ? 'translateX(0)' : 'translateX(-100%)'};
+      display: flex;
+      flex-direction: column;
     `,
 
     pluginsTabSidebarTransition: (mSeconds: number) => {
@@ -397,6 +399,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         transition: transform ${mSecondsToCssSeconds(mSeconds)} ease;
       `
     },
+
+    pluginsList: css`
+      flex: 1;
+      overflow-y: auto;
+    `,
 
     pluginName: css`
       font-size: ${fontSize.xs};
@@ -458,6 +465,579 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     settingsModifiers: css`
       display: flex;
       gap: 0.5rem;
+    `,
+
+    // No Plugins Fallback Styles
+    noPluginsFallback: css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      padding: 2rem;
+      background: ${t(colors.gray[50], colors.darkGray[700])};
+      width: 100%;
+      height: 100%;
+    `,
+    noPluginsFallbackContent: css`
+      max-width: 600px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    `,
+    noPluginsFallbackIcon: css`
+      width: 64px;
+      height: 64px;
+      color: ${t(colors.gray[400], colors.gray[600])};
+      margin-bottom: 0.5rem;
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    `,
+    noPluginsFallbackTitle: css`
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0;
+    `,
+    noPluginsFallbackDescription: css`
+      font-size: 0.95rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      line-height: 1.5;
+      margin: 0;
+    `,
+    noPluginsSuggestions: css`
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: ${t(colors.white, colors.darkGray[800])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.5rem;
+    `,
+    noPluginsSuggestionsTitle: css`
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0 0 0.5rem 0;
+    `,
+    noPluginsSuggestionsDesc: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      margin: 0 0 1rem 0;
+    `,
+    noPluginsSuggestionsList: css`
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    `,
+    noPluginsSuggestionCard: css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: ${t(colors.gray[50], colors.darkGray[900])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.375rem;
+      transition: all 0.15s ease;
+
+      &:hover {
+        border-color: ${t(colors.gray[300], colors.gray[600])};
+        background: ${t(colors.gray[100], colors.darkGray[800])};
+      }
+    `,
+    noPluginsSuggestionInfo: css`
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+      flex: 1;
+    `,
+    noPluginsSuggestionPackage: css`
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    `,
+    noPluginsSuggestionSource: css`
+      font-size: 0.8rem;
+      color: ${t(colors.gray[500], colors.gray[500])};
+      margin: 0;
+    `,
+    noPluginsSuggestionStatus: css`
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: ${t(colors.green[600], colors.green[400])};
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    `,
+    noPluginsSuggestionStatusText: css`
+      font-size: 0.875rem;
+      font-weight: 500;
+    `,
+    noPluginsSuggestionStatusTextError: css`
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: ${t(colors.red[600], colors.red[400])};
+    `,
+    noPluginsEmptyState: css`
+      margin-top: 1.5rem;
+      padding: 1.5rem;
+      background: ${t(colors.white, colors.darkGray[800])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.5rem;
+    `,
+    noPluginsEmptyStateText: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      margin: 0;
+      line-height: 1.5;
+    `,
+    noPluginsFallbackLinks: css`
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    `,
+    noPluginsFallbackLink: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      text-decoration: none;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: ${t(colors.gray[900], colors.gray[100])};
+        text-decoration: underline;
+      }
+    `,
+    noPluginsFallbackLinkSeparator: css`
+      color: ${t(colors.gray[400], colors.gray[600])};
+    `,
+
+    // Plugin Marketplace Styles (for "Add More" tab)
+    pluginMarketplace: css`
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      padding: 2rem;
+      background: ${t(
+        'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        'linear-gradient(135deg, #1a1d23 0%, #13161a 100%)',
+      )};
+      animation: fadeIn 0.3s ease;
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `,
+    pluginMarketplaceHeader: css`
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid ${t(colors.gray[200], colors.gray[700])};
+    `,
+    pluginMarketplaceTitle: css`
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+    `,
+    pluginMarketplaceDescription: css`
+      font-size: 0.95rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      margin: 0 0 1rem 0;
+      line-height: 1.5;
+    `,
+    pluginMarketplaceSearchWrapper: css`
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-top: 1rem;
+
+      svg {
+        position: absolute;
+        left: 1rem;
+        color: ${t(colors.gray[400], colors.gray[500])};
+        pointer-events: none;
+      }
+    `,
+    pluginMarketplaceSearch: css`
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      background: ${t(colors.gray[50], colors.darkGray[900])};
+      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.5rem;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      font-size: 0.95rem;
+      font-family: ${fontFamily.sans};
+      transition: all 0.2s ease;
+
+      &::placeholder {
+        color: ${t(colors.gray[400], colors.gray[500])};
+      }
+
+      &:focus {
+        outline: none;
+        border-color: ${t(colors.blue[500], colors.blue[400])};
+        background: ${t(colors.white, colors.darkGray[800])};
+        box-shadow: 0 0 0 3px
+          ${t('rgba(59, 130, 246, 0.1)', 'rgba(96, 165, 250, 0.1)')};
+      }
+    `,
+    pluginMarketplaceGrid: css`
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+      animation: slideUp 0.4s ease;
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `,
+    pluginMarketplaceCard: css`
+      background: ${t(colors.white, colors.darkGray[800])};
+      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: ${t(
+          'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
+          'linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%)',
+        )};
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s ease;
+      }
+
+      &:hover {
+        border-color: ${t(colors.gray[400], colors.gray[500])};
+        box-shadow: 0 8px 24px ${t('rgba(0,0,0,0.1)', 'rgba(0,0,0,0.4)')};
+        transform: translateY(-4px);
+
+        &::before {
+          transform: scaleX(1);
+        }
+      }
+    `,
+    pluginMarketplaceCardIcon: css`
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: ${t(
+        'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+        'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
+      )};
+      border-radius: 0.5rem;
+      color: white;
+      transition: transform 0.25s ease;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    `,
+    pluginMarketplaceCardHeader: css`
+      flex: 1;
+    `,
+    pluginMarketplaceCardTitle: css`
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0 0 0.5rem 0;
+      line-height: 1.4;
+    `,
+    pluginMarketplaceCardDescription: css`
+      font-size: 0.8rem;
+      color: ${t(colors.gray[500], colors.gray[500])};
+      margin: 0;
+      padding: 0.375rem 0.75rem;
+      background: ${t(colors.gray[100], colors.gray[900])};
+      border-radius: 0.375rem;
+      display: inline-block;
+      font-weight: 500;
+    `,
+    pluginMarketplaceCardStatus: css`
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: ${t(colors.green[600], colors.green[400])};
+      animation: statusFadeIn 0.3s ease;
+
+      @keyframes statusFadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+        animation: iconPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      }
+
+      @keyframes iconPop {
+        0% {
+          transform: scale(0);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    `,
+    pluginMarketplaceCardSpinner: css`
+      width: 18px;
+      height: 18px;
+      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      border-top-color: ${t(colors.blue[600], colors.blue[400])};
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+    pluginMarketplaceCardStatusText: css`
+      font-size: 0.875rem;
+      font-weight: 600;
+    `,
+    pluginMarketplaceCardStatusTextError: css`
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: ${t(colors.red[600], colors.red[400])};
+    `,
+    pluginMarketplaceEmpty: css`
+      padding: 3rem 2rem;
+      text-align: center;
+      background: ${t(colors.white, colors.darkGray[800])};
+      border: 2px dashed ${t(colors.gray[300], colors.gray[700])};
+      border-radius: 0.75rem;
+      animation: fadeIn 0.3s ease;
+    `,
+    pluginMarketplaceEmptyText: css`
+      font-size: 0.95rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      margin: 0;
+      line-height: 1.6;
+    `,
+
+    // Framework sections
+    pluginMarketplaceSection: css`
+      margin-bottom: 2.5rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    `,
+    pluginMarketplaceSectionHeader: css`
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    `,
+    pluginMarketplaceSectionHeaderLeft: css`
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    `,
+    pluginMarketplaceSectionChevron: css`
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      transition: transform 0.2s ease;
+    `,
+    pluginMarketplaceSectionChevronCollapsed: css`
+      transform: rotate(-90deg);
+    `,
+    pluginMarketplaceSectionTitle: css`
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    `,
+    pluginMarketplaceSectionBadge: css`
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.5rem;
+      background: ${t(
+        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+      )};
+      color: white;
+      border-radius: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    `,
+    pluginMarketplaceCardDisabled: css`
+      opacity: 0.6;
+      filter: grayscale(0.3);
+      cursor: not-allowed;
+
+      &:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    `,
+
+    // Card state badges
+    pluginMarketplaceCardBadge: css`
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      border-radius: 0.25rem;
+      letter-spacing: 0.05em;
+    `,
+    pluginMarketplaceCardBadgeInstall: css`
+      background: ${t(colors.green[100], colors.green[900])};
+      color: ${t(colors.green[700], colors.green[300])};
+    `,
+    pluginMarketplaceCardBadgeAdd: css`
+      background: ${t(colors.blue[100], colors.blue[900])};
+      color: ${t(colors.blue[700], colors.blue[300])};
+    `,
+    pluginMarketplaceCardBadgeRequires: css`
+      background: ${t(colors.gray[100], colors.gray[800])};
+      color: ${t(colors.gray[600], colors.gray[400])};
+    `,
+
+    // Add More Tab Style (visually distinct from regular plugins)
+    pluginNameAddMore: css`
+      font-size: ${fontSize.xs};
+      font-family: ${fontFamily.sans};
+      color: ${t(colors.gray[600], colors.gray[400])};
+      padding: ${size[3]} ${size[2]};
+      cursor: pointer;
+      text-align: center;
+      border-top: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      border-left: 2px solid transparent;
+      background: ${t(
+        'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+        'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
+      )};
+      font-weight: 600;
+      position: relative;
+      margin-top: auto;
+
+      h3 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+
+        &::before {
+          content: '✨';
+          font-size: 0.875rem;
+          animation: sparkle 2s ease-in-out infinite;
+        }
+      }
+
+      @keyframes sparkle {
+        0%,
+        100% {
+          opacity: 1;
+          transform: scale(1) rotate(0deg);
+        }
+        50% {
+          opacity: 0.6;
+          transform: scale(1.1) rotate(10deg);
+        }
+      }
+
+      &:hover {
+        background: ${t(
+          'linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)',
+          'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
+        )};
+        color: ${t(colors.gray[900], colors.gray[100])};
+        border-left-color: ${t(colors.blue[500], colors.blue[400])};
+
+        h3::before {
+          animation: sparkle 0.5s ease-in-out infinite;
+        }
+      }
+
+      &.active {
+        background: ${t(
+          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+          'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+        )};
+        color: ${t(colors.white, colors.white)};
+        border-left: 2px solid ${t(colors.blue[600], colors.blue[300])};
+        box-shadow: 0 4px 12px
+          ${t('rgba(59, 130, 246, 0.3)', 'rgba(96, 165, 250, 0.3)')};
+
+        h3::before {
+          filter: brightness(0) invert(1);
+        }
+      }
+
+      &.active:hover {
+        background: ${t(
+          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        )};
+        transform: translateX(4px) scale(1.02);
+      }
     `,
   }
 }

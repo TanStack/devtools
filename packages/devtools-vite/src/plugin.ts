@@ -86,6 +86,57 @@ const emitOutdatedDeps = async () => {
   })
 }
 
+const installPackage = async (
+  packageName: string,
+): Promise<{
+  success: boolean
+  error?: string
+}> => {
+  return new Promise((resolve) => {
+    // Detect package manager
+    exec('npm --version', (error) => {
+      const packageManager = error ? 'pnpm' : 'npm'
+      const installCommand = `${packageManager} install -D ${packageName}`
+
+      console.log(
+        chalk.blueBright(
+          `[@tanstack/devtools-vite] Installing ${packageName}...`,
+        ),
+      )
+
+      exec(installCommand, async (installError) => {
+        if (installError) {
+          console.error(
+            chalk.redBright(
+              `[@tanstack/devtools-vite] Failed to install ${packageName}:`,
+            ),
+            installError.message,
+          )
+          resolve({
+            success: false,
+            error: installError.message,
+          })
+          return
+        }
+
+        console.log(
+          chalk.greenBright(
+            `[@tanstack/devtools-vite] Successfully installed ${packageName}`,
+          ),
+        )
+
+        // Read the updated package.json and emit the event
+        const updatedPackageJson = await readPackageJson()
+        devtoolsEventClient.emit('package-json-updated', {
+          packageJson: updatedPackageJson,
+        })
+
+        resolve({ success: true })
+      })
+    })
+  })
+}
+
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
   const logging = args?.logging ?? true
@@ -230,6 +281,16 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       async configureServer() {
         const packageJson = await readPackageJson()
         const outdatedDeps = emitOutdatedDeps().then((deps) => deps)
+
+        // Listen for package installation requests
+        devtoolsEventClient.on('install-devtools', async (event) => {
+          const result = await installPackage(event.payload.packageName)
+          devtoolsEventClient.emit('devtools-installed', {
+            packageName: event.payload.packageName,
+            success: result.success,
+            error: result.error,
+          })
+        })
 
         // whenever a client mounts we send all the current info to the subscribers
         devtoolsEventClient.on('mounted', async () => {
