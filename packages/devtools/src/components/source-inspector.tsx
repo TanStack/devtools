@@ -1,100 +1,96 @@
-import { createEffect, createSignal, onCleanup } from 'solid-js'
+import { createEffect, createMemo, createSignal } from 'solid-js'
+import { createStore } from 'solid-js/store'
+import { createElementSize } from '@solid-primitives/resize-observer'
+import { useKeyDownList } from '@solid-primitives/keyboard'
+import { createMousePosition } from '@solid-primitives/mouse'
+import { createEventListener } from '@solid-primitives/event-listener'
 
 export const SourceInspector = () => {
-  const [isHighlighting, setIsHighlighting] = createSignal(false)
-  const [currentElement, setCurrentElement] = createSignal<HTMLElement | null>(
-    null,
-  )
-  const [currentElementBounding, setCurrentElementBounding] = createSignal({
-    width: 0,
-    height: 0,
-    left: 0,
-    top: 0,
+  const highlightStateInit = {
+    element: null as HTMLElement | null,
+    bounding: { width: 0, height: 0, left: 0, top: 0 },
+    dataSource: '',
+  }
+
+  const [highlightState, setHighlightState] = createStore({
+    ...highlightStateInit,
+  })
+  const resetHighlight = () => {
+    setHighlightState({ ...highlightStateInit })
+  }
+
+  const [nameTagRef, setNameTagRef] = createSignal<HTMLDivElement | null>(null)
+  const nameTagSize = createElementSize(() => nameTagRef())
+
+  const mousePosition = createMousePosition()
+
+  const downList = useKeyDownList()
+  const isHighlightingKeysHeld = createMemo(() => {
+    const keys = downList()
+    const isShiftHeld = keys.includes('SHIFT')
+    const isCtrlHeld = keys.includes('CONTROL')
+    const isMetaHeld = keys.includes('META')
+    return isShiftHeld && (isCtrlHeld || isMetaHeld)
   })
 
   createEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isShiftHeld = e.shiftKey
-      const isCtrlHeld = e.ctrlKey || e.metaKey
-      if (isShiftHeld && isCtrlHeld) {
-        setIsHighlighting(true)
-      }
+    if (!isHighlightingKeysHeld()) {
+      resetHighlight()
+      return
     }
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      const isShiftHeld = e.shiftKey
-      const isCtrlHeld = e.ctrlKey || e.metaKey
-      if (!isShiftHeld || !isCtrlHeld) {
-        setIsHighlighting(false)
-        setCurrentElement(null)
-      }
-    }
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isHighlighting()) return
+    const target = document.elementFromPoint(mousePosition.x, mousePosition.y)
 
-      const target = document.elementFromPoint(e.clientX, e.clientY)
-
-      if (!(target instanceof HTMLElement)) {
-        return
-      }
-
-      if (target === currentElement()) {
-        return
-      }
-
-      const dataSource = target.getAttribute('data-tsd-source')
-      if (!dataSource) return
-
-      setCurrentElement(target)
-      const rect = target.getBoundingClientRect()
-      setCurrentElementBounding({
-        width: rect.width,
-        height: rect.height,
-        left: rect.left,
-        top: rect.top,
-      })
+    if (!(target instanceof HTMLElement)) {
+      resetHighlight()
+      return
     }
 
-    const openSourceHandler = (e: Event) => {
-      if (!isHighlighting()) return
-
-      if (e.target instanceof HTMLElement) {
-        const dataSource = e.target.getAttribute('data-tsd-source')
-        window.getSelection()?.removeAllRanges()
-        if (dataSource) {
-          e.preventDefault()
-          e.stopPropagation()
-          fetch(
-            `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
-              dataSource,
-            )}`,
-          ).catch(() => {})
-        }
-      }
+    if (target === highlightState.element) {
+      return
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
-    window.addEventListener('mousemove', handleMouseMove)
-    window.addEventListener('click', openSourceHandler)
-    onCleanup(() => {
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
-      window.removeEventListener('mousemove', handleMouseMove)
-      window.removeEventListener('click', openSourceHandler)
+    const dataSource = target.getAttribute('data-tsd-source')
+    if (!dataSource) {
+      resetHighlight()
+      return
+    }
+
+    const rect = target.getBoundingClientRect()
+    const bounding = {
+      width: rect.width,
+      height: rect.height,
+      left: rect.left,
+      top: rect.top,
+    }
+
+    setHighlightState({
+      element: target,
+      bounding,
+      dataSource,
     })
   })
 
-  const currentElementBoxStyles = () => {
-    const element = currentElement()
-    if (element) {
-      const bounding = currentElementBounding()
+  createEventListener(window, 'click', (e: Event) => {
+    if (!highlightState.element) return
+
+    e.preventDefault()
+    e.stopPropagation()
+    fetch(
+      `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
+        highlightState.dataSource,
+      )}`,
+    ).catch(() => {})
+  })
+
+  const currentElementBoxStyles = createMemo(() => {
+    if (highlightState.element) {
       return {
         display: 'block',
-        width: `${bounding.width}px`,
-        height: `${bounding.height}px`,
-        left: `${bounding.left}px`,
-        top: `${bounding.top}px`,
+        width: `${highlightState.bounding.width}px`,
+        height: `${highlightState.bounding.height}px`,
+        left: `${highlightState.bounding.left}px`,
+        top: `${highlightState.bounding.top}px`,
 
         'background-color': 'oklch(55.4% 0.046 257.417 /0.25)',
         transition: 'all 0.05s linear',
@@ -105,9 +101,56 @@ export const SourceInspector = () => {
     return {
       display: 'none',
     }
-  }
+  })
+
+  const fileNameStyles = createMemo(() => {
+    if (highlightState.element && nameTagRef()) {
+      const windowWidth = window.innerWidth
+      const nameTagHeight = nameTagSize.height || 26
+      const nameTagWidth = nameTagSize.width || 0
+      let left = highlightState.bounding.left
+      let top = highlightState.bounding.top - nameTagHeight - 4
+
+      if (top < 0) {
+        top = highlightState.bounding.top + highlightState.bounding.height + 4
+      }
+
+      if (left + nameTagWidth > windowWidth) {
+        left = windowWidth - nameTagWidth - 4
+      }
+
+      if (left < 0) {
+        left = 4
+      }
+
+      return {
+        position: 'fixed' as const,
+        left: `${left}px`,
+        top: `${top}px`,
+        'background-color': 'oklch(55.4% 0.046 257.417 /0.80)',
+        color: 'white',
+        padding: '2px 4px',
+        fontSize: '12px',
+        'border-radius': '2px',
+        'z-index': 10000,
+        visibility: 'visible' as const,
+        transition: 'all 0.05s linear',
+      }
+    }
+    return {
+      display: 'none',
+    }
+  })
 
   return (
-    <div style={{ ...currentElementBoxStyles(), 'pointer-events': 'none' }} />
+    <>
+      <div
+        ref={setNameTagRef}
+        style={{ ...fileNameStyles(), 'pointer-events': 'none' }}
+      >
+        {highlightState.dataSource.split(':')[0]}
+      </div>
+      <div style={{ ...currentElementBoxStyles(), 'pointer-events': 'none' }} />
+    </>
   )
 }
