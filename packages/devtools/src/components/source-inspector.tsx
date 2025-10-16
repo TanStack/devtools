@@ -6,17 +6,15 @@ import { createMousePosition } from '@solid-primitives/mouse'
 import { createEventListener } from '@solid-primitives/event-listener'
 
 export const SourceInspector = () => {
-  const highlightStateInit = {
+  const highlightStateInit = () => ({
     element: null as HTMLElement | null,
     bounding: { width: 0, height: 0, left: 0, top: 0 },
     dataSource: '',
-  }
-
-  const [highlightState, setHighlightState] = createStore({
-    ...highlightStateInit,
   })
+
+  const [highlightState, setHighlightState] = createStore(highlightStateInit())
   const resetHighlight = () => {
-    setHighlightState({ ...highlightStateInit })
+    setHighlightState(highlightStateInit())
   }
 
   const [nameTagRef, setNameTagRef] = createSignal<HTMLDivElement | null>(null)
