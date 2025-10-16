@@ -485,9 +485,6 @@ importers:
       '@solid-primitives/keyboard':
         specifier: ^1.3.3
         version: 1.3.3(solid-js@1.9.9)
-      '@solid-primitives/mouse':
-        specifier: ^2.1.4
-        version: 2.1.4(solid-js@1.9.9)
       '@solid-primitives/resize-observer':
         specifier: ^2.1.3
         version: 2.1.3(solid-js@1.9.9)
@@ -2590,11 +2587,6 @@ packages:
 
   '@solid-primitives/media@2.3.3':
     resolution: {integrity: sha512-hQ4hLOGvfbugQi5Eu1BFWAIJGIAzztq9x0h02xgBGl2l0Jaa3h7tg6bz5tV1NSuNYVGio4rPoa7zVQQLkkx9dA==}
-    peerDependencies:
-      solid-js: ^1.6.12
-
-  '@solid-primitives/mouse@2.1.4':
-    resolution: {integrity: sha512-qZNh7FedzJMSrUX/BSd5Pjkv+Ct7vDr9TXVbXSdAKa4xMri0mwNi1eCbNbcEsq/FOsPVQLyt2d5oR7cQHBOg0A==}
     peerDependencies:
       solid-js: ^1.6.12
 
@@ -9695,14 +9687,6 @@ snapshots:
       solid-js: 1.9.9
 
   '@solid-primitives/media@2.3.3(solid-js@1.9.9)':
-    dependencies:
-      '@solid-primitives/event-listener': 2.4.3(solid-js@1.9.9)
-      '@solid-primitives/rootless': 1.5.2(solid-js@1.9.9)
-      '@solid-primitives/static-store': 0.1.2(solid-js@1.9.9)
-      '@solid-primitives/utils': 6.3.2(solid-js@1.9.9)
-      solid-js: 1.9.9
-
-  '@solid-primitives/mouse@2.1.4(solid-js@1.9.9)':
     dependencies:
       '@solid-primitives/event-listener': 2.4.3(solid-js@1.9.9)
       '@solid-primitives/rootless': 1.5.2(solid-js@1.9.9)

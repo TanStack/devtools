@@ -2,7 +2,6 @@ import { createEffect, createMemo, createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { createElementSize } from '@solid-primitives/resize-observer'
 import { useKeyDownList } from '@solid-primitives/keyboard'
-import { createMousePosition } from '@solid-primitives/mouse'
 import { createEventListener } from '@solid-primitives/event-listener'
 
 export const SourceInspector = () => {
@@ -20,7 +19,10 @@ export const SourceInspector = () => {
   const [nameTagRef, setNameTagRef] = createSignal<HTMLDivElement | null>(null)
   const nameTagSize = createElementSize(() => nameTagRef())
 
-  const mousePosition = createMousePosition()
+  const [mousePosition, setMousePosition] = createStore({ x: 0, y: 0 })
+  createEventListener(document, 'mousemove', (e) => {
+    setMousePosition({ x: e.clientX, y: e.clientY })
+  })
 
   const downList = useKeyDownList()
   const isHighlightingKeysHeld = createMemo(() => {
@@ -69,7 +71,7 @@ export const SourceInspector = () => {
     })
   })
 
-  createEventListener(window, 'click', (e: Event) => {
+  createEventListener(document, 'click', (e: Event) => {
     if (!highlightState.element) return
 
     e.preventDefault()
