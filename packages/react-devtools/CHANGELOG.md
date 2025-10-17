@@ -1,5 +1,14 @@
 # @tanstack/react-devtools
 
+## 0.7.7
+
+### Patch Changes
+
+- Added plugin marketplace functionality into devtools ([#216](https://github.com/TanStack/devtools/pull/216))
+
+- Updated dependencies [[`0b4a4a9`](https://github.com/TanStack/devtools/commit/0b4a4a9e57f3be7079166198f3e69fedd15c5b5d)]:
+  - @tanstack/devtools@0.6.21
+
 ## 0.7.6
 
 ### Patch Changes
