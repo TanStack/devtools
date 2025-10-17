@@ -77,7 +77,7 @@ export const SourceInspector = () => {
     window.getSelection()?.removeAllRanges()
     e.preventDefault()
     e.stopPropagation()
-    
+
     fetch(
       `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
         highlightState.dataSource,
