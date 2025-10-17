@@ -82,7 +82,7 @@ export const SourceInspector = () => {
       `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
         highlightState.dataSource,
       )}`,
-    ).catch(() => { })
+    ).catch(() => {})
   })
 
   const currentElementBoxStyles = createMemo(() => {
