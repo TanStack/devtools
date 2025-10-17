@@ -17,9 +17,9 @@ import type {
 type SolidPluginRender =
   | JSX.Element
   | ((
-    el: HTMLDivElement | HTMLHeadingElement,
-    theme: 'dark' | 'light',
-  ) => JSX.Element)
+      el: HTMLDivElement | HTMLHeadingElement,
+      theme: 'dark' | 'light',
+    ) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
@@ -111,19 +111,18 @@ export default function SolidDevtoolsCore({
   eventBusConfig,
 }: TanStackDevtoolsInit) {
   // Convert plugins to the format expected by the core
-  const pluginsMap = createMemo<Array<TanStackDevtoolsPlugin> | undefined>(
-    () =>
-      plugins?.map((plugin) => ({
-        ...plugin,
-        name:
-          typeof plugin.name === 'string'
-            ? plugin.name
-            : // The check above confirms that `plugin.name` is of Render type
+  const pluginsMap = createMemo<Array<TanStackDevtoolsPlugin> | undefined>(() =>
+    plugins?.map((plugin) => ({
+      ...plugin,
+      name:
+        typeof plugin.name === 'string'
+          ? plugin.name
+          : // The check above confirms that `plugin.name` is of Render type
             (el, theme) =>
               convertRender(el, plugin.name as SolidPluginRender, theme),
-        render: (el: HTMLDivElement, theme: 'dark' | 'light') =>
-          convertRender(el, plugin.render, theme),
-      })),
+      render: (el: HTMLDivElement, theme: 'dark' | 'light') =>
+        convertRender(el, plugin.render, theme),
+    })),
   )
 
   const [devtools] = createSignal(

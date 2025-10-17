@@ -73,7 +73,8 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
                 ? `Active in your devtools`
                 : card.actionType === 'version-mismatch'
                   ? card.versionInfo?.reason || 'Version incompatible'
-                  : card.metadata?.description || `For ${card.requiredPackageName}`}
+                  : card.metadata?.description ||
+                    `For ${card.requiredPackageName}`}
         </p>
         <Show when={card.versionInfo}>
           <p class={styles().pluginMarketplaceCardVersionInfo}>

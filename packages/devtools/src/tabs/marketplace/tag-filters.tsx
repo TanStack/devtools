@@ -19,8 +19,9 @@ export const TagFilters = (props: TagFiltersProps) => {
             <button
               class={styles().pluginMarketplaceTagButton}
               classList={{
-                [styles().pluginMarketplaceTagButtonActive]:
-                  props.selectedTags().has(tag),
+                [styles().pluginMarketplaceTagButtonActive]: props
+                  .selectedTags()
+                  .has(tag),
               }}
               onClick={() => props.onToggleTag(tag)}
             >

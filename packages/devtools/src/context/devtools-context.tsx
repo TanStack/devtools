@@ -39,11 +39,11 @@ export interface TanStackDevtoolsPlugin {
    * ```
    */
   name:
-  | string
-  | ((
-    el: HTMLHeadingElement,
-    theme: DevtoolsStore['settings']['theme'],
-  ) => void)
+    | string
+    | ((
+        el: HTMLHeadingElement,
+        theme: DevtoolsStore['settings']['theme'],
+      ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
@@ -76,7 +76,9 @@ interface ContextProps {
   children: JSX.Element
   plugins?: Array<TanStackDevtoolsPlugin>
   config?: TanStackDevtoolsConfig
-  onSetPlugins?: (setPlugins: (plugins: Array<TanStackDevtoolsPlugin>) => void) => void
+  onSetPlugins?: (
+    setPlugins: (plugins: Array<TanStackDevtoolsPlugin>) => void,
+  ) => void
 }
 
 const getSettings = () => {

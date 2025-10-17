@@ -17,11 +17,16 @@ import type { PluginCard, PluginSection } from './marketplace/types'
 export const PluginMarketplace = () => {
   const styles = useStyles()
   const { plugins } = usePlugins()
-  const [pluginSections, setPluginSections] = createSignal<Array<PluginSection>>([])
-  const [currentPackageJson, setCurrentPackageJson] = createSignal<PackageJson | null>(null)
+  const [pluginSections, setPluginSections] = createSignal<
+    Array<PluginSection>
+  >([])
+  const [currentPackageJson, setCurrentPackageJson] =
+    createSignal<PackageJson | null>(null)
   const [searchInput, setSearchInput] = createSignal('')
   const [searchQuery, setSearchQuery] = createSignal('')
-  const [collapsedSections, setCollapsedSections] = createSignal<Set<string>>(new Set())
+  const [collapsedSections, setCollapsedSections] = createSignal<Set<string>>(
+    new Set(),
+  )
   const [showActivePlugins, setShowActivePlugins] = createSignal(true)
   const [selectedTags, setSelectedTags] = createSignal<Set<string>>(new Set())
   const [isSettingsOpen, setIsSettingsOpen] = createSignal(false)
@@ -74,9 +79,7 @@ export const PluginMarketplace = () => {
     if (!pkg) return []
 
     const currentFramework = detectFramework(pkg, FRAMEWORKS)
-    const registeredPlugins = new Set(
-      plugins()?.map((p) => p.id || '') || [],
-    )
+    const registeredPlugins = new Set(plugins()?.map((p) => p.id || '') || [])
 
     // Build fresh cards from current state
     const allCards = buildPluginCards(
@@ -84,7 +87,6 @@ export const PluginMarketplace = () => {
       currentFramework,
       registeredPlugins,
       pluginSections().flatMap((s) => s.cards), // Preserve status from existing cards
-
     )
 
     // Generate sections from cards
@@ -97,13 +99,15 @@ export const PluginMarketplace = () => {
 
     // Filter by tags if any are selected
     if (tags.size > 0) {
-      sections = sections.map((section) => ({
-        ...section,
-        cards: section.cards.filter((card) => {
-          if (!card.metadata?.tags) return false
-          return card.metadata.tags.some((tag) => tags.has(tag))
-        }),
-      })).filter((section) => section.cards.length > 0)
+      sections = sections
+        .map((section) => ({
+          ...section,
+          cards: section.cards.filter((card) => {
+            if (!card.metadata?.tags) return false
+            return card.metadata.tags.some((tag) => tags.has(tag))
+          }),
+        }))
+        .filter((section) => section.cards.length > 0)
     }
 
     // Apply search filter
@@ -117,62 +121,73 @@ export const PluginMarketplace = () => {
       .filter((section) => section.cards.length > 0)
   }
 
-
   onMount(() => {
     // Listen for package.json updates
-    const cleanupJsonRead = devtoolsEventClient.on('package-json-read', (event) => {
-      setCurrentPackageJson(event.payload.packageJson)
-      updatePluginCards(event.payload.packageJson)
-    })
+    const cleanupJsonRead = devtoolsEventClient.on(
+      'package-json-read',
+      (event) => {
+        setCurrentPackageJson(event.payload.packageJson)
+        updatePluginCards(event.payload.packageJson)
+      },
+    )
 
-    const cleanupJsonUpdated = devtoolsEventClient.on('package-json-updated', (event) => {
-      setCurrentPackageJson(event.payload.packageJson)
-      updatePluginCards(event.payload.packageJson)
-    })
+    const cleanupJsonUpdated = devtoolsEventClient.on(
+      'package-json-updated',
+      (event) => {
+        setCurrentPackageJson(event.payload.packageJson)
+        updatePluginCards(event.payload.packageJson)
+      },
+    )
 
     // Listen for installation results
-    const cleanupDevtoolsInstalled = devtoolsEventClient.on('devtools-installed', (event) => {
-      setPluginSections((prevSections) =>
-        prevSections.map((section) => ({
-          ...section,
-          cards: section.cards.map((card) =>
-            card.devtoolsPackage === event.payload.packageName
-              ? {
-                ...card,
-                status: event.payload.success ? 'success' : 'error',
-                error: event.payload.error,
-              }
-              : card,
-          ),
-        })),
-      )
-    })
+    const cleanupDevtoolsInstalled = devtoolsEventClient.on(
+      'devtools-installed',
+      (event) => {
+        setPluginSections((prevSections) =>
+          prevSections.map((section) => ({
+            ...section,
+            cards: section.cards.map((card) =>
+              card.devtoolsPackage === event.payload.packageName
+                ? {
+                    ...card,
+                    status: event.payload.success ? 'success' : 'error',
+                    error: event.payload.error,
+                  }
+                : card,
+            ),
+          })),
+        )
+      },
+    )
 
     // Listen for plugin added results
-    const cleanupPluginAdded = devtoolsEventClient.on('plugin-added', (event) => {
-      setPluginSections((prevSections) =>
-        prevSections.map((section) => ({
-          ...section,
-          cards: section.cards.map((card) =>
-            card.devtoolsPackage === event.payload.packageName
-              ? {
-                ...card,
-                status: event.payload.success ? 'success' : 'error',
-                error: event.payload.error,
-              }
-              : card,
-          ),
-        })),
-      )
+    const cleanupPluginAdded = devtoolsEventClient.on(
+      'plugin-added',
+      (event) => {
+        setPluginSections((prevSections) =>
+          prevSections.map((section) => ({
+            ...section,
+            cards: section.cards.map((card) =>
+              card.devtoolsPackage === event.payload.packageName
+                ? {
+                    ...card,
+                    status: event.payload.success ? 'success' : 'error',
+                    error: event.payload.error,
+                  }
+                : card,
+            ),
+          })),
+        )
 
-      // When plugin is successfully added, recalculate to move it to active section
-      if (event.payload.success) {
-        const pkg = currentPackageJson()
-        if (pkg) {
-          updatePluginCards(pkg)
+        // When plugin is successfully added, recalculate to move it to active section
+        if (event.payload.success) {
+          const pkg = currentPackageJson()
+          if (pkg) {
+            updatePluginCards(pkg)
+          }
         }
-      }
-    })
+      },
+    )
 
     onCleanup(() => {
       cleanupJsonRead()
@@ -190,16 +205,13 @@ export const PluginMarketplace = () => {
     const currentFramework = detectFramework(pkg, FRAMEWORKS)
 
     // Get list of registered plugin names
-    const registeredPlugins = new Set(
-      plugins()?.map((p) => p.id || '') || [],
-    )
+    const registeredPlugins = new Set(plugins()?.map((p) => p.id || '') || [])
 
     const allCards = buildPluginCards(
       pkg,
       currentFramework,
       registeredPlugins,
       pluginSections().flatMap((s) => s.cards),
-
     )
 
     const sections = groupIntoSections(allCards)
@@ -207,7 +219,12 @@ export const PluginMarketplace = () => {
   }
 
   const handleAction = (card: PluginCard) => {
-    if (card.actionType === 'requires-package' || card.actionType === 'wrong-framework' || card.actionType === 'already-installed' || card.actionType === 'version-mismatch') {
+    if (
+      card.actionType === 'requires-package' ||
+      card.actionType === 'wrong-framework' ||
+      card.actionType === 'already-installed' ||
+      card.actionType === 'version-mismatch'
+    ) {
       // Can't install devtools without the base package, wrong framework, already installed, or version mismatch
       return
     }
@@ -238,7 +255,6 @@ export const PluginMarketplace = () => {
     }
 
     if (card.actionType === 'add-to-devtools') {
-
       // emits the event to vite plugin to add the plugin
       devtoolsEventClient.emit('add-plugin-to-devtools', {
         packageName: card.devtoolsPackage,
@@ -254,7 +270,6 @@ export const PluginMarketplace = () => {
       pluginName: card.metadata?.title ?? card.devtoolsPackage,
       pluginImport: card.metadata?.pluginImport,
     })
-
   }
 
   // Get all available tags from plugins (excluding active plugins)
@@ -286,7 +301,7 @@ export const PluginMarketplace = () => {
   }
 
   return (
-    <div class={styles().pluginMarketplace} >
+    <div class={styles().pluginMarketplace}>
       {/* Settings Panel */}
       <SettingsPanel
         isOpen={isSettingsOpen}

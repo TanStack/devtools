@@ -23,7 +23,6 @@ export const PluginsTab = () => {
     () => plugins()?.length && plugins()!.length > 0,
   )
 
-
   // Keep sidebar expanded when marketplace is shown
   createEffect(() => {
     setForceExpand(showMarketplace())
@@ -49,7 +48,6 @@ export const PluginsTab = () => {
     // Close marketplace when switching to a plugin
     if (showMarketplace()) {
       setShowMarketplace(false)
-
     }
     toggleActivePlugins(pluginId)
   }

@@ -12,9 +12,7 @@ interface PluginSectionComponentProps {
   onCardAction: (card: PluginCard) => void
 }
 
-export const PluginSectionComponent = (
-  props: PluginSectionComponentProps,
-) => {
+export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
   const styles = useStyles()
 
   return (
