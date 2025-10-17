@@ -1,4 +1,4 @@
-import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Show, createEffect, createSignal } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
@@ -18,6 +18,7 @@ import { TabContent } from './components/tab-content'
 import { keyboardModifiers } from './context/devtools-store'
 import { getAllPermutations } from './utils/sanitize'
 import { usePiPWindow } from './context/pip-context'
+import { SourceInspector } from './components/source-inspector'
 
 export default function DevTools() {
   const { settings } = useDevtoolsSettings()
@@ -159,33 +160,6 @@ export default function DevTools() {
     }
   })
 
-  createEffect(() => {
-    // this will only work with the Vite plugin
-    const openSourceHandler = (e: Event) => {
-      const isShiftHeld = (e as KeyboardEvent).shiftKey
-      const isCtrlHeld =
-        (e as KeyboardEvent).ctrlKey || (e as KeyboardEvent).metaKey
-      if (!isShiftHeld || !isCtrlHeld) return
-
-      if (e.target instanceof HTMLElement) {
-        const dataSource = e.target.getAttribute('data-tsd-source')
-        window.getSelection()?.removeAllRanges()
-        if (dataSource) {
-          e.preventDefault()
-          e.stopPropagation()
-          fetch(
-            `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
-              dataSource,
-            )}`,
-          ).catch(() => {})
-        }
-      }
-    }
-    window.addEventListener('click', openSourceHandler)
-    onCleanup(() => {
-      window.removeEventListener('click', openSourceHandler)
-    })
-  })
   const { theme } = useTheme()
 
   return (
@@ -216,6 +190,7 @@ export default function DevTools() {
               </ContentPanel>
             </MainPanel>
           </Show>
+          <SourceInspector />
         </div>
       </Portal>
     </ThemeContextProvider>

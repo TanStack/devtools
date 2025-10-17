@@ -487,9 +487,15 @@ importers:
 
   packages/devtools:
     dependencies:
+      '@solid-primitives/event-listener':
+        specifier: ^2.4.3
+        version: 2.4.3(solid-js@1.9.9)
       '@solid-primitives/keyboard':
         specifier: ^1.3.3
         version: 1.3.3(solid-js@1.9.9)
+      '@solid-primitives/resize-observer':
+        specifier: ^2.1.3
+        version: 2.1.3(solid-js@1.9.9)
       '@tanstack/devtools-client':
         specifier: workspace:*
         version: link:../devtools-client
