@@ -624,7 +624,6 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     // Plugin Marketplace Styles (for "Add More" tab)
     pluginMarketplace: css`
       width: 100%;
-      height: 100%;
       overflow-y: auto;
       padding: 2rem;
       background: ${t(
@@ -649,11 +648,18 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding-bottom: 1rem;
       border-bottom: 2px solid ${t(colors.gray[200], colors.gray[700])};
     `,
+    pluginMarketplaceTitleRow: css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 0.5rem;
+    `,
     pluginMarketplaceTitle: css`
       font-size: 1.5rem;
       font-weight: 700;
       color: ${t(colors.gray[900], colors.gray[100])};
-      margin: 0 0 0.5rem 0;
+      margin: 0;
       letter-spacing: -0.02em;
     `,
     pluginMarketplaceDescription: css`
@@ -666,7 +672,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       position: relative;
       display: flex;
       align-items: center;
-      margin-top: 1rem;
+      max-width: 400px;
+      flex-shrink: 0;
 
       svg {
         position: absolute;
@@ -682,7 +689,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border: 2px solid ${t(colors.gray[200], colors.gray[700])};
       border-radius: 0.5rem;
       color: ${t(colors.gray[900], colors.gray[100])};
-      font-size: 0.95rem;
+      font-size: 0.875rem;
       font-family: ${fontFamily.sans};
       transition: all 0.2s ease;
 
@@ -697,6 +704,134 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         box-shadow: 0 0 0 3px
           ${t('rgba(59, 130, 246, 0.1)', 'rgba(96, 165, 250, 0.1)')};
       }
+    `,
+    pluginMarketplaceFilters: css`
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+    `,
+    pluginMarketplaceTagsContainer: css`
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: ${t(colors.gray[50], colors.darkGray[800])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.5rem;
+    `,
+    pluginMarketplaceTagButton: css`
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      background: ${t(colors.white, colors.darkGray[700])};
+      border: 2px solid ${t(colors.gray[300], colors.gray[600])};
+      border-radius: 0.375rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      cursor: pointer;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: ${t(colors.gray[100], colors.darkGray[600])};
+        border-color: ${t(colors.gray[400], colors.gray[500])};
+        color: ${t(colors.gray[900], colors.gray[100])};
+      }
+    `,
+    pluginMarketplaceTagButtonActive: css`
+      background: ${t(
+        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
+      )} !important;
+      border-color: ${t('#2563eb', '#3b82f6')} !important;
+      color: white !important;
+
+      &:hover {
+        background: ${t(
+          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        )} !important;
+        border-color: ${t('#1d4ed8', '#2563eb')} !important;
+      }
+    `,
+    pluginMarketplaceSettingsButton: css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem;
+      background: ${t(colors.gray[100], colors.darkGray[800])};
+      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.5rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 0.5rem;
+
+      &:hover {
+        background: ${t(colors.gray[200], colors.darkGray[700])};
+        border-color: ${t(colors.gray[300], colors.gray[600])};
+        color: ${t(colors.gray[900], colors.gray[100])};
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    `,
+    pluginMarketplaceSettingsPanel: css`
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 350px;
+      background: ${t(colors.white, colors.darkGray[800])};
+      border-left: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      box-shadow: -4px 0 12px ${t('rgba(0, 0, 0, 0.1)', 'rgba(0, 0, 0, 0.4)')};
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      animation: slideInRight 0.3s ease;
+
+      @keyframes slideInRight {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+    `,
+    pluginMarketplaceSettingsPanelHeader: css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[700])};
+    `,
+    pluginMarketplaceSettingsPanelTitle: css`
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      margin: 0;
+    `,
+    pluginMarketplaceSettingsPanelClose: css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem;
+      background: transparent;
+      border: none;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      cursor: pointer;
+      border-radius: 0.375rem;
+      transition: all 0.15s ease;
+
+      &:hover {
+        background: ${t(colors.gray[100], colors.darkGray[700])};
+        color: ${t(colors.gray[900], colors.gray[100])};
+      }
+    `,
+    pluginMarketplaceSettingsPanelContent: css`
+      flex: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
     `,
     pluginMarketplaceGrid: css`
       display: grid;
@@ -771,6 +906,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         width: 20px;
         height: 20px;
       }
+
+      &.custom-logo {
+      }
     `,
     pluginMarketplaceCardHeader: css`
       flex: 1;
@@ -786,11 +924,112 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.8rem;
       color: ${t(colors.gray[500], colors.gray[500])};
       margin: 0;
-      padding: 0.375rem 0.75rem;
-      background: ${t(colors.gray[100], colors.gray[900])};
+      padding: 0;
+      background: transparent;
       border-radius: 0.375rem;
-      display: inline-block;
+      display: block;
       font-weight: 500;
+    `,
+    pluginMarketplaceCardPackageBadge: css`
+      margin-top: 4px;
+      margin-bottom: 8px;
+      font-size: 0.6875rem;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      opacity: 0.6;
+      padding: 4px 8px;
+      padding-left: 0;
+      background-color: var(--bg-tertiary);
+      border-radius: 4px;
+      word-break: break-all;
+      display: inline-block;
+    `,
+    pluginMarketplaceCardDescriptionText: css`
+      line-height: 1.5;
+      margin-top: 0;
+    `,
+    pluginMarketplaceCardVersionInfo: css`
+      margin-top: 8px;
+      font-size: 0.6875rem;
+      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    `,
+    pluginMarketplaceCardVersionSatisfied: css`
+      color: ${t(colors.green[600], colors.green[400])};
+    `,
+    pluginMarketplaceCardVersionUnsatisfied: css`
+      color: ${t(colors.red[600], colors.red[400])};
+    `,
+    pluginMarketplaceCardDocsLink: css`
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      color: ${t(colors.blue[600], colors.blue[400])};
+      text-decoration: none;
+      margin-top: 0.5rem;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: ${t(colors.blue[700], colors.blue[300])};
+        text-decoration: underline;
+      }
+
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+    `,
+    pluginMarketplaceCardTags: css`
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+      margin-top: 0.75rem;
+    `,
+    pluginMarketplaceCardTag: css`
+      font-size: 0.6875rem;
+      font-weight: 500;
+      padding: 0.25rem 0.5rem;
+      background: ${t(colors.gray[100], colors.darkGray[700])};
+      border: 1px solid ${t(colors.gray[300], colors.gray[600])};
+      border-radius: 0.25rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
+    pluginMarketplaceCardImage: css`
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    `,
+    pluginMarketplaceNewBanner: css`
+      position: absolute;
+      top: 12px;
+      right: -35px;
+      background-color: ${t(colors.green[500], colors.green[500])};
+      color: white;
+      padding: 4px 40px;
+      font-size: 0.6875rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      transform: rotate(45deg);
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+      z-index: 10;
+      letter-spacing: 0.5px;
+    `,
+    pluginMarketplaceCardFeatured: css`
+      border-color: ${t(colors.blue[500], colors.blue[400])};
+      border-width: 2px;
+    `,
+    pluginMarketplaceCardActive: css`
+      border-color: ${t(colors.green[500], colors.green[600])};
+      border-width: 2px;
+
+      &:hover {
+        border-color: ${t(colors.green[500], colors.green[600])};
+        box-shadow: none;
+        transform: none;
+
+        &::before {
+          transform: scaleX(0);
+        }
+      }
     `,
     pluginMarketplaceCardStatus: css`
       display: flex;
@@ -874,14 +1113,20 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     pluginMarketplaceSectionHeader: css`
       margin-bottom: 1rem;
+      padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
       gap: 0.75rem;
       cursor: pointer;
       user-select: none;
+      background: ${t(colors.gray[50], colors.darkGray[800])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 0.5rem;
+      transition: all 0.15s ease;
 
       &:hover {
-        opacity: 0.8;
+        background: ${t(colors.gray[100], colors.darkGray[700])};
+        border-color: ${t(colors.gray[300], colors.gray[600])};
       }
     `,
     pluginMarketplaceSectionHeaderLeft: css`
@@ -890,21 +1135,21 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       gap: 0.5rem;
     `,
     pluginMarketplaceSectionChevron: css`
-      width: 20px;
-      height: 20px;
+      width: 24px;
+      height: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${t(colors.gray[700], colors.gray[300])};
       transition: transform 0.2s ease;
     `,
     pluginMarketplaceSectionChevronCollapsed: css`
       transform: rotate(-90deg);
     `,
     pluginMarketplaceSectionTitle: css`
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: ${t(colors.gray[900], colors.gray[50])};
       margin: 0;
       display: flex;
       align-items: center;
@@ -959,6 +1204,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       color: ${t(colors.gray[600], colors.gray[400])};
     `,
 
+    // Button style for already installed plugins
+    pluginMarketplaceButtonInstalled: css`
+      opacity: 0.5;
+    `,
+
     // Add More Tab Style (visually distinct from regular plugins)
     pluginNameAddMore: css`
       font-size: ${fontSize.xs};
@@ -967,7 +1217,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: ${size[3]} ${size[2]};
       cursor: pointer;
       text-align: center;
-      border-top: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      transition: all 0.15s ease;
       border-left: 2px solid transparent;
       background: ${t(
         'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
@@ -1036,7 +1286,6 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
           'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
           'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
         )};
-        transform: translateX(4px) scale(1.02);
       }
     `,
   }

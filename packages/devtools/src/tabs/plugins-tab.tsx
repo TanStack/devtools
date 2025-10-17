@@ -4,12 +4,11 @@ import { useDrawContext } from '../context/draw-context'
 import { usePlugins, useTheme } from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
 import { PLUGIN_CONTAINER_ID, PLUGIN_TITLE_CONTAINER_ID } from '../constants'
-import { NoPluginsFallback } from './no-plugins-fallback'
 import { PluginMarketplace } from './plugin-marketplace'
 
 export const PluginsTab = () => {
   const { plugins, activePlugins, toggleActivePlugins } = usePlugins()
-  const { expanded, hoverUtils, animationMs } = useDrawContext()
+  const { expanded, hoverUtils, animationMs, setForceExpand } = useDrawContext()
 
   const [pluginRefs, setPluginRefs] = createSignal(
     new Map<string, HTMLDivElement>(),
@@ -24,8 +23,11 @@ export const PluginsTab = () => {
     () => plugins()?.length && plugins()!.length > 0,
   )
 
-  // Marketplace ID for managing active state
-  const MARKETPLACE_ID = '__marketplace__'
+
+  // Keep sidebar expanded when marketplace is shown
+  createEffect(() => {
+    setForceExpand(showMarketplace())
+  })
 
   createEffect(() => {
     const currentActivePlugins = plugins()?.filter((plugin) =>
@@ -41,19 +43,19 @@ export const PluginsTab = () => {
     })
   })
 
-  const handleMarketplaceClick = () => {
-    setShowMarketplace(true)
-    // Clear other active plugins when marketplace is selected
-    toggleActivePlugins(MARKETPLACE_ID)
-  }
+  const handleMarketplaceClick = () => setShowMarketplace(!showMarketplace())
 
   const handlePluginClick = (pluginId: string) => {
-    setShowMarketplace(false)
+    // Close marketplace when switching to a plugin
+    if (showMarketplace()) {
+      setShowMarketplace(false)
+
+    }
     toggleActivePlugins(pluginId)
   }
 
   return (
-    <Show when={hasPlugins()} fallback={<NoPluginsFallback />}>
+    <Show when={hasPlugins()} fallback={<PluginMarketplace />}>
       <div class={styles().pluginsTabPanel}>
         <div
           class={clsx(
@@ -64,7 +66,12 @@ export const PluginsTab = () => {
             styles().pluginsTabDrawTransition(animationMs),
           )}
           onMouseEnter={() => hoverUtils.enter()}
-          onMouseLeave={() => hoverUtils.leave()}
+          onMouseLeave={() => {
+            // Don't collapse on mouse leave if marketplace is open
+            if (!showMarketplace()) {
+              hoverUtils.leave()
+            }
+          }}
         >
           <div
             class={clsx(
@@ -113,7 +120,7 @@ export const PluginsTab = () => {
                 active: showMarketplace(),
               })}
             >
-              <h3>+ Add More</h3>
+              <h3>Add More</h3>
             </div>
           </div>
         </div>

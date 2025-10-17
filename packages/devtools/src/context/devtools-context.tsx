@@ -1,4 +1,4 @@
-import { createContext } from 'solid-js'
+import { createContext, createEffect } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { tryParseJson } from '../utils/sanitize'
 import {
@@ -39,11 +39,11 @@ export interface TanStackDevtoolsPlugin {
    * ```
    */
   name:
-    | string
-    | ((
-        el: HTMLHeadingElement,
-        theme: DevtoolsStore['settings']['theme'],
-      ) => void)
+  | string
+  | ((
+    el: HTMLHeadingElement,
+    theme: DevtoolsStore['settings']['theme'],
+  ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
@@ -76,6 +76,7 @@ interface ContextProps {
   children: JSX.Element
   plugins?: Array<TanStackDevtoolsPlugin>
   config?: TanStackDevtoolsConfig
+  onSetPlugins?: (setPlugins: (plugins: Array<TanStackDevtoolsPlugin>) => void) => void
 }
 
 const getSettings = () => {
@@ -160,6 +161,26 @@ export const DevtoolsProvider = (props: ContextProps) => {
   const [store, setStore] = createStore(
     getExistingStateFromStorage(props.config, props.plugins),
   )
+
+  // Provide a way for the core to update plugins reactively
+  const updatePlugins = (newPlugins: Array<TanStackDevtoolsPlugin>) => {
+    const pluginsWithIds = newPlugins.map((plugin, i) => {
+      const id = generatePluginId(plugin, i)
+      return {
+        ...plugin,
+        id,
+      }
+    })
+
+    setStore('plugins', pluginsWithIds)
+  }
+
+  // Call the callback to give core access to updatePlugins
+  createEffect(() => {
+    if (props.onSetPlugins) {
+      props.onSetPlugins(updatePlugins)
+    }
+  })
 
   const value = {
     store,

@@ -1,138 +1,30 @@
-import { For, Show, createSignal, onMount } from 'solid-js'
+import { For, Show, createSignal, onCleanup, onMount } from 'solid-js'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
-import { Button } from '@tanstack/devtools-ui'
-import { useStyles } from '../styles/use-styles'
 import { usePlugins } from '../context/use-devtools-context'
+import { useStyles } from '../styles/use-styles'
+import { PluginSectionComponent } from './marketplace/plugin-section'
+import { SettingsPanel } from './marketplace/settings-panel'
+import { MarketplaceHeader } from './marketplace/marketplace-header'
+import { FRAMEWORKS } from './marketplace/types'
+import {
+  buildPluginCards,
+  detectFramework,
+  groupIntoSections,
+} from './marketplace/plugin-utils'
 import type { PackageJson } from '@tanstack/devtools-client'
-
-// Comprehensive list of all TanStack devtools packages
-// Pattern: @tanstack/<framework>-<name> => @tanstack/<framework>-<name>-devtools
-const TANSTACK_FRAMEWORKS = ['react', 'solid', 'vue', 'svelte', 'angular'] as const
-const TANSTACK_PACKAGES = ['query', 'router', 'form', 'pacer'] as const
-const FRAMEWORK_AGNOSTIC_PACKAGES = ['table'] as const
-
-type InstallStatus = 'idle' | 'installing' | 'success' | 'error'
-type ActionType = 'install' | 'add-to-devtools' | 'requires-package' | 'wrong-framework'
-
-interface PluginCard {
-  packageName: string
-  devtoolsPackage: string
-  framework: string
-  package: string
-  hasPackage: boolean
-  hasDevtools: boolean
-  isRegistered: boolean
-  actionType: ActionType
-  status: InstallStatus
-  error?: string
-  isCurrentFramework: boolean
-}
-
-interface FrameworkSection {
-  framework: string
-  displayName: string
-  cards: Array<PluginCard>
-  isActive: boolean
-}
-
-// Simple icon components
-const PackageIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M16.5 9.39999L7.5 4.20999M12 17.5L12 3M21 16V7.99999C20.9996 7.64926 20.9071 7.30481 20.7315 7.00116C20.556 6.69751 20.3037 6.44536 20 6.26999L13 2.26999C12.696 2.09446 12.3511 2.00204 12 2.00204C11.6489 2.00204 11.304 2.09446 11 2.26999L4 6.26999C3.69626 6.44536 3.44398 6.69751 3.26846 7.00116C3.09294 7.30481 3.00036 7.64926 3 7.99999V16C3.00036 16.3507 3.09294 16.6952 3.26846 16.9988C3.44398 17.3025 3.69626 17.5546 4 17.73L11 21.73C11.304 21.9055 11.6489 21.998 12 21.998C12.3511 21.998 12.696 21.9055 13 21.73L20 17.73C20.3037 17.5546 20.556 17.3025 20.7315 16.9988C20.9071 16.6952 20.9996 16.3507 21 16Z"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
-
-const CheckCircleIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M22 11.08V12C21.9988 14.1564 21.3005 16.2547 20.0093 17.9818C18.7182 19.7088 16.9033 20.9725 14.8354 21.5839C12.7674 22.1953 10.5573 22.1219 8.53447 21.3746C6.51168 20.6273 4.78465 19.2461 3.61096 17.4371C2.43727 15.628 1.87979 13.4881 2.02168 11.3363C2.16356 9.18455 2.99721 7.13631 4.39828 5.49706C5.79935 3.85781 7.69279 2.71537 9.79619 2.24013C11.8996 1.76489 14.1003 1.98232 16.07 2.85999M22 4L12 14.01L9 11.01"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
-
-const XCircleIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M15 9L9 15M9 9L15 15M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
-
-const ChevronDownIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M6 9L12 15L18 9"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
-
-const SearchIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-)
+import type { PluginCard, PluginSection } from './marketplace/types'
 
 export const PluginMarketplace = () => {
   const styles = useStyles()
   const { plugins } = usePlugins()
-  const [frameworkSections, setFrameworkSections] = createSignal<Array<FrameworkSection>>([])
+  const [pluginSections, setPluginSections] = createSignal<Array<PluginSection>>([])
+  const [currentPackageJson, setCurrentPackageJson] = createSignal<PackageJson | null>(null)
   const [searchInput, setSearchInput] = createSignal('')
   const [searchQuery, setSearchQuery] = createSignal('')
   const [collapsedSections, setCollapsedSections] = createSignal<Set<string>>(new Set())
+  const [showActivePlugins, setShowActivePlugins] = createSignal(true)
+  const [selectedTags, setSelectedTags] = createSignal<Set<string>>(new Set())
+  const [isSettingsOpen, setIsSettingsOpen] = createSignal(false)
 
   let debounceTimeout: ReturnType<typeof setTimeout> | undefined
 
@@ -167,17 +59,57 @@ export const PluginMarketplace = () => {
     const lowerQuery = query.toLowerCase()
     return (
       card.devtoolsPackage.toLowerCase().includes(lowerQuery) ||
-      card.packageName.toLowerCase().includes(lowerQuery) ||
-      card.framework.toLowerCase().includes(lowerQuery) ||
-      card.package.toLowerCase().includes(lowerQuery)
+      card.requiredPackageName.toLowerCase().includes(lowerQuery) ||
+      card.framework.toLowerCase().includes(lowerQuery)
     )
   }
 
   const getFilteredSections = () => {
     const query = searchQuery()
-    if (!query) return frameworkSections()
+    const showActive = showActivePlugins()
+    const tags = selectedTags()
+    const pkg = currentPackageJson()
 
-    return frameworkSections()
+    // Regenerate sections from current plugin state
+    if (!pkg) return []
+
+    const currentFramework = detectFramework(pkg, FRAMEWORKS)
+    const registeredPlugins = new Set(
+      plugins()?.map((p) => p.id || '') || [],
+    )
+
+    // Build fresh cards from current state
+    const allCards = buildPluginCards(
+      pkg,
+      currentFramework,
+      registeredPlugins,
+      pluginSections().flatMap((s) => s.cards), // Preserve status from existing cards
+
+    )
+
+    // Generate sections from cards
+    let sections = groupIntoSections(allCards)
+
+    // Filter out active plugins section if hidden
+    if (!showActive) {
+      sections = sections.filter((section) => section.id !== 'active')
+    }
+
+    // Filter by tags if any are selected
+    if (tags.size > 0) {
+      sections = sections.map((section) => ({
+        ...section,
+        cards: section.cards.filter((card) => {
+          if (!card.metadata?.tags) return false
+          return card.metadata.tags.some((tag) => tags.has(tag))
+        }),
+      })).filter((section) => section.cards.length > 0)
+    }
+
+    // Apply search filter
+    if (!query) return sections
+
+    return sections
       .map((section) => ({
         ...section,
         cards: section.cards.filter((card) => matchesSearch(card, query)),
@@ -185,19 +117,40 @@ export const PluginMarketplace = () => {
       .filter((section) => section.cards.length > 0)
   }
 
+
   onMount(() => {
     // Listen for package.json updates
-    devtoolsEventClient.on('package-json-read', (event) => {
+    const cleanupJsonRead = devtoolsEventClient.on('package-json-read', (event) => {
+      setCurrentPackageJson(event.payload.packageJson)
       updatePluginCards(event.payload.packageJson)
     })
 
-    devtoolsEventClient.on('package-json-updated', (event) => {
+    const cleanupJsonUpdated = devtoolsEventClient.on('package-json-updated', (event) => {
+      setCurrentPackageJson(event.payload.packageJson)
       updatePluginCards(event.payload.packageJson)
     })
 
     // Listen for installation results
-    devtoolsEventClient.on('devtools-installed', (event) => {
-      setFrameworkSections((prevSections) =>
+    const cleanupDevtoolsInstalled = devtoolsEventClient.on('devtools-installed', (event) => {
+      setPluginSections((prevSections) =>
+        prevSections.map((section) => ({
+          ...section,
+          cards: section.cards.map((card) =>
+            card.devtoolsPackage === event.payload.packageName
+              ? {
+                ...card,
+                status: event.payload.success ? 'success' : 'error',
+                error: event.payload.error,
+              }
+              : card,
+          ),
+        })),
+      )
+    })
+
+    // Listen for plugin added results
+    const cleanupPluginAdded = devtoolsEventClient.on('plugin-added', (event) => {
+      setPluginSections((prevSections) =>
         prevSections.map((section) => ({
           ...section,
           cards: section.cards.map((card) =>
@@ -212,229 +165,55 @@ export const PluginMarketplace = () => {
         })),
       )
 
-      // Refresh the list after successful installation
+      // When plugin is successfully added, recalculate to move it to active section
       if (event.payload.success) {
-        setTimeout(() => {
-          devtoolsEventClient.emit('mounted', undefined)
-        }, 1000)
+        const pkg = currentPackageJson()
+        if (pkg) {
+          updatePluginCards(pkg)
+        }
       }
     })
 
+    onCleanup(() => {
+      cleanupJsonRead()
+      cleanupJsonUpdated()
+      cleanupDevtoolsInstalled()
+      cleanupPluginAdded()
+    })
     // Emit mounted event to trigger package.json read
     devtoolsEventClient.emit('mounted', undefined)
   })
 
-  const detectFramework = (pkg: PackageJson): string => {
-    const allDeps = {
-      ...pkg.dependencies,
-      ...pkg.devDependencies,
-    }
-
-    // Check for framework-specific packages
-    for (const framework of TANSTACK_FRAMEWORKS) {
-      const frameworkPackages = [
-        `${framework}`,
-        `@${framework}/core`,
-        `@tanstack/${framework}-query`,
-        `@tanstack/${framework}-router`,
-        `@tanstack/${framework}-form`,
-        `@tanstack/${framework}-table`,
-      ]
-
-      if (frameworkPackages.some((pkg) => allDeps[pkg])) {
-        return framework
-      }
-    }
-
-    return 'unknown'
-  }
-
   const updatePluginCards = (pkg: PackageJson | null) => {
     if (!pkg) return
 
-    const allDeps = {
-      ...pkg.dependencies,
-      ...pkg.devDependencies,
-    }
-
-    const currentFramework = detectFramework(pkg)
+    const currentFramework = detectFramework(pkg, FRAMEWORKS)
 
     // Get list of registered plugin names
     const registeredPlugins = new Set(
-      plugins()?.map((p) => {
-        return p.id || ''
-      }) || [],
+      plugins()?.map((p) => p.id || '') || [],
     )
 
-    const allCards: Array<PluginCard> = []
+    const allCards = buildPluginCards(
+      pkg,
+      currentFramework,
+      registeredPlugins,
+      pluginSections().flatMap((s) => s.cards),
 
-    // Generate all possible combinations
-    TANSTACK_FRAMEWORKS.forEach((framework) => {
-      TANSTACK_PACKAGES.forEach((pkg) => {
-        // Special handling for router (it's just @tanstack/router-devtools for react)
-        const packageName =
-          pkg === 'router' && framework === 'react'
-            ? '@tanstack/react-router'
-            : `@tanstack/${framework}-${pkg}`
+    )
 
-        const devtoolsPackage =
-          pkg === 'router' && framework === 'react'
-            ? '@tanstack/router-devtools'
-            : `@tanstack/${framework}-${pkg}-devtools`
-
-        const hasPackage = !!allDeps[packageName]
-        const hasDevtools = !!allDeps[devtoolsPackage]
-        const isCurrentFramework = framework === currentFramework
-
-        // Check if plugin is registered
-        const isRegistered =
-          registeredPlugins.has(devtoolsPackage) ||
-          registeredPlugins.has(packageName) ||
-          Array.from(registeredPlugins).some(
-            (id) => id.includes(pkg) && id.includes(framework),
-          )
-
-        // Determine action type
-        let actionType: ActionType
-        if (!isCurrentFramework) {
-          actionType = 'wrong-framework'
-        } else if (!hasPackage) {
-          actionType = 'requires-package'
-        } else if (hasDevtools && !isRegistered) {
-          actionType = 'add-to-devtools'
-        } else if (!hasDevtools) {
-          actionType = 'install'
-        } else {
-          // Has package, has devtools, and is registered - skip
-          return
-        }
-
-        // Find existing card to preserve status
-        const existing = frameworkSections()
-          .flatMap((s) => s.cards)
-          .find((c) => c.devtoolsPackage === devtoolsPackage)
-
-        allCards.push({
-          packageName,
-          devtoolsPackage,
-          framework,
-          package: pkg,
-          hasPackage,
-          hasDevtools,
-          isRegistered,
-          actionType,
-          status: existing?.status || 'idle',
-          error: existing?.error,
-          isCurrentFramework,
-        })
-      })
-    })
-
-    // Also add framework-agnostic packages (table)
-    FRAMEWORK_AGNOSTIC_PACKAGES.forEach((pkg) => {
-      TANSTACK_FRAMEWORKS.forEach((framework) => {
-        const packageName = `@tanstack/${framework}-${pkg}`
-        const devtoolsPackage = `@tanstack/${framework}-${pkg}-devtools`
-
-        const hasPackage = !!allDeps[packageName]
-        const hasDevtools = !!allDeps[devtoolsPackage]
-        const isCurrentFramework = framework === currentFramework
-
-        const isRegistered =
-          registeredPlugins.has(devtoolsPackage) ||
-          registeredPlugins.has(packageName) ||
-          Array.from(registeredPlugins).some(
-            (id) => id.includes(pkg) && id.includes(framework),
-          )
-
-        let actionType: ActionType
-        if (!isCurrentFramework) {
-          actionType = 'wrong-framework'
-        } else if (!hasPackage) {
-          actionType = 'requires-package'
-        } else if (hasDevtools && !isRegistered) {
-          actionType = 'add-to-devtools'
-        } else if (!hasDevtools) {
-          actionType = 'install'
-        } else {
-          return
-        }
-
-        const existing = frameworkSections()
-          .flatMap((s) => s.cards)
-          .find((c) => c.devtoolsPackage === devtoolsPackage)
-
-        allCards.push({
-          packageName,
-          devtoolsPackage,
-          framework,
-          package: pkg,
-          hasPackage,
-          hasDevtools,
-          isRegistered,
-          actionType,
-          status: existing?.status || 'idle',
-          error: existing?.error,
-          isCurrentFramework,
-        })
-      })
-    })
-
-    // Group cards by framework
-    const sections: Array<FrameworkSection> = []
-
-    TANSTACK_FRAMEWORKS.forEach((framework) => {
-      const frameworkCards = allCards.filter((c) => c.framework === framework)
-
-      if (frameworkCards.length > 0) {
-        sections.push({
-          framework,
-          displayName: framework.charAt(0).toUpperCase() + framework.slice(1),
-          cards: frameworkCards,
-          isActive: framework === currentFramework,
-        })
-      }
-    })
-
-    // Sort sections: current framework first, then others
-    sections.sort((a, b) => {
-      if (a.isActive) return -1
-      if (b.isActive) return 1
-      return a.displayName.localeCompare(b.displayName)
-    })
-
-    setFrameworkSections(sections)
-
-    // Collapse non-active sections by default
-    const newCollapsed = new Set<string>()
-    sections.forEach((section) => {
-      if (!section.isActive) {
-        newCollapsed.add(section.framework)
-      }
-    })
-    setCollapsedSections(newCollapsed)
+    const sections = groupIntoSections(allCards)
+    setPluginSections(sections)
   }
 
   const handleAction = (card: PluginCard) => {
-    if (card.actionType === 'requires-package' || card.actionType === 'wrong-framework') {
-      // Can't install devtools without the base package or wrong framework
+    if (card.actionType === 'requires-package' || card.actionType === 'wrong-framework' || card.actionType === 'already-installed' || card.actionType === 'version-mismatch') {
+      // Can't install devtools without the base package, wrong framework, already installed, or version mismatch
       return
     }
 
-    if (card.actionType === 'add-to-devtools') {
-      // Show instructions to add to devtools manually
-      alert(
-        `To add ${card.devtoolsPackage} to your devtools:\n\n` +
-        `1. Import the package in your code\n` +
-        `2. Add it to the plugins array in <TanStackDevtools plugins={[...]} />\n\n` +
-        `Example:\nimport { ${card.package}Devtools } from '${card.devtoolsPackage}'\n\n` +
-        `plugins={[\n  { name: '${card.package}', render: <${card.package}Devtools /> }\n]}`,
-      )
-      return
-    }
-
-    // Install the devtools package
-    setFrameworkSections((prevSections) =>
+    // change state to installing of the plugin user clicked
+    setPluginSections((prevSections) =>
       prevSections.map((section) => ({
         ...section,
         cards: section.cards.map((c) =>
@@ -445,208 +224,95 @@ export const PluginMarketplace = () => {
       })),
     )
 
+    // Bump the version of the required package and then add to devtools
+    if (card.actionType === 'bump-version') {
+      // emits the event to vite plugin to bump the package version, this will add it to devtools after
+      devtoolsEventClient.emit('bump-package-version', {
+        packageName: card.requiredPackageName,
+        devtoolsPackage: card.devtoolsPackage,
+        pluginName: card.metadata?.title || card.devtoolsPackage,
+        minVersion: card.metadata?.requires?.minVersion,
+        pluginImport: card.metadata?.pluginImport,
+      })
+      return
+    }
+
+    if (card.actionType === 'add-to-devtools') {
+
+      // emits the event to vite plugin to add the plugin
+      devtoolsEventClient.emit('add-plugin-to-devtools', {
+        packageName: card.devtoolsPackage,
+        // should always be defined
+        pluginName: card.metadata?.title ?? card.devtoolsPackage,
+        pluginImport: card.metadata?.pluginImport,
+      })
+      return
+    }
     devtoolsEventClient.emit('install-devtools', {
       packageName: card.devtoolsPackage,
+      // should always be defined
+      pluginName: card.metadata?.title ?? card.devtoolsPackage,
+      pluginImport: card.metadata?.pluginImport,
+    })
+
+  }
+
+  // Get all available tags from plugins (excluding active plugins)
+  const getAllTags = () => {
+    const tags = new Set<string>()
+    pluginSections().forEach((section) => {
+      // Only get tags from featured and available sections, not active plugins
+      if (section.id === 'featured' || section.id === 'available') {
+        section.cards.forEach((card) => {
+          if (card.metadata?.tags) {
+            card.metadata.tags.forEach((tag) => tags.add(tag))
+          }
+        })
+      }
+    })
+    return Array.from(tags).sort()
+  }
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) => {
+      const newTags = new Set(prev)
+      if (newTags.has(tag)) {
+        newTags.delete(tag)
+      } else {
+        newTags.add(tag)
+      }
+      return newTags
     })
   }
 
-  const getButtonText = (card: PluginCard) => {
-    if (card.status === 'installing') return 'Installing...'
-    if (card.status === 'success') return 'Installed!'
-    if (card.status === 'error') return 'Error'
-
-    switch (card.actionType) {
-      case 'install':
-        return 'Install'
-      case 'add-to-devtools':
-        return 'Add to Devtools'
-      case 'requires-package':
-        return `Requires ${card.package}`
-      case 'wrong-framework':
-        return 'Different Framework'
-      default:
-        return 'Install'
-    }
-  }
-
-  const getButtonVariant = (card: PluginCard) => {
-    if (
-      card.actionType === 'requires-package' ||
-      card.actionType === 'wrong-framework'
-    )
-      return 'secondary'
-    return 'primary'
-  }
-
-  const getBadgeClass = (card: PluginCard) => {
-    const s = styles()
-    const base = s.pluginMarketplaceCardBadge
-    switch (card.actionType) {
-      case 'install':
-        return `${base} ${s.pluginMarketplaceCardBadgeInstall}`
-      case 'add-to-devtools':
-        return `${base} ${s.pluginMarketplaceCardBadgeAdd}`
-      case 'requires-package':
-      case 'wrong-framework':
-        return `${base} ${s.pluginMarketplaceCardBadgeRequires}`
-      default:
-        return base
-    }
-  }
-
-  const getBadgeText = (card: PluginCard) => {
-    switch (card.actionType) {
-      case 'install':
-        return 'Available'
-      case 'add-to-devtools':
-        return 'Installed'
-      case 'requires-package':
-        return 'Unavailable'
-      case 'wrong-framework':
-        return 'Other Framework'
-      default:
-        return ''
-    }
-  }
-
   return (
-    <div class={styles().pluginMarketplace}>
-      <div class={styles().pluginMarketplaceHeader}>
-        <h2 class={styles().pluginMarketplaceTitle}>Plugin Marketplace</h2>
-        <p class={styles().pluginMarketplaceDescription}>
-          Discover and install devtools for TanStack Query, Router, Form, and
-          Pacer
-        </p>
+    <div class={styles().pluginMarketplace} >
+      {/* Settings Panel */}
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        showActivePlugins={showActivePlugins}
+        setShowActivePlugins={setShowActivePlugins}
+      />
 
-        <div class={styles().pluginMarketplaceSearchWrapper}>
-          <SearchIcon />
-          <input
-            type="text"
-            class={styles().pluginMarketplaceSearch}
-            placeholder="Search plugins by name, package, or framework..."
-            value={searchInput()}
-            onInput={(e) => handleSearchInput(e.currentTarget.value)}
-          />
-        </div>
-      </div>
+      <MarketplaceHeader
+        searchInput={searchInput}
+        onSearchInput={handleSearchInput}
+        onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen())}
+        tags={getAllTags}
+        selectedTags={selectedTags}
+        onToggleTag={toggleTag}
+      />
 
       <Show when={getFilteredSections().length > 0}>
         <For each={getFilteredSections()}>
           {(section) => (
-            <div class={styles().pluginMarketplaceSection}>
-              <div
-                class={styles().pluginMarketplaceSectionHeader}
-                onClick={() => toggleSection(section.framework)}
-              >
-                <div class={styles().pluginMarketplaceSectionHeaderLeft}>
-                  <div
-                    class={styles().pluginMarketplaceSectionChevron}
-                    classList={{
-                      [styles().pluginMarketplaceSectionChevronCollapsed]:
-                        collapsedSections().has(section.framework)
-                    }}
-                  >
-                    <ChevronDownIcon />
-                  </div>
-                  <h3 class={styles().pluginMarketplaceSectionTitle}>
-                    {section.displayName}
-                    {section.isActive && (
-                      <span class={styles().pluginMarketplaceSectionBadge}>
-                        Your Framework
-                      </span>
-                    )}
-                  </h3>
-                </div>
-              </div>
-
-              <Show when={!collapsedSections().has(section.framework)}>
-                <div class={styles().pluginMarketplaceGrid}>
-                  <For each={section.cards}>
-                    {(card) => (
-                      <div
-                        class={styles().pluginMarketplaceCard}
-                        classList={{
-                          [styles().pluginMarketplaceCardDisabled]:
-                            !card.isCurrentFramework,
-                        }}
-                      >
-                        <span class={getBadgeClass(card)}>
-                          {getBadgeText(card)}
-                        </span>
-                        <div class={styles().pluginMarketplaceCardIcon}>
-                          <PackageIcon />
-                        </div>
-                        <div class={styles().pluginMarketplaceCardHeader}>
-                          <h3 class={styles().pluginMarketplaceCardTitle}>
-                            {card.devtoolsPackage}
-                          </h3>
-                          <p class={styles().pluginMarketplaceCardDescription}>
-                            {card.actionType === 'requires-package'
-                              ? `Requires ${card.packageName}`
-                              : card.actionType === 'wrong-framework'
-                                ? `For ${section.displayName} projects`
-                                : `For ${card.packageName}`}
-                          </p>
-                        </div>
-
-                        <Show
-                          when={card.status === 'idle'}
-                          fallback={
-                            <div class={styles().pluginMarketplaceCardStatus}>
-                              <Show when={card.status === 'installing'}>
-                                <div
-                                  class={styles().pluginMarketplaceCardSpinner}
-                                />
-                                <span
-                                  class={
-                                    styles().pluginMarketplaceCardStatusText
-                                  }
-                                >
-                                  Installing...
-                                </span>
-                              </Show>
-                              <Show when={card.status === 'success'}>
-                                <CheckCircleIcon />
-                                <span
-                                  class={
-                                    styles().pluginMarketplaceCardStatusText
-                                  }
-                                >
-                                  Installed!
-                                </span>
-                              </Show>
-                              <Show when={card.status === 'error'}>
-                                <XCircleIcon />
-                                <span
-                                  class={
-                                    styles()
-                                      .pluginMarketplaceCardStatusTextError
-                                  }
-                                >
-                                  {card.error || 'Failed to install'}
-                                </span>
-                              </Show>
-                            </div>
-                          }
-                        >
-                          <Button
-                            variant={getButtonVariant(card)}
-                            onClick={() => handleAction(card)}
-                            disabled={
-                              card.status !== 'idle' ||
-                              card.actionType === 'requires-package' ||
-                              card.actionType === 'wrong-framework'
-                            }
-                          >
-                            {getButtonText(card)}
-                          </Button>
-                        </Show>
-                      </div>
-                    )}
-                  </For>
-                </div>
-              </Show>
-            </div>
+            <PluginSectionComponent
+              section={section}
+              isCollapsed={() => collapsedSections().has(section.id)}
+              onToggleCollapse={() => toggleSection(section.id)}
+              onCardAction={handleAction}
+            />
           )}
         </For>
       </Show>

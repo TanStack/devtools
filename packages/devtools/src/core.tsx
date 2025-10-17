@@ -50,6 +50,7 @@ export class TanStackDevtoolsCore {
   #Component: any
   #eventBus: ClientEventBus | undefined
   #eventBusConfig: ClientEventBusConfig | undefined
+  #setPlugins?: (plugins: Array<TanStackDevtoolsPlugin>) => void
 
   constructor(init: TanStackDevtoolsInit) {
     this.#plugins = init.plugins || []
@@ -74,7 +75,13 @@ export class TanStackDevtoolsCore {
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
       return (
-        <DevtoolsProvider plugins={this.#plugins} config={this.#config}>
+        <DevtoolsProvider
+          plugins={this.#plugins}
+          config={this.#config}
+          onSetPlugins={(setPlugins) => {
+            this.#setPlugins = setPlugins
+          }}
+        >
           <PiPProvider>
             <Portal mount={mountTo}>
               <Devtools />
@@ -101,6 +108,13 @@ export class TanStackDevtoolsCore {
     this.#config = {
       ...this.#config,
       ...config,
+    }
+    if (config.plugins) {
+      this.#plugins = config.plugins
+      // Update the reactive store if mounted
+      if (this.#isMounted && this.#setPlugins) {
+        this.#setPlugins(config.plugins)
+      }
     }
   }
 }

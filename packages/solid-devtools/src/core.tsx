@@ -1,5 +1,11 @@
 import { TanStackDevtoolsCore } from '@tanstack/devtools'
-import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import {
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  onMount,
+} from 'solid-js'
 import { Portal } from 'solid-js/web'
 import type { JSX } from 'solid-js'
 import type {
@@ -11,9 +17,9 @@ import type {
 type SolidPluginRender =
   | JSX.Element
   | ((
-      el: HTMLDivElement | HTMLHeadingElement,
-      theme: 'dark' | 'light',
-    ) => JSX.Element)
+    el: HTMLDivElement | HTMLHeadingElement,
+    theme: 'dark' | 'light',
+  ) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
@@ -104,27 +110,43 @@ export default function SolidDevtoolsCore({
   plugins,
   eventBusConfig,
 }: TanStackDevtoolsInit) {
-  const [devtools] = createSignal(
-    new TanStackDevtoolsCore({
-      config,
-      eventBusConfig,
-      plugins: plugins?.map((plugin) => ({
+  // Convert plugins to the format expected by the core
+  const pluginsMap = createMemo<Array<TanStackDevtoolsPlugin> | undefined>(
+    () =>
+      plugins?.map((plugin) => ({
         ...plugin,
         name:
           typeof plugin.name === 'string'
             ? plugin.name
             : // The check above confirms that `plugin.name` is of Render type
-              (el, theme) =>
-                convertRender(el, plugin.name as SolidPluginRender, theme),
+            (el, theme) =>
+              convertRender(el, plugin.name as SolidPluginRender, theme),
         render: (el: HTMLDivElement, theme: 'dark' | 'light') =>
           convertRender(el, plugin.render, theme),
       })),
+  )
+
+  const [devtools] = createSignal(
+    new TanStackDevtoolsCore({
+      config,
+      eventBusConfig,
+      plugins: pluginsMap(),
     }),
   )
   let devToolRef: HTMLDivElement | undefined
+
   createEffect(() => {
     devtools().setConfig({ config })
   })
+
+  // Update plugins when they change
+  createEffect(() => {
+    const currentPlugins = pluginsMap()
+    if (currentPlugins) {
+      devtools().setConfig({ plugins: currentPlugins })
+    }
+  })
+
   onMount(() => {
     if (devToolRef) {
       devtools().mount(devToolRef)
