@@ -187,7 +187,7 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     description: 'Monitor and debug your Pacer animations and transitions',
     requires: {
       packageName: '@tanstack/react-pacer',
-      minVersion: '0.1.0',
+      minVersion: '0.16.4',
     },
     author: 'TanStack',
     framework: 'react',
@@ -200,7 +200,7 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     description: 'Monitor and debug your Pacer animations and transitions',
     requires: {
       packageName: '@tanstack/solid-pacer',
-      minVersion: '0.1.0',
+      minVersion: '0.14.4',
     },
     author: 'TanStack',
     framework: 'solid',
