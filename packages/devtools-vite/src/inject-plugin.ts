@@ -326,7 +326,7 @@ export function injectPluginIntoFile(
     // Generate the new code
     const result = gen(ast, {
       sourceMaps: false,
-      retainLines: true,
+      retainLines: false,
     })
 
     // Write back to file
