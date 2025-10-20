@@ -191,7 +191,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       transform(code, id) {
         if (id.includes('node_modules') || id.includes('?raw')) return
         const transform = removeDevtools(code, id)
-        console.log(chalk.greenBright('checking transform'), id, !!transform)
         if (!transform) return
         if (logging) {
           console.log(
