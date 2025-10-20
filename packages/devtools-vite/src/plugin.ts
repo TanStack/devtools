@@ -91,8 +91,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('node_modules') ||
           id.includes('?raw') ||
           id.includes('dist') ||
-          id.includes('build') ||
-          id.includes('?tsr')
+          id.includes('build')
         )
           return
 
@@ -417,7 +416,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           id.includes('?raw') ||
           id.includes('dist') ||
           id.includes('build') ||
-          id.includes('?tsr') ||
           !code.includes('console.')
         )
           return
