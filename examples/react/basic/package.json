@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@tanstack/devtools-ui": "0.4.3",
-    "@tanstack/devtools-vite": "0.3.7",
+    "@tanstack/devtools-vite": "0.3.8",
     "@tanstack/react-form-devtools": "^0.1.7",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",

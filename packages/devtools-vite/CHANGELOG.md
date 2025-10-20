@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.8
+
+### Patch Changes
+
+- fix issue where hosting providers would include devtools in production ([#220](https://github.com/TanStack/devtools/pull/220))
+
 ## 0.3.7
 
 ### Patch Changes
