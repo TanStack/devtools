@@ -179,7 +179,11 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
     {
       name: '@tanstack/devtools:remove-devtools-on-build',
       apply(config, { command }) {
-        console.log('remove-devtools-on-build apply called', config, command)
+        console.log(
+          chalk.redBright('remove-devtools-on-build apply called'),
+          config,
+          command,
+        )
         // Check both command and mode to support various hosting providers
         // Some providers (Cloudflare, Netlify, Heroku) might not use 'build' command
         // but will always set mode to 'production' for production builds
