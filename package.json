@@ -47,7 +47,7 @@
   },
   "size-limit": [
     {
-      "path": "packages/devtools/dist/index.js",
+      "path": "packages/devtools/dist/esm/index.js",
       "limit": "60 KB"
     },
     {

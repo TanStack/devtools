@@ -111,7 +111,7 @@ export const TanStackDevtools = ({
   eventBusConfig,
 }: TanStackDevtoolsReactInit): ReactElement | null => {
   const devToolRef = useRef<HTMLDivElement>(null)
-
+  const devtoolInstance = useRef<TanStackDevtoolsCore>(null)
   const [pluginContainers, setPluginContainers] = useState<
     Record<string, HTMLElement>
   >({})
@@ -135,23 +135,23 @@ export const TanStackDevtools = ({
             typeof plugin.name === 'string'
               ? plugin.name
               : (e, theme) => {
-                  const id = e.getAttribute('id')!
-                  const target = e.ownerDocument.getElementById(id)
+                const id = e.getAttribute('id')!
+                const target = e.ownerDocument.getElementById(id)
 
-                  if (target) {
-                    setTitleContainers((prev) => ({
-                      ...prev,
-                      [id]: e,
-                    }))
-                  }
+                if (target) {
+                  setTitleContainers((prev) => ({
+                    ...prev,
+                    [id]: e,
+                  }))
+                }
 
-                  convertRender(
-                    plugin.name as PluginRender,
-                    setTitleComponents,
-                    e,
-                    theme,
-                  )
-                },
+                convertRender(
+                  plugin.name as PluginRender,
+                  setTitleComponents,
+                  e,
+                  theme,
+                )
+              },
           render: (e, theme) => {
             const id = e.getAttribute('id')!
             const target = e.ownerDocument.getElementById(id)
@@ -170,28 +170,34 @@ export const TanStackDevtools = ({
     [plugins],
   )
 
-  const [devtools] = useState(
-    () =>
-      new TanStackDevtoolsCore({
-        config,
-        eventBusConfig,
-        plugins: pluginsMap,
-      }),
-  )
-
+  // initialize devtools instance
   useEffect(() => {
-    devtools.setConfig({
+    if (devtoolInstance.current) {
+      return
+    }
+    devtoolInstance.current = new TanStackDevtoolsCore({
+      config,
+      eventBusConfig,
       plugins: pluginsMap,
     })
-  }, [devtools, pluginsMap])
+  }, [config, eventBusConfig, pluginsMap])
+
 
   useEffect(() => {
-    if (devToolRef.current) {
-      devtools.mount(devToolRef.current)
+    devtoolInstance.current?.setConfig({
+      plugins: pluginsMap,
+    })
+  }, [devtoolInstance, pluginsMap])
+
+  useEffect(() => {
+    if (!devToolRef.current) {
+      return
     }
 
-    return () => devtools.unmount()
-  }, [devtools])
+    devtoolInstance.current?.mount(devToolRef.current)
+
+    return () => devtoolInstance.current?.unmount()
+  }, [devtoolInstance])
 
   const hasPlugins =
     Object.values(pluginContainers).length > 0 &&
@@ -206,14 +212,14 @@ export const TanStackDevtools = ({
 
       {hasPlugins
         ? Object.entries(pluginContainers).map(([key, pluginContainer]) =>
-            createPortal(<>{PluginComponents[key]}</>, pluginContainer),
-          )
+          createPortal(<>{PluginComponents[key]}</>, pluginContainer),
+        )
         : null}
 
       {hasTitles
         ? Object.entries(titleContainers).map(([key, titleContainer]) =>
-            createPortal(<>{TitleComponents[key]}</>, titleContainer),
-          )
+          createPortal(<>{TitleComponents[key]}</>, titleContainer),
+        )
         : null}
     </>
   )

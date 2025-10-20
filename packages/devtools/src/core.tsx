@@ -1,9 +1,6 @@
-import { lazy } from 'solid-js'
-import { Portal, render } from 'solid-js/web'
+
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
-import { DevtoolsProvider } from './context/devtools-context'
-import { initialState } from './context/devtools-store'
-import { PiPProvider } from './context/pip-context'
+import { initialState } from './context/initial-state'
 import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
 import type {
   TanStackDevtoolsConfig,
@@ -61,16 +58,18 @@ export class TanStackDevtoolsCore {
     }
   }
 
-  mount<T extends HTMLElement>(el: T) {
-    //  tsup-preset-solid statically replaces this variable during build, which eliminates this code from server bundle
-    if (import.meta.env.SSR) return
+  async mount<T extends HTMLElement>(el: T) {
 
     if (this.#isMounted) {
       throw new Error('Devtools is already mounted')
     }
+    const { render, Portal } = await import('solid-js/web')
+    const { lazy } = await import('solid-js')
     const mountTo = el
     const dispose = render(() => {
       this.#Component = lazy(() => import('./devtools'))
+      const DevtoolsProvider = lazy(() => import('./context/devtools-context').then(m => ({ default: m.DevtoolsProvider })))
+      const PiPProvider = lazy(() => import('./context/pip-context').then(m => ({ default: m.PiPProvider })))
       const Devtools = this.#Component
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
