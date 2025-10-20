@@ -1,4 +1,3 @@
-
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import { initialState } from './context/initial-state'
 import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
@@ -59,7 +58,6 @@ export class TanStackDevtoolsCore {
   }
 
   async mount<T extends HTMLElement>(el: T) {
-
     if (this.#isMounted) {
       throw new Error('Devtools is already mounted')
     }
@@ -68,8 +66,16 @@ export class TanStackDevtoolsCore {
     const mountTo = el
     const dispose = render(() => {
       this.#Component = lazy(() => import('./devtools'))
-      const DevtoolsProvider = lazy(() => import('./context/devtools-context').then(m => ({ default: m.DevtoolsProvider })))
-      const PiPProvider = lazy(() => import('./context/pip-context').then(m => ({ default: m.PiPProvider })))
+      const DevtoolsProvider = lazy(() =>
+        import('./context/devtools-context').then((m) => ({
+          default: m.DevtoolsProvider,
+        })),
+      )
+      const PiPProvider = lazy(() =>
+        import('./context/pip-context').then((m) => ({
+          default: m.PiPProvider,
+        })),
+      )
       const Devtools = this.#Component
       this.#eventBus = new ClientEventBus(this.#eventBusConfig)
       this.#eventBus.start()
