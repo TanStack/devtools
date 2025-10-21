@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.9
+
+### Patch Changes
+
+- add ignore to inject source for granular manipulation ([#223](https://github.com/TanStack/devtools/pull/223))
+
 ## 0.3.8
 
 ### Patch Changes
