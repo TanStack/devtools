@@ -165,7 +165,13 @@ export default {
   plugins: [
     devtools({
       injectSource: {
-        enabled: true
+        enabled: true,
+        ignore: {
+          // files to ignore source injection for
+          files: ['node_modules', /.*\.test\.(js|ts|jsx|tsx)$/],
+          // components to ignore source injection for
+          components: ['YourComponent', /.*Lazy$/],
+        },
       }
     }),
     // ... rest of your plugins here

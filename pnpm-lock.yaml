@@ -388,6 +388,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4
 
+  examples/react/start/generated/prisma: {}
+
   examples/react/time-travel:
     dependencies:
       '@tanstack/devtools-event-client':
@@ -599,6 +601,9 @@ importers:
       launch-editor:
         specifier: ^2.11.1
         version: 2.11.1
+      picomatch:
+        specifier: ^4.0.3
+        version: 4.0.3
       vite:
         specifier: ^6.0.0 || ^7.0.0
         version: 7.1.7(@types/node@22.15.2)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)
@@ -612,6 +617,9 @@ importers:
       '@types/babel__traverse':
         specifier: ^7.28.0
         version: 7.28.0
+      '@types/picomatch':
+        specifier: ^4.0.2
+        version: 4.0.2
       happy-dom:
         specifier: ^18.0.1
         version: 18.0.1
@@ -3127,6 +3135,9 @@ packages:
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
+
+  '@types/picomatch@4.0.2':
+    resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -10497,6 +10508,8 @@ snapshots:
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/parse-json@4.0.2': {}
+
+  '@types/picomatch@4.0.2': {}
 
   '@types/prop-types@15.7.15': {}
 

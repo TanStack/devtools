@@ -1,5 +1,6 @@
 import { normalizePath } from 'vite'
 import { gen, parse, t, trav } from './babel'
+import { matcher } from './matcher'
 import type { types as Babel, NodePath } from '@babel/core'
 import type { ParseResult } from '@babel/parser'
 
@@ -111,14 +112,19 @@ const transformJSX = (
   element: NodePath<t.JSXOpeningElement>,
   propsName: string | null,
   file: string,
+  ignorePatterns: Array<string | RegExp>,
 ) => {
   const loc = element.node.loc
   if (!loc) return
   const line = loc.start.line
   const column = loc.start.column
   const nameOfElement = getNameOfElement(element.node.name)
-
-  if (nameOfElement === 'Fragment' || nameOfElement === 'React.Fragment') {
+  const isIgnored = matcher(ignorePatterns, nameOfElement)
+  if (
+    nameOfElement === 'Fragment' ||
+    nameOfElement === 'React.Fragment' ||
+    isIgnored
+  ) {
     return
   }
   const hasDataSource = element.node.attributes.some(
@@ -151,7 +157,11 @@ const transformJSX = (
   return true
 }
 
-const transform = (ast: ParseResult<Babel.File>, file: string) => {
+const transform = (
+  ast: ParseResult<Babel.File>,
+  file: string,
+  ignorePatterns: Array<string | RegExp>,
+) => {
   let didTransform = false
 
   trav(ast, {
@@ -161,7 +171,12 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
       )
       functionDeclaration.traverse({
         JSXOpeningElement(element) {
-          const transformed = transformJSX(element, propsName, file)
+          const transformed = transformJSX(
+            element,
+            propsName,
+            file,
+            ignorePatterns,
+          )
           if (transformed) {
             didTransform = true
           }
@@ -172,7 +187,12 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
       const propsName = getPropsNameFromFunctionDeclaration(path.node)
       path.traverse({
         JSXOpeningElement(element) {
-          const transformed = transformJSX(element, propsName, file)
+          const transformed = transformJSX(
+            element,
+            propsName,
+            file,
+            ignorePatterns,
+          )
           if (transformed) {
             didTransform = true
           }
@@ -183,7 +203,12 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
       const propsName = getPropsNameFromFunctionDeclaration(path.node)
       path.traverse({
         JSXOpeningElement(element) {
-          const transformed = transformJSX(element, propsName, file)
+          const transformed = transformJSX(
+            element,
+            propsName,
+            file,
+            ignorePatterns,
+          )
           if (transformed) {
             didTransform = true
           }
@@ -204,7 +229,12 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
 
       path.traverse({
         JSXOpeningElement(element) {
-          const transformed = transformJSX(element, propsName, file)
+          const transformed = transformJSX(
+            element,
+            propsName,
+            file,
+            ignorePatterns,
+          )
           if (transformed) {
             didTransform = true
           }
@@ -216,17 +246,28 @@ const transform = (ast: ParseResult<Babel.File>, file: string) => {
   return didTransform
 }
 
-export function addSourceToJsx(code: string, id: string) {
+export function addSourceToJsx(
+  code: string,
+  id: string,
+  ignore: {
+    files?: Array<string | RegExp>
+    components?: Array<string | RegExp>
+  } = {},
+) {
   const [filePath] = id.split('?')
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
   const location = filePath?.replace(normalizePath(process.cwd()), '')!
 
+  const fileIgnored = matcher(ignore.files || [], location)
+  if (fileIgnored) {
+    return
+  }
   try {
     const ast = parse(code, {
       sourceType: 'module',
       plugins: ['jsx', 'typescript'],
     })
-    const didTransform = transform(ast, location)
+    const didTransform = transform(ast, location, ignore.components || [])
     if (!didTransform) {
       return
     }

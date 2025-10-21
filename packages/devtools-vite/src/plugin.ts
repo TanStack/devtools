@@ -62,6 +62,13 @@ export type TanStackDevtoolsViteConfig = {
      * @default true
      */
     enabled: boolean
+    /**
+     * List of files or patterns to ignore for source injection.
+     */
+    ignore?: {
+      files?: Array<string | RegExp>
+      components?: Array<string | RegExp>
+    }
   }
 }
 
@@ -95,7 +102,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         )
           return
 
-        return addSourceToJsx(code, id)
+        return addSourceToJsx(code, id, args?.injectSource?.ignore)
       },
     },
     {
