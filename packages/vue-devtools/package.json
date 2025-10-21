@@ -1,0 +1,58 @@
+{
+  "name": "@tanstack/vue-devtools",
+  "version": "0.0.1",
+  "description": "TanStack Devtools is a set of tools for building advanced devtools for your Vue application.",
+  "author": "Damian Osipiuk",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TanStack/devtools.git",
+    "directory": "packages/vue-devtools"
+  },
+  "homepage": "https://tanstack.com/devtools",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "vue",
+    "devtools"
+  ],
+  "type": "module",
+  "types": "dist/esm/index.d.ts",
+  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "clean": "premove ./build ./dist",
+    "test:eslint": "eslint ./src",
+    "test:lib": "vitest --passWithNoTests",
+    "test:lib:dev": "pnpm test:lib --watch",
+    "test:types": "tsc",
+    "test:build": "publint --strict",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tanstack/devtools": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "eslint-plugin-vue": "^10.5.1",
+    "vue": "^3.5.22"
+  }
+}
