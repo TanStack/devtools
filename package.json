@@ -35,7 +35,7 @@
     "test:lib": "nx affected --targets=test:lib --exclude=examples/**",
     "test:lib:dev": "pnpm test:lib && nx watch --all -- pnpm test:lib",
     "test:pr": "nx affected --targets=test:format,test:eslint,test:sherif,test:knip,test:lib,test:types,test:build,build",
-    "test:sherif": "sherif",
+    "test:sherif": "sherif -p @tanstack/query-example-vue-basic",
     "test:types": "nx affected --targets=test:types --exclude=examples/**",
     "watch": "pnpm run build:all && nx watch --all -- pnpm run build:all"
   },
