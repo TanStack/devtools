@@ -854,4 +854,36 @@ function test({...rest}) {
       )
     })
   })
+
+  describe('ignore patterns', () => {
+    it('should skip injection for ignored component names (string)', () => {
+      const output = addSourceToJsx(
+        `
+    function test() {
+        return <Button />
+      }
+        `,
+        'test.jsx',
+        {
+          components: ['Button'],
+        },
+      )
+      expect(output).toBe(undefined)
+    })
+
+    it('should skip injection for ignored file paths (glob)', () => {
+      const output = addSourceToJsx(
+        `
+    function test() {
+        return <div />
+      }
+        `,
+        'src/components/ignored-file.jsx',
+        {
+          files: ['**/ignored-file.jsx'],
+        },
+      )
+      expect(output).toBe(undefined)
+    })
+  })
 })
