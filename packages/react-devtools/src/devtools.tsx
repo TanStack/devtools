@@ -76,7 +76,7 @@ export type TanStackDevtoolsReactPlugin = Omit<
   name: string | PluginRender
 }
 
-export type TanStackDevtoolsReactConfig = Omit<
+type TanStackDevtoolsReactConfig = Omit<
   Partial<TanStackDevtoolsConfig>,
   'triggerComponent'
 > & {
