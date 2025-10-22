@@ -80,6 +80,11 @@ export type DevtoolsStore = {
      * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
      */
     triggerHidden?: boolean
+    /**
+     * An optional custom function to render the dev tools trigger component.
+     * If provided, it replaces the default trigger button.
+     * @default undefined
+     */
     triggerComponent?: (el: HTMLElement, props: TriggerProps) => void
   }
   state: {

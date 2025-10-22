@@ -78,8 +78,19 @@ export type TanStackDevtoolsReactPlugin = Omit<
 
 export type TanStackDevtoolsReactConfig = Omit<
   Partial<TanStackDevtoolsConfig>,
-  'triggerComponent' | 'triggerContainerClass'
+  'triggerComponent'
 > & {
+  /**
+   * Optional custom trigger component for the devtools.
+   * It can be a React element or a function that renders one.
+   *
+   * Example:
+   * ```jsx
+   *   {
+   *     triggerComponent: <CustomTriggerComponent />,
+   *   }
+   * ```
+   */
   triggerComponent?: TriggerRender
 }
 
