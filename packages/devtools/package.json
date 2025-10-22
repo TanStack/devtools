@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools",
-  "version": "0.6.20",
+  "version": "0.6.21",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -59,7 +59,10 @@
     "build": "tsup"
   },
   "dependencies": {
+    "@solid-primitives/event-listener": "^2.4.3",
     "@solid-primitives/keyboard": "^1.3.3",
+    "@solid-primitives/resize-observer": "^2.1.3",
+    "@tanstack/devtools-client": "workspace:*",
     "@tanstack/devtools-event-bus": "workspace:*",
     "@tanstack/devtools-ui": "workspace:*",
     "clsx": "^2.1.1",

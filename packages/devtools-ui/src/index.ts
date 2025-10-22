@@ -14,3 +14,14 @@ export {
 } from './components/section'
 export { Header, HeaderLogo } from './components/header'
 export { useTheme, ThemeContextProvider } from './components/theme'
+export {
+  CheckCircleIcon,
+  ChevronDownIcon,
+  CloseIcon,
+  ExternalLinkIcon,
+  PackageIcon,
+  SearchIcon,
+  SettingsIcon,
+  X,
+  XCircleIcon,
+} from './icons'

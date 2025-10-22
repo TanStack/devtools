@@ -1,5 +1,26 @@
 # @tanstack/devtools-event-client
 
+## 0.3.9
+
+### Patch Changes
+
+- add ignore to inject source for granular manipulation ([#223](https://github.com/TanStack/devtools/pull/223))
+
+## 0.3.8
+
+### Patch Changes
+
+- fix issue where hosting providers would include devtools in production ([#220](https://github.com/TanStack/devtools/pull/220))
+
+## 0.3.7
+
+### Patch Changes
+
+- Added plugin marketplace functionality into devtools ([#216](https://github.com/TanStack/devtools/pull/216))
+
+- Updated dependencies [[`0b4a4a9`](https://github.com/TanStack/devtools/commit/0b4a4a9e57f3be7079166198f3e69fedd15c5b5d)]:
+  - @tanstack/devtools-client@0.0.3
+
 ## 0.3.6
 
 ### Patch Changes

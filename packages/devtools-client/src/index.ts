@@ -43,6 +43,15 @@ export interface OutdatedDeps {
   }
 }
 
+export interface PluginInjection {
+  packageName: string
+  pluginName: string
+  pluginImport?: {
+    importName: string
+    type: 'jsx' | 'function'
+  }
+}
+
 interface EventMap {
   'tanstack-devtools-core:ready': {
     packageJson: PackageJson | null
@@ -55,6 +64,25 @@ interface EventMap {
     packageJson: PackageJson | null
   }
   'tanstack-devtools-core:mounted': void
+  'tanstack-devtools-core:install-devtools': PluginInjection
+  'tanstack-devtools-core:devtools-installed': {
+    packageName: string
+    success: boolean
+    error?: string
+  }
+  'tanstack-devtools-core:add-plugin-to-devtools': PluginInjection
+  'tanstack-devtools-core:plugin-added': {
+    packageName: string
+    success: boolean
+    error?: string
+  }
+  'tanstack-devtools-core:bump-package-version': PluginInjection & {
+    devtoolsPackage: string
+    minVersion?: string
+  }
+  'tanstack-devtools-core:package-json-updated': {
+    packageJson: PackageJson | null
+  }
 }
 
 export class DevtoolsEventClient extends EventClient<EventMap> {

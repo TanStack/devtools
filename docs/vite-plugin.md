@@ -60,7 +60,9 @@ export default {
         // port to run the event bus on
         port: 1234,
         // console log debug logs or not
-        debug: false
+        debug: false,
+        // enables the server event bus (defaults to true), you can disable it if you're running devtools in something like storybook or vitest
+        enabled: true
       },
     }),
     // ... rest of your plugins here
@@ -163,7 +165,13 @@ export default {
   plugins: [
     devtools({
       injectSource: {
-        enabled: true
+        enabled: true,
+        ignore: {
+          // files to ignore source injection for
+          files: ['node_modules', /.*\.test\.(js|ts|jsx|tsx)$/],
+          // components to ignore source injection for
+          components: ['YourComponent', /.*Lazy$/],
+        },
       }
     }),
     // ... rest of your plugins here

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { TanStackDevtoolsCore } from '@tanstack/devtools'
 import { createPortal } from 'react-dom'
 import type { JSX, ReactElement } from 'react'
@@ -180,23 +180,9 @@ export const TanStackDevtools = ({
     null,
   )
 
-  const [devtools] = useState(() => {
-    const { triggerComponent, ...coreConfig } = config || {}
-    return new TanStackDevtoolsCore({
-      config: {
-        ...coreConfig,
-        triggerComponent: triggerComponent
-          ? (el, props) => {
-              setTriggerContainer(el)
-              convertTrigger(triggerComponent, setTriggerComponent, el, {
-                ...props,
-                isOpen: props.isOpen(),
-              })
-            }
-          : undefined,
-      },
-      eventBusConfig,
-      plugins: plugins?.map((plugin) => {
+  const pluginsMap: Array<TanStackDevtoolsPlugin> = useMemo(
+    () =>
+      plugins?.map((plugin) => {
         return {
           ...plugin,
           name:
@@ -234,9 +220,35 @@ export const TanStackDevtools = ({
             convertRender(plugin.render, setPluginComponents, e, theme)
           },
         }
-      }),
+      }) ?? [],
+    [plugins],
+  )
+
+  const [devtools] = useState(() => {
+    const { triggerComponent, ...coreConfig } = config || {}
+    return new TanStackDevtoolsCore({
+      config: {
+        ...coreConfig,
+        triggerComponent: triggerComponent
+          ? (el, props) => {
+              setTriggerContainer(el)
+              convertTrigger(triggerComponent, setTriggerComponent, el, {
+                ...props,
+                isOpen: props.isOpen(),
+              })
+            }
+          : undefined,
+      },
+      eventBusConfig,
+      plugins: pluginsMap,
     })
   })
+
+  useEffect(() => {
+    devtools.setConfig({
+      plugins: pluginsMap,
+    })
+  }, [devtools, pluginsMap])
 
   useEffect(() => {
     if (devToolRef.current) {

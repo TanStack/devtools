@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-vite",
-  "version": "0.3.6",
+  "version": "0.3.9",
   "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -59,12 +59,14 @@
     "@tanstack/devtools-client": "workspace:*",
     "@tanstack/devtools-event-bus": "workspace:*",
     "chalk": "^5.6.2",
-    "launch-editor": "^2.11.1"
+    "launch-editor": "^2.11.1",
+    "picomatch": "^4.0.3"
   },
   "devDependencies": {
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/babel__traverse": "^7.28.0",
+    "@types/picomatch": "^4.0.2",
     "happy-dom": "^18.0.1"
   }
 }

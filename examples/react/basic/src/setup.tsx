@@ -27,7 +27,6 @@ const rootRoute = createRootRoute({
     </>
   ),
 })
-
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
@@ -46,17 +45,15 @@ function About() {
     </div>
   )
 }
-
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/about',
   component: About,
 })
-
 const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
-
-const router = createRouter({ routeTree })
-
+const router = createRouter({
+  routeTree,
+})
 export default function DevtoolsExample() {
   return (
     <>
@@ -78,9 +75,9 @@ export default function DevtoolsExample() {
             render: () => <PackageJsonPanel />,
           },
           /* {
-            name: "The actual app",
-            render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
-          } */
+      name: "The actual app",
+      render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
+    } */
         ]}
       />
       <RouterProvider router={router} />

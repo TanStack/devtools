@@ -1,18 +1,18 @@
-import { exec } from 'node:child_process'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { normalizePath } from 'vite'
 import chalk from 'chalk'
-import {
-  handleDevToolsViteRequest,
-  readPackageJson,
-  tryParseJson,
-} from './utils'
+import { handleDevToolsViteRequest, readPackageJson } from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
 import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
 import { enhanceConsoleLog } from './enhance-logs'
-import type { OutdatedDeps } from '@tanstack/devtools-client'
+import { detectDevtoolsFile, injectPluginIntoFile } from './inject-plugin'
+import {
+  addPluginToDevtools,
+  emitOutdatedDeps,
+  installPackage,
+} from './package-manager'
 import type { Plugin } from 'vite'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
@@ -62,29 +62,18 @@ export type TanStackDevtoolsViteConfig = {
      * @default true
      */
     enabled: boolean
+    /**
+     * List of files or patterns to ignore for source injection.
+     */
+    ignore?: {
+      files?: Array<string | RegExp>
+      components?: Array<string | RegExp>
+    }
   }
 }
 
 export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
   config
-
-const emitOutdatedDeps = async () => {
-  return await new Promise<OutdatedDeps | null>((resolve) => {
-    exec('npm outdated --json', (_, stdout) => {
-      // npm outdated exits with code 1 if there are outdated packages, but still outputs valid JSON
-      if (stdout) {
-        const newOutdatedDeps = tryParseJson<OutdatedDeps>(stdout)
-        if (!newOutdatedDeps) {
-          return
-        }
-        devtoolsEventClient.emit('outdated-deps-read', {
-          outdatedDeps: newOutdatedDeps,
-        })
-        resolve(newOutdatedDeps)
-      }
-    })
-  })
-}
 
 export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let port = 5173
@@ -94,6 +83,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const serverBusEnabled = args?.eventBusConfig?.enabled ?? true
   const bus = new ServerEventBus(args?.eventBusConfig)
+
+  let devtoolsFileId: string | null = null
 
   return [
     {
@@ -111,7 +102,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         )
           return
 
-        return addSourceToJsx(code, id)
+        return addSourceToJsx(code, id, args?.injectSource?.ignore)
       },
     },
     {
@@ -194,18 +185,18 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
     },
     {
       name: '@tanstack/devtools:remove-devtools-on-build',
-      apply(_, { command }) {
-        return command === 'build' && removeDevtoolsOnBuild
+      apply(config, { command }) {
+        // Check both command and mode to support various hosting providers
+        // Some providers (Cloudflare, Netlify, Heroku) might not use 'build' command
+        // but will always set mode to 'production' for production builds
+        return (
+          (command !== 'serve' || config.mode === 'production') &&
+          removeDevtoolsOnBuild
+        )
       },
       enforce: 'pre',
       transform(code, id) {
-        if (
-          id.includes('node_modules') ||
-          id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build')
-        )
-          return
+        if (id.includes('node_modules') || id.includes('?raw')) return
         const transform = removeDevtools(code, id)
         if (!transform) return
         if (logging) {
@@ -230,6 +221,174 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       async configureServer() {
         const packageJson = await readPackageJson()
         const outdatedDeps = emitOutdatedDeps().then((deps) => deps)
+
+        // Listen for package installation requests
+        devtoolsEventClient.on('install-devtools', async (event) => {
+          const result = await installPackage(event.payload.packageName)
+          devtoolsEventClient.emit('devtools-installed', {
+            packageName: event.payload.packageName,
+            success: result.success,
+            error: result.error,
+          })
+
+          // If installation was successful, automatically add the plugin to devtools
+          if (result.success) {
+            const { packageName, pluginName, pluginImport } = event.payload
+
+            console.log(
+              chalk.blueBright(
+                `[@tanstack/devtools-vite] Auto-adding ${packageName} to devtools...`,
+              ),
+            )
+
+            const injectResult = addPluginToDevtools(
+              devtoolsFileId,
+              packageName,
+              pluginName,
+              pluginImport,
+            )
+
+            if (injectResult.success) {
+              // Emit plugin-added event so the UI updates
+              devtoolsEventClient.emit('plugin-added', {
+                packageName,
+                success: true,
+              })
+
+              // Also re-read package.json to update the UI with the newly installed package
+              const updatedPackageJson = await readPackageJson()
+              devtoolsEventClient.emit('package-json-read', {
+                packageJson: updatedPackageJson,
+              })
+            }
+          }
+        })
+
+        // Listen for add plugin to devtools requests
+        devtoolsEventClient.on('add-plugin-to-devtools', (event) => {
+          const { packageName, pluginName, pluginImport } = event.payload
+
+          console.log(
+            chalk.blueBright(
+              `[@tanstack/devtools-vite] Adding ${packageName} to devtools...`,
+            ),
+          )
+
+          const result = addPluginToDevtools(
+            devtoolsFileId,
+            packageName,
+            pluginName,
+            pluginImport,
+          )
+
+          devtoolsEventClient.emit('plugin-added', {
+            packageName,
+            success: result.success,
+            error: result.error,
+          })
+        })
+
+        // Handle bump-package-version event
+        devtoolsEventClient.on('bump-package-version', async (event) => {
+          const {
+            packageName,
+            devtoolsPackage,
+            pluginName,
+            minVersion,
+            pluginImport,
+          } = event.payload
+
+          console.log(
+            chalk.blueBright(
+              `[@tanstack/devtools-vite] Bumping ${packageName} to version ${minVersion}...`,
+            ),
+          )
+
+          // Install the package with the minimum version
+          const packageWithVersion = minVersion
+            ? `${packageName}@^${minVersion}`
+            : packageName
+
+          const result = await installPackage(packageWithVersion)
+
+          if (!result.success) {
+            console.log(
+              chalk.redBright(
+                `[@tanstack/devtools-vite] Failed to bump ${packageName}: ${result.error}`,
+              ),
+            )
+            devtoolsEventClient.emit('devtools-installed', {
+              packageName: devtoolsPackage,
+              success: false,
+              error: result.error,
+            })
+            return
+          }
+
+          console.log(
+            chalk.greenBright(
+              `[@tanstack/devtools-vite] Successfully bumped ${packageName} to ${minVersion}!`,
+            ),
+          )
+
+          // Check if we found the devtools file
+          if (!devtoolsFileId) {
+            console.log(
+              chalk.yellowBright(
+                `[@tanstack/devtools-vite] Devtools file not found. Skipping auto-injection.`,
+              ),
+            )
+            devtoolsEventClient.emit('devtools-installed', {
+              packageName: devtoolsPackage,
+              success: true,
+            })
+            return
+          }
+
+          // Now inject the devtools plugin
+          console.log(
+            chalk.blueBright(
+              `[@tanstack/devtools-vite] Adding ${devtoolsPackage} to devtools...`,
+            ),
+          )
+
+          const injectResult = injectPluginIntoFile(devtoolsFileId, {
+            packageName: devtoolsPackage,
+            pluginName,
+            pluginImport,
+          })
+
+          if (injectResult.success) {
+            console.log(
+              chalk.greenBright(
+                `[@tanstack/devtools-vite] Successfully added ${devtoolsPackage} to devtools!`,
+              ),
+            )
+
+            devtoolsEventClient.emit('plugin-added', {
+              packageName: devtoolsPackage,
+              success: true,
+            })
+
+            // Re-read package.json to update the UI
+            const updatedPackageJson = await readPackageJson()
+            devtoolsEventClient.emit('package-json-read', {
+              packageJson: updatedPackageJson,
+            })
+          } else {
+            console.log(
+              chalk.redBright(
+                `[@tanstack/devtools-vite] Failed to add ${devtoolsPackage} to devtools: ${injectResult.error}`,
+              ),
+            )
+
+            devtoolsEventClient.emit('plugin-added', {
+              packageName: devtoolsPackage,
+              success: false,
+              error: injectResult.error,
+            })
+          }
+        })
 
         // whenever a client mounts we send all the current info to the subscribers
         devtoolsEventClient.on('mounted', async () => {
@@ -269,6 +428,24 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           return
 
         return enhanceConsoleLog(code, id, port)
+      },
+    },
+    {
+      name: '@tanstack/devtools:inject-plugin',
+      apply(config, { command }) {
+        return config.mode === 'development' && command === 'serve'
+      },
+      transform(code, id) {
+        // First pass: find where TanStackDevtools is imported
+        if (!devtoolsFileId && detectDevtoolsFile(code)) {
+          // Extract actual file path (remove query params)
+          const [filePath] = id.split('?')
+          if (filePath) {
+            devtoolsFileId = filePath
+          }
+        }
+
+        return undefined
       },
     },
   ]

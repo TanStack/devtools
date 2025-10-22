@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.4.3
+
+### Patch Changes
+
+- Added plugin marketplace functionality into devtools ([#216](https://github.com/TanStack/devtools/pull/216))
+
 ## 0.4.2
 
 ### Patch Changes

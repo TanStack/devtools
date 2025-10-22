@@ -80,14 +80,17 @@ importers:
   examples/react/basic:
     dependencies:
       '@tanstack/devtools-client':
-        specifier: 0.0.2
+        specifier: 0.0.3
         version: link:../../../packages/devtools-client
       '@tanstack/devtools-event-client':
         specifier: 0.3.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/react-devtools
+      '@tanstack/react-form':
+        specifier: ^1.23.7
+        version: 1.23.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@tanstack/react-query':
         specifier: ^5.90.1
         version: 5.90.1(react@19.1.1)
@@ -111,11 +114,14 @@ importers:
         version: 4.1.11
     devDependencies:
       '@tanstack/devtools-ui':
-        specifier: 0.4.2
+        specifier: 0.4.3
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.3.6
+        specifier: 0.3.9
         version: link:../../../packages/devtools-vite
+      '@tanstack/react-form-devtools':
+        specifier: ^0.1.7
+        version: 0.1.7(csstype@3.1.3)(react@19.1.1)(solid-js@1.9.9)
       '@types/react':
         specifier: ^19.1.13
         version: 19.1.13
@@ -141,7 +147,7 @@ importers:
         specifier: 0.3.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/react-devtools
       react:
         specifier: 19.1.1
@@ -166,7 +172,7 @@ importers:
   examples/react/drizzle:
     dependencies:
       '@tanstack/react-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.131.50
@@ -185,7 +191,7 @@ importers:
         version: 19.1.1(react@19.1.1)
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.3.6
+        specifier: 0.3.9
         version: link:../../../packages/devtools-vite
       '@types/node':
         specifier: ^22.15.2
@@ -221,7 +227,7 @@ importers:
         specifier: 0.3.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -246,10 +252,10 @@ importers:
         version: 4.1.11
     devDependencies:
       '@tanstack/devtools-ui':
-        specifier: 0.4.2
+        specifier: 0.4.3
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.3.6
+        specifier: 0.3.9
         version: link:../../../packages/devtools-vite
       '@types/react':
         specifier: ^19.1.13
@@ -300,7 +306,7 @@ importers:
         specifier: 0.3.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -346,7 +352,7 @@ importers:
         version: 4.1.11
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.3.6
+        specifier: 0.3.9
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.1
@@ -388,7 +394,7 @@ importers:
         specifier: workspace:^
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -431,7 +437,7 @@ importers:
   examples/solid/basic:
     dependencies:
       '@tanstack/solid-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/solid-devtools
       '@tanstack/solid-query':
         specifier: ^5.90.1
@@ -450,7 +456,7 @@ importers:
         version: 1.9.9
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.3.6
+        specifier: 0.3.9
         version: link:../../../packages/devtools-vite
       vite:
         specifier: ^7.1.7
@@ -468,7 +474,7 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(@testing-library/jest-dom@6.8.0)(solid-js@1.9.9)(vinxi@0.5.8(@netlify/blobs@9.1.2)(@types/node@22.15.2)(db0@0.3.2(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@prisma/client@6.16.2(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))(typescript@5.9.2))(pg@8.16.3)(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))))(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@prisma/client@6.16.2(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))(typescript@5.9.2))(pg@8.16.3)(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2)))(encoding@0.1.13)(ioredis@5.6.1)(jiti@2.5.1)(lightningcss@1.30.1)(rolldown@1.0.0-beta.32)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))(vite@7.1.7(@types/node@22.15.2)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))
       '@tanstack/solid-devtools':
-        specifier: ^0.7.6
+        specifier: ^0.7.7
         version: link:../../../packages/solid-devtools
       solid-js:
         specifier: ^1.9.9
@@ -479,9 +485,18 @@ importers:
 
   packages/devtools:
     dependencies:
+      '@solid-primitives/event-listener':
+        specifier: ^2.4.3
+        version: 2.4.3(solid-js@1.9.9)
       '@solid-primitives/keyboard':
         specifier: ^1.3.3
         version: 1.3.3(solid-js@1.9.9)
+      '@solid-primitives/resize-observer':
+        specifier: ^2.1.3
+        version: 2.1.3(solid-js@1.9.9)
+      '@tanstack/devtools-client':
+        specifier: workspace:*
+        version: link:../devtools-client
       '@tanstack/devtools-event-bus':
         specifier: workspace:*
         version: link:../event-bus
@@ -584,6 +599,9 @@ importers:
       launch-editor:
         specifier: ^2.11.1
         version: 2.11.1
+      picomatch:
+        specifier: ^4.0.3
+        version: 4.0.3
       vite:
         specifier: ^6.0.0 || ^7.0.0
         version: 7.1.7(@types/node@22.15.2)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0)
@@ -597,6 +615,9 @@ importers:
       '@types/babel__traverse':
         specifier: ^7.28.0
         version: 7.28.0
+      '@types/picomatch':
+        specifier: ^4.0.2
+        version: 4.0.2
       happy-dom:
         specifier: ^18.0.1
         version: 18.0.1
@@ -2711,6 +2732,16 @@ packages:
     resolution: {integrity: sha512-CWVv5kK7QdfnrAyvUo31spmqZjn+zpxKRqsyJDhGY7I4QweJeCbRJrlhzH3trv18ZyW3thRvtiHWfX1MdUr2VA==}
     engines: {node: '>=18'}
 
+  '@tanstack/devtools-event-client@0.3.3':
+    resolution: {integrity: sha512-RfV+OPV/M3CGryYqTue684u10jUt55PEqeBOnOtCe6tAmHI9Iqyc8nHeDhWPEV9715gShuauFVaMc9RiUVNdwg==}
+    engines: {node: '>=18'}
+
+  '@tanstack/devtools-ui@0.3.5':
+    resolution: {integrity: sha512-DU8OfLntngnph+Tb7ivQvh4F4w+rDu6r01fXlhjq/Nmgdr0gtsOox4kdmyq5rCs+C6aPgP3M7+BE+fv4dN+VvA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      solid-js: '>=1.9.7'
+
   '@tanstack/directive-functions-plugin@1.121.21':
     resolution: {integrity: sha512-B9z/HbF7gJBaRHieyX7f2uQ4LpLLAVAEutBZipH6w+CYD6RHRJvSVPzECGHF7icFhNWTiJQL2QR6K07s59yzEw==}
     engines: {node: '>=12'}
@@ -2726,6 +2757,14 @@ packages:
   '@tanstack/eslint-config@0.3.2':
     resolution: {integrity: sha512-2g+PuGR3GuvvCiR3xZs+IMqAvnYU9bvH+jRml0BFBSxHBj22xFCTNvJWhvgj7uICFF9IchDkFUto91xDPMu5cg==}
     engines: {node: '>=18'}
+
+  '@tanstack/form-core@1.24.3':
+    resolution: {integrity: sha512-e+HzSD49NWr4aIqJWtPPzmi+/phBJAP3nSPN8dvxwmJWqAxuB/cH138EcmCFf3+oA7j3BXvwvTY0I+8UweGPjQ==}
+
+  '@tanstack/form-devtools@0.1.7':
+    resolution: {integrity: sha512-bXgZEnKMEKwf3v0SZz63HKiH6C8UUazFsy5O/GI6xGhYR/2TlQiAyJB9NuY3gFo1J5CRBh93m2ekH4S5D/6Ulg==}
+    peerDependencies:
+      solid-js: '>=1.9.9'
 
   '@tanstack/history@1.131.2':
     resolution: {integrity: sha512-cs1WKawpXIe+vSTeiZUuSBy8JFjEuDgdMKZFRLKwQysKo8y2q6Q1HvS74Yw+m5IhOW1nTZooa6rlgdfXcgFAaw==}
@@ -2744,6 +2783,20 @@ packages:
 
   '@tanstack/query-devtools@5.90.1':
     resolution: {integrity: sha512-GtINOPjPUH0OegJExZ70UahT9ykmAhmtNVcmtdnOZbxLwT7R5OmRztR5Ahe3/Cu7LArEmR6/588tAycuaWb1xQ==}
+
+  '@tanstack/react-form-devtools@0.1.7':
+    resolution: {integrity: sha512-9Wh1+WyQ6QeQUeMnkYwnTyIa9mDnyuyGiUF93tCkvEgDbSkmKQ/4x8nvh2/CLREw9ZDxsQomgZSUqVX1FeoYrA==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/react-form@1.23.7':
+    resolution: {integrity: sha512-p/j9Gi2+s135sOjj48RjM+6xZQr1FVpliQlETLYBEGmmmxWHgYYs2b62mTDSnuv7AqtuZhpQ+t0CRFVfbQLsFA==}
+    peerDependencies:
+      '@tanstack/react-start': ^1.130.10
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@tanstack/react-start':
+        optional: true
 
   '@tanstack/react-query-devtools@5.90.1':
     resolution: {integrity: sha512-otOjczcUft13RZlWi8JHIWei1MLuRf0AK+hyEEAm0/IqKUbs/0ZXj0wlc+P1XdE0nYcOMuHK69496FvP/9g3LQ==}
@@ -2812,6 +2865,12 @@ packages:
 
   '@tanstack/react-store@0.7.3':
     resolution: {integrity: sha512-3Dnqtbw9P2P0gw8uUM8WP2fFfg8XMDSZCTsywRPZe/XqqYW8PGkXKZTvP0AHkE4mpqP9Y43GpOg9vwO44azu6Q==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@tanstack/react-store@0.7.7':
+    resolution: {integrity: sha512-qqT0ufegFRDGSof9D/VqaZgjNgp4tRPHZIJq2+QIHkMUtHjaJ0lYrrXjeIUJvjnTbgPfSD1XgOMEt0lmANn6Zg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -2955,6 +3014,9 @@ packages:
   '@tanstack/store@0.7.2':
     resolution: {integrity: sha512-RP80Z30BYiPX2Pyo0Nyw4s1SJFH2jyM6f9i3HfX4pA+gm5jsnYryscdq2aIQLnL4TaGuQMO+zXmN9nh1Qck+Pg==}
 
+  '@tanstack/store@0.7.7':
+    resolution: {integrity: sha512-xa6pTan1bcaqYDS9BDpSiS63qa6EoDkPN9RsRaxHuDdVDNntzq3xNwR5YKTU/V3SkSyC9T4YVOPh2zRQN0nhIQ==}
+
   '@tanstack/typedoc-config@0.2.1':
     resolution: {integrity: sha512-3miLBNiyWX54bQKBNnh7Fj6otWX8ZDiU6/ffOsNnikwBdKjFkA7ddrBtC5/JQkLCE6CBIqcJvtNIwI+DZu4y1Q==}
     engines: {node: '>=18'}
@@ -3071,6 +3133,9 @@ packages:
 
   '@types/parse-json@4.0.2':
     resolution: {integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw==}
+
+  '@types/picomatch@4.0.2':
+    resolution: {integrity: sha512-qHHxQ+P9PysNEGbALT8f8YOSHW0KJu6l2xU8DYY0fu/EmGxXdVnuTLvFUvBgPJMSqXq29SYHveejeAha+4AYgA==}
 
   '@types/prop-types@15.7.15':
     resolution: {integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==}
@@ -3976,6 +4041,9 @@ packages:
   dax-sh@0.43.2:
     resolution: {integrity: sha512-uULa1sSIHgXKGCqJ/pA0zsnzbHlVnuq7g8O2fkHokWFNwEGIhh5lAJlxZa1POG5En5ba7AU4KcBAvGQWMMf8rg==}
 
+  dayjs@1.11.18:
+    resolution: {integrity: sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==}
+
   db0@0.3.2:
     resolution: {integrity: sha512-xzWNQ6jk/+NtdfLyXEipbX55dmDSeteLFt/ayF+wZUU5bzKgmrDOxmInUTbyVRp46YwnJdkDA1KhB7WIXFofJw==}
     peerDependencies:
@@ -4032,6 +4100,9 @@ packages:
 
   decimal.js@10.5.0:
     resolution: {integrity: sha512-8vDa8Qxvr/+d94hSh5P3IJwI5t8/c0KsMp+g8bNw9cY2icONa5aPfvKeieW1WlG0WQYwwhJ7mjui2xtiePQSXw==}
+
+  decode-formdata@0.9.0:
+    resolution: {integrity: sha512-q5uwOjR3Um5YD+ZWPOF/1sGHVW9A5rCrRwITQChRXlmPkxDFBqCm4jNTIVdGHNH9OnR+V9MoZVgRhsFb+ARbUw==}
 
   deep-eql@5.0.2:
     resolution: {integrity: sha512-h5k/5U50IJJFpzfL6nO9jaaumfjO/f2NjK/oYB2Djzm4p9L+3T9qWpZqZ2hAbLPuuYq9wrU08WQyBTL5GbPk5Q==}
@@ -4148,6 +4219,9 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       typescript: ^5.4.4
+
+  devalue@5.4.1:
+    resolution: {integrity: sha512-YtoaOfsqjbZQKGIMRYDWKjUmSB4VJ/RElB+bXZawQAQYAo4xu08GKTMVlsZDTF6R2MbAgjcAQRPI5eIyRAT2OQ==}
 
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
@@ -9816,6 +9890,16 @@ snapshots:
       - typescript
       - vite
 
+  '@tanstack/devtools-event-client@0.3.3': {}
+
+  '@tanstack/devtools-ui@0.3.5(csstype@3.1.3)(solid-js@1.9.9)':
+    dependencies:
+      clsx: 2.1.1
+      goober: 2.1.16(csstype@3.1.3)
+      solid-js: 1.9.9
+    transitivePeerDependencies:
+      - csstype
+
   '@tanstack/directive-functions-plugin@1.121.21(vite@7.1.7(@types/node@22.15.2)(jiti@2.5.1)(lightningcss@1.30.1)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.0))':
     dependencies:
       '@babel/code-frame': 7.26.2
@@ -9858,6 +9942,22 @@ snapshots:
       - supports-color
       - typescript
 
+  '@tanstack/form-core@1.24.3':
+    dependencies:
+      '@tanstack/devtools-event-client': 0.3.3
+      '@tanstack/store': 0.7.7
+
+  '@tanstack/form-devtools@0.1.7(csstype@3.1.3)(solid-js@1.9.9)':
+    dependencies:
+      '@tanstack/devtools-ui': 0.3.5(csstype@3.1.3)(solid-js@1.9.9)
+      '@tanstack/form-core': 1.24.3
+      clsx: 2.1.1
+      dayjs: 1.11.18
+      goober: 2.1.16(csstype@3.1.3)
+      solid-js: 1.9.9
+    transitivePeerDependencies:
+      - csstype
+
   '@tanstack/history@1.131.2': {}
 
   '@tanstack/history@1.132.0-alpha.1': {}
@@ -9874,6 +9974,24 @@ snapshots:
   '@tanstack/query-core@5.90.1': {}
 
   '@tanstack/query-devtools@5.90.1': {}
+
+  '@tanstack/react-form-devtools@0.1.7(csstype@3.1.3)(react@19.1.1)(solid-js@1.9.9)':
+    dependencies:
+      '@tanstack/form-devtools': 0.1.7(csstype@3.1.3)(solid-js@1.9.9)
+      react: 19.1.1
+    transitivePeerDependencies:
+      - csstype
+      - solid-js
+
+  '@tanstack/react-form@1.23.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@tanstack/form-core': 1.24.3
+      '@tanstack/react-store': 0.7.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      decode-formdata: 0.9.0
+      devalue: 5.4.1
+      react: 19.1.1
+    transitivePeerDependencies:
+      - react-dom
 
   '@tanstack/react-query-devtools@5.90.1(@tanstack/react-query@5.90.1(react@19.1.1))(react@19.1.1)':
     dependencies:
@@ -9972,6 +10090,13 @@ snapshots:
   '@tanstack/react-store@0.7.3(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@tanstack/store': 0.7.2
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+      use-sync-external-store: 1.5.0(react@19.1.1)
+
+  '@tanstack/react-store@0.7.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      '@tanstack/store': 0.7.7
       react: 19.1.1
       react-dom: 19.1.1(react@19.1.1)
       use-sync-external-store: 1.5.0(react@19.1.1)
@@ -10234,6 +10359,8 @@ snapshots:
 
   '@tanstack/store@0.7.2': {}
 
+  '@tanstack/store@0.7.7': {}
+
   '@tanstack/typedoc-config@0.2.1(typescript@5.9.2)':
     dependencies:
       typedoc: 0.27.9(typescript@5.9.2)
@@ -10379,6 +10506,8 @@ snapshots:
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/parse-json@4.0.2': {}
+
+  '@types/picomatch@4.0.2': {}
 
   '@types/prop-types@15.7.15': {}
 
@@ -11402,6 +11531,8 @@ snapshots:
       '@deno/shim-deno': 0.19.2
       undici-types: 5.28.4
 
+  dayjs@1.11.18: {}
+
   db0@0.3.2(drizzle-orm@0.44.5(@opentelemetry/api@1.9.0)(@prisma/client@6.16.2(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))(typescript@5.9.2))(pg@8.16.3)(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))):
     optionalDependencies:
       drizzle-orm: 0.44.5(@opentelemetry/api@1.9.0)(@prisma/client@6.16.2(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))(typescript@5.9.2))(pg@8.16.3)(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))
@@ -11426,6 +11557,8 @@ snapshots:
       callsite: 1.0.0
 
   decimal.js@10.5.0: {}
+
+  decode-formdata@0.9.0: {}
 
   deep-eql@5.0.2: {}
 
@@ -11525,6 +11658,8 @@ snapshots:
       typescript: 5.9.2
     transitivePeerDependencies:
       - supports-color
+
+  devalue@5.4.1: {}
 
   devlop@1.1.0:
     dependencies:
