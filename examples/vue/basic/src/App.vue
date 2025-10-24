@@ -1,6 +1,9 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { TanStackDevtools } from '@tanstack/vue-devtools'
+import {
+  TanStackDevtools,
+  TanStackDevtoolsVuePlugin,
+} from '@tanstack/vue-devtools'
 import { VueQueryDevtoolsPanel } from '@tanstack/vue-query-devtools'
 
 import Posts from './Posts.vue'
@@ -19,7 +22,12 @@ export default defineComponent({
       postId.value = id
     }
 
-    const plugins = [{ name: 'Vue Query', component: VueQueryDevtoolsPanel }]
+    const plugins: TanStackDevtoolsVuePlugin[] = [
+      {
+        name: 'Vue Query',
+        component: VueQueryDevtoolsPanel,
+      },
+    ]
 
     return {
       isVisited,
