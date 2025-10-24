@@ -30,6 +30,10 @@
           "to": "vite-plugin"
         },
         {
+          "label": "Third party plugins",
+          "to": "third-party-plugins"
+        },
+        {
           "label": "Production",
           "to": "production"
         }
