@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-bus
 
+## 0.3.3
+
+### Patch Changes
+
+- fixed an issue where bigInt was not parsed properly ([#231](https://github.com/TanStack/devtools/pull/231))
+
 ## 0.3.2
 
 ### Patch Changes
