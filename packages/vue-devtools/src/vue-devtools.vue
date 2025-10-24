@@ -10,7 +10,9 @@ import type {
 const props = defineProps<TanStackDevtoolsVueInit>()
 
 const titlesToRender = shallowRef<Array<{ id: string; component: any }>>([])
-const pluginsToRender = shallowRef<Array<{ id: string; component: any }>>([])
+const pluginsToRender = shallowRef<
+  Array<{ id: string; component: any; props: any }>
+>([])
 const div = ref<HTMLElement>()
 
 function getPlugin(plugin: TanStackDevtoolsVuePlugin): TanStackDevtoolsPlugin {
@@ -33,7 +35,7 @@ function getPlugin(plugin: TanStackDevtoolsVuePlugin): TanStackDevtoolsPlugin {
       const id = e.getAttribute('id')!
       pluginsToRender.value = [
         ...pluginsToRender.value,
-        { id, component: plugin.component },
+        { id, component: plugin.component, props: plugin.props },
       ]
     },
     destroy: (pluginId) => {
@@ -83,6 +85,6 @@ onScopeDispose(() => {
     :key="plugin.id"
     :to="'#' + plugin.id"
   >
-    <component :is="plugin.component" />
+    <component :is="plugin.component" v-bind="plugin.props" />
   </Teleport>
 </template>

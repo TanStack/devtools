@@ -2,13 +2,10 @@ import type { Component } from 'vue'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
-  TanStackDevtoolsPlugin,
 } from '@tanstack/devtools'
 
-export type TanStackDevtoolsVuePlugin = Omit<
-  TanStackDevtoolsPlugin,
-  'render' | 'name'
-> & {
+export type TanStackDevtoolsVuePlugin = {
+  id?: string
   component: Component
   name: string | Component
   props?: Record<string, any>
