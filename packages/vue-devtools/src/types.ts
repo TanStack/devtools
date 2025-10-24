@@ -17,19 +17,23 @@ export type TanStackDevtoolsVuePlugin = Omit<
 export interface TanStackDevtoolsVueInit {
   /**
    * Array of plugins to be used in the devtools.
-   * Each plugin should have a `render` function that returns a Vue component
+   * Each plugin should have a `render` prop that returns a Vue component
    *
    * Example:
    * ```vue
-   * <TanStackDevtools
-   *   plugins={[
-   *     {
-   *       id: "your-plugin-id",
-   *       name: "Your Plugin",
-   *       render: <CustomPluginComponent />,
-   *     }
-   *   ]}
-   * />
+   * <script setup lang="ts">
+   * import { TanStackDevtools } from '@tanstack/vue-devtools'
+   * import { VueQueryDevtoolsPanel } from '@tanstack/vue-query-devtools'
+   *
+   * const plugins = [{ name: 'Vue Query', component: VueQueryDevtoolsPanel }]
+   * </script>
+   *
+   * <template>
+   *  <TanStackDevtools
+   *   :eventBusConfig="{ connectToServerBus: true }"
+   *   :plugins="plugins"
+   *  />
+   * </template>
    * ```
    */
   plugins?: Array<TanStackDevtoolsVuePlugin>

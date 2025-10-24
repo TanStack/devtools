@@ -35,7 +35,7 @@
     "test:lib": "nx affected --targets=test:lib --exclude=examples/**",
     "test:lib:dev": "pnpm test:lib && nx watch --all -- pnpm test:lib",
     "test:pr": "nx affected --targets=test:format,test:eslint,test:sherif,test:knip,test:lib,test:types,test:build,build",
-    "test:sherif": "sherif -p @tanstack/query-example-vue-basic",
+    "test:sherif": "sherif",
     "test:types": "nx affected --targets=test:types --exclude=examples/**",
     "watch": "pnpm run build:all && nx watch --all -- pnpm run build:all"
   },
@@ -72,7 +72,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.0",
     "publint": "^0.3.13",
-    "sherif": "^1.6.1",
+    "sherif": "^1.7.0",
     "size-limit": "^11.2.0",
     "tinyglobby": "^0.2.15",
     "typescript": "~5.9.2",
