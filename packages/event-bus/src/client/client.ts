@@ -1,3 +1,5 @@
+import { parseWithBigInt, stringifyWithBigInt } from '../utils/json'
+
 interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   type: TEventName
   payload: TPayload
@@ -55,7 +57,7 @@ export class ClientEventBus {
     this.#connectToServerBus = connectToServerBus
     this.#eventTarget = this.getGlobalTarget()
     this.#broadcastChannel.onmessage = (e) => {
-      this.emitToClients(JSON.parse(e.data), true)
+      this.emitToClients(parseWithBigInt(e.data), true)
     }
     this.debugLog('Initializing client event bus')
   }
@@ -74,14 +76,14 @@ export class ClientEventBus {
     // We only emit the events if they didn't come from the broadcast channel
     // otherwise it would infinitely send events between
     if (!fromBroadcastChannel) {
-      this.#broadcastChannel?.postMessage(JSON.stringify(event))
+      this.#broadcastChannel?.postMessage(stringifyWithBigInt(event))
     }
     this.debugLog('Emitting event to global client listeners', event)
     this.#eventTarget.dispatchEvent(globalEvent)
   }
 
   private emitToServer(event: TanStackDevtoolsEvent<string, any>) {
-    const json = JSON.stringify(event)
+    const json = stringifyWithBigInt(event)
     // try to emit it to the event bus first
     if (this.#socket && this.#socket.readyState === WebSocket.OPEN) {
       this.debugLog('Emitting event to server via WS', event)
@@ -185,7 +187,7 @@ export class ClientEventBus {
 
   private handleEventReceived(data: string) {
     try {
-      const event = JSON.parse(data) as TanStackDevtoolsEvent<string, any>
+      const event = parseWithBigInt(data) as TanStackDevtoolsEvent<string, any>
       this.emitToClients(event)
     } catch {}
   }
