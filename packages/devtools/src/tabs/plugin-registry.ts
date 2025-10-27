@@ -218,24 +218,30 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     packageName: '@dimano/ts-devtools-plugin-prefetch-heatmap',
     title: 'Prefetch Heatmap',
     description:
-      'Visualize TanStack Router prefetch wins vs. waste with an overlay and metrics panel.',
+      'Visualize TanStack Router prefetch intent, hits, and waste with a color overlay and a live metrics panel.',
     requires: {
       packageName: '@tanstack/react-router',
       minVersion: '1.0.0',
     },
-    // Optional import hints (your package default-exports a registration function)
+    // default export registers the plugin
     pluginImport: {
       importName: 'default',
       type: 'function',
     },
-    // Optional if you have a small square logo hosted somewhere stable:
-    // logoUrl: 'https://raw.githubusercontent.com/dimitrianoudi/tanstack-prefetch-heatmap/main/assets/logo.png',
-    docsUrl: 'https://github.com/dimitrianoudi/tanstack-prefetch-heatmap#readme',
+    // helps the host match your plugin deterministically
+    pluginId: 'prefetch-heatmap',
+    // show a nice card in the marketplace
+    logoUrl:
+      'https://raw.githubusercontent.com/dimitrianoudi/tanstack-prefetch-heatmap/main/assets/prefetch-heatmap-card.png',
+    docsUrl:
+      'https://github.com/dimitrianoudi/tanstack-prefetch-heatmap#prefetch-heatmap-devtools-plugin',
     repoUrl: 'https://github.com/dimitrianoudi/tanstack-prefetch-heatmap',
-    author: 'Dimano',
+    author: 'Dimitris Anoudis (@dimitrianoudi)',
     framework: 'react',
-    tags: ['Router', 'Prefetch', 'Analytics', 'Overlay'],
-  },
+    isNew: true,
+    tags: ['Router', 'Prefetch', 'Analytics', 'Overlay', 'TanStack'],
+  }
+
 
 }
 
