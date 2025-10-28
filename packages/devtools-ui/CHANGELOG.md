@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.4.4
+
+### Patch Changes
+
+- Adds optional prop to header for handeling clicks to the logo. ([#237](https://github.com/TanStack/devtools/pull/237))
+
 ## 0.4.3
 
 ### Patch Changes
