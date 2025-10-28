@@ -1168,6 +1168,75 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       text-transform: uppercase;
       letter-spacing: 0.05em;
     `,
+    pluginMarketplaceFeatureBanner: css`
+      margin-top: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: ${t(
+        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+        'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
+      )};
+      border-radius: 0.75rem;
+      border: 1px solid ${t(colors.blue[400], colors.blue[800])};
+      box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    `,
+    pluginMarketplaceFeatureBannerContent: css`
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    `,
+    pluginMarketplaceFeatureBannerTitle: css`
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    `,
+    pluginMarketplaceFeatureBannerIcon: css`
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+    `,
+    pluginMarketplaceFeatureBannerText: css`
+      font-size: 0.95rem;
+      color: ${t('rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.9)')};
+      line-height: 1.5;
+      margin: 0;
+    `,
+    pluginMarketplaceFeatureBannerButton: css`
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      background: white;
+      color: ${colors.blue[600]};
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      align-self: flex-start;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: ${t(colors.gray[50], colors.gray[100])};
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    `,
+    pluginMarketplaceFeatureBannerButtonIcon: css`
+      width: 18px;
+      height: 18px;
+    `,
     pluginMarketplaceCardDisabled: css`
       opacity: 0.6;
       filter: grayscale(0.3);
