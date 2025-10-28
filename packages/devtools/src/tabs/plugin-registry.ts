@@ -240,9 +240,7 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     framework: 'react',
     isNew: true,
     tags: ['Router', 'Prefetch', 'Analytics', 'Overlay', 'TanStack'],
-  }
-
-
+  },
 }
 
 /**
