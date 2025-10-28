@@ -225,7 +225,7 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     },
     // default export registers the plugin
     pluginImport: {
-      importName: 'default',
+      importName: 'registerPrefetchHeatmapPlugin',
       type: 'function',
     },
     // helps the host match your plugin deterministically
