@@ -11,7 +11,7 @@
   "dependencies": {
     "@tanstack/devtools-client": "0.0.3",
     "@tanstack/devtools-event-client": "0.3.4",
-    "@tanstack/react-devtools": "^0.7.9",
+    "@tanstack/react-devtools": "^0.7.10",
     "@tanstack/react-form": "^1.23.7",
     "@tanstack/react-query": "^5.90.1",
     "@tanstack/react-query-devtools": "^5.90.1",

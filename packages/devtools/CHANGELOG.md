@@ -1,5 +1,12 @@
 # @tanstack/devtools
 
+## 0.6.24
+
+### Patch Changes
+
+- Add featured section to marketplace ([#238](https://github.com/TanStack/devtools/pull/238))
+  Add third-party Prefetch Heatmap plugin to marketplace registry(metadata-only)
+
 ## 0.6.23
 
 ### Patch Changes
