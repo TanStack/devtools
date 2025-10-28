@@ -201,6 +201,20 @@ export const groupIntoSections = (
 ): Array<PluginSection> => {
   const sections: Array<PluginSection> = []
 
+  // Add Featured section first - always show this section
+  const featuredCards = allCards.filter(
+    (c) =>
+      c.metadata?.featured &&
+      c.actionType !== 'already-installed' &&
+      c.isCurrentFramework, // Only show featured plugins for current framework
+  )
+  // Always add featured section, even if no cards to show the partner banner
+  sections.push({
+    id: 'featured',
+    displayName: '⭐ Featured',
+    cards: featuredCards,
+  })
+
   // Add Active Plugins section
   const activeCards = allCards.filter(
     (c) => c.actionType === 'already-installed' && c.isRegistered,
@@ -210,21 +224,6 @@ export const groupIntoSections = (
       id: 'active',
       displayName: '✓ Active Plugins',
       cards: activeCards,
-    })
-  }
-
-  // Add Featured section
-  const featuredCards = allCards.filter(
-    (c) =>
-      c.metadata?.featured &&
-      c.actionType !== 'already-installed' &&
-      c.isCurrentFramework, // Only show featured plugins for current framework
-  )
-  if (featuredCards.length > 0) {
-    sections.push({
-      id: 'featured',
-      displayName: '⭐ Featured',
-      cards: featuredCards,
     })
   }
 

@@ -1,5 +1,12 @@
 # @tanstack/devtools
 
+## 0.6.23
+
+### Patch Changes
+
+- Updated dependencies [[`1db2215`](https://github.com/TanStack/devtools/commit/1db22151ac1738f7dc3b6c3eaa4b4bf58aabc331)]:
+  - @tanstack/devtools-ui@0.4.4
+
 ## 0.6.22
 
 ### Patch Changes
