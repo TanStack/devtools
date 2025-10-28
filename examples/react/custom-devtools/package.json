@@ -9,7 +9,7 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "0.3.3",
+    "@tanstack/devtools-event-client": "0.3.4",
     "@tanstack/react-devtools": "^0.7.8",
     "react": "19.1.1",
     "react-dom": "19.1.1"

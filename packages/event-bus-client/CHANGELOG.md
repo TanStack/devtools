@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.4
+
+### Patch Changes
+
+- increase minimum reconnection time and allow it to be configurable on event bus client ([#235](https://github.com/TanStack/devtools/pull/235))
+
 ## 0.3.3
 
 ### Patch Changes
