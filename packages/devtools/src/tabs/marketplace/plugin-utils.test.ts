@@ -223,10 +223,11 @@ describe('groupIntoSections', () => {
 
     const sections = groupIntoSections(cards)
 
-    expect(sections).toHaveLength(1)
-    expect(sections[0]?.id).toBe('active')
-    expect(sections[0]?.displayName).toBe('✓ Active Plugins')
-    expect(sections[0]?.cards).toHaveLength(1)
+    expect(sections).toHaveLength(2) // Featured (always present) + Active
+    expect(sections[0]?.id).toBe('featured')
+    expect(sections[1]?.id).toBe('active')
+    expect(sections[1]?.displayName).toBe('✓ Active Plugins')
+    expect(sections[1]?.cards).toHaveLength(1)
   })
 
   it('should group featured plugins', () => {
@@ -266,9 +267,11 @@ describe('groupIntoSections', () => {
 
     const sections = groupIntoSections(cards)
 
-    expect(sections).toHaveLength(1)
-    expect(sections[0]?.id).toBe('active')
-    expect(sections.find((s) => s.id === 'featured')).toBeUndefined()
+    expect(sections).toHaveLength(2) // Featured (always present) + Active
+    expect(sections[0]?.id).toBe('featured')
+    expect(sections[1]?.id).toBe('active')
+    expect(sections[0]?.cards).toHaveLength(0) // Featured section empty
+    expect(sections[1]?.cards).toHaveLength(1) // Active has the plugin
   })
 
   it('should group available plugins', () => {
@@ -286,9 +289,10 @@ describe('groupIntoSections', () => {
 
     const sections = groupIntoSections(cards)
 
-    expect(sections).toHaveLength(1)
-    expect(sections[0]?.id).toBe('available')
-    expect(sections[0]?.displayName).toBe('Available Plugins')
+    expect(sections).toHaveLength(2) // Featured (always present) + Available
+    expect(sections[0]?.id).toBe('featured')
+    expect(sections[1]?.id).toBe('available')
+    expect(sections[1]?.displayName).toBe('Available Plugins')
   })
 
   it('should not include featured plugins in available section', () => {
@@ -345,8 +349,8 @@ describe('groupIntoSections', () => {
     const sections = groupIntoSections(cards)
 
     expect(sections).toHaveLength(3)
-    expect(sections[0]?.id).toBe('active')
-    expect(sections[1]?.id).toBe('featured')
+    expect(sections[0]?.id).toBe('featured')
+    expect(sections[1]?.id).toBe('active')
     expect(sections[2]?.id).toBe('available')
   })
 
@@ -365,12 +369,16 @@ describe('groupIntoSections', () => {
 
     const sections = groupIntoSections(cards)
 
-    expect(sections).toHaveLength(0)
+    expect(sections).toHaveLength(1) // Only featured section (always present, empty)
+    expect(sections[0]?.id).toBe('featured')
+    expect(sections[0]?.cards).toHaveLength(0)
   })
 
   it('should handle empty card array', () => {
     const sections = groupIntoSections([])
-    expect(sections).toHaveLength(0)
+    expect(sections).toHaveLength(1) // Featured section always present
+    expect(sections[0]?.id).toBe('featured')
+    expect(sections[0]?.cards).toHaveLength(0)
   })
 })
 
