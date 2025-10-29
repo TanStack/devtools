@@ -41,4 +41,8 @@ function App() {
 
 You can set a plugin to be open by default by setting the `defaultOpen` property to `true` when configuring the plugin. This will make the plugin panel open when the devtools are first loaded.
 
+If you only have 1 plugin it will automatically be opened regardless of the `defaultOpen` setting.
+
+The limit to open plugins is at 3 panels at a time. If more than 3 plugins are set to `defaultOpen: true`, only the first 3 will be opened.
+
 This does not override the settings saved in localStorage. If you have previously opened the plugin panel, and selected some plugins to be open or closed, those settings will take precedence over the `defaultOpen` setting.
