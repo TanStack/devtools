@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.0.5
+
+### Patch Changes
+
+- extend the plugins to accept config ([#245](https://github.com/TanStack/devtools/pull/245))
+
 ## 0.0.4
 
 ### Patch Changes

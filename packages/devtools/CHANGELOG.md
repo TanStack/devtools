@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.7.0
+
+### Minor Changes
+
+- add defaultOpen to plugins ([#245](https://github.com/TanStack/devtools/pull/245))
+
 ## 0.6.24
 
 ### Patch Changes
