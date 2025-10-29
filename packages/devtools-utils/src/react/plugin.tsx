@@ -1,14 +1,15 @@
 import type { JSX } from 'react'
 import type { DevtoolsPanelProps } from './panel'
 
-export function createReactPlugin(
-  { Component, ...config }: {
-    name: string,
-    id?: string,
-    defaultOpen?: boolean,
-    Component: (props: DevtoolsPanelProps) => JSX.Element,
-  }
-) {
+export function createReactPlugin({
+  Component,
+  ...config
+}: {
+  name: string
+  id?: string
+  defaultOpen?: boolean
+  Component: (props: DevtoolsPanelProps) => JSX.Element
+}) {
   function Plugin() {
     return {
       config,

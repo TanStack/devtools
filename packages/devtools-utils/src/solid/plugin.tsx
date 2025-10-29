@@ -3,14 +3,15 @@
 import type { JSX } from 'solid-js'
 import type { DevtoolsPanelProps } from './panel'
 
-export function createSolidPlugin(
-  { Component, ...config }: {
-    name: string,
-    id?: string,
-    defaultOpen?: boolean,
-    Component: (props: DevtoolsPanelProps) => JSX.Element,
-  }
-) {
+export function createSolidPlugin({
+  Component,
+  ...config
+}: {
+  name: string
+  id?: string
+  defaultOpen?: boolean
+  Component: (props: DevtoolsPanelProps) => JSX.Element
+}) {
   function Plugin() {
     return {
       ...config,
