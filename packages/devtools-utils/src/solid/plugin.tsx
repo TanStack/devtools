@@ -4,12 +4,16 @@ import type { JSX } from 'solid-js'
 import type { DevtoolsPanelProps } from './panel'
 
 export function createSolidPlugin(
-  name: string,
-  Component: (props: DevtoolsPanelProps) => JSX.Element,
+  { Component, ...config }: {
+    name: string,
+    id?: string,
+    defaultOpen?: boolean,
+    Component: (props: DevtoolsPanelProps) => JSX.Element,
+  }
 ) {
   function Plugin() {
     return {
-      name: name,
+      ...config,
       render: (_el: HTMLElement, theme: 'light' | 'dark') => {
         return <Component theme={theme} />
       },
@@ -17,7 +21,7 @@ export function createSolidPlugin(
   }
   function NoOpPlugin() {
     return {
-      name: name,
+      ...config,
       render: (_el: HTMLElement, _theme: 'light' | 'dark') => <></>,
     }
   }
