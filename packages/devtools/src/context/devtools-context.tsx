@@ -40,11 +40,11 @@ export interface TanStackDevtoolsPlugin {
    * ```
    */
   name:
-  | string
-  | ((
-    el: HTMLHeadingElement,
-    theme: DevtoolsStore['settings']['theme'],
-  ) => void)
+    | string
+    | ((
+        el: HTMLHeadingElement,
+        theme: DevtoolsStore['settings']['theme'],
+      ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
