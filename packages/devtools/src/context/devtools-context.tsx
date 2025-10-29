@@ -8,7 +8,7 @@ import {
   getStorageItem,
   setStorageItem,
 } from '../utils/storage'
-import { initialState } from './devtools-store'
+import { initialState } from './initial-state'
 import type { DevtoolsStore } from './devtools-store'
 import type { JSX, Setter } from 'solid-js'
 

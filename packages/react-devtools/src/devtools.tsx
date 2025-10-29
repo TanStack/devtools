@@ -111,7 +111,7 @@ export const TanStackDevtools = ({
   eventBusConfig,
 }: TanStackDevtoolsReactInit): ReactElement | null => {
   const devToolRef = useRef<HTMLDivElement>(null)
-
+  const devtoolInstance = useRef<TanStackDevtoolsCore>(null)
   const [pluginContainers, setPluginContainers] = useState<
     Record<string, HTMLElement>
   >({})
@@ -170,28 +170,33 @@ export const TanStackDevtools = ({
     [plugins],
   )
 
-  const [devtools] = useState(
-    () =>
-      new TanStackDevtoolsCore({
-        config,
-        eventBusConfig,
-        plugins: pluginsMap,
-      }),
-  )
-
+  // initialize devtools instance
   useEffect(() => {
-    devtools.setConfig({
+    if (devtoolInstance.current) {
+      return
+    }
+    devtoolInstance.current = new TanStackDevtoolsCore({
+      config,
+      eventBusConfig,
       plugins: pluginsMap,
     })
-  }, [devtools, pluginsMap])
+  }, [config, eventBusConfig, pluginsMap])
 
   useEffect(() => {
-    if (devToolRef.current) {
-      devtools.mount(devToolRef.current)
+    devtoolInstance.current?.setConfig({
+      plugins: pluginsMap,
+    })
+  }, [devtoolInstance, pluginsMap])
+
+  useEffect(() => {
+    if (!devToolRef.current) {
+      return
     }
 
-    return () => devtools.unmount()
-  }, [devtools])
+    devtoolInstance.current?.mount(devToolRef.current)
+
+    return () => devtoolInstance.current?.unmount()
+  }, [devtoolInstance])
 
   const hasPlugins =
     Object.values(pluginContainers).length > 0 &&
