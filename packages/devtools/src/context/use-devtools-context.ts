@@ -1,4 +1,5 @@
 import { createEffect, createMemo, useContext } from 'solid-js'
+import { MAX_ACTIVE_PLUGINS } from '../utils/constants.js'
 import { DevtoolsContext } from './devtools-context.jsx'
 import { useDrawContext } from './draw-context.jsx'
 
@@ -50,7 +51,7 @@ export const usePlugins = () => {
       const updatedPlugins = isActive
         ? prev.state.activePlugins.filter((id) => id !== pluginId)
         : [...prev.state.activePlugins, pluginId]
-      if (updatedPlugins.length > 3) return prev
+      if (updatedPlugins.length > MAX_ACTIVE_PLUGINS) return prev
       return {
         ...prev,
         state: {

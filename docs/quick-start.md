@@ -69,10 +69,12 @@ function App() {
         {
           name: 'TanStack Query',
           render: <ReactQueryDevtoolsPanel />,
+          defaultOpen: true
         },
         {
           name: 'TanStack Router',
           render: <TanStackRouterDevtoolsPanel />,
+          defaultOpen: false
         },
       ]} />
     </QueryClientProvider>

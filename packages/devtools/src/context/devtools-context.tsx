@@ -1,5 +1,6 @@
 import { createContext, createEffect } from 'solid-js'
 import { createStore } from 'solid-js/store'
+import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
 import { tryParseJson } from '../utils/sanitize'
 import {
   TANSTACK_DEVTOOLS_SETTINGS,
@@ -39,16 +40,22 @@ export interface TanStackDevtoolsPlugin {
    * ```
    */
   name:
-    | string
-    | ((
-        el: HTMLHeadingElement,
-        theme: DevtoolsStore['settings']['theme'],
-      ) => void)
+  | string
+  | ((
+    el: HTMLHeadingElement,
+    theme: DevtoolsStore['settings']['theme'],
+  ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
    */
   id?: string
+  /**
+   * Whether the plugin should be open by default when there are no active plugins.
+   * If true, this plugin will be added to activePlugins on initial load when activePlugins is empty.
+   * @default false
+   */
+  defaultOpen?: boolean
   /**
    * Render the plugin UI by using the provided element. This function will be called
    * when the plugin tab is clicked and expected to be mounted.
@@ -127,26 +134,39 @@ export function getStateFromLocalStorage(
   return existingState
 }
 
-const getExistingStateFromStorage = (
+export const getExistingStateFromStorage = (
   config?: TanStackDevtoolsConfig,
   plugins?: Array<TanStackDevtoolsPlugin>,
 ) => {
   const existingState = getStateFromLocalStorage(plugins)
   const settings = getSettings()
 
+  const pluginsWithIds =
+    plugins?.map((plugin, i) => {
+      const id = generatePluginId(plugin, i)
+      return {
+        ...plugin,
+        id,
+      }
+    }) || []
+
+  // If no active plugins exist, add plugins with defaultOpen: true
+  // Or if there's only 1 plugin, activate it automatically
+  let activePlugins = existingState?.activePlugins || []
+
+  const shouldFillWithDefaultOpenPlugins =
+    activePlugins.length === 0 && pluginsWithIds.length > 0
+  if (shouldFillWithDefaultOpenPlugins) {
+    activePlugins = getDefaultActivePlugins(pluginsWithIds)
+  }
+
   const state: DevtoolsStore = {
     ...initialState,
-    plugins:
-      plugins?.map((plugin, i) => {
-        const id = generatePluginId(plugin, i)
-        return {
-          ...plugin,
-          id,
-        }
-      }) || [],
+    plugins: pluginsWithIds,
     state: {
       ...initialState.state,
       ...existingState,
+      activePlugins,
     },
     settings: {
       ...initialState.settings,

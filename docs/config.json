@@ -22,6 +22,10 @@
           "to": "configuration"
         },
         {
+          "label": "Plugin Configuration",
+          "to": "plugin-configuration"
+        },
+        {
           "label": "Installation",
           "to": "installation"
         },
