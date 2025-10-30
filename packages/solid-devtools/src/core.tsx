@@ -148,7 +148,9 @@ export default function SolidDevtoolsCore({
     new TanStackDevtoolsCore({
       config: {
         ...config,
-        customTrigger: (el, props) => convertTrigger(el, props),
+        customTrigger: config?.customTrigger
+          ? (el, props) => convertTrigger(el, props)
+          : undefined,
       },
       eventBusConfig,
       plugins: pluginsMap(),
@@ -160,7 +162,9 @@ export default function SolidDevtoolsCore({
     devtools().setConfig({
       config: {
         ...config,
-        customTrigger: (el, props) => convertTrigger(el, props),
+        customTrigger: config?.customTrigger
+          ? (el, props) => convertTrigger(el, props)
+          : undefined,
       },
     })
   })
