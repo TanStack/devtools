@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/devtools-event-client": "0.3.4",
-    "@tanstack/react-devtools": "^0.7.11",
+    "@tanstack/react-devtools": "^0.8.0",
     "@tanstack/react-query": "^5.90.1",
     "@tanstack/react-query-devtools": "^5.90.1",
     "@tanstack/react-router": "^1.131.50",
@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@tanstack/devtools-ui": "0.4.4",
-    "@tanstack/devtools-vite": "0.3.10",
+    "@tanstack/devtools-vite": "0.3.11",
     "@types/react": "^19.1.13",
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^4.7.0",

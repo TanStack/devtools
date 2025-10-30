@@ -1,5 +1,20 @@
 # @tanstack/devtools
 
+## 0.8.0
+
+### Minor Changes
+
+- added optional trigger component in config ([#228](https://github.com/TanStack/devtools/pull/228))
+
+  removed trigger image setting completely
+
+### Patch Changes
+
+- add the ability to open up devtools programatically ([#250](https://github.com/TanStack/devtools/pull/250))
+
+- Updated dependencies [[`f02a894`](https://github.com/TanStack/devtools/commit/f02a8941e7f0f0cfe44ffb370391267261f31f4e)]:
+  - @tanstack/devtools-client@0.0.4
+
 ## 0.7.0
 
 ### Minor Changes
