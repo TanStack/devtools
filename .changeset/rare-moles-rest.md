@@ -4,3 +4,5 @@
 ---
 
 added optional trigger component in config
+
+removed trigger image setting completely
