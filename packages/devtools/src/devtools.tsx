@@ -1,7 +1,8 @@
-import { Show, createEffect, createSignal } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
+import { devtoolsEventClient } from '@tanstack/devtools-client'
 import {
   useDevtoolsSettings,
   useHeight,
@@ -31,14 +32,36 @@ export default function DevTools() {
   const pip = usePiPWindow()
   let panelRef: HTMLDivElement | undefined = undefined
   const [isResizing, setIsResizing] = createSignal(false)
+
   const toggleOpen = () => {
     if (pip().pipWindow) {
       return
     }
     const open = isOpen()
-    setIsOpen(!open)
-    setPersistOpen(!open)
+    const newState = !open
+    setIsOpen(newState)
+    setPersistOpen(newState)
+
+    // Emit event when user toggles devtools
+    devtoolsEventClient.emit('trigger-toggled', { isOpen: newState })
   }
+
+  // Listen for trigger-toggled events to control devtools
+  createEffect(() => {
+    const unsubscribe = devtoolsEventClient.on('trigger-toggled', (event) => {
+      if (pip().pipWindow) {
+        return
+      }
+      const payload = event.payload as unknown as { isOpen: boolean }
+      const shouldBeOpen = payload.isOpen
+      if (shouldBeOpen !== isOpen()) {
+        setIsOpen(shouldBeOpen)
+        setPersistOpen(shouldBeOpen)
+      }
+    })
+
+    onCleanup(unsubscribe)
+  })
   // Used to resize the panel
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -100,10 +123,10 @@ export default function DevTools() {
       run()
 
       if (typeof window !== 'undefined') {
-        ;(pip().pipWindow ?? window).addEventListener('resize', run)
+        ; (pip().pipWindow ?? window).addEventListener('resize', run)
 
         return () => {
-          ;(pip().pipWindow ?? window).removeEventListener('resize', run)
+          ; (pip().pipWindow ?? window).removeEventListener('resize', run)
           if (rootEl()?.parentElement && typeof previousValue === 'string') {
             setRootEl((prev) => {
               // prev!.parentElement!.style.paddingBottom = previousValue
