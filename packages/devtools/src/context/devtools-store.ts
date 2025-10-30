@@ -1,4 +1,3 @@
-import type { Accessor } from 'solid-js'
 import type { TabName } from '../tabs'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
 
@@ -20,12 +19,7 @@ type TriggerPosition =
   | 'middle-right'
 
 type TriggerProps = {
-  isOpen: Accessor<boolean>
-  setIsOpen: (isOpen: boolean) => void
   theme: 'light' | 'dark'
-  image: string
-  position: TriggerPosition
-  hideUntilHover: boolean
 }
 
 export type DevtoolsStore = {
@@ -71,11 +65,7 @@ export type DevtoolsStore = {
      * @default "dark"
      */
     theme: 'light' | 'dark'
-    /**
-     * The image used for the dev tools trigger
-     * @default TanStackLogo
-     */
-    triggerImage: string
+
     /**
      * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
      */
@@ -85,7 +75,7 @@ export type DevtoolsStore = {
      * If provided, it replaces the default trigger button.
      * @default undefined
      */
-    triggerComponent?: (el: HTMLElement, props: TriggerProps) => void
+    customTrigger?: (el: HTMLElement, props: TriggerProps) => void
   }
   state: {
     activeTab: TabName
@@ -111,9 +101,8 @@ export const initialState: DevtoolsStore = {
       window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
-    triggerImage: '',
     triggerHidden: false,
-    triggerComponent: undefined,
+    customTrigger: undefined,
   },
   state: {
     activeTab: 'plugins',

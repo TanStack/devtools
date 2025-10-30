@@ -14,17 +14,7 @@ type PluginRender =
 
 type TriggerProps = {
   theme: 'dark' | 'light'
-  image: string
-  position:
-    | 'top-left'
-    | 'top-right'
-    | 'bottom-left'
-    | 'bottom-right'
-    | 'middle-left'
-    | 'middle-right'
-  isOpen: boolean
-  setIsOpen: (isOpen: boolean) => void
-  hideUntilHover: boolean
+
 }
 
 type TriggerRender =
@@ -78,7 +68,7 @@ export type TanStackDevtoolsReactPlugin = Omit<
 
 type TanStackDevtoolsReactConfig = Omit<
   Partial<TanStackDevtoolsConfig>,
-  'triggerComponent'
+  'customTrigger'
 > & {
   /**
    * Optional custom trigger component for the devtools.
@@ -87,11 +77,11 @@ type TanStackDevtoolsReactConfig = Omit<
    * Example:
    * ```jsx
    *   {
-   *     triggerComponent: <CustomTriggerComponent />,
+   *     customTrigger: <CustomTriggerComponent />,
    *   }
    * ```
    */
-  triggerComponent?: TriggerRender
+  customTrigger?: TriggerRender
 }
 
 export interface TanStackDevtoolsReactInit {
@@ -189,23 +179,23 @@ export const TanStackDevtools = ({
             typeof plugin.name === 'string'
               ? plugin.name
               : (e, theme) => {
-                  const id = e.getAttribute('id')!
-                  const target = e.ownerDocument.getElementById(id)
+                const id = e.getAttribute('id')!
+                const target = e.ownerDocument.getElementById(id)
 
-                  if (target) {
-                    setTitleContainers((prev) => ({
-                      ...prev,
-                      [id]: e,
-                    }))
-                  }
+                if (target) {
+                  setTitleContainers((prev) => ({
+                    ...prev,
+                    [id]: e,
+                  }))
+                }
 
-                  convertRender(
-                    plugin.name as PluginRender,
-                    setTitleComponents,
-                    e,
-                    theme,
-                  )
-                },
+                convertRender(
+                  plugin.name as PluginRender,
+                  setTitleComponents,
+                  e,
+                  theme,
+                )
+              },
           render: (e, theme) => {
             const id = e.getAttribute('id')!
             const target = e.ownerDocument.getElementById(id)
@@ -225,18 +215,15 @@ export const TanStackDevtools = ({
   )
 
   const [devtools] = useState(() => {
-    const { triggerComponent, ...coreConfig } = config || {}
+    const { customTrigger, ...coreConfig } = config || {}
     return new TanStackDevtoolsCore({
       config: {
         ...coreConfig,
-        triggerComponent: triggerComponent
+        customTrigger: customTrigger
           ? (el, props) => {
-              setTriggerContainer(el)
-              convertTrigger(triggerComponent, setTriggerComponent, el, {
-                ...props,
-                isOpen: props.isOpen(),
-              })
-            }
+            setTriggerContainer(el)
+            convertTrigger(customTrigger, setTriggerComponent, el, props)
+          }
           : undefined,
       },
       eventBusConfig,
@@ -271,14 +258,14 @@ export const TanStackDevtools = ({
 
       {hasPlugins
         ? Object.entries(pluginContainers).map(([key, pluginContainer]) =>
-            createPortal(<>{PluginComponents[key]}</>, pluginContainer),
-          )
+          createPortal(<>{PluginComponents[key]}</>, pluginContainer),
+        )
         : null}
 
       {hasTitles
         ? Object.entries(titleContainers).map(([key, titleContainer]) =>
-            createPortal(<>{TitleComponents[key]}</>, titleContainer),
-          )
+          createPortal(<>{TitleComponents[key]}</>, titleContainer),
+        )
         : null}
 
       {triggerContainer && TriggerComponent
