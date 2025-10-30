@@ -1,5 +1,6 @@
 import http from 'node:http'
 import { WebSocket, WebSocketServer } from 'ws'
+import { parseWithBigInt, stringifyWithBigInt } from '../utils/json'
 
 // Shared types
 export interface TanStackDevtoolsEvent<
@@ -76,7 +77,7 @@ export class ServerEventBus {
 
   private emitEventToClients(event: TanStackDevtoolsEvent<string>) {
     this.debugLog('Emitting event to clients', event)
-    const json = JSON.stringify(event)
+    const json = stringifyWithBigInt(event)
 
     for (const client of this.#clients) {
       if (client.readyState === WebSocket.OPEN) {
@@ -117,7 +118,7 @@ export class ServerEventBus {
         req.on('data', (chunk) => (body += chunk))
         req.on('end', () => {
           try {
-            const msg = JSON.parse(body)
+            const msg = parseWithBigInt(body)
             this.debugLog('Received event from client', msg)
             this.emitToServer(msg)
           } catch {}
@@ -155,7 +156,7 @@ export class ServerEventBus {
       })
       ws.on('message', (msg) => {
         this.debugLog('Received message from WebSocket client', msg.toString())
-        const data = JSON.parse(msg.toString())
+        const data = parseWithBigInt(msg.toString())
         this.emitToServer(data)
       })
     })

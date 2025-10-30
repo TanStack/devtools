@@ -112,6 +112,7 @@ createRoot(document.getElementById('root')!).render(
         {
           name: 'TanStack Form',
           render: <FormDevtools />,
+          defaultOpen: true,
         },
       ]}
     />

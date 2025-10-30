@@ -1,5 +1,32 @@
 # @tanstack/devtools
 
+## 0.7.0
+
+### Minor Changes
+
+- add defaultOpen to plugins ([#245](https://github.com/TanStack/devtools/pull/245))
+
+## 0.6.24
+
+### Patch Changes
+
+- Add featured section to marketplace ([#238](https://github.com/TanStack/devtools/pull/238))
+  Add third-party Prefetch Heatmap plugin to marketplace registry(metadata-only)
+
+## 0.6.23
+
+### Patch Changes
+
+- Updated dependencies [[`1db2215`](https://github.com/TanStack/devtools/commit/1db22151ac1738f7dc3b6c3eaa4b4bf58aabc331)]:
+  - @tanstack/devtools-ui@0.4.4
+
+## 0.6.22
+
+### Patch Changes
+
+- Updated dependencies [[`d0567fc`](https://github.com/TanStack/devtools/commit/d0567fc9b710bec50bce1457e195091ddbe65cac)]:
+  - @tanstack/devtools-event-bus@0.3.3
+
 ## 0.6.21
 
 ### Patch Changes

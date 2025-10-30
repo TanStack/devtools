@@ -22,12 +22,20 @@
           "to": "configuration"
         },
         {
+          "label": "Plugin Configuration",
+          "to": "plugin-configuration"
+        },
+        {
           "label": "Installation",
           "to": "installation"
         },
         {
           "label": "Vite plugin",
           "to": "vite-plugin"
+        },
+        {
+          "label": "Third party plugins",
+          "to": "third-party-plugins"
         },
         {
           "label": "Production",

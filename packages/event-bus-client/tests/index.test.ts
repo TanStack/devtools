@@ -208,7 +208,7 @@ describe('EventClient', () => {
 
       bus.start()
       // wait to connect to the bus
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       expect(eventHandler).toHaveBeenCalledWith({
         type: 'test:event',
         payload: { foo: 'bar' },
@@ -221,6 +221,7 @@ describe('EventClient', () => {
       const client = new EventClient({
         debug: false,
         pluginId: 'test',
+        reconnectEveryMs: 500,
       })
       const eventHandler = vi.fn()
       client.onAllPluginEvents(eventHandler)

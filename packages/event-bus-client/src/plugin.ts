@@ -64,10 +64,11 @@ export class EventClient<
     pluginId,
     debug = false,
     enabled = true,
+    reconnectEveryMs = 1000,
   }: {
     pluginId: TPluginId
     debug?: boolean
-
+    reconnectEveryMs?: number
     enabled?: boolean
   }) {
     this.#pluginId = pluginId
@@ -78,7 +79,7 @@ export class EventClient<
     this.#queuedEvents = []
     this.#connected = false
     this.#connectIntervalId = null
-    this.#connectEveryMs = 500
+    this.#connectEveryMs = reconnectEveryMs
   }
 
   private startConnectLoop() {

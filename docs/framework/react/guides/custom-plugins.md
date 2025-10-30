@@ -62,7 +62,7 @@ class CustomEventClient extends EventClient<EventMap> {
 }
 
 // This is where the magic happens, it'll be used throughout your application.
-export const DevtoolsEventClient = new FormEventClient()
+export const DevtoolsEventClient = new CustomEventClient()
 ```
 
 ## Event Client Integration
