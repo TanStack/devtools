@@ -1,5 +1,11 @@
 # @tanstack/devtools-client
 
+## 0.0.4
+
+### Patch Changes
+
+- add the ability to open up devtools programatically ([#250](https://github.com/TanStack/devtools/pull/250))
+
 ## 0.0.3
 
 ### Patch Changes

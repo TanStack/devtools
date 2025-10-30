@@ -19,6 +19,9 @@ function App() {
       <Router />
 
       <TanStackDevtools
+        config={{
+          customTrigger: () => <h1>hello world</h1>,
+        }}
         plugins={[
           {
             name: 'TanStack Query',

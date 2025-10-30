@@ -83,6 +83,9 @@ interface EventMap {
   'tanstack-devtools-core:package-json-updated': {
     packageJson: PackageJson | null
   }
+  'tanstack-devtools-core:trigger-toggled': {
+    isOpen: boolean
+  }
 }
 
 export class DevtoolsEventClient extends EventClient<EventMap> {

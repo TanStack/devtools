@@ -74,6 +74,9 @@ export type TanStackDevtoolsSolidPlugin = Omit<
    */
   name: string | SolidPluginRender
 }
+interface TriggerProps {
+  theme: 'light' | 'dark'
+}
 export interface TanStackDevtoolsInit {
   /**
    * Array of plugins to be used in the devtools.
@@ -98,7 +101,14 @@ export interface TanStackDevtoolsInit {
    * initial state of the devtools when it is started for the first time. Afterwards,
    * the settings are persisted in local storage and changed through the settings panel.
    */
-  config?: Partial<TanStackDevtoolsConfig>
+  config?: Omit<Partial<TanStackDevtoolsConfig>, 'customTrigger'> & {
+    /**
+     * An optional custom function to render the dev tools trigger component.
+     */
+    customTrigger?:
+      | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
+      | JSX.Element
+  }
   /**
    * Configuration for the TanStack Devtools client event bus.
    */
@@ -125,9 +135,21 @@ export default function SolidDevtoolsCore({
     })),
   )
 
+  const convertTrigger = (el: HTMLElement, props: TriggerProps) => {
+    const Trigger = config?.customTrigger
+
+    return (
+      <Portal mount={el}>
+        {typeof Trigger === 'function' ? Trigger(el, props) : Trigger}
+      </Portal>
+    )
+  }
   const [devtools] = createSignal(
     new TanStackDevtoolsCore({
-      config,
+      config: {
+        ...config,
+        customTrigger: (el, props) => convertTrigger(el, props),
+      },
       eventBusConfig,
       plugins: pluginsMap(),
     }),
@@ -135,7 +157,12 @@ export default function SolidDevtoolsCore({
   let devToolRef: HTMLDivElement | undefined
 
   createEffect(() => {
-    devtools().setConfig({ config })
+    devtools().setConfig({
+      config: {
+        ...config,
+        customTrigger: (el, props) => convertTrigger(el, props),
+      },
+    })
   })
 
   // Update plugins when they change

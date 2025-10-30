@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-client",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "TanStack Devtools client that is used to interact with the event system produced by the Devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",

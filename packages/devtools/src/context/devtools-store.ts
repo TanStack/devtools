@@ -18,6 +18,10 @@ type TriggerPosition =
   | 'middle-left'
   | 'middle-right'
 
+type TriggerProps = {
+  theme: 'light' | 'dark'
+}
+
 export type DevtoolsStore = {
   settings: {
     /**
@@ -61,15 +65,17 @@ export type DevtoolsStore = {
      * @default "dark"
      */
     theme: 'light' | 'dark'
-    /**
-     * The image used for the dev tools trigger
-     * @default TanStackLogo
-     */
-    triggerImage: string
+
     /**
      * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
      */
     triggerHidden?: boolean
+    /**
+     * An optional custom function to render the dev tools trigger component.
+     * If provided, it replaces the default trigger button.
+     * @default undefined
+     */
+    customTrigger?: (el: HTMLElement, props: TriggerProps) => void
   }
   state: {
     activeTab: TabName
@@ -95,8 +101,8 @@ export const initialState: DevtoolsStore = {
       window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
-    triggerImage: '',
     triggerHidden: false,
+    customTrigger: undefined,
   },
   state: {
     activeTab: 'plugins',
