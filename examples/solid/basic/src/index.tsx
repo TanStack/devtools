@@ -20,9 +20,7 @@ function App() {
 
       <TanStackDevtools
         config={{
-          customTrigger: () => <h1>
-            hello world
-          </h1>
+          customTrigger: () => <h1>hello world</h1>,
         }}
         plugins={[
           {

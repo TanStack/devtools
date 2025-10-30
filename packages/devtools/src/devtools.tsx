@@ -100,10 +100,10 @@ export default function DevTools() {
       run()
 
       if (typeof window !== 'undefined') {
-        ; (pip().pipWindow ?? window).addEventListener('resize', run)
+        ;(pip().pipWindow ?? window).addEventListener('resize', run)
 
         return () => {
-          ; (pip().pipWindow ?? window).removeEventListener('resize', run)
+          ;(pip().pipWindow ?? window).removeEventListener('resize', run)
           if (rootEl()?.parentElement && typeof previousValue === 'string') {
             setRootEl((prev) => {
               // prev!.parentElement!.style.paddingBottom = previousValue
@@ -175,10 +175,7 @@ export default function DevTools() {
                   : true
             }
           >
-            <Trigger
-              isOpen={isOpen}
-              setIsOpen={toggleOpen}
-            />
+            <Trigger isOpen={isOpen} setIsOpen={toggleOpen} />
             <MainPanel isResizing={isResizing} isOpen={isOpen}>
               <ContentPanel
                 ref={(ref) => (panelRef = ref)}

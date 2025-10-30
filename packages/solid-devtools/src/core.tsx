@@ -17,9 +17,9 @@ import type {
 type SolidPluginRender =
   | JSX.Element
   | ((
-    el: HTMLDivElement | HTMLHeadingElement,
-    theme: 'dark' | 'light',
-  ) => JSX.Element)
+      el: HTMLDivElement | HTMLHeadingElement,
+      theme: 'dark' | 'light',
+    ) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
@@ -105,7 +105,9 @@ export interface TanStackDevtoolsInit {
     /**
      * An optional custom function to render the dev tools trigger component.
      */
-    customTrigger?: ((el: HTMLElement, props: TriggerProps) => JSX.Element) | JSX.Element
+    customTrigger?:
+      | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
+      | JSX.Element
   }
   /**
    * Configuration for the TanStack Devtools client event bus.
@@ -126,8 +128,8 @@ export default function SolidDevtoolsCore({
         typeof plugin.name === 'string'
           ? plugin.name
           : // The check above confirms that `plugin.name` is of Render type
-          (el, theme) =>
-            convertRender(el, plugin.name as SolidPluginRender, theme),
+            (el, theme) =>
+              convertRender(el, plugin.name as SolidPluginRender, theme),
       render: (el: HTMLDivElement, theme: 'dark' | 'light') =>
         convertRender(el, plugin.render, theme),
     })),
@@ -136,7 +138,11 @@ export default function SolidDevtoolsCore({
   const convertTrigger = (el: HTMLElement, props: TriggerProps) => {
     const Trigger = config?.customTrigger
 
-    return <Portal mount={el}>{typeof Trigger === 'function' ? Trigger(el, props) : Trigger}</Portal>
+    return (
+      <Portal mount={el}>
+        {typeof Trigger === 'function' ? Trigger(el, props) : Trigger}
+      </Portal>
+    )
   }
   const [devtools] = createSignal(
     new TanStackDevtoolsCore({
@@ -155,7 +161,7 @@ export default function SolidDevtoolsCore({
       config: {
         ...config,
         customTrigger: (el, props) => convertTrigger(el, props),
-      }
+      },
     })
   })
 

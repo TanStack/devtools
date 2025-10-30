@@ -14,7 +14,6 @@ type PluginRender =
 
 type TriggerProps = {
   theme: 'dark' | 'light'
-
 }
 
 type TriggerRender =
@@ -179,23 +178,23 @@ export const TanStackDevtools = ({
             typeof plugin.name === 'string'
               ? plugin.name
               : (e, theme) => {
-                const id = e.getAttribute('id')!
-                const target = e.ownerDocument.getElementById(id)
+                  const id = e.getAttribute('id')!
+                  const target = e.ownerDocument.getElementById(id)
 
-                if (target) {
-                  setTitleContainers((prev) => ({
-                    ...prev,
-                    [id]: e,
-                  }))
-                }
+                  if (target) {
+                    setTitleContainers((prev) => ({
+                      ...prev,
+                      [id]: e,
+                    }))
+                  }
 
-                convertRender(
-                  plugin.name as PluginRender,
-                  setTitleComponents,
-                  e,
-                  theme,
-                )
-              },
+                  convertRender(
+                    plugin.name as PluginRender,
+                    setTitleComponents,
+                    e,
+                    theme,
+                  )
+                },
           render: (e, theme) => {
             const id = e.getAttribute('id')!
             const target = e.ownerDocument.getElementById(id)
@@ -221,9 +220,9 @@ export const TanStackDevtools = ({
         ...coreConfig,
         customTrigger: customTrigger
           ? (el, props) => {
-            setTriggerContainer(el)
-            convertTrigger(customTrigger, setTriggerComponent, el, props)
-          }
+              setTriggerContainer(el)
+              convertTrigger(customTrigger, setTriggerComponent, el, props)
+            }
           : undefined,
       },
       eventBusConfig,
@@ -258,14 +257,14 @@ export const TanStackDevtools = ({
 
       {hasPlugins
         ? Object.entries(pluginContainers).map(([key, pluginContainer]) =>
-          createPortal(<>{PluginComponents[key]}</>, pluginContainer),
-        )
+            createPortal(<>{PluginComponents[key]}</>, pluginContainer),
+          )
         : null}
 
       {hasTitles
         ? Object.entries(titleContainers).map(([key, titleContainer]) =>
-          createPortal(<>{TitleComponents[key]}</>, titleContainer),
-        )
+            createPortal(<>{TitleComponents[key]}</>, titleContainer),
+          )
         : null}
 
       {triggerContainer && TriggerComponent

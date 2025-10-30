@@ -26,7 +26,6 @@ export const Trigger = (props: {
     if (triggerComponent && el) {
       triggerComponent(el, {
         theme: settings().theme,
-
       })
     }
   })
@@ -41,15 +40,11 @@ export const Trigger = (props: {
       >
         <Show
           when={settings().customTrigger}
-          fallback={
-            <img src={TanStackLogo} alt="TanStack Devtools" />
-          }
+          fallback={<img src={TanStackLogo} alt="TanStack Devtools" />}
         >
           <div ref={setContainerRef} />
         </Show>
-
       </button>
-
     </Show>
   )
 }
