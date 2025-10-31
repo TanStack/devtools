@@ -1,5 +1,11 @@
 # @tanstack/solid-devtools
 
+## 0.7.13
+
+### Patch Changes
+
+- Fixed customTrigger causing empty button when not passed ([#253](https://github.com/TanStack/devtools/pull/253))
+
 ## 0.7.12
 
 ### Patch Changes
