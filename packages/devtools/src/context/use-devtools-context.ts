@@ -48,6 +48,14 @@ export const usePlugins = () => {
     setStore((prev) => {
       const isActive = prev.state.activePlugins.includes(pluginId)
 
+      const currentPlugin = store.plugins?.find(
+        (plugin) => plugin.id === pluginId,
+      )
+
+      if (currentPlugin?.destroy && isActive) {
+        currentPlugin.destroy(pluginId)
+      }
+
       const updatedPlugins = isActive
         ? prev.state.activePlugins.filter((id) => id !== pluginId)
         : [...prev.state.activePlugins, pluginId]
