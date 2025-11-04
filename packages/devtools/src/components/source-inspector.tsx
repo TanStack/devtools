@@ -78,11 +78,15 @@ export const SourceInspector = () => {
     e.preventDefault()
     e.stopPropagation()
 
-    fetch(
-      `${location.origin}/__tsd/open-source?source=${encodeURIComponent(
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
+    const url = new URL(
+      `__tsd/open-source?source=${encodeURIComponent(
         highlightState.dataSource,
       )}`,
-    ).catch(() => {})
+      baseUrl,
+    )
+    fetch(url).catch(() => {})
   })
 
   const currentElementBoxStyles = createMemo(() => {
