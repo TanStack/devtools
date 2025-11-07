@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.0.6
+
+### Patch Changes
+
+- fix config issue ([#259](https://github.com/TanStack/devtools/pull/259))
+
 ## 0.0.5
 
 ### Patch Changes

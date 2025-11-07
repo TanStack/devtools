@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
