@@ -12,7 +12,7 @@ export function createReactPlugin({
 }) {
   function Plugin() {
     return {
-      config,
+      ...config,
       render: (_el: HTMLElement, theme: 'light' | 'dark') => (
         <Component theme={theme} />
       ),
@@ -20,7 +20,7 @@ export function createReactPlugin({
   }
   function NoOpPlugin() {
     return {
-      config,
+      ...config,
       render: (_el: HTMLElement, _theme: 'light' | 'dark') => <></>,
     }
   }
