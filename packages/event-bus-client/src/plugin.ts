@@ -29,9 +29,12 @@ export class EventClient<
   #connectEveryMs: number
   #retryCount = 0
   #maxRetries = 5
+  #connecting = false
+
   #onConnected = () => {
     this.debugLog('Connected to event bus')
     this.#connected = true
+    this.#connecting = false
     this.debugLog('Emitting queued events', this.#queuedEvents)
     this.#queuedEvents.forEach((event) => this.emitEventToBus(event))
     this.#queuedEvents = []
@@ -42,6 +45,9 @@ export class EventClient<
     )
   }
   #connectFunction = () => {
+    if (this.#connecting) return
+
+    this.#connecting = true
     this.#eventTarget().addEventListener(
       'tanstack-connect-success',
       this.#onConnected,
@@ -56,6 +62,7 @@ export class EventClient<
       'tanstack-connect',
       this.#connectFunction,
     )
+
     this.debugLog('Max retries reached, giving up on connection')
     this.stopConnectLoop()
   }
@@ -93,6 +100,7 @@ export class EventClient<
   }
 
   private stopConnectLoop() {
+    this.#connecting = false
     if (this.#connectIntervalId === null) {
       return
     }
@@ -203,7 +211,7 @@ export class EventClient<
         pluginId: this.#pluginId,
       })
       // start connection to event bus
-      if (typeof CustomEvent !== 'undefined') {
+      if (typeof CustomEvent !== 'undefined' && !this.#connecting) {
         this.#connectFunction()
         this.startConnectLoop()
       }
