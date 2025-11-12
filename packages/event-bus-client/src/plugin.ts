@@ -44,34 +44,39 @@ export class EventClient<
       this.#onConnected,
     )
   }
-  #connectFunction = () => {
-    if (this.#connecting) return
-
-    this.#connecting = true
-    this.#eventTarget().addEventListener(
-      'tanstack-connect-success',
-      this.#onConnected,
-    )
+  // fired off right away and then at intervals
+  #retryConnection = () => {
     if (this.#retryCount < this.#maxRetries) {
       this.#retryCount++
       this.dispatchCustomEvent('tanstack-connect', {})
+
       return
     }
-
     this.#eventTarget().removeEventListener(
       'tanstack-connect',
-      this.#connectFunction,
+      this.#retryConnection,
     )
 
     this.debugLog('Max retries reached, giving up on connection')
     this.stopConnectLoop()
   }
 
+  // This is run to register connection handlers on first emit attempt
+  #connectFunction = () => {
+    if (this.#connecting) return
+    this.#connecting = true
+    this.#eventTarget().addEventListener(
+      'tanstack-connect-success',
+      this.#onConnected,
+    )
+    this.#retryConnection()
+  }
+
   constructor({
     pluginId,
     debug = false,
     enabled = true,
-    reconnectEveryMs = 1000,
+    reconnectEveryMs = 300,
   }: {
     pluginId: TPluginId
     debug?: boolean
@@ -90,11 +95,13 @@ export class EventClient<
   }
 
   private startConnectLoop() {
-    if (this.#connectIntervalId !== null || this.#connected) return
+    // if connected, trying to connect, or the internalId is already set, do nothing
+    if (this.#connectIntervalId !== null || this.#connected || this.#connecting)
+      return
     this.debugLog(`Starting connect loop (every ${this.#connectEveryMs}ms)`)
 
     this.#connectIntervalId = setInterval(
-      this.#connectFunction,
+      this.#retryConnection,
       this.#connectEveryMs,
     ) as unknown as number
   }
