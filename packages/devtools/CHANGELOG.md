@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.8.1
+
+### Patch Changes
+
+- fixed an issue where SourceInspector was not working when the app is served to a subpath ([#249](https://github.com/TanStack/devtools/pull/249))
+
 ## 0.8.0
 
 ### Minor Changes
