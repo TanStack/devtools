@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.0.7
+
+### Patch Changes
+
+- fix issue with client connectivity by not calling the connect method multiple times ([#261](https://github.com/TanStack/devtools/pull/261))
+
 ## 0.0.6
 
 ### Patch Changes
