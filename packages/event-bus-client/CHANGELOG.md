@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.3.5
+
+### Patch Changes
+
+- fixed connectivity issues ([#263](https://github.com/TanStack/devtools/pull/263))
+
 ## 0.3.4
 
 ### Patch Changes
