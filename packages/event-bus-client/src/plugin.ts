@@ -96,8 +96,7 @@ export class EventClient<
 
   private startConnectLoop() {
     // if connected, trying to connect, or the internalId is already set, do nothing
-    if (this.#connectIntervalId !== null || this.#connected || this.#connecting)
-      return
+    if (this.#connectIntervalId !== null || this.#connected) return
     this.debugLog(`Starting connect loop (every ${this.#connectEveryMs}ms)`)
 
     this.#connectIntervalId = setInterval(
