@@ -2,4 +2,4 @@
 '@tanstack/devtools-utils': patch
 ---
 
-fix config issue
+fix issue with client connectivity by not calling the connect method multiple times
