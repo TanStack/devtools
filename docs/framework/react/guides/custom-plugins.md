@@ -104,7 +104,8 @@ export function createCounter() {
 }
 ```
 
-> [!IMPORTANT] `EventClient` is framework agnostic so this process will be the same regardless of framework or even in vanilla JavaScript.
+> [!IMPORTANT] 
+> `EventClient` is framework agnostic so this process will be the same regardless of framework or even in vanilla JavaScript.
 
 ## Consuming The Event Client
 
