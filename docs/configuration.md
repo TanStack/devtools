@@ -5,7 +5,8 @@ id: configuration
 
 Both TanStack `DevTools` and `EventClient` can be configured.
 
-> [!IMPORTANT] all configuration is optional unless marked (required)
+> [!IMPORTANT] 
+> All configuration is optional unless marked (required)
 
 ## Devtools Component Configuration
 
