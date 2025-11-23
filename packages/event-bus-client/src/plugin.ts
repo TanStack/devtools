@@ -44,6 +44,7 @@ export class EventClient<
       this.#onConnected,
     )
   }
+
   // fired off right away and then at intervals
   #retryConnection = () => {
     if (this.#retryCount < this.#maxRetries) {
@@ -77,14 +78,18 @@ export class EventClient<
     debug = false,
     enabled = true,
     reconnectEveryMs = 300,
+    serverNoOp = false,
   }: {
     pluginId: TPluginId
     debug?: boolean
     reconnectEveryMs?: number
     enabled?: boolean
+    serverNoOp?: boolean
   }) {
     this.#pluginId = pluginId
-    this.#enabled = enabled
+    // disables events on server if serverNoOp is active, defaults to #enabled outside this environment
+    this.#enabled =
+      serverNoOp && typeof document === 'undefined' ? false : enabled
     this.#eventTarget = this.getGlobalTarget
     this.#debug = debug
     this.debugLog(' Initializing event subscription for plugin', this.#pluginId)
