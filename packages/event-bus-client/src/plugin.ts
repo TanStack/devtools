@@ -78,18 +78,19 @@ export class EventClient<
     debug = false,
     enabled = true,
     reconnectEveryMs = 300,
-    serverNoOp = false,
+    noServerEvents = false,
   }: {
     pluginId: TPluginId
     debug?: boolean
     reconnectEveryMs?: number
     enabled?: boolean
-    serverNoOp?: boolean
+    noServerEvents?: boolean
   }) {
+    const runningOnServer = typeof window === 'undefined'
+
     this.#pluginId = pluginId
-    // disables events on server if serverNoOp is active, defaults to #enabled outside this environment
-    this.#enabled =
-      serverNoOp && typeof document === 'undefined' ? false : enabled
+    // disables events on server if noServerEvents is active, defaults to #enabled outside this environment
+    this.#enabled = enabled && !(noServerEvents && runningOnServer)
     this.#eventTarget = this.getGlobalTarget
     this.#debug = debug
     this.debugLog(' Initializing event subscription for plugin', this.#pluginId)
@@ -97,6 +98,11 @@ export class EventClient<
     this.#connected = false
     this.#connectIntervalId = null
     this.#connectEveryMs = reconnectEveryMs
+  }
+
+  // for debugging purposes
+  get isEnabled() {
+    return this.#enabled
   }
 
   private startConnectLoop() {
