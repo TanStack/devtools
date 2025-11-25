@@ -73,6 +73,8 @@ export interface TanStackDevtoolsPlugin {
     el: HTMLDivElement,
     theme: DevtoolsStore['settings']['theme'],
   ) => void
+
+  destroy?: (pluginId: string) => void
 }
 export const DevtoolsContext = createContext<{
   store: DevtoolsStore
