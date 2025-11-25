@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.8.2
+
+### Patch Changes
+
+- feat: vue devtools ([#226](https://github.com/TanStack/devtools/pull/226))
+
 ## 0.8.1
 
 ### Patch Changes

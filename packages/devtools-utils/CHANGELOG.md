@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.0.8
+
+### Patch Changes
+
+- add vue utils ([#274](https://github.com/TanStack/devtools/pull/274))
+
 ## 0.0.7
 
 ### Patch Changes
