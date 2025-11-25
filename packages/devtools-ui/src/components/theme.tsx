@@ -17,6 +17,7 @@ export const ThemeContextProvider = (props: {
   createEffect(() => {
     setTheme(props.theme)
   })
+
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
       {props.children}

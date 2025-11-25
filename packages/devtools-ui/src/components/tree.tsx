@@ -1,14 +1,24 @@
 import { For, Match, Show, Switch, createSignal } from 'solid-js'
 import clsx from 'clsx'
+import dayjs from 'dayjs'
+
+// css
 import { css, useStyles } from '../styles/use-styles'
+
+// icons
 import { CopiedCopier, Copier, ErrorCopier } from './icons'
+
+// utils
 import type { CollapsiblePaths } from '../utils/deep-keys'
 
 export function JsonTree<TData, TName extends CollapsiblePaths<TData>>(props: {
   value: TData
   copyable?: boolean
+
   defaultExpansionDepth?: number
   collapsePaths?: Array<TName>
+
+  config?: { dateFormat?: string }
 }) {
   return (
     <JsonValue
@@ -19,6 +29,7 @@ export function JsonTree<TData, TName extends CollapsiblePaths<TData>>(props: {
       defaultExpansionDepth={props.defaultExpansionDepth ?? 1}
       path=""
       collapsePaths={props.collapsePaths}
+      config={props.config}
     />
   )
 }
@@ -35,6 +46,8 @@ function JsonValue(props: {
 
   collapsePaths?: Array<string>
   path: string
+
+  config?: { dateFormat?: string }
 }) {
   const styles = useStyles()
 
@@ -47,6 +60,7 @@ function JsonValue(props: {
             &quot;{props.keyName}&quot;:{' '}
           </span>
         )}
+
       {(() => {
         if (typeof props.value === 'string') {
           return (
@@ -55,9 +69,11 @@ function JsonValue(props: {
             </span>
           )
         }
+
         if (typeof props.value === 'number') {
           return <span class={styles().tree.valueNumber}>{props.value}</span>
         }
+
         if (typeof props.value === 'boolean') {
           return (
             <span class={styles().tree.valueBoolean}>
@@ -65,12 +81,15 @@ function JsonValue(props: {
             </span>
           )
         }
+
         if (props.value === null) {
           return <span class={styles().tree.valueNull}>null</span>
         }
+
         if (props.value === undefined) {
           return <span class={styles().tree.valueNull}>undefined</span>
         }
+
         if (typeof props.value === 'function') {
           return (
             <span class={styles().tree.valueFunction}>
@@ -78,6 +97,7 @@ function JsonValue(props: {
             </span>
           )
         }
+
         if (Array.isArray(props.value)) {
           return (
             <ArrayValue
@@ -88,9 +108,11 @@ function JsonValue(props: {
               value={props.value}
               collapsePaths={props.collapsePaths}
               path={props.path}
+              config={props.config}
             />
           )
         }
+
         if (typeof props.value === 'object') {
           return (
             <ObjectValue
@@ -101,9 +123,11 @@ function JsonValue(props: {
               value={props.value}
               collapsePaths={props.collapsePaths}
               path={props.path}
+              config={props.config}
             />
           )
         }
+
         return <span />
       })()}
       {props.copyable && (
@@ -124,6 +148,7 @@ const ArrayValue = (props: {
   depth: number
   collapsePaths?: Array<string>
   path: string
+  config?: { dateFormat?: string }
 }) => {
   const styles = useStyles()
 
@@ -182,6 +207,7 @@ const ArrayValue = (props: {
                   depth={props.depth + 1}
                   collapsePaths={props.collapsePaths}
                   path={props.path ? `${props.path}[${i()}]` : `[${i()}]`}
+                  config={props.config}
                 />
               )
             }}
@@ -214,6 +240,7 @@ const ObjectValue = (props: {
   depth: number
   collapsePaths?: Array<string>
   path: string
+  config?: { dateFormat?: string }
 }) => {
   const styles = useStyles()
 
@@ -224,6 +251,24 @@ const ObjectValue = (props: {
 
   const keys = Object.keys(props.value)
   const lastKeyName = keys[keys.length - 1]
+
+  if (props.value instanceof Date) {
+    return (
+      <span class={styles().tree.expanderContainer}>
+        {props.keyName && (
+          <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+            &quot;{props.keyName}&quot;:{' '}
+          </span>
+        )}
+
+        <span class={styles().tree.valueBraces}>
+          {dayjs(props.value).format(
+            props.config?.dateFormat ? props.config.dateFormat : 'DDMMMYY',
+          )}
+        </span>
+      </span>
+    )
+  }
 
   if (keys.length === 0) {
     return (
@@ -278,6 +323,7 @@ const ObjectValue = (props: {
                   depth={props.depth + 1}
                   collapsePaths={props.collapsePaths}
                   path={`${props.path}${props.path ? '.' : ''}${k}`}
+                  config={props.config}
                 />
               </>
             )}
