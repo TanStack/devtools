@@ -84,5 +84,12 @@
     "@tanstack/react-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
     "@tanstack/devtools-vite": "workspace:*"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.8.0",
+      "onFail": "download"
+    }
   }
 }
