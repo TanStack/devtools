@@ -45,3 +45,9 @@ export interface TanStackDevtoolsVueInit {
    */
   eventBusConfig?: ClientEventBusConfig
 }
+
+export type RenderArray = Array<{
+  id: string
+  component: Component
+  props: Record<string, unknown>
+}>
