@@ -4,16 +4,15 @@ import type { DefineComponent } from 'vue'
 export function createVuePlugin<TComponentProps extends Record<string, any>>(
   name: string,
   component: DefineComponent<TComponentProps, {}, unknown>,
-  props: TComponentProps,
 ) {
-  function Plugin() {
+  function Plugin(props: TComponentProps) {
     return {
       name,
       component,
       props,
     }
   }
-  function NoOpPlugin(props: Record<string, any>) {
+  function NoOpPlugin(props: TComponentProps) {
     return {
       name,
       component: Fragment,
