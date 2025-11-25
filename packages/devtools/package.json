@@ -67,7 +67,7 @@
     "@tanstack/devtools-ui": "workspace:*",
     "clsx": "^2.1.1",
     "goober": "^2.1.16",
-    "solid-js": "^1.9.9"
+    "solid-js": "^1.9.10"
   },
   "peerDependencies": {
     "solid-js": ">=1.9.7"
@@ -75,6 +75,6 @@
   "devDependencies": {
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.8"
+    "vite-plugin-solid": "^2.11.10"
   }
 }

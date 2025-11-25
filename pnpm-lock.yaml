@@ -452,7 +452,7 @@ importers:
         specifier: ^1.131.50
         version: 1.134.4(@tanstack/router-core@1.134.4)(@tanstack/solid-router@1.134.4(solid-js@1.9.10))(@types/node@22.15.2)(csstype@3.1.3)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(solid-js@1.9.10)(terser@5.43.1)(tiny-invariant@1.3.3)(tsx@4.20.3)(yaml@2.8.1)
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.10
         version: 1.9.10
     devDependencies:
       '@tanstack/devtools-vite':
@@ -465,7 +465,7 @@ importers:
         specifier: 11.3.3
         version: 11.3.3(vite@7.1.12(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
       vite-plugin-solid:
-        specifier: ^2.11.8
+        specifier: ^2.11.10
         version: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vite@7.1.12(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
 
   examples/solid/start:
@@ -477,7 +477,7 @@ importers:
         specifier: ^0.7.14
         version: link:../../../packages/solid-devtools
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.10
         version: 1.9.10
       vinxi:
         specifier: ^0.5.8
@@ -538,7 +538,7 @@ importers:
         specifier: ^2.1.16
         version: 2.1.18(csstype@3.1.3)
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.10
         version: 1.9.10
     devDependencies:
       tsup:
@@ -548,7 +548,7 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(esbuild@0.25.9)(solid-js@1.9.10)(tsup@8.5.0(@microsoft/api-extractor@7.47.7(@types/node@22.15.2))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.1))
       vite-plugin-solid:
-        specifier: ^2.11.8
+        specifier: ^2.11.10
         version: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vite@7.1.12(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
 
   packages/devtools-client:
@@ -566,11 +566,11 @@ importers:
         specifier: ^2.1.16
         version: 2.1.18(csstype@3.1.3)
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.10
         version: 1.9.10
     devDependencies:
       vite-plugin-solid:
-        specifier: ^2.11.8
+        specifier: ^2.11.10
         version: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vite@7.1.12(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
 
   packages/devtools-utils:
@@ -598,7 +598,7 @@ importers:
         specifier: ^2.2.0
         version: 2.2.0(esbuild@0.25.9)(solid-js@1.9.10)(tsup@8.5.0(@microsoft/api-extractor@7.47.7(@types/node@22.15.2))(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.3)(typescript@5.9.3)(yaml@2.8.1))
       vite-plugin-solid:
-        specifier: ^2.11.8
+        specifier: ^2.11.10
         version: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vite@7.1.12(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
 
   packages/devtools-vite:
@@ -710,10 +710,10 @@ importers:
         version: link:../devtools
     devDependencies:
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.10
         version: 1.9.10
       vite-plugin-solid:
-        specifier: ^2.11.8
+        specifier: ^2.11.10
         version: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vite@7.1.12(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
 
   packages/vue-devtools:
