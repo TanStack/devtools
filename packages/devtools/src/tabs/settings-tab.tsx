@@ -1,4 +1,4 @@
-import { Show, createMemo } from 'solid-js'
+import { Show } from 'solid-js'
 import {
   Button,
   Checkbox,
@@ -19,29 +19,78 @@ import {
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'
-import type { ModifierKey } from '@solid-primitives/keyboard'
+import type { KeyboardKey } from '../context/devtools-store'
 
 export const SettingsTab = () => {
   const { setSettings, settings } = useDevtoolsSettings()
   const styles = useStyles()
-  const hotkey = createMemo(() => settings().openHotkey)
-  const modifiers: Array<ModifierKey> = ['Control', 'Alt', 'Meta', 'Shift']
-  const changeHotkey = (newHotkey: ModifierKey) => () => {
-    if (hotkey().includes(newHotkey)) {
-      return setSettings({
-        openHotkey: hotkey().filter((key) => key !== newHotkey),
+  
+  const modifiers: Array<KeyboardKey> = [
+    'Control',
+    'Alt',
+    'Meta',
+    'Shift',
+    'CtrlOrMeta',
+  ]
+
+  const createHotkeyHandler =
+    (hotkeyKey: 'openHotkey' | 'inspectHotkey') =>
+    (newHotkey: KeyboardKey) =>
+    () => {
+      const hotkey = settings()[hotkeyKey]
+      if (hotkey.includes(newHotkey)) {
+        return setSettings({
+          [hotkeyKey]: hotkey.filter((key) => key !== newHotkey),
+        })
+      }
+      const existingModifiers = hotkey.filter((key) =>
+        modifiers.includes(key as any),
+      )
+      const otherKeys = hotkey.filter(
+        (key) => !modifiers.includes(key as any),
+      )
+      setSettings({
+        [hotkeyKey]: [...existingModifiers, newHotkey, ...otherKeys],
       })
     }
-    const existingModifiers = hotkey().filter((key) =>
-      modifiers.includes(key as any),
-    )
-    const otherModifiers = hotkey().filter(
-      (key) => !modifiers.includes(key as any),
-    )
-    setSettings({
-      openHotkey: [...existingModifiers, newHotkey, ...otherModifiers],
-    })
-  }
+
+  const createHotkeyDisplay =
+    (hotkeyKey: 'openHotkey' | 'inspectHotkey') => () => {
+      return settings()[hotkeyKey].join(' + ')
+    }
+
+  const createHotkeyNonModifierValue =
+    (hotkeyKey: 'openHotkey' | 'inspectHotkey') => () => {
+      return settings()[hotkeyKey]
+        .filter((key) => !modifiers.includes(key as any))
+        .join('+')
+    }
+
+  const createHotkeyInputHandler =
+    (hotkeyKey: 'openHotkey' | 'inspectHotkey') => (e: string) => {
+      const makeModifierArray = (key: string) => {
+        if (key.length === 1) return [uppercaseFirstLetter(key)]
+        const modifiersArray: Array<string> = []
+        for (const character of key) {
+          const newLetter = uppercaseFirstLetter(character)
+          if (!modifiersArray.includes(newLetter))
+            modifiersArray.push(newLetter)
+        }
+        return modifiersArray
+      }
+      const hotkey = settings()[hotkeyKey]
+      const hotkeyModifiers = hotkey.filter((key) =>
+        modifiers.includes(key as any),
+      )
+      const newKeys = e
+        .split('+')
+        .flatMap((key) => makeModifierArray(key))
+        .filter(Boolean)
+      return setSettings({
+        [hotkeyKey]: [...hotkeyModifiers, ...newKeys],
+      })
+    }
+
   return (
     <MainPanel withPadding>
       <Section>
@@ -144,36 +193,46 @@ export const SettingsTab = () => {
         <SectionDescription>
           Customize keyboard shortcuts for quick access.
         </SectionDescription>
+        
+        {/* Open/Close Devtools Hotkey */}
         <div class={styles().settingsGroup}>
+          <h4>Open/Close Devtools</h4>
           <div class={styles().settingsModifiers}>
-            <Show keyed when={hotkey()}>
+            <Show keyed when={settings().openHotkey}>
               <Button
                 variant="success"
-                onclick={changeHotkey('Shift')}
-                outline={!hotkey().includes('Shift')}
+                onclick={createHotkeyHandler('openHotkey')('Shift')}
+                outline={!settings().openHotkey.includes('Shift')}
               >
                 Shift
               </Button>
               <Button
                 variant="success"
-                onclick={changeHotkey('Alt')}
-                outline={!hotkey().includes('Alt')}
+                onclick={createHotkeyHandler('openHotkey')('Alt')}
+                outline={!settings().openHotkey.includes('Alt')}
               >
                 Alt
               </Button>
               <Button
                 variant="success"
-                onclick={changeHotkey('Meta')}
-                outline={!hotkey().includes('Meta')}
+                onclick={createHotkeyHandler('openHotkey')('Meta')}
+                outline={!settings().openHotkey.includes('Meta')}
               >
                 Meta
               </Button>
               <Button
                 variant="success"
-                onclick={changeHotkey('Control')}
-                outline={!hotkey().includes('Control')}
+                onclick={createHotkeyHandler('openHotkey')('Control')}
+                outline={!settings().openHotkey.includes('Control')}
               >
                 Control
+              </Button>
+              <Button
+                variant="success"
+                onclick={createHotkeyHandler('openHotkey')('CtrlOrMeta')}
+                outline={!settings().openHotkey.includes('CtrlOrMeta')}
+              >
+                Ctrl Or Meta
               </Button>
             </Show>
           </div>
@@ -181,34 +240,62 @@ export const SettingsTab = () => {
             label="Hotkey to open/close devtools"
             description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
             placeholder="a"
-            value={hotkey()
-              .filter((key) => !['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key))
-              .join('+')}
-            onChange={(e) => {
-              const makeModifierArray = (key: string) => {
-                if (key.length === 1) return [uppercaseFirstLetter(key)]
-                const modifiers: Array<string> = []
-                for (const character of key) {
-                  const newLetter = uppercaseFirstLetter(character)
-                  if (!modifiers.includes(newLetter)) modifiers.push(newLetter)
-                }
-                return modifiers
-              }
-              const modifiers = e
-                .split('+')
-                .flatMap((key) => makeModifierArray(key))
-                .filter(Boolean)
-              return setSettings({
-                openHotkey: [
-                  ...hotkey().filter((key) =>
-                    ['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key),
-                  ),
-                  ...modifiers,
-                ],
-              })
-            }}
+            value={createHotkeyNonModifierValue('openHotkey')()}
+            onChange={createHotkeyInputHandler('openHotkey')}
           />
-          Final shortcut is: {hotkey().join(' + ')}
+          Final shortcut is: {createHotkeyDisplay('openHotkey')()}
+        </div>
+
+        {/* Inspector Hotkey */}
+        <div class={styles().settingsGroup}>
+          <h4>Source Inspector</h4>
+          <div class={styles().settingsModifiers}>
+            <Show keyed when={settings().inspectHotkey}>
+              <Button
+                variant="success"
+                onclick={createHotkeyHandler('inspectHotkey')('Shift')}
+                outline={!settings().inspectHotkey.includes('Shift')}
+              >
+                Shift
+              </Button>
+              <Button
+                variant="success"
+                onclick={createHotkeyHandler('inspectHotkey')('Alt')}
+                outline={!settings().inspectHotkey.includes('Alt')}
+              >
+                Alt
+              </Button>
+              <Button
+                variant="success"
+                onclick={createHotkeyHandler('inspectHotkey')('Meta')}
+                outline={!settings().inspectHotkey.includes('Meta')}
+              >
+                Meta
+              </Button>
+              <Button
+                variant="success"
+                onclick={createHotkeyHandler('inspectHotkey')('Control')}
+                outline={!settings().inspectHotkey.includes('Control')}
+              >
+                Control
+              </Button>
+              <Button
+                variant="success"
+                onclick={createHotkeyHandler('inspectHotkey')('CtrlOrMeta')}
+                outline={!settings().inspectHotkey.includes('CtrlOrMeta')}
+              >
+                Ctrl Or Meta
+              </Button>
+            </Show>
+          </div>
+          <Input
+            label="Hotkey to open source inspector"
+            description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
+            placeholder="a"
+            value={createHotkeyNonModifierValue('inspectHotkey')()}
+            onChange={createHotkeyInputHandler('inspectHotkey')}
+          />
+          Final shortcut is: {createHotkeyDisplay('inspectHotkey')()}
         </div>
       </Section>
 

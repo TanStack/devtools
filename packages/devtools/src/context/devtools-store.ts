@@ -1,13 +1,15 @@
 import type { TabName } from '../tabs'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
 
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift'
+type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta'
 type KeyboardKey = ModifierKey | (string & {})
+export type { ModifierKey, KeyboardKey }
 export const keyboardModifiers: Array<ModifierKey> = [
   'Alt',
   'Control',
   'Meta',
   'Shift',
+  'CtrlOrMeta',
 ]
 
 type TriggerPosition =
@@ -52,6 +54,7 @@ export type DevtoolsStore = {
     openHotkey: Array<KeyboardKey>
     /**
      * The hotkey to open the source inspector
+     * @default ["Shift", "CtrlOrMeta"]
      */
     inspectHotkey: Array<KeyboardKey>
     /**
@@ -97,7 +100,7 @@ export const initialState: DevtoolsStore = {
     position: 'bottom-right',
     panelLocation: 'bottom',
     openHotkey: ['Shift', 'A'],
-    inspectHotkey: ['Shift', 'Meta'],
+    inspectHotkey: ['Shift', 'CtrlOrMeta'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     theme:

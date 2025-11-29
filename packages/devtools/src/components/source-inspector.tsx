@@ -3,9 +3,9 @@ import { createStore } from 'solid-js/store'
 import { createElementSize } from '@solid-primitives/resize-observer'
 import { useKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
+
 import { useDevtoolsSettings } from '../context/use-devtools-context'
-import { keyboardModifiers } from '../context/devtools-store'
-import { getAllPermutations } from '../utils/sanitize'
+import { isHotkeyCombinationPressed } from '../utils/hotkey'
 
 export const SourceInspector = () => {
   const { settings } = useDevtoolsSettings()
@@ -30,30 +30,8 @@ export const SourceInspector = () => {
 
   const downList = useKeyDownList()
 
-  const hotKeyPermutations = createMemo(() => {
-    const modifiers = settings().inspectHotkey.filter((key) =>
-      keyboardModifiers.includes(key as any),
-    ).map((key) => key.toUpperCase())
-    const nonModifiers = settings().inspectHotkey.filter(
-      (key) => !keyboardModifiers.includes(key as any),
-    ).map((key) => key.toUpperCase())
-
-    const allModifierCombinations = getAllPermutations(modifiers)
-
-    const permutations = allModifierCombinations.map(c => [...c, ...nonModifiers]);
-
-    return permutations
-  })
-
   const isHighlightingKeysHeld = createMemo(() => {
-    const downKeys = downList()
-    return hotKeyPermutations().some(
-      (combo) => 
-      // every key in the combo must be pressed
-      combo.every(key => downKeys.includes(key)) &&
-      // and no extra keys beyond the combo
-      downKeys.every(key => combo.includes(key))
-    );
+    return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
   })
 
   createEffect(() => {
