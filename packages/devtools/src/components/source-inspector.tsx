@@ -3,8 +3,12 @@ import { createStore } from 'solid-js/store'
 import { createElementSize } from '@solid-primitives/resize-observer'
 import { useKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
+import { useDevtoolsSettings } from '../context/use-devtools-context'
+import { keyboardModifiers } from '../context/devtools-store'
+import { getAllPermutations } from '../utils/sanitize'
 
 export const SourceInspector = () => {
+  const { settings } = useDevtoolsSettings()
   const highlightStateInit = () => ({
     element: null as HTMLElement | null,
     bounding: { width: 0, height: 0, left: 0, top: 0 },
@@ -25,12 +29,31 @@ export const SourceInspector = () => {
   })
 
   const downList = useKeyDownList()
+
+  const hotKeyPermutations = createMemo(() => {
+    const modifiers = settings().inspectHotkey.filter((key) =>
+      keyboardModifiers.includes(key as any),
+    ).map((key) => key.toUpperCase())
+    const nonModifiers = settings().inspectHotkey.filter(
+      (key) => !keyboardModifiers.includes(key as any),
+    ).map((key) => key.toUpperCase())
+
+    const allModifierCombinations = getAllPermutations(modifiers)
+
+    const permutations = allModifierCombinations.map(c => [...c, ...nonModifiers]);
+
+    return permutations
+  })
+
   const isHighlightingKeysHeld = createMemo(() => {
-    const keys = downList()
-    const isShiftHeld = keys.includes('SHIFT')
-    const isCtrlHeld = keys.includes('CONTROL')
-    const isMetaHeld = keys.includes('META')
-    return isShiftHeld && (isCtrlHeld || isMetaHeld)
+    const downKeys = downList()
+    return hotKeyPermutations().some(
+      (combo) => 
+      // every key in the combo must be pressed
+      combo.every(key => downKeys.includes(key)) &&
+      // and no extra keys beyond the combo
+      downKeys.every(key => combo.includes(key))
+    );
   })
 
   createEffect(() => {

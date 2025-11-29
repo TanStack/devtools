@@ -51,6 +51,10 @@ export type DevtoolsStore = {
      */
     openHotkey: Array<KeyboardKey>
     /**
+     * The hotkey to open the source inspector
+     */
+    inspectHotkey: Array<KeyboardKey>
+    /**
      * Whether to require the URL flag to open the dev tools
      * @default false
      */
@@ -93,6 +97,7 @@ export const initialState: DevtoolsStore = {
     position: 'bottom-right',
     panelLocation: 'bottom',
     openHotkey: ['Shift', 'A'],
+    inspectHotkey: ['Shift', 'Meta'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     theme:
