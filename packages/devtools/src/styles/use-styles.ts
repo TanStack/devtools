@@ -466,6 +466,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       display: flex;
       gap: 0.5rem;
     `,
+    settingsStack: css`
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    `,
 
     // No Plugins Fallback Styles
     noPluginsFallback: css`

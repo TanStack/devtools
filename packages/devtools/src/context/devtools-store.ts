@@ -49,7 +49,7 @@ export type DevtoolsStore = {
     panelLocation: 'top' | 'bottom'
     /**
      * The hotkey to open the dev tools
-     * @default "shift+a"
+     * @default ["Shift", "A"]
      */
     openHotkey: Array<KeyboardKey>
     /**
