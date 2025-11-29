@@ -32,6 +32,11 @@ export const getHotkeyPermutations = (hotkey: Array<KeyboardKey>): Array<Array<K
       (key) => !keyboardModifiers.includes(key as any),
     )
     
+    // handle case with no modifiers (just non-modifier keys)
+    if (modifiers.length === 0) {
+      return [nonModifiers]
+    }
+    
     const allModifierCombinations = getAllPermutations(modifiers)
     return allModifierCombinations.map(combo => [...combo, ...nonModifiers])
   })
