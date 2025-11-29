@@ -45,10 +45,19 @@ The `config` object is mainly focused around user interaction with the devtools 
 - `openHotkey` - The hotkey set to open the devtools
 
 ```ts
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift';
+type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta';
 type KeyboardKey = ModifierKey | (string & {});
 
 { openHotkey: Array<KeyboardKey> }
+```
+
+- `inspectHotkey` - The hotkey set to open the source inspector
+
+```ts
+type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta';
+type KeyboardKey = ModifierKey | (string & {});
+
+{ inspectHotkey: Array<KeyboardKey> }
 ```
 
 - `requireUrlFlag` - Requires a flag present in the url to enable devtools
