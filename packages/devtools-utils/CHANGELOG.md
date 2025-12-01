@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.0.9
+
+### Patch Changes
+
+- Lower peer dep range to support React 17 ([#278](https://github.com/TanStack/devtools/pull/278))
+
 ## 0.0.8
 
 ### Patch Changes
