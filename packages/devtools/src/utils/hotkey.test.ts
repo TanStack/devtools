@@ -63,9 +63,9 @@ describe('hotkey utilities', () => {
     })
 
     it('should be case-insensitive', () => {
-      expect(
-        isHotkeyCombinationPressed(['shift', 'a'], ['Shift', 'A']),
-      ).toBe(true)
+      expect(isHotkeyCombinationPressed(['shift', 'a'], ['Shift', 'A'])).toBe(
+        true,
+      )
     })
 
     it('should match regardless of modifier order', () => {
@@ -97,9 +97,9 @@ describe('hotkey utilities', () => {
     })
 
     it('should reject extra keys', () => {
-      expect(isHotkeyCombinationPressed(['Shift', 'A', 'B'], ['Shift', 'A'])).toBe(
-        false,
-      )
+      expect(
+        isHotkeyCombinationPressed(['Shift', 'A', 'B'], ['Shift', 'A']),
+      ).toBe(false)
     })
 
     it('should handle single key hotkey', () => {
