@@ -388,6 +388,8 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4
 
+  examples/react/start/generated/prisma: {}
+
   examples/react/time-travel:
     dependencies:
       '@tanstack/devtools-event-client':
@@ -579,10 +581,10 @@ importers:
         specifier: workspace:^
         version: link:../devtools-ui
       '@types/react':
-        specifier: '>=19.0.0'
+        specifier: '>=17.0.0'
         version: 19.2.2
       react:
-        specifier: '>=19.0.0'
+        specifier: '>=17.0.0'
         version: 19.1.1
       solid-js:
         specifier: '>=1.9.7'
