@@ -137,7 +137,7 @@ export function DevtoolPanel() {
 
 ## Application Integration
 
-This step follows what's shown in [basic-setup](../../basic-setup.md)  for a more documented guide go check it out. As well as the complete [custom-devtools example](https://tanstack.com/devtools/latest/docs/framework/react/examples/custom-devtools) in our examples section.
+This step follows what's shown in [basic-setup](../basic-setup.md)  for a more documented guide go check it out. As well as the complete [custom-devtools example](https://tanstack.com/devtools/latest/docs/framework/react/examples/custom-devtools) in our examples section.
 
 Main.tsx
 ```tsx

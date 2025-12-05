@@ -74,6 +74,6 @@ createRoot(document.getElementById('root')!).render(
 )
 ```
 
-Finally add any additional configuration you desire to the `TanStackDevtools` component, more information can be found under the [TanStack Devtools Configuration](../../../configuration.md) section.
+Finally add any additional configuration you desire to the `TanStackDevtools` component, more information can be found under the [TanStack Devtools Configuration](../../configuration.md) section.
 
 A complete working example can be found in our [basic example](https://tanstack.com/devtools/latest/docs/framework/react/examples/basic).
