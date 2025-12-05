@@ -23,7 +23,7 @@ Defined in: [devtools/src/core.tsx:53](https://github.com/TanStack/devtools/blob
 
 ##### init
 
-[`TanStackDevtoolsInit`](../interfaces/tanstackdevtoolsinit.md)
+[`TanStackDevtoolsInit`](./interfaces/tanstackdevtoolsinit.md)
 
 #### Returns
 
@@ -67,7 +67,7 @@ Defined in: [devtools/src/core.tsx:94](https://github.com/TanStack/devtools/blob
 
 ##### config
 
-`Partial`\<[`TanStackDevtoolsInit`](../interfaces/tanstackdevtoolsinit.md)\>
+`Partial`\<[`TanStackDevtoolsInit`](./interfaces/tanstackdevtoolsinit.md)\>
 
 #### Returns
 

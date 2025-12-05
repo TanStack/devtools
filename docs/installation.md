@@ -44,4 +44,4 @@ npm install -D @tanstack/devtools-vite
 ```
  
 
-Read more about using the devtools in production in our [Production docs](https://tanstack.com/devtools/latest/docs/production).
+Read more about using the devtools in production in our [Production docs](./production.md).
