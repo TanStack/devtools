@@ -134,7 +134,11 @@ function Portal({
 
 const convertRender = (
   Component: PluginRender,
-  setComponents: (value: Record<string, JSX.Element> | ((prev: Record<string, JSX.Element>) => Record<string, JSX.Element>)) => void,
+  setComponents: (
+    value:
+      | Record<string, JSX.Element>
+      | ((prev: Record<string, JSX.Element>) => Record<string, JSX.Element>),
+  ) => void,
   e: HTMLElement,
   theme: 'dark' | 'light',
 ) => {
@@ -275,10 +279,7 @@ export const TanStackDevtools = ({
         ? Object.entries(pluginContainers).map(([key, pluginContainer]) => {
             const component = PluginComponents[key]
             return component ? (
-              <Portal
-                key={key}
-                container={pluginContainer}
-              >
+              <Portal key={key} container={pluginContainer}>
                 {component}
               </Portal>
             ) : null
@@ -289,10 +290,7 @@ export const TanStackDevtools = ({
         ? Object.entries(titleContainers).map(([key, titleContainer]) => {
             const component = TitleComponents[key]
             return component ? (
-              <Portal
-                key={key}
-                container={titleContainer}
-              >
+              <Portal key={key} container={titleContainer}>
                 {component}
               </Portal>
             ) : null
@@ -305,4 +303,3 @@ export const TanStackDevtools = ({
     </>
   )
 }
-

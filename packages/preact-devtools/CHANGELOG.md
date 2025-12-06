@@ -5,4 +5,3 @@
 ### Patch Changes
 
 - Initial release of Preact devtools adapter
-

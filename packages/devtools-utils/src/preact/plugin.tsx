@@ -28,4 +28,3 @@ export function createPreactPlugin({
   }
   return [Plugin, NoOpPlugin] as const
 }
-

@@ -11,11 +11,7 @@ type Post = {
   body: string
 }
 
-function Posts({
-  setPostId,
-}: {
-  setPostId: (id: number) => void
-}) {
+function Posts({ setPostId }: { setPostId: (id: number) => void }) {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
@@ -46,10 +42,7 @@ function Posts({
             <div>
               {posts.map((post) => (
                 <p key={post.id}>
-                  <a
-                    onClick={() => setPostId(post.id)}
-                    href="#"
-                  >
+                  <a onClick={() => setPostId(post.id)} href="#">
                     {post.title}
                   </a>
                 </p>
@@ -166,11 +159,10 @@ function App() {
         {win && render(<Mounted />, win.document.body)}
         <Feature />
         <p>
-          As you visit the posts below, you will notice them in a loading
-          state the first time you load them. However, after you return to
-          this list and click on any posts you have already visited again, you
-          will see them load instantly and background refresh right before
-          your eyes!{' '}
+          As you visit the posts below, you will notice them in a loading state
+          the first time you load them. However, after you return to this list
+          and click on any posts you have already visited again, you will see
+          them load instantly and background refresh right before your eyes!{' '}
           <strong>
             (You may need to throttle your network speed to simulate longer
             loading sequences)

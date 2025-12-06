@@ -57,4 +57,3 @@ export function createPreactPanel<
   }
   return [Panel, NoOpPanel] as const
 }
-

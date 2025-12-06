@@ -8,4 +8,3 @@ export type {
   TanStackDevtoolsPreactPlugin,
   TanStackDevtoolsPreactInit,
 } from './devtools'
-
