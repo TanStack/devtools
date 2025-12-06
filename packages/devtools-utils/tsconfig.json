@@ -9,6 +9,7 @@
     "tsup.config.ts",
     "eslint.config.js",
     "vite.config.ts",
+    "vite.config.preact.ts",
     "tests",
     "vite.config.solid.ts"
   ]

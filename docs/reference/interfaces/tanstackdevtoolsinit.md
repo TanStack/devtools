@@ -7,7 +7,7 @@ title: TanStackDevtoolsInit
 
 # Interface: TanStackDevtoolsInit
 
-Defined in: [devtools/src/core.tsx:12](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L12)
+Defined in: [devtools/src/core.tsx:13](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L13)
 
 ## Properties
 
@@ -15,17 +15,20 @@ Defined in: [devtools/src/core.tsx:12](https://github.com/TanStack/devtools/blob
 
 ```ts
 optional config: Partial<{
+  customTrigger: (el, props) => void;
   defaultOpen: boolean;
   hideUntilHover: boolean;
   openHotkey: KeyboardKey[];
   panelLocation: "top" | "bottom";
   position: TriggerPosition;
   requireUrlFlag: boolean;
+  theme: "light" | "dark";
+  triggerHidden: boolean;
   urlFlag: string;
 }>;
 ```
 
-Defined in: [devtools/src/core.tsx:18](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L18)
+Defined in: [devtools/src/core.tsx:19](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L19)
 
 Configuration for the devtools shell. These configuration options are used to set the
 initial state of the devtools when it is started for the first time. Afterwards,
@@ -39,7 +42,7 @@ the settings are persisted in local storage and changed through the settings pan
 optional eventBusConfig: ClientEventBusConfig;
 ```
 
-Defined in: [devtools/src/core.tsx:39](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L39)
+Defined in: [devtools/src/core.tsx:40](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L40)
 
 ***
 
@@ -49,7 +52,7 @@ Defined in: [devtools/src/core.tsx:39](https://github.com/TanStack/devtools/blob
 optional plugins: TanStackDevtoolsPlugin[];
 ```
 
-Defined in: [devtools/src/core.tsx:38](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L38)
+Defined in: [devtools/src/core.tsx:39](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/core.tsx#L39)
 
 Array of plugins to be used in the devtools.
 Each plugin has a `render` function that gives you the dom node to mount into
