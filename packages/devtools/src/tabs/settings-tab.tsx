@@ -1,6 +1,5 @@
-import { Show, createMemo } from 'solid-js'
+import { Show } from 'solid-js'
 import {
-  Button,
   Checkbox,
   Input,
   MainPanel,
@@ -16,32 +15,18 @@ import {
   Link,
   SettingsCog,
 } from '@tanstack/devtools-ui/icons'
+
 import { useDevtoolsSettings } from '../context/use-devtools-context'
-import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'
-import type { ModifierKey } from '@solid-primitives/keyboard'
+import { HotkeyConfig } from './hotkey-config'
+import type { KeyboardKey } from '../context/devtools-store'
 
 export const SettingsTab = () => {
   const { setSettings, settings } = useDevtoolsSettings()
   const styles = useStyles()
-  const hotkey = createMemo(() => settings().openHotkey)
-  const modifiers: Array<ModifierKey> = ['Control', 'Alt', 'Meta', 'Shift']
-  const changeHotkey = (newHotkey: ModifierKey) => () => {
-    if (hotkey().includes(newHotkey)) {
-      return setSettings({
-        openHotkey: hotkey().filter((key) => key !== newHotkey),
-      })
-    }
-    const existingModifiers = hotkey().filter((key) =>
-      modifiers.includes(key as any),
-    )
-    const otherModifiers = hotkey().filter(
-      (key) => !modifiers.includes(key as any),
-    )
-    setSettings({
-      openHotkey: [...existingModifiers, newHotkey, ...otherModifiers],
-    })
-  }
+
+  const modifiers: Array<KeyboardKey> = ['CtrlOrMeta', 'Alt', 'Shift']
+
   return (
     <MainPanel withPadding>
       <Section>
@@ -144,71 +129,23 @@ export const SettingsTab = () => {
         <SectionDescription>
           Customize keyboard shortcuts for quick access.
         </SectionDescription>
-        <div class={styles().settingsGroup}>
-          <div class={styles().settingsModifiers}>
-            <Show keyed when={hotkey()}>
-              <Button
-                variant="success"
-                onclick={changeHotkey('Shift')}
-                outline={!hotkey().includes('Shift')}
-              >
-                Shift
-              </Button>
-              <Button
-                variant="success"
-                onclick={changeHotkey('Alt')}
-                outline={!hotkey().includes('Alt')}
-              >
-                Alt
-              </Button>
-              <Button
-                variant="success"
-                onclick={changeHotkey('Meta')}
-                outline={!hotkey().includes('Meta')}
-              >
-                Meta
-              </Button>
-              <Button
-                variant="success"
-                onclick={changeHotkey('Control')}
-                outline={!hotkey().includes('Control')}
-              >
-                Control
-              </Button>
-            </Show>
-          </div>
-          <Input
-            label="Hotkey to open/close devtools"
-            description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
-            placeholder="a"
-            value={hotkey()
-              .filter((key) => !['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key))
-              .join('+')}
-            onChange={(e) => {
-              const makeModifierArray = (key: string) => {
-                if (key.length === 1) return [uppercaseFirstLetter(key)]
-                const modifiers: Array<string> = []
-                for (const character of key) {
-                  const newLetter = uppercaseFirstLetter(character)
-                  if (!modifiers.includes(newLetter)) modifiers.push(newLetter)
-                }
-                return modifiers
-              }
-              const modifiers = e
-                .split('+')
-                .flatMap((key) => makeModifierArray(key))
-                .filter(Boolean)
-              return setSettings({
-                openHotkey: [
-                  ...hotkey().filter((key) =>
-                    ['Shift', 'Meta', 'Alt', 'Ctrl'].includes(key),
-                  ),
-                  ...modifiers,
-                ],
-              })
-            }}
+
+        <div class={styles().settingsStack}>
+          <HotkeyConfig
+            title="Open/Close Devtools"
+            description="Hotkey to open/close devtools"
+            hotkey={settings().openHotkey}
+            modifiers={modifiers}
+            onHotkeyChange={(hotkey) => setSettings({ openHotkey: hotkey })}
           />
-          Final shortcut is: {hotkey().join(' + ')}
+
+          <HotkeyConfig
+            title="Source Inspector"
+            description="Hotkey to open source inspector"
+            hotkey={settings().inspectHotkey}
+            modifiers={modifiers}
+            onHotkeyChange={(hotkey) => setSettings({ inspectHotkey: hotkey })}
+          />
         </div>
       </Section>
 

@@ -4,7 +4,11 @@ import { createElementSize } from '@solid-primitives/resize-observer'
 import { useKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
 
+import { useDevtoolsSettings } from '../context/use-devtools-context'
+import { isHotkeyCombinationPressed } from '../utils/hotkey'
+
 export const SourceInspector = () => {
+  const { settings } = useDevtoolsSettings()
   const highlightStateInit = () => ({
     element: null as HTMLElement | null,
     bounding: { width: 0, height: 0, left: 0, top: 0 },
@@ -25,12 +29,9 @@ export const SourceInspector = () => {
   })
 
   const downList = useKeyDownList()
+
   const isHighlightingKeysHeld = createMemo(() => {
-    const keys = downList()
-    const isShiftHeld = keys.includes('SHIFT')
-    const isCtrlHeld = keys.includes('CONTROL')
-    const isMetaHeld = keys.includes('META')
-    return isShiftHeld && (isCtrlHeld || isMetaHeld)
+    return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
   })
 
   createEffect(() => {

@@ -3,6 +3,7 @@ import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
+
 import {
   useDevtoolsSettings,
   useHeight,
@@ -11,13 +12,12 @@ import {
 } from './context/use-devtools-context'
 import { useDisableTabbing } from './hooks/use-disable-tabbing'
 import { TANSTACK_DEVTOOLS } from './utils/storage'
+import { getHotkeyPermutations } from './utils/hotkey'
 import { Trigger } from './components/trigger'
 import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
 import { Tabs } from './components/tabs'
 import { TabContent } from './components/tab-content'
-import { keyboardModifiers } from './context/devtools-store'
-import { getAllPermutations } from './utils/sanitize'
 import { usePiPWindow } from './context/pip-context'
 import { SourceInspector } from './components/source-inspector'
 
@@ -165,18 +165,9 @@ export default function DevTools() {
     }
   })
   createEffect(() => {
-    // we create all combinations of modifiers
-    const modifiers = settings().openHotkey.filter((key) =>
-      keyboardModifiers.includes(key as any),
-    )
-    const nonModifiers = settings().openHotkey.filter(
-      (key) => !keyboardModifiers.includes(key as any),
-    )
+    const permutations = getHotkeyPermutations(settings().openHotkey)
 
-    const allModifierCombinations = getAllPermutations(modifiers)
-
-    for (const combination of allModifierCombinations) {
-      const permutation = [...combination, ...nonModifiers]
+    for (const permutation of permutations) {
       createShortcut(permutation, () => {
         toggleOpen()
       })
