@@ -25,11 +25,7 @@ export const SettingsTab = () => {
   const { setSettings, settings } = useDevtoolsSettings()
   const styles = useStyles()
 
-  const modifiers: Array<KeyboardKey> = [
-    'CtrlOrMeta',
-    'Alt',
-    'Shift',
-  ]
+  const modifiers: Array<KeyboardKey> = ['CtrlOrMeta', 'Alt', 'Shift']
 
   return (
     <MainPanel withPadding>
