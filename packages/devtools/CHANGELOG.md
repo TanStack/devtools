@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.9.0
+
+### Minor Changes
+
+- add inspectHotkey to devtools configuration ([#275](https://github.com/TanStack/devtools/pull/275))
+
 ## 0.8.2
 
 ### Patch Changes
