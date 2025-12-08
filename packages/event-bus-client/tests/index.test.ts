@@ -284,6 +284,27 @@ describe('EventClient', () => {
     })
   })
 
+  describe('emitting to internal event target', () => {
+    it('should initialize and dispatch events to the internal event target', () => {
+      const client = new EventClient({
+        debug: false,
+        pluginId: 'test-internal',
+      })
+      const internalEventHandler = vi.fn()
+      client.on('event', internalEventHandler, {
+        withEventTarget: true,
+      })
+      client.emit('event', { foo: 'bar' })
+      expect(internalEventHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'test-internal:event',
+          payload: { foo: 'bar' },
+          pluginId: 'test-internal',
+        }),
+      )
+    })
+  })
+
   describe('connecting behavior', () => {
     it('should only attempt connection once when #connecting flag is set', async () => {
       bus.stop()

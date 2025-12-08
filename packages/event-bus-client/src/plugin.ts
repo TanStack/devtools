@@ -30,6 +30,7 @@ export class EventClient<
   #retryCount = 0
   #maxRetries = 5
   #connecting = false
+  #internalEventTarget: EventTarget | null = null
 
   #onConnected = () => {
     this.debugLog('Connected to event bus')
@@ -112,6 +113,7 @@ export class EventClient<
     }
     clearInterval(this.#connectIntervalId)
     this.#connectIntervalId = null
+    this.#queuedEvents = []
     this.debugLog('Stopped connect loop')
   }
 
@@ -189,6 +191,23 @@ export class EventClient<
     this.dispatchCustomEvent('tanstack-dispatch-event', event)
   }
 
+  createEventPayload<
+    TSuffix extends Extract<
+      keyof TEventMap,
+      `${TPluginId & string}:${string}`
+    > extends `${TPluginId & string}:${infer S}`
+      ? S
+      : never,
+  >(
+    eventSuffix: TSuffix,
+    payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
+  ) {
+    return {
+      type: `${this.#pluginId}:${eventSuffix}`,
+      payload,
+      pluginId: this.#pluginId,
+    }
+  }
   emit<
     TSuffix extends Extract<
       keyof TEventMap,
@@ -200,6 +219,18 @@ export class EventClient<
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
   ) {
+    if (this.#internalEventTarget) {
+      this.debugLog(
+        'Emitting event to internal event target',
+        eventSuffix,
+        payload,
+      )
+      this.#internalEventTarget.dispatchEvent(
+        new CustomEvent(`${this.#pluginId}:${eventSuffix}`, {
+          detail: this.createEventPayload(eventSuffix, payload),
+        }),
+      )
+    }
     if (!this.#enabled) {
       this.debugLog(
         'Event bus client is disabled, not emitting event',
@@ -211,11 +242,7 @@ export class EventClient<
     // wait to connect to the bus
     if (!this.#connected) {
       this.debugLog('Bus not available, will be pushed as soon as connected')
-      this.#queuedEvents.push({
-        type: `${this.#pluginId}:${eventSuffix}`,
-        payload,
-        pluginId: this.#pluginId,
-      })
+      this.#queuedEvents.push(this.createEventPayload(eventSuffix, payload))
       // start connection to event bus
       if (typeof CustomEvent !== 'undefined' && !this.#connecting) {
         this.#connectFunction()
@@ -224,11 +251,7 @@ export class EventClient<
       return
     }
     // emit right now
-    return this.emitEventToBus({
-      type: `${this.#pluginId}:${eventSuffix}`,
-      payload,
-      pluginId: this.#pluginId,
-    })
+    return this.emitEventToBus(this.createEventPayload(eventSuffix, payload))
   }
 
   on<
@@ -246,8 +269,20 @@ export class EventClient<
         TEventMap[`${TPluginId & string}:${TSuffix}`]
       >,
     ) => void,
+    options?: {
+      withEventTarget?: boolean
+    },
   ) {
+    const withEventTarget = options?.withEventTarget ?? false
     const eventName = `${this.#pluginId}:${eventSuffix}` as const
+    if (withEventTarget) {
+      if (!this.#internalEventTarget) {
+        this.#internalEventTarget = new EventTarget()
+      }
+      this.#internalEventTarget.addEventListener(eventName, (e) => {
+        cb((e as CustomEvent).detail)
+      })
+    }
     if (!this.#enabled) {
       this.debugLog(
         'Event bus client is disabled, not registering event',
@@ -262,6 +297,9 @@ export class EventClient<
     this.#eventTarget().addEventListener(eventName, handler)
     this.debugLog('Registered event to bus', eventName)
     return () => {
+      if (withEventTarget) {
+        this.#internalEventTarget?.removeEventListener(eventName, handler)
+      }
       this.#eventTarget().removeEventListener(eventName, handler)
     }
   }
