@@ -151,7 +151,7 @@ importers:
         specifier: 0.3.5
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.8.2
+        specifier: ^0.8.3
         version: link:../../../packages/react-devtools
       '@tanstack/react-form':
         specifier: ^1.23.7
@@ -212,7 +212,7 @@ importers:
         specifier: 0.3.5
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.8.2
+        specifier: ^0.8.3
         version: link:../../../packages/react-devtools
       react:
         specifier: 19.1.1
@@ -237,7 +237,7 @@ importers:
   examples/react/drizzle:
     dependencies:
       '@tanstack/react-devtools':
-        specifier: ^0.8.2
+        specifier: ^0.8.3
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.131.50
@@ -292,7 +292,7 @@ importers:
         specifier: 0.3.5
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.8.2
+        specifier: ^0.8.3
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -371,7 +371,7 @@ importers:
         specifier: 0.3.5
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.8.2
+        specifier: ^0.8.3
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -453,15 +453,13 @@ importers:
         specifier: ^4.2.4
         version: 4.2.4
 
-  examples/react/start/generated/prisma: {}
-
   examples/react/time-travel:
     dependencies:
       '@tanstack/devtools-event-client':
         specifier: workspace:^
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.8.2
+        specifier: ^0.8.3
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -504,7 +502,7 @@ importers:
   examples/solid/basic:
     dependencies:
       '@tanstack/solid-devtools':
-        specifier: ^0.7.15
+        specifier: ^0.7.16
         version: link:../../../packages/solid-devtools
       '@tanstack/solid-query':
         specifier: ^5.90.1
@@ -541,7 +539,7 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(@testing-library/jest-dom@6.9.1)(solid-js@1.9.10)(vinxi@0.5.8(@netlify/blobs@9.1.2)(@types/node@22.15.2)(db0@0.3.2(drizzle-orm@0.44.7(@opentelemetry/api@1.9.0)(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(pg@8.16.3)(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))))(drizzle-orm@0.44.7(@opentelemetry/api@1.9.0)(@prisma/client@6.19.0(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3))(typescript@5.9.3))(pg@8.16.3)(prisma@6.19.0(magicast@0.3.5)(typescript@5.9.3)))(encoding@0.1.13)(ioredis@5.6.1)(jiti@2.6.1)(lightningcss@1.30.2)(rolldown@1.0.0-beta.32)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))(vite@7.2.6(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))
       '@tanstack/solid-devtools':
-        specifier: ^0.7.15
+        specifier: ^0.7.16
         version: link:../../../packages/solid-devtools
       solid-js:
         specifier: ^1.9.9
@@ -553,10 +551,10 @@ importers:
   examples/vue/basic:
     dependencies:
       '@tanstack/devtools':
-        specifier: ^0.6.22
-        version: 0.6.24(csstype@3.2.3)(solid-js@1.9.10)
+        specifier: ^0.9.0
+        version: link:../../../packages/devtools
       '@tanstack/vue-devtools':
-        specifier: ^0.1.0
+        specifier: ^0.1.1
         version: link:../../../packages/vue-devtools
       '@tanstack/vue-query':
         specifier: ^5.90.5
@@ -3054,26 +3052,12 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
 
-  '@tanstack/devtools-client@0.0.3':
-    resolution: {integrity: sha512-kl0r6N5iIL3t9gGDRAv55VRM3UIyMKVH83esRGq7xBjYsRLe/BeCIN2HqrlJkObUXQMKhy7i8ejuGOn+bDqDBw==}
-    engines: {node: '>=18'}
-
-  '@tanstack/devtools-event-bus@0.3.3':
-    resolution: {integrity: sha512-lWl88uLAz7ZhwNdLH6A3tBOSEuBCrvnY9Fzr5JPdzJRFdM5ZFdyNWz1Bf5l/F3GU57VodrN0KCFi9OA26H5Kpg==}
-    engines: {node: '>=18'}
-
   '@tanstack/devtools-event-client@0.3.5':
     resolution: {integrity: sha512-RL1f5ZlfZMpghrCIdzl6mLOFLTuhqmPNblZgBaeKfdtk5rfbjykurv+VfYydOFXj0vxVIoA2d/zT7xfD7Ph8fw==}
     engines: {node: '>=18'}
 
   '@tanstack/devtools-ui@0.4.4':
     resolution: {integrity: sha512-5xHXFyX3nom0UaNfiOM92o6ziaHjGo3mcSGe2HD5Xs8dWRZNpdZ0Smd0B9ddEhy0oB+gXyMzZgUJb9DmrZV0Mg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      solid-js: '>=1.9.7'
-
-  '@tanstack/devtools@0.6.24':
-    resolution: {integrity: sha512-z3J7k1EQ8yoUuUiEP3PtOcGBMz4bl16vFjoDIQ2izicu1yF332qVzth4wswzp7q91mj+RLetKglak7DZGi5ZKw==}
     engines: {node: '>=18'}
     peerDependencies:
       solid-js: '>=1.9.7'
@@ -10432,17 +10416,6 @@ snapshots:
       tailwindcss: 4.1.17
       vite: 7.2.6(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1)
 
-  '@tanstack/devtools-client@0.0.3':
-    dependencies:
-      '@tanstack/devtools-event-client': 0.3.5
-
-  '@tanstack/devtools-event-bus@0.3.3':
-    dependencies:
-      ws: 8.18.3
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   '@tanstack/devtools-event-client@0.3.5': {}
 
   '@tanstack/devtools-ui@0.4.4(csstype@3.2.3)(solid-js@1.9.10)':
@@ -10452,22 +10425,6 @@ snapshots:
       solid-js: 1.9.10
     transitivePeerDependencies:
       - csstype
-
-  '@tanstack/devtools@0.6.24(csstype@3.2.3)(solid-js@1.9.10)':
-    dependencies:
-      '@solid-primitives/event-listener': 2.4.3(solid-js@1.9.10)
-      '@solid-primitives/keyboard': 1.3.3(solid-js@1.9.10)
-      '@solid-primitives/resize-observer': 2.1.3(solid-js@1.9.10)
-      '@tanstack/devtools-client': 0.0.3
-      '@tanstack/devtools-event-bus': 0.3.3
-      '@tanstack/devtools-ui': 0.4.4(csstype@3.2.3)(solid-js@1.9.10)
-      clsx: 2.1.1
-      goober: 2.1.18(csstype@3.2.3)
-      solid-js: 1.9.10
-    transitivePeerDependencies:
-      - bufferutil
-      - csstype
-      - utf-8-validate
 
   '@tanstack/directive-functions-plugin@1.121.21(vite@7.2.6(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1))':
     dependencies:
