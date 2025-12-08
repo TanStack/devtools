@@ -1,5 +1,12 @@
 # @tanstack/react-devtools
 
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.9.1
+
 ## 0.8.3
 
 ### Patch Changes
