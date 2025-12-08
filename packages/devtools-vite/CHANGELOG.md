@@ -1,5 +1,12 @@
 # @tanstack/devtools-event-client
 
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools-client@0.0.5
+
 ## 0.3.11
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.4.0
+
+### Minor Changes
+
+- fix memory leak and add internal event emission ([#286](https://github.com/TanStack/devtools/pull/286))
+
 ## 0.3.5
 
 ### Patch Changes
