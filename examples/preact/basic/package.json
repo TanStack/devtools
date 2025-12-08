@@ -13,14 +13,14 @@
     "@tanstack/devtools-event-client": "0.3.5",
     "@tanstack/preact-devtools": "workspace:*",
     "preact": "^10.28.0",
-    "zod": "^4.1.11"
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.2",
     "@tanstack/devtools-ui": "0.4.4",
     "@tanstack/devtools-vite": "0.3.11",
-    "sonda": "0.9.0",
-    "vite": "^7.1.7",
+    "sonda": "0.10.1",
+    "vite": "^7.2.7",
     "vite-plugin-inspect": "11.3.3"
   },
   "browserslist": {
