@@ -7,9 +7,48 @@ title: TanStackDevtoolsPlugin
 
 # Interface: TanStackDevtoolsPlugin
 
-Defined in: [devtools/src/context/devtools-context.tsx:14](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L14)
+Defined in: [devtools/src/context/devtools-context.tsx:15](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L15)
 
 ## Properties
+
+### defaultOpen?
+
+```ts
+optional defaultOpen: boolean;
+```
+
+Defined in: [devtools/src/context/devtools-context.tsx:58](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L58)
+
+Whether the plugin should be open by default when there are no active plugins.
+If true, this plugin will be added to activePlugins on initial load when activePlugins is empty.
+
+#### Default
+
+```ts
+false
+```
+
+***
+
+### destroy()?
+
+```ts
+optional destroy: (pluginId) => void;
+```
+
+Defined in: [devtools/src/context/devtools-context.tsx:77](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L77)
+
+#### Parameters
+
+##### pluginId
+
+`string`
+
+#### Returns
+
+`void`
+
+***
 
 ### id?
 
@@ -17,7 +56,7 @@ Defined in: [devtools/src/context/devtools-context.tsx:14](https://github.com/Ta
 optional id: string;
 ```
 
-Defined in: [devtools/src/context/devtools-context.tsx:46](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L46)
+Defined in: [devtools/src/context/devtools-context.tsx:52](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L52)
 
 Unique identifier for the plugin.
 If not provided, it will be generated based on the name.
@@ -27,10 +66,10 @@ If not provided, it will be generated based on the name.
 ### name
 
 ```ts
-name: string | (el) => void;
+name: string | (el, theme) => void;
 ```
 
-Defined in: [devtools/src/context/devtools-context.tsx:41](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L41)
+Defined in: [devtools/src/context/devtools-context.tsx:42](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L42)
 
 Name to be displayed in the devtools UI.
 If a string, it will be used as the plugin name.
@@ -62,10 +101,10 @@ or
 ### render()
 
 ```ts
-render: (el) => void;
+render: (el, theme) => void;
 ```
 
-Defined in: [devtools/src/context/devtools-context.tsx:60](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L60)
+Defined in: [devtools/src/context/devtools-context.tsx:72](https://github.com/TanStack/devtools/blob/main/packages/devtools/src/context/devtools-context.tsx#L72)
 
 Render the plugin UI by using the provided element. This function will be called
 when the plugin tab is clicked and expected to be mounted.
@@ -77,6 +116,10 @@ when the plugin tab is clicked and expected to be mounted.
 `HTMLDivElement`
 
 The mount element for the plugin.
+
+##### theme
+
+`"light"` | `"dark"`
 
 #### Returns
 

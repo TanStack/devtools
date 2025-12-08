@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -23,6 +23,12 @@
       "import": {
         "types": "./dist/react/esm/index.d.ts",
         "default": "./dist/react/esm/index.js"
+      }
+    },
+    "./preact": {
+      "import": {
+        "types": "./dist/preact/esm/index.d.ts",
+        "default": "./dist/preact/esm/index.js"
       }
     },
     "./solid": {
@@ -51,16 +57,20 @@
     "@tanstack/devtools-ui": "workspace:^"
   },
   "peerDependencies": {
-    "@types/react": ">=19.0.0",
-    "react": ">=19.0.0",
+    "@types/react": ">=17.0.0",
+    "preact": ">=10.0.0",
+    "react": ">=17.0.0",
     "solid-js": ">=1.9.7",
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
-    "react": {
+    "@types/react": {
       "optional": true
     },
-    "@types/react": {
+    "preact": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     },
     "solid-js": {
@@ -82,7 +92,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && tsup "
+    "build": "vite build && vite build --config vite.config.preact.ts && tsup "
   },
   "devDependencies": {
     "tsup": "^8.5.0",

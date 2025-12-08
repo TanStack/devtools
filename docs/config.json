@@ -57,6 +57,19 @@
           ]
         },
         {
+          "label": "preact",
+          "children": [
+            {
+              "label": "Basic setup",
+              "to": "framework/preact/basic-setup"
+            },
+            {
+              "label": "Preact adapter",
+              "to": "framework/preact/adapter"
+            }
+          ]
+        },
+        {
           "label": "solid",
           "children": [
             {
@@ -85,6 +98,15 @@
           ]
         },
         {
+          "label": "preact",
+          "children": [
+            {
+              "label": "Custom plugins",
+              "to": "framework/preact/guides/custom-plugins"
+            }
+          ]
+        },
+        {
           "label": "solid",
           "children": []
         }
@@ -105,6 +127,15 @@
             {
               "label": "React Hooks",
               "to": "framework/react/reference/index"
+            }
+          ]
+        },
+        {
+          "label": "preact",
+          "children": [
+            {
+              "label": "Preact Hooks",
+              "to": "framework/preact/reference/index"
             }
           ]
         },
@@ -137,6 +168,19 @@
             {
               "label": "Custom devtools",
               "to": "framework/react/examples/custom-devtools"
+            }
+          ]
+        },
+        {
+          "label": "preact",
+          "children": [
+            {
+              "label": "Basic",
+              "to": "framework/preact/examples/basic"
+            },
+            {
+              "label": "Custom devtools",
+              "to": "framework/preact/examples/custom-devtools"
             }
           ]
         },
