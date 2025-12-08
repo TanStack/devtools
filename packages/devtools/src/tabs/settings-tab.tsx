@@ -26,11 +26,9 @@ export const SettingsTab = () => {
   const styles = useStyles()
 
   const modifiers: Array<KeyboardKey> = [
-    'Control',
-    'Alt',
-    'Meta',
-    'Shift',
     'CtrlOrMeta',
+    'Alt',
+    'Shift',
   ]
 
   return (
