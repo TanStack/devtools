@@ -30,6 +30,7 @@ export class EventClient<
   #retryCount = 0
   #maxRetries = 5
   #connecting = false
+  #failedToConnect = false
   #internalEventTarget: EventTarget | null = null
 
   #onConnected = () => {
@@ -57,7 +58,7 @@ export class EventClient<
       'tanstack-connect',
       this.#retryConnection,
     )
-
+    this.#failedToConnect = true
     this.debugLog('Max retries reached, giving up on connection')
     this.stopConnectLoop()
   }
@@ -91,6 +92,7 @@ export class EventClient<
     this.debugLog(' Initializing event subscription for plugin', this.#pluginId)
     this.#queuedEvents = []
     this.#connected = false
+    this.#failedToConnect = false
     this.#connectIntervalId = null
     this.#connectEveryMs = reconnectEveryMs
   }
@@ -108,6 +110,7 @@ export class EventClient<
 
   private stopConnectLoop() {
     this.#connecting = false
+
     if (this.#connectIntervalId === null) {
       return
     }
@@ -219,6 +222,14 @@ export class EventClient<
     eventSuffix: TSuffix,
     payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
   ) {
+    if (!this.#enabled) {
+      this.debugLog(
+        'Event bus client is disabled, not emitting event',
+        eventSuffix,
+        payload,
+      )
+      return
+    }
     if (this.#internalEventTarget) {
       this.debugLog(
         'Emitting event to internal event target',
@@ -231,12 +242,9 @@ export class EventClient<
         }),
       )
     }
-    if (!this.#enabled) {
-      this.debugLog(
-        'Event bus client is disabled, not emitting event',
-        eventSuffix,
-        payload,
-      )
+
+    if (this.#failedToConnect) {
+      this.debugLog('Previously failed to connect, not emitting to bus')
       return
     }
     // wait to connect to the bus
