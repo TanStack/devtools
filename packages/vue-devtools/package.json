@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TanStack/devtools.git",
+    "url": "git+https://github.com/TanStack/devtools.git",
     "directory": "packages/vue-devtools"
   },
   "homepage": "https://tanstack.com/devtools",

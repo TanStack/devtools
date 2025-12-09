@@ -6,8 +6,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TanStack/devtools.git",
-    "directory": "packages/devtools"
+    "url": "git+https://github.com/TanStack/devtools.git",
+    "directory": "packages/devtools-event-client"
   },
   "homepage": "https://tanstack.com/devtools",
   "funding": {
