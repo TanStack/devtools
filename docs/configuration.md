@@ -39,7 +39,6 @@ The `config` object is mainly focused around user interaction with the devtools 
 
 ```ts
 { panelLocation: 'top' | 'bottom' }
-
 ```
 
 - `openHotkey` - The hotkey set to open the devtools
@@ -64,14 +63,12 @@ type KeyboardKey = ModifierKey | (string & {});
 
 ```ts
 { requireUrlFlag: boolean }
-
 ```
 
 - `triggerImage` - The image used for the dev tools trigger
 
 ```ts
 { triggerImage: string }
-
 ```
 
 - `urlFlag` - The required flag that must be present in the url to enable devtools.
@@ -80,7 +77,7 @@ type KeyboardKey = ModifierKey | (string & {});
 { urlFlag: string }
 ```
 
-The `eventBusConfig` is configuration for the back bone of the devtools, the ``, and accepts the following properties:
+The `eventBusConfig` is configuration for the back bone of the devtools, the `EventClient`, and accepts the following properties:
 
 - `debug` - Enables debug mode for the EventBus
 
@@ -138,13 +135,13 @@ Configuration for the `EventClient` is as follows
 - `pluginId` (required) - The plugin identifier used by the event bus to direct events to listeners
 
 ```ts
-{pluginId: string}
+{ pluginId: string }
 ```
 
 - `debug` - Enables debug mode for the EventClient
 
 ```ts
-{debug: boolean}
+{ debug: boolean }
 ```
 
 Put together the `EventClient` configuration looks like:
