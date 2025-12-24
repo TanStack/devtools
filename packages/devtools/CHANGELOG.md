@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.0
+
+### Minor Changes
+
+- modifies default hotkey to be Control ~, replacing Shift A ([#291](https://github.com/TanStack/devtools/pull/291))
+
 ## 0.9.2
 
 ### Patch Changes
