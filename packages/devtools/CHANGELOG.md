@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.9.2
+
+### Patch Changes
+
+- Allow config on the height of the panel ([#294](https://github.com/TanStack/devtools/pull/294))
+
 ## 0.9.1
 
 ### Patch Changes
