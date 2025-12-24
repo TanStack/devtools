@@ -21,6 +21,7 @@ export const MainPanel = (props: {
       id={TANSTACK_DEVTOOLS}
       style={{
         height: pip().pipWindow ? '100vh' : height() + 'px',
+        '--tsd-main-panel-height': pip().pipWindow ? '100vh' : height() + 'px',
       }}
       class={clsx(
         styles().devtoolsPanelContainer(
