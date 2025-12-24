@@ -9,7 +9,8 @@ id: plugin-configuration
 You can configure TanStack Devtools plugins by passing them as an array to the `plugins` prop of the `TanStackDevtools` component.
 
 Each plugin can have the following configuration options:
-- `render` (required) - A React component that renders the plugin's UI
+- `name` (required) - A name to be displayed in the devtools UI.
+- `render` (required) - A React component that renders the plugin's UI.
 - `defaultOpen` (optional) - A boolean that determines if the plugin panel is open by default (default: false).
 - `id` (optional) - A unique identifier for the plugin. If not provided, a random id will be generated.
 

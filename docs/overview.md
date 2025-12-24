@@ -3,7 +3,7 @@ title: Overview
 id: overview
 ---
 
-TanStack Devtools is a framework-agnostic devtool for managing and debugging *devtool devtools*
+TanStack Devtools is a framework-agnostic devtool for managing and debugging *your devtools*.
 
 We offer you all the tools you need to build and maintain your own devtools with ease.
 

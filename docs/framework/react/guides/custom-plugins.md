@@ -7,7 +7,7 @@ TanStack devtools allows you to create your own custom plugins by emitting and l
 
 ## Prerequisite
 
-This guide will walk you through a simple example where our library is a counter with a count history. A working example can be found in our [custom-plugin example](https://tanstack.com/devtools/latest/docs/framework/react/examples/custom-plugin).
+This guide will walk you through a simple example where our library is a counter with a count history. A working example can be found in our [custom-plugin example](https://tanstack.com/devtools/latest/docs/framework/react/examples/custom-devtools).
 
 This is our library code:
 
