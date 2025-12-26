@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/solid-devtools",
-  "version": "0.7.19",
+  "version": "0.7.20",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Solid application.",
   "author": "Tanner Linsley",
   "license": "MIT",
