@@ -4,8 +4,9 @@
   "typescript": true,
   "tailwind": true,
   "packageManager": "pnpm",
-  "git": false,
+  "git": true,
+  "addOnOptions": {},
   "version": 1,
   "framework": "react-cra",
-  "chosenAddOns": ["start"]
+  "chosenAddOns": ["start", "nitro"]
 }

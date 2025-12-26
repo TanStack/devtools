@@ -1,6 +1,10 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import Devtools from '../components/devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { TanStackDevtools } from '@tanstack/react-devtools'
+
 import Header from '../components/Header'
+import { RouteNavigationPanel } from '../devtools'
+
 import appCss from '../styles.css?url'
 
 export const Route = createRootRoute({
@@ -29,7 +33,6 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  console.log('hello in root document')
   return (
     <html lang="en">
       <head>
@@ -38,9 +41,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <Header />
         {children}
-
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            {
+              id: 'route-navigation',
+              name: 'Route Navigation',
+              render: <RouteNavigationPanel />,
+            },
+          ]}
+        />
         <Scripts />
-        <Devtools />
       </body>
     </html>
   )

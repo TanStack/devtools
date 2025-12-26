@@ -1,5 +1,15 @@
 import { parseWithBigInt, stringifyWithBigInt } from '../utils/json'
 
+// Declare the global placeholder that gets replaced by the Vite plugin at transform time
+// Falls back to 4206 when not using the Vite plugin or in non-transformed environments
+declare const __TANSTACK_DEVTOOLS_PORT__: number | undefined
+
+function getDefaultPort(configPort: number): number {
+  if (typeof __TANSTACK_DEVTOOLS_PORT__ !== 'undefined')
+    return __TANSTACK_DEVTOOLS_PORT__
+  return configPort
+}
+
 interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   type: TEventName
   payload: TPayload
@@ -20,7 +30,7 @@ export interface ClientEventBusConfig {
 
   /**
    * Optional port to connect to the devtools server event bus.
-   * Defaults to 42069.
+   * Defaults to 4206.
    */
   port?: number
 }
@@ -45,14 +55,14 @@ export class ClientEventBus {
     this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
   constructor({
-    port = 42069,
+    port = 4206,
     debug = false,
     connectToServerBus = false,
   }: ClientEventBusConfig = {}) {
     this.#debug = debug
     this.#broadcastChannel = new BroadcastChannel('tanstack-devtools')
     this.#eventSource = null
-    this.#port = port
+    this.#port = getDefaultPort(port)
     this.#socket = null
     this.#connectToServerBus = connectToServerBus
     this.#eventTarget = this.getGlobalTarget()

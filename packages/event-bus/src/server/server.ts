@@ -44,7 +44,7 @@ export class ServerEventBus {
     )
     this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
-  constructor({ port = 42069, debug = false }: ServerEventBusConfig = {}) {
+  constructor({ port = 4206, debug = false }: ServerEventBusConfig = {}) {
     this.#port = port
     this.#eventTarget =
       globalThis.__TANSTACK_EVENT_TARGET__ ?? new EventTarget()
@@ -162,39 +162,73 @@ export class ServerEventBus {
     })
   }
 
-  start() {
-    if (process.env.NODE_ENV !== 'development') return
-    if (this.#server || this.#wssServer) {
-      // console.warn('Server is already running')
-      return
-    }
-    this.debugLog('Starting server event bus')
-    const server = this.createSSEServer()
-    const wss = this.createWebSocketServer()
+  start(): Promise<number> {
+    return new Promise((resolve) => {
+      if (process.env.NODE_ENV !== 'development') {
+        resolve(this.#port)
+        return
+      }
+      if (this.#server || this.#wssServer) {
+        // console.warn('Server is already running')
+        resolve(this.#port)
+        return
+      }
+      this.debugLog('Starting server event bus')
+      const server = this.createSSEServer()
+      const wss = this.createWebSocketServer()
 
-    this.#eventTarget.addEventListener(
-      'tanstack-dispatch-event',
-      this.#dispatcher,
-    )
-    this.#eventTarget.addEventListener(
-      'tanstack-connect',
-      this.#connectFunction,
-    )
-    this.handleNewConnection(wss)
+      this.#eventTarget.addEventListener(
+        'tanstack-dispatch-event',
+        this.#dispatcher,
+      )
+      this.#eventTarget.addEventListener(
+        'tanstack-connect',
+        this.#connectFunction,
+      )
+      this.handleNewConnection(wss)
 
-    // Handle connection upgrade for WebSocket
-    server.on('upgrade', (req, socket, head) => {
-      if (req.url === '/__devtools/ws') {
-        wss.handleUpgrade(req, socket, head, (ws) => {
-          this.debugLog('WebSocket connection established')
-          wss.emit('connection', ws, req)
+      // Handle connection upgrade for WebSocket
+      server.on('upgrade', (req, socket, head) => {
+        if (req.url === '/__devtools/ws') {
+          wss.handleUpgrade(req, socket, head, (ws) => {
+            this.debugLog('WebSocket connection established')
+            wss.emit('connection', ws, req)
+          })
+        }
+      })
+
+      const tryListen = (port: number) => {
+        server.listen(port, () => {
+          const address = server.address()
+          if (typeof address === 'object' && address) {
+            this.#port = address.port
+          }
+          this.debugLog(`Listening on http://localhost:${this.#port}`)
+          resolve(this.#port)
         })
       }
-    })
 
-    server.listen(this.#port, () => {
-      this.debugLog(`Listening on http://localhost:${this.#port}`)
+      // Handle EADDRINUSE by retrying with port 0 (OS-assigned)
+      server.on('error', (err: NodeJS.ErrnoException) => {
+        if (err.code === 'EADDRINUSE') {
+          this.debugLog(
+            `Port ${this.#port} is in use, trying OS-assigned port...`,
+          )
+          // Use port 0 to let OS assign an available port
+          tryListen(0)
+        }
+      })
+
+      tryListen(this.#port)
     })
+  }
+
+  /**
+   * Get the port the server is listening on.
+   * This may differ from the configured port if the original port was in use.
+   */
+  get port(): number {
+    return this.#port
   }
 
   stop() {

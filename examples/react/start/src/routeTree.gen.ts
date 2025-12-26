@@ -8,24 +8,16 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DemoStartServerFuncsRouteImport } from './routes/demo.start.server-funcs'
-import { Route as DemoStartApiRequestRouteImport } from './routes/demo.start.api-request'
-import { ServerRoute as StudioServerRouteImport } from './routes/studio'
-import { ServerRoute as ApiDemoNamesServerRouteImport } from './routes/api.demo-names'
-import { ServerRoute as ApiChatServerRouteImport } from './routes/api.chat'
+import { Route as DemoStartServerFuncsRouteImport } from './routes/demo/start.server-funcs'
+import { Route as DemoStartApiRequestRouteImport } from './routes/demo/start.api-request'
+import { Route as DemoApiNamesRouteImport } from './routes/demo/api.names'
+import { Route as DemoStartSsrIndexRouteImport } from './routes/demo/start.ssr.index'
+import { Route as DemoStartSsrSpaModeRouteImport } from './routes/demo/start.ssr.spa-mode'
+import { Route as DemoStartSsrFullSsrRouteImport } from './routes/demo/start.ssr.full-ssr'
+import { Route as DemoStartSsrDataOnlyRouteImport } from './routes/demo/start.ssr.data-only'
 
-const rootServerRouteImport = createServerRootRoute()
-
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -41,103 +33,109 @@ const DemoStartApiRequestRoute = DemoStartApiRequestRouteImport.update({
   path: '/demo/start/api-request',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudioServerRoute = StudioServerRouteImport.update({
-  id: '/studio',
-  path: '/studio',
-  getParentRoute: () => rootServerRouteImport,
+const DemoApiNamesRoute = DemoApiNamesRouteImport.update({
+  id: '/demo/api/names',
+  path: '/demo/api/names',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiDemoNamesServerRoute = ApiDemoNamesServerRouteImport.update({
-  id: '/api/demo-names',
-  path: '/api/demo-names',
-  getParentRoute: () => rootServerRouteImport,
+const DemoStartSsrIndexRoute = DemoStartSsrIndexRouteImport.update({
+  id: '/demo/start/ssr/',
+  path: '/demo/start/ssr/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiChatServerRoute = ApiChatServerRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
-  getParentRoute: () => rootServerRouteImport,
+const DemoStartSsrSpaModeRoute = DemoStartSsrSpaModeRouteImport.update({
+  id: '/demo/start/ssr/spa-mode',
+  path: '/demo/start/ssr/spa-mode',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoStartSsrFullSsrRoute = DemoStartSsrFullSsrRouteImport.update({
+  id: '/demo/start/ssr/full-ssr',
+  path: '/demo/start/ssr/full-ssr',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DemoStartSsrDataOnlyRoute = DemoStartSsrDataOnlyRouteImport.update({
+  id: '/demo/start/ssr/data-only',
+  path: '/demo/start/ssr/data-only',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
+  '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
+  '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
+  '/demo/start/ssr': typeof DemoStartSsrIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
+  '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
+  '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
+  '/demo/start/ssr': typeof DemoStartSsrIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/demo/api/names': typeof DemoApiNamesRoute
   '/demo/start/api-request': typeof DemoStartApiRequestRoute
   '/demo/start/server-funcs': typeof DemoStartServerFuncsRoute
+  '/demo/start/ssr/data-only': typeof DemoStartSsrDataOnlyRoute
+  '/demo/start/ssr/full-ssr': typeof DemoStartSsrFullSsrRoute
+  '/demo/start/ssr/spa-mode': typeof DemoStartSsrSpaModeRoute
+  '/demo/start/ssr/': typeof DemoStartSsrIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/about'
+    | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/demo/start/ssr/data-only'
+    | '/demo/start/ssr/full-ssr'
+    | '/demo/start/ssr/spa-mode'
+    | '/demo/start/ssr'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/demo/start/api-request' | '/demo/start/server-funcs'
+  to:
+    | '/'
+    | '/demo/api/names'
+    | '/demo/start/api-request'
+    | '/demo/start/server-funcs'
+    | '/demo/start/ssr/data-only'
+    | '/demo/start/ssr/full-ssr'
+    | '/demo/start/ssr/spa-mode'
+    | '/demo/start/ssr'
   id:
     | '__root__'
     | '/'
-    | '/about'
+    | '/demo/api/names'
     | '/demo/start/api-request'
     | '/demo/start/server-funcs'
+    | '/demo/start/ssr/data-only'
+    | '/demo/start/ssr/full-ssr'
+    | '/demo/start/ssr/spa-mode'
+    | '/demo/start/ssr/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  DemoApiNamesRoute: typeof DemoApiNamesRoute
   DemoStartApiRequestRoute: typeof DemoStartApiRequestRoute
   DemoStartServerFuncsRoute: typeof DemoStartServerFuncsRoute
-}
-export interface FileServerRoutesByFullPath {
-  '/studio': typeof StudioServerRoute
-  '/api/chat': typeof ApiChatServerRoute
-  '/api/demo-names': typeof ApiDemoNamesServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/studio': typeof StudioServerRoute
-  '/api/chat': typeof ApiChatServerRoute
-  '/api/demo-names': typeof ApiDemoNamesServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/studio': typeof StudioServerRoute
-  '/api/chat': typeof ApiChatServerRoute
-  '/api/demo-names': typeof ApiDemoNamesServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/studio' | '/api/chat' | '/api/demo-names'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/studio' | '/api/chat' | '/api/demo-names'
-  id: '__root__' | '/studio' | '/api/chat' | '/api/demo-names'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  StudioServerRoute: typeof StudioServerRoute
-  ApiChatServerRoute: typeof ApiChatServerRoute
-  ApiDemoNamesServerRoute: typeof ApiDemoNamesServerRoute
+  DemoStartSsrDataOnlyRoute: typeof DemoStartSsrDataOnlyRoute
+  DemoStartSsrFullSsrRoute: typeof DemoStartSsrFullSsrRoute
+  DemoStartSsrSpaModeRoute: typeof DemoStartSsrSpaModeRoute
+  DemoStartSsrIndexRoute: typeof DemoStartSsrIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -159,48 +157,63 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DemoStartApiRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
-    '/studio': {
-      id: '/studio'
-      path: '/studio'
-      fullPath: '/studio'
-      preLoaderRoute: typeof StudioServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+    '/demo/api/names': {
+      id: '/demo/api/names'
+      path: '/demo/api/names'
+      fullPath: '/demo/api/names'
+      preLoaderRoute: typeof DemoApiNamesRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/api/demo-names': {
-      id: '/api/demo-names'
-      path: '/api/demo-names'
-      fullPath: '/api/demo-names'
-      preLoaderRoute: typeof ApiDemoNamesServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+    '/demo/start/ssr/': {
+      id: '/demo/start/ssr/'
+      path: '/demo/start/ssr'
+      fullPath: '/demo/start/ssr'
+      preLoaderRoute: typeof DemoStartSsrIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+    '/demo/start/ssr/spa-mode': {
+      id: '/demo/start/ssr/spa-mode'
+      path: '/demo/start/ssr/spa-mode'
+      fullPath: '/demo/start/ssr/spa-mode'
+      preLoaderRoute: typeof DemoStartSsrSpaModeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/start/ssr/full-ssr': {
+      id: '/demo/start/ssr/full-ssr'
+      path: '/demo/start/ssr/full-ssr'
+      fullPath: '/demo/start/ssr/full-ssr'
+      preLoaderRoute: typeof DemoStartSsrFullSsrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/demo/start/ssr/data-only': {
+      id: '/demo/start/ssr/data-only'
+      path: '/demo/start/ssr/data-only'
+      fullPath: '/demo/start/ssr/data-only'
+      preLoaderRoute: typeof DemoStartSsrDataOnlyRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  DemoApiNamesRoute: DemoApiNamesRoute,
   DemoStartApiRequestRoute: DemoStartApiRequestRoute,
   DemoStartServerFuncsRoute: DemoStartServerFuncsRoute,
+  DemoStartSsrDataOnlyRoute: DemoStartSsrDataOnlyRoute,
+  DemoStartSsrFullSsrRoute: DemoStartSsrFullSsrRoute,
+  DemoStartSsrSpaModeRoute: DemoStartSsrSpaModeRoute,
+  DemoStartSsrIndexRoute: DemoStartSsrIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  StudioServerRoute: StudioServerRoute,
-  ApiChatServerRoute: ApiChatServerRoute,
-  ApiDemoNamesServerRoute: ApiDemoNamesServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

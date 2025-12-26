@@ -12,7 +12,7 @@ export default defineConfig({
     }),
 
     Inspect(),
-    sonda(),
+    sonda() as any,
     react({
       // babel: {
       //   plugins: [['babel-plugin-react-compiler', { target: '19' }]],
