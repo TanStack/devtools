@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue'
 import packageJson from './package.json'
 
 const config = defineConfig({
-  plugins: [vue()],
+  plugins: [vue() as any],
   test: {
     name: packageJson.name,
     dir: './tests',

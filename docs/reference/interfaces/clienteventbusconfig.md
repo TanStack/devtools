@@ -45,4 +45,4 @@ optional port: number;
 Defined in: event-bus/dist/esm/client/client.d.ts:15
 
 Optional port to connect to the devtools server event bus.
-Defaults to 42069.
+Defaults to 4206.

@@ -12,7 +12,7 @@ export default defineConfig({
     }),
 
     Inspect(),
-    sonda(),
+    sonda() as any,
     preact(),
   ],
   build: {

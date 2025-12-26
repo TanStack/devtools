@@ -82,9 +82,9 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const serverBusEnabled = args?.eventBusConfig?.enabled ?? true
-  const bus = new ServerEventBus(args?.eventBusConfig)
 
   let devtoolsFileId: string | null = null
+  let devtoolsPort: number | null = null
 
   return [
     {
@@ -139,9 +139,15 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         // Custom server is only needed in development for piping events to the client
         return config.mode === 'development'
       },
-      configureServer(server) {
+      async configureServer(server) {
         if (serverBusEnabled) {
-          bus.start()
+          const preferredPort = args?.eventBusConfig?.port ?? 4206
+          const bus = new ServerEventBus({
+            ...args?.eventBusConfig,
+            port: preferredPort,
+          })
+          // start() now handles EADDRINUSE and returns the actual port
+          devtoolsPort = await bus.start()
         }
 
         server.middlewares.use((req, _res, next) => {
@@ -446,6 +452,25 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         }
 
         return undefined
+      },
+    },
+    {
+      name: '@tanstack/devtools:port-injection',
+      apply(config, { command }) {
+        return config.mode === 'development' && command === 'serve'
+      },
+      transform(code, id) {
+        // Only transform @tanstack packages that contain the port placeholder
+        if (!code.includes('__TANSTACK_DEVTOOLS_PORT__')) return
+        if (
+          !id.includes('@tanstack/devtools') &&
+          !id.includes('@tanstack/event-bus')
+        )
+          return
+
+        // Replace placeholder with actual port (or fallback to 4206 if not resolved yet)
+        const portValue = devtoolsPort ?? 4206
+        return code.replace(/__TANSTACK_DEVTOOLS_PORT__/g, String(portValue))
       },
     },
   ]

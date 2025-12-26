@@ -8,7 +8,7 @@ const config = defineConfig({
   plugins: [
     solid({
       ssr: true,
-    }),
+    }) as any,
   ],
   test: {
     name: packageJson.name,
