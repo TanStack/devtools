@@ -11,7 +11,7 @@
   "dependencies": {
     "@tanstack/devtools-client": "0.0.5",
     "@tanstack/devtools-event-client": "0.4.0",
-    "@tanstack/react-devtools": "^0.8.6",
+    "@tanstack/react-devtools": "^0.9.0",
     "@tanstack/react-form": "^1.23.7",
     "@tanstack/react-query": "^5.90.1",
     "@tanstack/react-query-devtools": "^5.90.1",
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@tanstack/devtools-ui": "0.4.4",
-    "@tanstack/devtools-vite": "0.3.12",
+    "@tanstack/devtools-vite": "0.4.0",
     "@tanstack/react-form-devtools": "^0.1.7",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

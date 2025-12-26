@@ -1,5 +1,16 @@
 # @tanstack/vue-devtools
 
+## 0.2.0
+
+### Minor Changes
+
+- fix issues with apps dying if the server port is not available for the event bus ([#297](https://github.com/TanStack/devtools/pull/297))
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.10.1
+
 ## 0.1.4
 
 ### Patch Changes
