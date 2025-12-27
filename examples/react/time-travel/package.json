@@ -11,20 +11,20 @@
   "dependencies": {
     "@tanstack/devtools-event-client": "workspace:^",
     "@tanstack/react-devtools": "^0.9.0",
-    "@tanstack/react-query": "^5.90.1",
-    "@tanstack/react-query-devtools": "^5.90.1",
-    "@tanstack/react-router": "^1.132.0",
-    "@tanstack/react-router-devtools": "^1.132.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "zod": "^4.1.11",
-    "zustand": "^5.0.8"
+    "@tanstack/react-query": "^5.90.12",
+    "@tanstack/react-query-devtools": "^5.91.1",
+    "@tanstack/react-router": "^1.143.11",
+    "@tanstack/react-router-devtools": "^1.143.11",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "zod": "^4.2.1",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.4",
-    "vite": "^7.1.7"
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.0"
   },
   "browserslist": {
     "production": [
