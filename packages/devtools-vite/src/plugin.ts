@@ -41,6 +41,12 @@ export type TanStackDevtoolsViteConfig = {
      * @default true
      */
     enabled: boolean
+    /**
+     * Whether to use CSS formatting for enhanced logging.
+     * @note Chrome supports ANSI escape codes for formatting. Firefox does not.
+     * @default false
+     */
+    cssFormatting?: boolean
   }
   /**
    * Whether to remove devtools from the production build.
@@ -433,7 +439,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         )
           return
 
-        return enhanceConsoleLog(code, id, port)
+        return enhanceConsoleLog(
+          code,
+          id,
+          port,
+          enhancedLogsConfig.cssFormatting === true,
+        )
       },
     },
     {

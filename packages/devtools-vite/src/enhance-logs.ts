@@ -8,6 +8,7 @@ const transform = (
   ast: ParseResult<Babel.File>,
   filePath: string,
   port: number,
+  cssFormatting: boolean,
 ) => {
   let didTransform = false
 
@@ -31,11 +32,27 @@ const transform = (
           location.start.column,
         ]
         const finalPath = `${filePath}:${lineNumber}:${column + 1}`
-        path.node.arguments.unshift(
-          t.stringLiteral(
-            `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `,
-          ),
-        )
+        // Prefer ANSI escape codes for formatting.
+        if (!cssFormatting) {
+          path.node.arguments.unshift(
+            t.stringLiteral(
+              `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `,
+            ),
+          )
+        } else {
+          path.node.arguments.unshift(
+            // LOG with css formatting specifiers: %c
+            t.stringLiteral(
+              `%c${'LOG'}%c %c${`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`}%c \n → `,
+            ),
+            // magenta
+            t.stringLiteral('color:#A0A'),
+            t.stringLiteral('color:#FFF'),
+            // blueBright
+            t.stringLiteral('color:#55F'),
+            t.stringLiteral('color:#FFF'),
+          )
+        }
         didTransform = true
       }
     },
@@ -44,7 +61,12 @@ const transform = (
   return didTransform
 }
 
-export function enhanceConsoleLog(code: string, id: string, port: number) {
+export function enhanceConsoleLog(
+  code: string,
+  id: string,
+  port: number,
+  cssFormatting: boolean,
+) {
   const [filePath] = id.split('?')
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
   const location = filePath?.replace(normalizePath(process.cwd()), '')!
@@ -54,7 +76,7 @@ export function enhanceConsoleLog(code: string, id: string, port: number) {
       sourceType: 'module',
       plugins: ['jsx', 'typescript'],
     })
-    const didTransform = transform(ast, location, port)
+    const didTransform = transform(ast, location, port, cssFormatting)
     if (!didTransform) {
       return
     }
