@@ -65,7 +65,7 @@ export function enhanceConsoleLog(
   code: string,
   id: string,
   port: number,
-  cssFormatting: boolean,
+  cssFormatting?: boolean,
 ) {
   const [filePath] = id.split('?')
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
@@ -76,7 +76,7 @@ export function enhanceConsoleLog(
       sourceType: 'module',
       plugins: ['jsx', 'typescript'],
     })
-    const didTransform = transform(ast, location, port, cssFormatting)
+    const didTransform = transform(ast, location, port, cssFormatting === true)
     if (!didTransform) {
       return
     }

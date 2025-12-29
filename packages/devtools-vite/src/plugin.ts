@@ -443,7 +443,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           code,
           id,
           port,
-          enhancedLogsConfig.cssFormatting === true,
+          enhancedLogsConfig.cssFormatting,
         )
       },
     },
