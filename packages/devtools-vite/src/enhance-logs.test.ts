@@ -114,4 +114,21 @@ describe('remove-devtools', () => {
     )
     expect(output).toBe(undefined)
   })
+
+  test('it adds enhanced console.log with css formatting to console.log()', () => {
+    const output = removeEmptySpace(
+      enhanceConsoleLog(
+        `
+        console.log('This is a log')
+        `,
+        'test.jsx',
+        3000,
+        true,
+      )!.code,
+    )
+    expect(output.includes('color:#A0A')).toEqual(true)
+    expect(output.includes('color:#FFF')).toEqual(true)
+    expect(output.includes('color:#55F')).toEqual(true)
+    expect(output.includes('color:#FFF')).toEqual(true)
+  })
 })
