@@ -32,15 +32,15 @@ const transform = (
           location.start.column,
         ]
         const finalPath = `${filePath}:${lineNumber}:${column + 1}`
+        const logMessage = `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `
         // Prefer ANSI escape codes for formatting.
         if (!cssFormatting) {
-          path.node.arguments.unshift(
-            t.stringLiteral(
-              `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `,
-            ),
-          )
+          path.node.arguments.unshift(t.stringLiteral(logMessage))
         } else {
-          path.node.arguments.unshift(
+          const serverLogMessage = t.arrayExpression([
+            t.stringLiteral(logMessage),
+          ])
+          const browserLogMessage = t.arrayExpression([
             // LOG with css formatting specifiers: %c
             t.stringLiteral(
               `%c${'LOG'}%c %c${`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`}%c \n → `,
@@ -51,6 +51,27 @@ const transform = (
             // blueBright
             t.stringLiteral('color:#55F'),
             t.stringLiteral('color:#FFF'),
+          ])
+
+          // globalThis.window == undefined
+          const checkServerCondition = t.binaryExpression(
+            '==',
+            t.memberExpression(
+              t.identifier('globalThis'),
+              t.identifier('window'),
+            ),
+            t.identifier('undefined'),
+          )
+
+          // ...(isServer ? checkServerCondition : browserLogMessage)
+          path.node.arguments.unshift(
+            t.spreadElement(
+              t.conditionalExpression(
+                checkServerCondition,
+                serverLogMessage,
+                browserLogMessage,
+              ),
+            ),
           )
         }
         didTransform = true
