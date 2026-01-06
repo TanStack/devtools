@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.2.1
+
+### Patch Changes
+
+- fix issue with unmounting of devtools ([#305](https://github.com/TanStack/devtools/pull/305))
+
 ## 0.2.0
 
 ### Minor Changes

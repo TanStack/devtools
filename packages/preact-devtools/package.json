@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/preact-devtools",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Preact application.",
   "author": "Tanner Linsley",
   "license": "MIT",
