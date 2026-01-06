@@ -202,7 +202,19 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       },
       enforce: 'pre',
       transform(code, id) {
-        if (id.includes('node_modules') || id.includes('?raw')) return
+        const devtoolPackages = [
+          '@tanstack/react-devtools',
+          '@tanstack/preact-devtools',
+          '@tanstack/solid-devtools',
+          '@tanstack/vue-devtools',
+          '@tanstack/devtools',
+        ]
+        if (
+          id.includes('node_modules') ||
+          id.includes('?raw') ||
+          !devtoolPackages.some((pkg) => code.includes(pkg))
+        )
+          return
         const transform = removeDevtools(code, id)
         if (!transform) return
         if (logging) {
