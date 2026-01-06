@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.4.1
+
+### Patch Changes
+
+- Added css format specifier support to enhancedLogs ([#300](https://github.com/TanStack/devtools/pull/300))
+
 ## 0.4.0
 
 ### Minor Changes

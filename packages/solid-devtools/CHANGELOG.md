@@ -1,5 +1,12 @@
 # @tanstack/solid-devtools
 
+## 0.7.21
+
+### Patch Changes
+
+- Updated dependencies [[`adcf45c`](https://github.com/TanStack/devtools/commit/adcf45c434a0fa3d8f3d5d986606c2593a30a671)]:
+  - @tanstack/devtools@0.10.2
+
 ## 0.7.20
 
 ### Patch Changes

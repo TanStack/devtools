@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.2
+
+### Patch Changes
+
+- fix issue with popup window ([#305](https://github.com/TanStack/devtools/pull/305))
+
 ## 0.10.1
 
 ### Patch Changes

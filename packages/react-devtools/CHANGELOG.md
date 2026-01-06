@@ -1,5 +1,12 @@
 # @tanstack/react-devtools
 
+## 0.9.1
+
+### Patch Changes
+
+- Updated dependencies [[`adcf45c`](https://github.com/TanStack/devtools/commit/adcf45c434a0fa3d8f3d5d986606c2593a30a671)]:
+  - @tanstack/devtools@0.10.2
+
 ## 0.9.0
 
 ### Minor Changes
