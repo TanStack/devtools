@@ -87,7 +87,7 @@ export const SourceInspector = () => {
       )}`,
       baseUrl,
     )
-    fetch(url).catch(() => { })
+    fetch(url).catch(() => {})
   })
 
   const currentElementBoxStyles = createMemo(() => {
