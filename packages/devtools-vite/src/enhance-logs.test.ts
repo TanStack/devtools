@@ -94,7 +94,6 @@ describe('remove-devtools', () => {
         3000,
       )!.code,
     )
-    console.log('output', output)
     expect(
       output.includes(
         'http://localhost:3000/__tsd/open-source?source=test.jsx',
@@ -123,7 +122,6 @@ describe('remove-devtools', () => {
         `,
         'test.jsx',
         3000,
-        true,
       )!.code,
     )
     expect(output.includes('color:#A0A')).toEqual(true)
