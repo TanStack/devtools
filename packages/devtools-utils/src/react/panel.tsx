@@ -32,16 +32,18 @@ export function createReactPanel<
     const devToolRef = useRef<HTMLDivElement>(null)
     const devtools = useRef<TCoreDevtoolsClass | null>(null)
     useEffect(() => {
-      const instance = new CoreClass()
-      devtools.current = instance
+      if (devtools.current) return
+
+      devtools.current = new CoreClass()
 
       if (devToolRef.current) {
-        instance.mount(devToolRef.current, props?.theme ?? 'dark')
+        devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
       }
 
       return () => {
-        instance.unmount()
-        devtools.current = null
+        if (devToolRef.current) {
+          devtools.current?.unmount()
+        }
       }
     }, [props?.theme])
 
