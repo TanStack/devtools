@@ -212,7 +212,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         if (
           id.includes('node_modules') ||
           id.includes('?raw') ||
-          !devtoolPackages.some((pkg) => id.includes(pkg))
+          !devtoolPackages.some((pkg) => code.includes(pkg))
         )
           return
         const transform = removeDevtools(code, id)
