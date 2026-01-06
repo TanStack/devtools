@@ -31,11 +31,42 @@ const transform = (
           location.start.column,
         ]
         const finalPath = `${filePath}:${lineNumber}:${column + 1}`
-        path.node.arguments.unshift(
+        const logMessage = `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath}`)}\n → `
+
+        const serverLogMessage = t.arrayExpression([
+          t.stringLiteral(logMessage),
+        ])
+        const browserLogMessage = t.arrayExpression([
+          // LOG with css formatting specifiers: %c
           t.stringLiteral(
-            `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath} - http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`)}\n → `,
+            `%c${'LOG'}%c %c${`Go to Source: http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`}%c \n → `,
+          ),
+          // magenta
+          t.stringLiteral('color:#A0A'),
+          t.stringLiteral('color:#FFF'),
+          // blueBright
+          t.stringLiteral('color:#55F'),
+          t.stringLiteral('color:#FFF'),
+        ])
+
+        // typeof window === "undefined"
+        const checkServerCondition = t.binaryExpression(
+          '===',
+          t.unaryExpression('typeof', t.identifier('window')),
+          t.stringLiteral('undefined'),
+        )
+
+        // ...(isServer ? serverLogMessage : browserLogMessage)
+        path.node.arguments.unshift(
+          t.spreadElement(
+            t.conditionalExpression(
+              checkServerCondition,
+              serverLogMessage,
+              browserLogMessage,
+            ),
           ),
         )
+
         didTransform = true
       }
     },

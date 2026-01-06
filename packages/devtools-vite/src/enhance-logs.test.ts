@@ -94,7 +94,6 @@ describe('remove-devtools', () => {
         3000,
       )!.code,
     )
-    console.log('output', output)
     expect(
       output.includes(
         'http://localhost:3000/__tsd/open-source?source=test.jsx',
@@ -113,5 +112,21 @@ describe('remove-devtools', () => {
       3000,
     )
     expect(output).toBe(undefined)
+  })
+
+  test('it adds enhanced console.log with css formatting to console.log()', () => {
+    const output = removeEmptySpace(
+      enhanceConsoleLog(
+        `
+        console.log('This is a log')
+        `,
+        'test.jsx',
+        3000,
+      )!.code,
+    )
+    expect(output.includes('color:#A0A')).toEqual(true)
+    expect(output.includes('color:#FFF')).toEqual(true)
+    expect(output.includes('color:#55F')).toEqual(true)
+    expect(output.includes('color:#FFF')).toEqual(true)
   })
 })

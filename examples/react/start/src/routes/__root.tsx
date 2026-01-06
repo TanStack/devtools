@@ -33,6 +33,7 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  console.log('Rendering Root Document')
   return (
     <html lang="en">
       <head>
