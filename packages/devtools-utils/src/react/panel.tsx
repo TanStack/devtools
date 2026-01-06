@@ -40,8 +40,8 @@ export function createReactPanel<
 
       return () => {
         if (devToolRef.current) {
-          devtools.current?.unmount();
-          devtools.current = null;
+          devtools.current?.unmount()
+          devtools.current = null
         }
       }
     }, [props?.theme])
