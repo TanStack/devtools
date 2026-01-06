@@ -14,16 +14,16 @@ import type { JSX } from 'solid-js'
 export function constructCoreClass(Component: () => JSX.Element) {
   class DevtoolsCore {
     #isMounted = false
-    #isMounting = false;
-    #mountCb: (() => void) | null = null;
+    #isMounting = false
+    #mountCb: (() => void) | null = null
     #dispose?: () => void
     #Component: any
     #ThemeProvider: any
 
-    constructor() { }
+    constructor() {}
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
-      this.#isMounting = true;
+      this.#isMounting = true
       const { lazy } = await import('solid-js')
       const { render, Portal } = await import('solid-js/web')
       if (this.#isMounted) {
@@ -52,11 +52,11 @@ export function constructCoreClass(Component: () => JSX.Element) {
         )
       }, mountTo)
       this.#isMounted = true
-      this.#isMounting = false;
+      this.#isMounting = false
       this.#dispose = dispose
       if (this.#mountCb) {
-        this.#mountCb();
-        this.#mountCb = null;
+        this.#mountCb()
+        this.#mountCb = null
       }
     }
 
@@ -69,7 +69,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
           this.#dispose?.()
           this.#isMounted = false
         }
-        return;
+        return
       }
       this.#dispose?.()
       this.#isMounted = false
@@ -79,8 +79,8 @@ export function constructCoreClass(Component: () => JSX.Element) {
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') { }
-    unmount() { }
+    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
+    unmount() {}
   }
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }
