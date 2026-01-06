@@ -14,6 +14,8 @@ import type { JSX } from 'solid-js'
 export function constructCoreClass(Component: () => JSX.Element) {
   class DevtoolsCore {
     #isMounted = false
+    #isMounting = false
+    #mountCb: (() => void) | null = null
     #dispose?: () => void
     #Component: any
     #ThemeProvider: any
@@ -21,6 +23,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
     constructor() {}
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
+      this.#isMounting = true
       const { lazy } = await import('solid-js')
       const { render, Portal } = await import('solid-js/web')
       if (this.#isMounted) {
@@ -49,12 +52,24 @@ export function constructCoreClass(Component: () => JSX.Element) {
         )
       }, mountTo)
       this.#isMounted = true
+      this.#isMounting = false
       this.#dispose = dispose
+      if (this.#mountCb) {
+        this.#mountCb()
+        this.#mountCb = null
+      }
     }
 
     unmount() {
-      if (!this.#isMounted) {
+      if (!this.#isMounted && !this.#isMounting) {
         throw new Error('Devtools is not mounted')
+      }
+      if (this.#isMounting) {
+        this.#mountCb = () => {
+          this.#dispose?.()
+          this.#isMounted = false
+        }
+        return
       }
       this.#dispose?.()
       this.#isMounted = false
