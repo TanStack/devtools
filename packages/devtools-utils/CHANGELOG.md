@@ -1,5 +1,13 @@
 # @tanstack/devtools-utils
 
+## 0.2.3
+
+### Patch Changes
+
+- fix: panel issue fix ([#308](https://github.com/TanStack/devtools/pull/308))
+
+- revert panel generation ([#308](https://github.com/TanStack/devtools/pull/308))
+
 ## 0.2.2
 
 ### Patch Changes
