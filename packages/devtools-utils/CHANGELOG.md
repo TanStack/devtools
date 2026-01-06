@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.2.2
+
+### Patch Changes
+
+- revert panel generation ([#306](https://github.com/TanStack/devtools/pull/306))
+
 ## 0.2.1
 
 ### Patch Changes
