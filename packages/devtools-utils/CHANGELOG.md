@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.2.4
+
+### Patch Changes
+
+- fix double mounting of panels ([#310](https://github.com/TanStack/devtools/pull/310))
+
 ## 0.2.3
 
 ### Patch Changes
