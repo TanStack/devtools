@@ -34,7 +34,7 @@ export function createPreactPanel<
     const devToolRef = useRef<HTMLDivElement>(null)
     const devtools = useRef<TCoreDevtoolsClass | null>(null)
     useEffect(() => {
-      if (devtools.current) return;
+      if (devtools.current) return
       devtools.current = new CoreClass()
 
       if (devToolRef.current) {
