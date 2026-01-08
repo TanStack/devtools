@@ -54,12 +54,13 @@ export const PiPProvider = (props: PiPProviderProps) => {
         'Failed to open popup. Please allow popups for this site to view the devtools in picture-in-picture mode.',
       )
     }
-    //  can be run outside of vite so we ignore the rule
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    import.meta?.hot?.on('vite:beforeUpdate', () => {
-      localStorage.setItem('pip_open', 'false')
-      closePipWindow()
-    })
+
+    if (import.meta.hot && typeof import.meta.hot.on === 'function') {
+      import.meta.hot.on('vite:beforeUpdate', () => {
+        localStorage.setItem('pip_open', 'false')
+        closePipWindow()
+      })
+    }
     window.addEventListener('beforeunload', () => {
       localStorage.setItem('pip_open', 'false')
       closePipWindow()
