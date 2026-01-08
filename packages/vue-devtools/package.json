@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/vue-devtools",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Vue application.",
   "author": "Damian Osipiuk",
   "license": "MIT",

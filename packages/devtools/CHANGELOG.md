@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.3
+
+### Patch Changes
+
+- fix issue with popups in non-vite environments ([#312](https://github.com/TanStack/devtools/pull/312))
+
 ## 0.10.2
 
 ### Patch Changes

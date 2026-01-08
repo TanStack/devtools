@@ -1,5 +1,12 @@
 # @tanstack/solid-devtools
 
+## 0.7.22
+
+### Patch Changes
+
+- Updated dependencies [[`e9f700c`](https://github.com/TanStack/devtools/commit/e9f700ce7d3327463a7c03ee8bdb1401452b18b1)]:
+  - @tanstack/devtools@0.10.3
+
 ## 0.7.21
 
 ### Patch Changes
