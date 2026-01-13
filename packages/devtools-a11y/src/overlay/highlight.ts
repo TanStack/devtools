@@ -247,7 +247,7 @@ export function highlightElement(
 
       // Scroll first highlighted element into view
       if (highlightedCount === 0) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
       }
 
       highlightedCount++

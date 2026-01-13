@@ -1,11 +1,26 @@
 import { useEffect, useState } from 'react'
 import { a11yEventClient } from '../event-client'
-import { filterByThreshold, getLiveMonitor, groupIssuesByImpact, runAudit, } from '../scanner'
-import { clearHighlights, highlightAllIssues, highlightElement, initOverlayAdapter, } from '../overlay'
+import {
+  filterByThreshold,
+  getLiveMonitor,
+  groupIssuesByImpact,
+  runAudit,
+} from '../scanner'
+import {
+  clearHighlights,
+  highlightAllIssues,
+  highlightElement,
+  initOverlayAdapter,
+} from '../overlay'
 import { mergeConfig, saveConfig } from '../config'
 import { exportAuditResults } from '../export'
 import type { JSX } from 'react'
-import type { A11yAuditResult, A11yPluginOptions, RuleSetPreset, SeverityThreshold, } from '../types'
+import type {
+  A11yAuditResult,
+  A11yPluginOptions,
+  RuleSetPreset,
+  SeverityThreshold,
+} from '../types'
 
 const SEVERITY_COLORS = {
   critical: '#dc2626',
@@ -34,11 +49,11 @@ function scrollToElement(selector: string): boolean {
   try {
     const element = document.querySelector(selector)
     if (element) {
-      // Scroll the element into view
+      // Scroll the element into view at the top so it's visible above the devtools panel
       element.scrollIntoView({
         behavior: 'smooth',
-        block: 'center',
-        inline: 'center',
+        block: 'start',
+        inline: 'nearest',
       })
       return true
     }
@@ -59,6 +74,9 @@ export function A11yDevtoolsPanel({
   const [results, setResults] = useState<A11yAuditResult | null>(null)
   const [isScanning, setIsScanning] = useState(false)
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null)
+  const [selectedSeverity, setSelectedSeverity] = useState<
+    'all' | SeverityThreshold
+  >('all')
 
   const isDark = theme === 'dark'
   const bg = isDark ? '#1a1a2e' : '#ffffff'
@@ -164,22 +182,43 @@ export function A11yDevtoolsPanel({
     }
   }
 
-  const handleIssueClick = (issueId: string, selector: string) => {
+  const handleIssueClick = (issueId: string) => {
     setSelectedIssueId(issueId)
     clearHighlights()
     const issue = results?.issues.find((i) => i.id === issueId)
-    if (issue) {
-      // Scroll to the element first
-      scrollToElement(selector)
+    if (issue && issue.nodes.length > 0) {
+      // Try each node's selector until we find one that exists in the DOM
+      let scrolled = false
+      for (const node of issue.nodes) {
+        const selector = node.selector
+        if (!selector) continue
 
-      // Highlight the element
-      highlightElement(selector, issue.impact)
+        try {
+          const element = document.querySelector(selector)
+          if (element) {
+            // Scroll to the first matching element
+            if (!scrolled) {
+              scrollToElement(selector)
+              scrolled = true
+            }
 
-      // Emit event for other listeners
-      a11yEventClient.emit('highlight', {
-        selector,
-        impact: issue.impact,
-      })
+            // Highlight the element
+            highlightElement(selector, issue.impact)
+          }
+        } catch (error) {
+          // Invalid selector, skip
+          console.warn('[A11y Panel] Invalid selector:', selector, error)
+        }
+      }
+
+      // Emit event for other listeners (use first selector)
+      const primarySelector = issue.nodes[0]?.selector
+      if (primarySelector) {
+        a11yEventClient.emit('highlight', {
+          selector: primarySelector,
+          impact: issue.impact,
+        })
+      }
     }
   }
 
@@ -222,8 +261,8 @@ export function A11yDevtoolsPanel({
                 color: isDark ? '#94a3b8' : '#64748b',
               }}
             >
-              {results.summary.total} issue
-              {results.summary.total !== 1 ? 's' : ''}
+              {filteredIssues.length} issue
+              {filteredIssues.length !== 1 ? 's' : ''}
             </span>
           )}
         </div>
@@ -425,44 +464,66 @@ export function A11yDevtoolsPanel({
               }}
             >
               {(['critical', 'serious', 'moderate', 'minor'] as const).map(
-                (impact) => (
-                  <div
-                    key={impact}
-                    style={{
-                      padding: '12px',
-                      background: secondaryBg,
-                      borderRadius: '8px',
-                      borderLeft: `3px solid ${SEVERITY_COLORS[impact]}`,
-                    }}
-                  >
-                    <div
+                (impact) => {
+                  const count = grouped[impact].length
+                  const isActive = selectedSeverity === impact
+                  return (
+                    <button
+                      key={impact}
+                      onClick={() =>
+                        setSelectedSeverity((prev) =>
+                          prev === impact ? 'all' : impact,
+                        )
+                      }
                       style={{
-                        fontSize: '24px',
-                        fontWeight: 700,
-                        color: SEVERITY_COLORS[impact],
+                        padding: '12px',
+                        background: secondaryBg,
+                        color: fg,
+                        borderRadius: '8px',
+                        border: `1px solid ${borderColor}`,
+                        boxShadow: isActive
+                          ? `0 0 0 2px ${SEVERITY_COLORS[impact]}`
+                          : 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
                       }}
                     >
-                      {results.summary[impact]}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '11px',
-                        color: isDark ? '#94a3b8' : '#64748b',
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {SEVERITY_LABELS[impact]}
-                    </div>
-                  </div>
-                ),
+                      <div
+                        style={{
+                          fontSize: '24px',
+                          fontWeight: 700,
+                          color: SEVERITY_COLORS[impact],
+                        }}
+                      >
+                        {count}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '11px',
+                          color: isDark ? '#94a3b8' : '#64748b',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {SEVERITY_LABELS[impact]}
+                      </div>
+                    </button>
+                  )
+                },
               )}
             </div>
 
             {/* Issue List */}
             {(['critical', 'serious', 'moderate', 'minor'] as const).map(
               (impact) => {
+                // If a specific severity is selected, only show that section
+                if (selectedSeverity !== 'all' && selectedSeverity !== impact)
+                  return null
+
                 const issues = grouped[impact]
-                if (issues.length === 0) return null
+
+                // If 'all' is selected, show only sections that have issues
+                if (selectedSeverity === 'all' && issues.length === 0)
+                  return null
 
                 return (
                   <div key={impact} style={{ marginBottom: '16px' }}>
@@ -478,122 +539,140 @@ export function A11yDevtoolsPanel({
                     >
                       {SEVERITY_LABELS[impact]} ({issues.length})
                     </h3>
-                    {issues.map((issue) => {
-                      const selector = issue.nodes[0]?.selector || 'unknown'
-                      const isSelected = selectedIssueId === issue.id
 
-                      return (
-                        <div
-                          key={issue.id}
-                          onClick={() => handleIssueClick(issue.id, selector)}
-                          style={{
-                            padding: '12px',
-                            marginBottom: '8px',
-                            background: isSelected
-                              ? isDark
-                                ? '#1e3a5f'
-                                : '#e0f2fe'
-                              : secondaryBg,
-                            border: `1px solid ${isSelected ? '#0ea5e9' : borderColor}`,
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                          }}
-                        >
+                    {issues.length === 0 ? (
+                      <div
+                        style={{
+                          padding: '12px',
+                          background: secondaryBg,
+                          border: `1px solid ${borderColor}`,
+                          borderRadius: '6px',
+                          color: isDark ? '#94a3b8' : '#64748b',
+                          fontSize: '13px',
+                        }}
+                      >
+                        No issues of this severity
+                      </div>
+                    ) : (
+                      issues.map((issue) => {
+                        const selector = issue.nodes[0]?.selector || 'unknown'
+                        const isSelected = selectedIssueId === issue.id
+
+                        return (
                           <div
+                            key={issue.id}
+                            onClick={() => handleIssueClick(issue.id)}
                             style={{
-                              display: 'flex',
-                              justifyContent: 'space-between',
-                              alignItems: 'flex-start',
+                              padding: '12px',
+                              marginBottom: '8px',
+                              background: isSelected
+                                ? isDark
+                                  ? '#1e3a5f'
+                                  : '#e0f2fe'
+                                : secondaryBg,
+                              border: `1px solid ${isSelected ? '#0ea5e9' : borderColor}`,
+                              borderRadius: '6px',
+                              cursor: 'pointer',
                             }}
                           >
-                            <div style={{ flex: 1 }}>
-                              <div
-                                style={{
-                                  fontWeight: 600,
-                                  fontSize: '13px',
-                                  marginBottom: '4px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  gap: '8px',
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    width: '8px',
-                                    height: '8px',
-                                    borderRadius: '50%',
-                                    background: SEVERITY_COLORS[impact],
-                                  }}
-                                />
-                                {issue.ruleId}
-                              </div>
-                              <p
-                                style={{
-                                  fontSize: '12px',
-                                  color: isDark ? '#cbd5e1' : '#475569',
-                                  margin: '0 0 8px 0',
-                                  lineHeight: 1.4,
-                                }}
-                              >
-                                {issue.message}
-                              </p>
-                              <div
-                                style={{
-                                  fontSize: '10px',
-                                  color: isDark ? '#64748b' : '#94a3b8',
-                                  fontFamily: 'monospace',
-                                  overflow: 'hidden',
-                                  textOverflow: 'ellipsis',
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                {selector}
-                              </div>
-                            </div>
-                            <a
-                              href={issue.helpUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              style={{
-                                fontSize: '11px',
-                                color: '#0ea5e9',
-                                textDecoration: 'none',
-                                flexShrink: 0,
-                                marginLeft: '12px',
-                              }}
-                            >
-                              Learn more →
-                            </a>
-                          </div>
-                          {issue.wcagTags.length > 0 && (
                             <div
                               style={{
                                 display: 'flex',
-                                gap: '4px',
-                                marginTop: '8px',
-                                flexWrap: 'wrap',
+                                justifyContent: 'space-between',
+                                alignItems: 'flex-start',
                               }}
                             >
-                              {issue.wcagTags.slice(0, 3).map((tag) => (
-                                <span
-                                  key={tag}
+                              <div style={{ flex: 1 }}>
+                                <div
                                   style={{
-                                    fontSize: '10px',
-                                    padding: '2px 6px',
-                                    background: isDark ? '#374151' : '#e2e8f0',
-                                    borderRadius: '4px',
-                                    color: isDark ? '#94a3b8' : '#64748b',
+                                    fontWeight: 600,
+                                    fontSize: '13px',
+                                    marginBottom: '4px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
                                   }}
                                 >
-                                  {tag}
-                                </span>
-                              ))}
+                                  <span
+                                    style={{
+                                      width: '8px',
+                                      height: '8px',
+                                      borderRadius: '50%',
+                                      background: SEVERITY_COLORS[impact],
+                                    }}
+                                  />
+                                  {issue.ruleId}
+                                </div>
+                                <p
+                                  style={{
+                                    fontSize: '12px',
+                                    color: isDark ? '#cbd5e1' : '#475569',
+                                    margin: '0 0 8px 0',
+                                    lineHeight: 1.4,
+                                  }}
+                                >
+                                  {issue.message}
+                                </p>
+                                <div
+                                  style={{
+                                    fontSize: '10px',
+                                    color: isDark ? '#64748b' : '#94a3b8',
+                                    fontFamily: 'monospace',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                  }}
+                                >
+                                  {selector}
+                                </div>
+                              </div>
+                              <a
+                                href={issue.helpUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                style={{
+                                  fontSize: '11px',
+                                  color: '#0ea5e9',
+                                  textDecoration: 'none',
+                                  flexShrink: 0,
+                                  marginLeft: '12px',
+                                }}
+                              >
+                                Learn more →
+                              </a>
                             </div>
-                          )}
-                        </div>
-                      )
-                    })}
+                            {issue.wcagTags.length > 0 && (
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  gap: '4px',
+                                  marginTop: '8px',
+                                  flexWrap: 'wrap',
+                                }}
+                              >
+                                {issue.wcagTags.slice(0, 3).map((tag) => (
+                                  <span
+                                    key={tag}
+                                    style={{
+                                      fontSize: '10px',
+                                      padding: '2px 6px',
+                                      background: isDark
+                                        ? '#374151'
+                                        : '#e2e8f0',
+                                      borderRadius: '4px',
+                                      color: isDark ? '#94a3b8' : '#64748b',
+                                    }}
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })
+                    )}
                   </div>
                 )
               },

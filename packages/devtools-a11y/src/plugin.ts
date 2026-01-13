@@ -438,9 +438,7 @@ export function createA11yPlugin(
 
       function attachEventHandlers() {
         // Scan button
-        const scanBtn = el.querySelector(
-          '#scan-btn',
-        )
+        const scanBtn = el.querySelector<HTMLButtonElement>('#scan-btn')
         if (scanBtn) {
           scanBtn.onclick = async () => {
             scanBtn.textContent = 'Scanning...'
@@ -475,9 +473,7 @@ export function createA11yPlugin(
         }
 
         // Export button
-        const exportBtn = el.querySelector(
-          '#export-btn',
-        )
+        const exportBtn = el.querySelector<HTMLButtonElement>('#export-btn')
         if (exportBtn && currentResults) {
           exportBtn.onclick = () => {
             exportAuditResults(currentResults!, { format: 'json' })
@@ -485,7 +481,7 @@ export function createA11yPlugin(
         }
 
         // Toggle overlay button
-        const toggleOverlayBtn = el.querySelector(
+        const toggleOverlayBtn = el.querySelector<HTMLButtonElement>(
           '#toggle-overlay-btn',
         )
         if (toggleOverlayBtn) {
@@ -508,9 +504,8 @@ export function createA11yPlugin(
         }
 
         // Threshold select
-        const thresholdSelect = el.querySelector(
-          '#threshold-select',
-        )
+        const thresholdSelect =
+          el.querySelector<HTMLSelectElement>('#threshold-select')
         if (thresholdSelect) {
           thresholdSelect.onchange = () => {
             config.threshold = thresholdSelect.value as SeverityThreshold
@@ -523,9 +518,8 @@ export function createA11yPlugin(
         }
 
         // Rule set select
-        const rulesetSelect = el.querySelector(
-          '#ruleset-select',
-        )
+        const rulesetSelect =
+          el.querySelector<HTMLSelectElement>('#ruleset-select')
         if (rulesetSelect) {
           rulesetSelect.onchange = () => {
             config.ruleSet = rulesetSelect.value as RuleSetPreset
@@ -535,7 +529,7 @@ export function createA11yPlugin(
         }
 
         // Live monitoring checkbox
-        const liveMonitorCheckbox = el.querySelector(
+        const liveMonitorCheckbox = el.querySelector<HTMLInputElement>(
           '#live-monitor-checkbox',
         )
         if (liveMonitorCheckbox) {
@@ -591,9 +585,7 @@ export function createA11yPlugin(
 
       // Run on mount if configured
       if (config.runOnMount) {
-        const scanBtn = el.querySelector(
-          '#scan-btn',
-        )
+        const scanBtn = el.querySelector<HTMLButtonElement>('#scan-btn')
         if (scanBtn) {
           scanBtn.click()
         }
