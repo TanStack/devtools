@@ -109,9 +109,16 @@ export interface A11yAuditResult {
 }
 
 /**
+ * Scanner engine option
+ */
+export type ScannerEngine = 'axe-core' | 'html-codesniffer'
+
+/**
  * Options for running an audit
  */
 export interface A11yAuditOptions {
+  /** Scanner engine to use (default: 'axe-core') */
+  engine?: ScannerEngine
   /** Minimum severity to report (default: 'serious') */
   threshold?: SeverityThreshold
   /** DOM context to audit (default: document) */
@@ -144,6 +151,10 @@ export interface A11yPluginOptions {
   showOverlays?: boolean
   /** Persist settings to localStorage (default: true) */
   persistSettings?: boolean
+  /** Scanner engine to use (default: 'axe-core') */
+  engine?: ScannerEngine
+  /** Rules to disable (by rule ID) */
+  disabledRules?: Array<string>
 }
 
 /**
