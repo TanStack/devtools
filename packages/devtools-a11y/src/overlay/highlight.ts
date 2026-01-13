@@ -9,6 +9,9 @@ const TOOLTIP_CLASS = 'tsd-a11y-tooltip'
 const activeTooltips = new Map<HTMLElement, Element>()
 let scrollHandler: (() => void) | null = null
 
+// Tooltip height (padding + font size + some buffer)
+const TOOLTIP_HEIGHT = 28
+
 /**
  * Selectors for devtools elements that should never be highlighted
  */
@@ -143,13 +146,67 @@ function injectStyles(): void {
 }
 
 /**
+ * Calculate optimal tooltip position, ensuring it's always visible in viewport
+ */
+function calculateTooltipPosition(
+  targetElement: Element,
+  tooltip: HTMLElement,
+): { top: number; left: number; flipped: boolean } {
+  const rect = targetElement.getBoundingClientRect()
+  const tooltipHeight = TOOLTIP_HEIGHT
+  const gap = 4 // Small gap between tooltip and element
+  const viewportPadding = 8 // Minimum distance from viewport edge
+
+  // Default: position above the element
+  let top = rect.top - tooltipHeight - gap
+  let flipped = false
+
+  // If tooltip would be above viewport, we need to find a visible position
+  if (top < viewportPadding) {
+    // Try positioning below the element's top edge (inside the element but visible)
+    const belowTop = rect.top + gap + viewportPadding
+
+    // If the element's bottom is within the viewport, position below the element
+    if (rect.bottom + gap + tooltipHeight < window.innerHeight) {
+      top = rect.bottom + gap
+      flipped = true
+    }
+    // Otherwise, position at the top of the viewport (for large elements like <main>)
+    else if (belowTop + tooltipHeight < window.innerHeight) {
+      top = belowTop
+      flipped = true
+    }
+    // Fallback: just keep it at the top of the viewport
+    else {
+      top = viewportPadding
+      flipped = true
+    }
+  }
+
+  // Also handle horizontal overflow - keep tooltip within viewport
+  let left = rect.left
+  const tooltipWidth = tooltip.offsetWidth || 150 // Estimate if not yet rendered
+  if (left + tooltipWidth > window.innerWidth) {
+    left = Math.max(
+      viewportPadding,
+      window.innerWidth - tooltipWidth - viewportPadding,
+    )
+  }
+  if (left < viewportPadding) {
+    left = viewportPadding
+  }
+
+  return { top, left, flipped }
+}
+
+/**
  * Update all tooltip positions based on their target elements
  */
 function updateTooltipPositions(): void {
   activeTooltips.forEach((targetElement, tooltip) => {
-    const rect = targetElement.getBoundingClientRect()
-    tooltip.style.top = `${rect.top - 28}px`
-    tooltip.style.left = `${rect.left}px`
+    const { top, left } = calculateTooltipPosition(targetElement, tooltip)
+    tooltip.style.top = `${top}px`
+    tooltip.style.left = `${left}px`
   })
 }
 
@@ -190,18 +247,18 @@ function createTooltip(
   // Mark as overlay element so it's excluded from a11y scans
   tooltip.setAttribute('data-a11y-overlay', 'true')
 
-  // Position the tooltip above the target element using fixed positioning
-  const rect = targetElement.getBoundingClientRect()
-  tooltip.style.top = `${rect.top - 28}px`
-  tooltip.style.left = `${rect.left}px`
-
-  // Track this tooltip for scroll updates
+  // Track this tooltip for scroll updates (need to add before positioning)
   activeTooltips.set(tooltip, targetElement)
 
   // Start scroll listener if not already running
   if (activeTooltips.size === 1) {
     startScrollListener()
   }
+
+  // Position the tooltip - will flip below element if above viewport
+  const { top, left } = calculateTooltipPosition(targetElement, tooltip)
+  tooltip.style.top = `${top}px`
+  tooltip.style.left = `${left}px`
 
   return tooltip
 }

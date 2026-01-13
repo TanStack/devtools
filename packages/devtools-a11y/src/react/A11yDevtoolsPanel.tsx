@@ -167,6 +167,24 @@ export function A11yDevtoolsPanel({
     }
   }, [])
 
+  // Update highlights when disabled rules change
+  useEffect(() => {
+    if (!results || !config.showOverlays) {
+      return
+    }
+
+    // Filter issues by threshold AND disabled rules
+    const issuesAboveThreshold = filterByThreshold(
+      results.issues,
+      config.threshold,
+    ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
+
+    clearHighlights()
+    if (issuesAboveThreshold.length > 0) {
+      highlightAllIssues(issuesAboveThreshold)
+    }
+  }, [config.disabledRules, results, config.showOverlays, config.threshold])
+
   const handleScan = async () => {
     setIsScanning(true)
 
@@ -186,11 +204,11 @@ export function A11yDevtoolsPanel({
         issueCount: result.issues.length,
       })
 
-      // Highlight only issues that meet the threshold
+      // Highlight only issues that meet the threshold and are not disabled
       const issuesAboveThreshold = filterByThreshold(
         result.issues,
         config.threshold,
-      )
+      ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
       if (config.showOverlays && issuesAboveThreshold.length > 0) {
         highlightAllIssues(issuesAboveThreshold)
       }
@@ -216,11 +234,11 @@ export function A11yDevtoolsPanel({
     saveConfig({ showOverlays: newValue })
 
     if (newValue && results) {
-      // Highlight only issues that meet the threshold
+      // Highlight only issues that meet the threshold and are not disabled
       const issuesAboveThreshold = filterByThreshold(
         results.issues,
         config.threshold,
-      )
+      ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
       if (issuesAboveThreshold.length > 0) {
         highlightAllIssues(issuesAboveThreshold)
       }
@@ -237,7 +255,10 @@ export function A11yDevtoolsPanel({
     // Re-highlight with new threshold if overlays are enabled
     if (config.showOverlays && results) {
       clearHighlights()
-      const issuesAboveThreshold = filterByThreshold(results.issues, threshold)
+      const issuesAboveThreshold = filterByThreshold(
+        results.issues,
+        threshold,
+      ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
       if (issuesAboveThreshold.length > 0) {
         highlightAllIssues(issuesAboveThreshold)
       }
@@ -263,11 +284,11 @@ export function A11yDevtoolsPanel({
       },
       onAuditComplete: (result) => {
         setResults(result)
-        // Highlight only issues that meet the threshold
+        // Highlight only issues that meet the threshold and are not disabled
         const issuesAboveThreshold = filterByThreshold(
           result.issues,
           config.threshold,
-        )
+        ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
         if (config.showOverlays && issuesAboveThreshold.length > 0) {
           highlightAllIssues(issuesAboveThreshold)
         }
