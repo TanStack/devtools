@@ -47,6 +47,56 @@ const RULE_SET_LABELS: Record<RuleSetPreset, string> = {
   all: 'All Rules',
 }
 
+type RuleCategory =
+  | 'all'
+  | 'cat.aria'
+  | 'cat.color'
+  | 'cat.forms'
+  | 'cat.keyboard'
+  | 'cat.language'
+  | 'cat.name-role-value'
+  | 'cat.parsing'
+  | 'cat.semantics'
+  | 'cat.sensory-and-visual-cues'
+  | 'cat.structure'
+  | 'cat.tables'
+  | 'cat.text-alternatives'
+  | 'cat.time-and-media'
+
+const CATEGORY_LABELS: Record<RuleCategory, string> = {
+  all: 'All Categories',
+  'cat.aria': 'ARIA',
+  'cat.color': 'Color & Contrast',
+  'cat.forms': 'Forms',
+  'cat.keyboard': 'Keyboard',
+  'cat.language': 'Language',
+  'cat.name-role-value': 'Names & Roles',
+  'cat.parsing': 'Parsing',
+  'cat.semantics': 'Semantics',
+  'cat.sensory-and-visual-cues': 'Sensory Cues',
+  'cat.structure': 'Structure',
+  'cat.tables': 'Tables',
+  'cat.text-alternatives': 'Text Alternatives',
+  'cat.time-and-media': 'Time & Media',
+}
+
+const CATEGORIES: Array<RuleCategory> = [
+  'all',
+  'cat.aria',
+  'cat.color',
+  'cat.forms',
+  'cat.keyboard',
+  'cat.language',
+  'cat.name-role-value',
+  'cat.parsing',
+  'cat.semantics',
+  'cat.sensory-and-visual-cues',
+  'cat.structure',
+  'cat.tables',
+  'cat.text-alternatives',
+  'cat.time-and-media',
+]
+
 interface RuleInfo {
   id: string
   description: string
@@ -97,6 +147,7 @@ export function A11yDevtoolsPanel({
   const [showSettings, setShowSettings] = useState(false)
   const [availableRules, setAvailableRules] = useState<Array<RuleInfo>>([])
   const [ruleSearchQuery, setRuleSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<RuleCategory>('all')
 
   const isDark = theme === 'dark'
   const bg = isDark ? '#1a1a2e' : '#ffffff'
@@ -1010,24 +1061,51 @@ export function A11yDevtoolsPanel({
                 </div>
               </div>
 
-              {/* Search */}
-              <input
-                type="text"
-                placeholder="Search rules..."
-                value={ruleSearchQuery}
-                onChange={(e) => setRuleSearchQuery(e.target.value)}
+              {/* Category and Search filters */}
+              <div
                 style={{
-                  width: '100%',
-                  padding: '8px 10px',
-                  border: `1px solid ${borderColor}`,
-                  borderRadius: '4px',
-                  background: bg,
-                  color: fg,
-                  fontSize: '12px',
+                  display: 'flex',
+                  gap: '8px',
                   marginBottom: '12px',
-                  boxSizing: 'border-box',
                 }}
-              />
+              >
+                <select
+                  value={selectedCategory}
+                  onChange={(e) =>
+                    setSelectedCategory(e.target.value as RuleCategory)
+                  }
+                  style={{
+                    padding: '8px 10px',
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: '4px',
+                    background: bg,
+                    color: fg,
+                    fontSize: '12px',
+                  }}
+                >
+                  {CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {CATEGORY_LABELS[cat]}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  type="text"
+                  placeholder="Search rules..."
+                  value={ruleSearchQuery}
+                  onChange={(e) => setRuleSearchQuery(e.target.value)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 10px',
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: '4px',
+                    background: bg,
+                    color: fg,
+                    fontSize: '12px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
 
               {/* Rules List */}
               <div
@@ -1039,17 +1117,32 @@ export function A11yDevtoolsPanel({
                 }}
               >
                 {availableRules
-                  .filter(
-                    (rule) =>
-                      rule.id
-                        .toLowerCase()
-                        .includes(ruleSearchQuery.toLowerCase()) ||
-                      rule.description
-                        .toLowerCase()
-                        .includes(ruleSearchQuery.toLowerCase()),
-                  )
-                  .map((rule, index) => {
+                  .filter((rule) => {
+                    // Category filter
+                    if (
+                      selectedCategory !== 'all' &&
+                      !rule.tags.includes(selectedCategory)
+                    ) {
+                      return false
+                    }
+                    // Search filter
+                    const query = ruleSearchQuery.toLowerCase()
+                    return (
+                      rule.id.toLowerCase().includes(query) ||
+                      rule.description.toLowerCase().includes(query)
+                    )
+                  })
+                  .map((rule, index, filteredRules) => {
                     const isDisabled = config.disabledRules.includes(rule.id)
+                    const isBestPracticeOnly =
+                      rule.tags.includes('best-practice') &&
+                      !rule.tags.some(
+                        (t) =>
+                          t.startsWith('wcag') || t.startsWith('section508'),
+                      )
+                    const categoryTag = rule.tags.find((t) =>
+                      t.startsWith('cat.'),
+                    )
                     return (
                       <label
                         key={rule.id}
@@ -1059,7 +1152,7 @@ export function A11yDevtoolsPanel({
                           gap: '8px',
                           padding: '8px 10px',
                           borderBottom:
-                            index < availableRules.length - 1
+                            index < filteredRules.length - 1
                               ? `1px solid ${borderColor}`
                               : 'none',
                           cursor: 'pointer',
@@ -1076,15 +1169,38 @@ export function A11yDevtoolsPanel({
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
-                              fontWeight: 500,
-                              fontSize: '12px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
                               marginBottom: '2px',
-                              textDecoration: isDisabled
-                                ? 'line-through'
-                                : 'none',
                             }}
                           >
-                            {rule.id}
+                            <span
+                              style={{
+                                fontWeight: 500,
+                                fontSize: '12px',
+                                textDecoration: isDisabled
+                                  ? 'line-through'
+                                  : 'none',
+                              }}
+                            >
+                              {rule.id}
+                            </span>
+                            {isBestPracticeOnly && (
+                              <span
+                                style={{
+                                  fontSize: '9px',
+                                  padding: '1px 4px',
+                                  background: '#f59e0b',
+                                  color: '#fff',
+                                  borderRadius: '3px',
+                                  fontWeight: 500,
+                                }}
+                                title="This rule is only included in 'Best Practice' or 'All Rules' presets"
+                              >
+                                BP
+                              </span>
+                            )}
                           </div>
                           <div
                             style={{
@@ -1095,29 +1211,26 @@ export function A11yDevtoolsPanel({
                           >
                             {rule.description}
                           </div>
-                          {rule.tags.length > 0 && (
+                          {categoryTag && (
                             <div
                               style={{
                                 display: 'flex',
                                 gap: '4px',
                                 marginTop: '4px',
-                                flexWrap: 'wrap',
                               }}
                             >
-                              {rule.tags.slice(0, 4).map((tag) => (
-                                <span
-                                  key={tag}
-                                  style={{
-                                    fontSize: '9px',
-                                    padding: '1px 4px',
-                                    background: isDark ? '#374151' : '#e2e8f0',
-                                    borderRadius: '3px',
-                                    color: isDark ? '#94a3b8' : '#64748b',
-                                  }}
-                                >
-                                  {tag}
-                                </span>
-                              ))}
+                              <span
+                                style={{
+                                  fontSize: '9px',
+                                  padding: '1px 4px',
+                                  background: isDark ? '#374151' : '#e2e8f0',
+                                  borderRadius: '3px',
+                                  color: isDark ? '#94a3b8' : '#64748b',
+                                }}
+                              >
+                                {CATEGORY_LABELS[categoryTag as RuleCategory] ||
+                                  categoryTag.replace('cat.', '')}
+                              </span>
                             </div>
                           )}
                         </div>

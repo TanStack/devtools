@@ -245,11 +245,6 @@ export function highlightElement(
         document.body.appendChild(tooltip)
       }
 
-      // Scroll first highlighted element into view
-      if (highlightedCount === 0) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-
       highlightedCount++
     })
 
@@ -264,21 +259,54 @@ export function highlightElement(
 }
 
 /**
- * Highlight all elements with issues
+ * Severity levels mapped to numeric values for comparison (higher = more severe)
+ */
+const SEVERITY_ORDER: Record<SeverityThreshold, number> = {
+  critical: 4,
+  serious: 3,
+  moderate: 2,
+  minor: 1,
+}
+
+/**
+ * Highlight all elements with issues.
+ * When multiple issues affect the same element, the most severe one is shown.
  */
 export function highlightAllIssues(issues: Array<A11yIssue>): void {
   injectStyles()
   clearHighlights()
 
+  // Track the most severe issue for each selector
+  // Map: selector -> { impact, ruleId }
+  const selectorSeverity = new Map<
+    string,
+    { impact: SeverityThreshold; ruleId: string }
+  >()
+
+  // First pass: determine the most severe issue for each selector
   for (const issue of issues) {
     for (const node of issue.nodes) {
+      const selector = node.selector
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      highlightElement(node.selector, issue.impact ?? 'minor', {
-        pulse: false,
-        showTooltip: true,
-        ruleId: issue.ruleId,
-      })
+      const impact = issue.impact ?? 'minor'
+      const existing = selectorSeverity.get(selector)
+
+      if (
+        !existing ||
+        SEVERITY_ORDER[impact] > SEVERITY_ORDER[existing.impact]
+      ) {
+        selectorSeverity.set(selector, { impact, ruleId: issue.ruleId })
+      }
     }
+  }
+
+  // Second pass: highlight each selector with its most severe issue
+  for (const [selector, { impact, ruleId }] of selectorSeverity) {
+    highlightElement(selector, impact, {
+      pulse: false,
+      showTooltip: true,
+      ruleId,
+    })
   }
 }
 

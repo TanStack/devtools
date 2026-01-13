@@ -114,6 +114,18 @@ export interface A11yAuditResult {
 export type ScannerEngine = 'axe-core' | 'html-codesniffer'
 
 /**
+ * Configuration for custom rules
+ */
+export interface CustomRulesConfig {
+  /** Enable click-handler-on-non-interactive rule (default: true) */
+  clickHandlerOnNonInteractive?: boolean
+  /** Enable mouse-only-event-handlers rule (default: true) */
+  mouseOnlyEventHandlers?: boolean
+  /** Enable static-element-interaction rule (default: true) */
+  staticElementInteraction?: boolean
+}
+
+/**
  * Options for running an audit
  */
 export interface A11yAuditOptions {
@@ -131,6 +143,8 @@ export interface A11yAuditOptions {
   disabledRules?: Array<string>
   /** Selectors to exclude from auditing */
   exclude?: Array<string>
+  /** Configuration for custom rules (default: all enabled) */
+  customRules?: CustomRulesConfig
 }
 
 /**

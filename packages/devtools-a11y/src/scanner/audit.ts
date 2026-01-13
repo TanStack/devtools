@@ -1,4 +1,8 @@
 import axe from 'axe-core'
+import {
+  getCustomRules as getCustomRulesInternal,
+  runCustomRules,
+} from './custom-rules'
 import type { AxeResults, RuleObject, RunOptions } from 'axe-core'
 import type {
   A11yAuditOptions,
@@ -6,6 +10,7 @@ import type {
   A11yIssue,
   A11yNode,
   A11ySummary,
+  CustomRulesConfig,
   GroupedIssues,
   RuleSetPreset,
   SeverityThreshold,
@@ -124,10 +129,11 @@ function convertToIssues(
 }
 
 /**
- * Create summary statistics from audit results
+ * Create summary statistics from issues array
+ * Used when combining axe-core results with custom rule results
  */
 function createSummary(
-  results: AxeResults,
+  axeResults: AxeResults,
   issues: Array<A11yIssue>,
 ): A11ySummary {
   const summary: A11ySummary = {
@@ -136,8 +142,8 @@ function createSummary(
     serious: 0,
     moderate: 0,
     minor: 0,
-    passes: results.passes.length,
-    incomplete: results.incomplete.length,
+    passes: axeResults.passes.length,
+    incomplete: axeResults.incomplete.length,
   }
 
   for (const issue of issues) {
@@ -228,6 +234,7 @@ export async function runAudit(
     enabledRules,
     disabledRules,
     exclude = [],
+    customRules = {},
   } = options
 
   // Merge user exclusions with default devtools exclusions
@@ -271,16 +278,45 @@ export async function runAudit(
       } as axe.ElementContext
     }
 
-    // Run the audit
+    // Run the axe-core audit
     const results = await axe.run(auditContext, axeOptions)
+
+    // Convert axe-core results to our format
+    const axeIssues = convertToIssues(results, threshold)
+
+    // Run custom rules (if not all disabled)
+    const customRulesConfig: CustomRulesConfig = {
+      clickHandlerOnNonInteractive:
+        customRules.clickHandlerOnNonInteractive !== false &&
+        !disabledRules?.includes('click-handler-on-non-interactive'),
+      mouseOnlyEventHandlers:
+        customRules.mouseOnlyEventHandlers !== false &&
+        !disabledRules?.includes('mouse-only-event-handlers'),
+      staticElementInteraction:
+        customRules.staticElementInteraction !== false &&
+        !disabledRules?.includes('static-element-interaction'),
+    }
+
+    const contextElement =
+      typeof context === 'string'
+        ? document.querySelector(context) || document
+        : context
+
+    const customIssues = runCustomRules(
+      contextElement,
+      customRulesConfig,
+    )
+
+    // Merge all issues
+    const allIssues = [...axeIssues, ...customIssues]
+
     const duration = performance.now() - startTime
 
-    // Convert results to our format
-    const issues = convertToIssues(results, threshold)
-    const summary = createSummary(results, issues)
+    // Create summary from combined issues
+    const summary = createSummary(results, allIssues)
 
     return {
-      issues,
+      issues: allIssues,
       summary,
       timestamp: Date.now(),
       url: typeof window !== 'undefined' ? window.location.href : '',
@@ -344,16 +380,22 @@ export function diffAuditResults(
 }
 
 /**
- * Get a list of all available axe-core rules
+ * Get a list of all available axe-core rules plus custom rules
  */
 export function getAvailableRules(): Array<{
   id: string
   description: string
   tags: Array<string>
 }> {
-  return axe.getRules().map((rule) => ({
+  // Get axe-core rules
+  const axeRules = axe.getRules().map((rule) => ({
     id: rule.ruleId,
     description: rule.description,
     tags: rule.tags,
   }))
+
+  // Get custom rules
+  const customRules = getCustomRulesInternal()
+
+  return [...axeRules, ...customRules]
 }
