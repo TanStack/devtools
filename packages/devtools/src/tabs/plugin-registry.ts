@@ -208,11 +208,6 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     tags: ['TanStack'],
   },
 
-  // ==========================================
-  // THIRD-PARTY PLUGINS - Examples
-  // ==========================================
-  // External contributors can add their plugins below!
-
   // TanStack A11y Devtools
   '@tanstack/devtools-a11y': {
     packageName: '@tanstack/devtools-a11y',
@@ -228,8 +223,13 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     author: 'TanStack',
     framework: 'react',
     isNew: true,
-    tags: ['accessibility', 'a11y', 'wcag', 'axe-core', 'audit'],
+    tags: ['TanStack', 'a11y'],
   },
+
+  // ==========================================
+  // THIRD-PARTY PLUGINS - Examples
+  // ==========================================
+  // External contributors can add their plugins below!
 
   // Dimano — Prefetch Heatmap for TanStack Router
   '@dimano/ts-devtools-plugin-prefetch-heatmap': {
