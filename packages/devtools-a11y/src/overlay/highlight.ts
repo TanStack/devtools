@@ -74,9 +74,11 @@ const SEVERITY_COLORS: Record<
  */
 function injectStyles(): void {
   if (document.getElementById(HIGHLIGHT_STYLE_ID)) {
+    console.log('[A11y Overlay] Styles already injected')
     return
   }
 
+  console.log('[A11y Overlay] Injecting styles into document.head')
   const style = document.createElement('style')
   style.id = HIGHLIGHT_STYLE_ID
   // Highlights use outline which doesn't affect layout
@@ -352,6 +354,11 @@ export function highlightElement(
  * Shows all issues per element in the tooltip, using the most severe for highlighting.
  */
 export function highlightAllIssues(issues: Array<A11yIssue>): void {
+  console.log(
+    '[A11y Overlay] highlightAllIssues called with',
+    issues.length,
+    'issues',
+  )
   injectStyles()
   clearHighlights()
 
@@ -376,6 +383,11 @@ export function highlightAllIssues(issues: Array<A11yIssue>): void {
   }
 
   // Highlight each selector with its most severe issue, but show all in tooltip
+  console.log(
+    '[A11y Overlay] Processing',
+    selectorIssues.size,
+    'unique selectors',
+  )
   for (const [selector, issueList] of selectorIssues) {
     // Skip empty lists (shouldn't happen, but guards against undefined)
     if (issueList.length === 0) {
@@ -389,6 +401,9 @@ export function highlightAllIssues(issues: Array<A11yIssue>): void {
 
     try {
       const elements = document.querySelectorAll(selector)
+      console.log(
+        `[A11y Overlay] Selector "${selector}" matched ${elements.length} elements`,
+      )
       if (elements.length === 0) {
         continue
       }
@@ -397,9 +412,11 @@ export function highlightAllIssues(issues: Array<A11yIssue>): void {
       elements.forEach((el) => {
         // Skip elements inside devtools
         if (isInsideDevtools(el)) {
+          console.log(`[A11y Overlay] Skipping element inside devtools:`, el)
           return
         }
 
+        console.log(`[A11y Overlay] Adding highlight class to element:`, el)
         el.classList.add(
           HIGHLIGHT_CLASS,
           `${HIGHLIGHT_CLASS}--${mostSevereImpact}`,

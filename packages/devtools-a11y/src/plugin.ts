@@ -3,6 +3,7 @@ import { filterByThreshold, groupIssuesByImpact, runAudit } from './scanner'
 import {
   clearHighlights,
   highlightAllIssues,
+  highlightElement,
   initOverlayAdapter,
 } from './overlay'
 import { mergeConfig, saveConfig } from './config'
@@ -97,14 +98,23 @@ export function createA11yPlugin(
                 <h2 style="margin: 0; font-size: 16px; font-weight: 600;">Accessibility Audit</h2>
                 ${
                   currentResults
-                    ? `
-                  <span style="
-                    font-size: 12px;
-                    color: ${isDark ? '#94a3b8' : '#64748b'};
-                  ">
-                    ${currentResults.summary.total} issue${currentResults.summary.total !== 1 ? 's' : ''}
-                  </span>
-                `
+                    ? (() => {
+                        const count = filterByThreshold(
+                          currentResults.issues,
+                          config.threshold,
+                        ).filter(
+                          (issue) =>
+                            !config.disabledRules.includes(issue.ruleId),
+                        ).length
+                        return `
+                          <span style="
+                            font-size: 12px;
+                            color: ${isDark ? '#94a3b8' : '#64748b'};
+                          ">
+                            ${count} issue${count !== 1 ? 's' : ''}
+                          </span>
+                        `
+                      })()
                     : ''
                 }
               </div>
@@ -256,8 +266,28 @@ export function createA11yPlugin(
         const filteredIssues = filterByThreshold(
           currentResults.issues,
           config.threshold,
-        )
+        ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
         const grouped = groupIssuesByImpact(filteredIssues)
+
+        // Show "no issues" if all issues are filtered out
+        if (filteredIssues.length === 0) {
+          return `
+            <div style="
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100%;
+              text-align: center;
+            ">
+              <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+              <p style="font-size: 16px; color: #10b981; font-weight: 600;">No accessibility issues found!</p>
+              <p style="font-size: 12px; color: ${isDark ? '#94a3b8' : '#64748b'}; margin-top: 8px;">
+                Scanned in ${currentResults.duration.toFixed(0)}ms
+              </p>
+            </div>
+          `
+        }
 
         let html = `
           <!-- Summary -->
@@ -277,7 +307,7 @@ export function createA11yPlugin(
                 border-left: 3px solid ${SEVERITY_COLORS[impact]};
               ">
                 <div style="font-size: 24px; font-weight: 700; color: ${SEVERITY_COLORS[impact]};">
-                  ${currentResults!.summary[impact]}
+                  ${grouped[impact].length}
                 </div>
                 <div style="font-size: 11px; color: ${isDark ? '#94a3b8' : '#64748b'}; text-transform: uppercase;">
                   ${SEVERITY_LABELS[impact]}
@@ -441,6 +471,8 @@ export function createA11yPlugin(
               currentResults = await runAudit({
                 threshold: config.threshold,
                 ruleSet: config.ruleSet,
+                disabledRules: config.disabledRules,
+                rootSelector: config.rootSelector,
               })
 
               a11yEventClient.emit('results', currentResults)
@@ -449,8 +481,17 @@ export function createA11yPlugin(
                 issueCount: currentResults.issues.length,
               })
 
+              // Highlight only issues that meet threshold and are not disabled
               if (config.showOverlays && currentResults.issues.length > 0) {
-                highlightAllIssues(currentResults.issues)
+                const issuesAboveThreshold = filterByThreshold(
+                  currentResults.issues,
+                  config.threshold,
+                ).filter(
+                  (issue) => !config.disabledRules.includes(issue.ruleId),
+                )
+                if (issuesAboveThreshold.length > 0) {
+                  highlightAllIssues(issuesAboveThreshold)
+                }
               }
 
               renderPanel()
@@ -485,7 +526,13 @@ export function createA11yPlugin(
               currentResults &&
               currentResults.issues.length > 0
             ) {
-              highlightAllIssues(currentResults.issues)
+              const issuesAboveThreshold = filterByThreshold(
+                currentResults.issues,
+                config.threshold,
+              ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
+              if (issuesAboveThreshold.length > 0) {
+                highlightAllIssues(issuesAboveThreshold)
+              }
             } else {
               clearHighlights()
             }
@@ -519,18 +566,58 @@ export function createA11yPlugin(
           }
         }
 
-        // Issue card clicks
+        // Issue card clicks - toggle behavior
         const issueCards = el.querySelectorAll('.issue-card')
         issueCards.forEach((card) => {
           ;(card as HTMLElement).onclick = () => {
             const issueId = card.getAttribute('data-issue-id')
             const selector = card.getAttribute('data-selector')
 
+            // Toggle behavior: if clicking the same issue, deselect and show all
+            if (selectedIssueId === issueId) {
+              selectedIssueId = null
+              clearHighlights()
+              // Restore all highlights if overlays are enabled
+              if (config.showOverlays && currentResults) {
+                const issuesAboveThreshold = filterByThreshold(
+                  currentResults.issues,
+                  config.threshold,
+                ).filter(
+                  (issue) => !config.disabledRules.includes(issue.ruleId),
+                )
+                if (issuesAboveThreshold.length > 0) {
+                  highlightAllIssues(issuesAboveThreshold)
+                }
+              }
+              renderPanel()
+              return
+            }
+
+            // Select new issue
             selectedIssueId = issueId
-            renderPanel()
+            clearHighlights()
 
             if (selector) {
-              clearHighlights()
+              const issue = currentResults?.issues.find((i) => i.id === issueId)
+              if (issue) {
+                // Highlight just this issue's element
+                highlightElement(selector, issue.impact)
+
+                // Try to scroll to the element
+                try {
+                  const element = document.querySelector(selector)
+                  if (element) {
+                    element.scrollIntoView({
+                      behavior: 'smooth',
+                      block: 'start',
+                      inline: 'nearest',
+                    })
+                  }
+                } catch {
+                  // Invalid selector, skip
+                }
+              }
+
               a11yEventClient.emit('highlight', {
                 selector,
                 impact:
@@ -538,6 +625,8 @@ export function createA11yPlugin(
                     ?.impact || 'serious',
               })
             }
+
+            renderPanel()
           }
         })
       }

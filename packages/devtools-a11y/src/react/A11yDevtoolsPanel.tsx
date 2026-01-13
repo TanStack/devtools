@@ -194,6 +194,7 @@ export function A11yDevtoolsPanel({
         threshold: config.threshold,
         ruleSet: config.ruleSet,
         disabledRules: config.disabledRules,
+        rootSelector: config.rootSelector,
       })
 
       setResults(result)
@@ -208,6 +209,11 @@ export function A11yDevtoolsPanel({
         result.issues,
         config.threshold,
       ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
+      console.log('[A11y Panel] After scan:', {
+        totalIssues: result.issues.length,
+        issuesAboveThreshold: issuesAboveThreshold.length,
+        showOverlays: config.showOverlays,
+      })
       if (config.showOverlays && issuesAboveThreshold.length > 0) {
         highlightAllIssues(issuesAboveThreshold)
       }

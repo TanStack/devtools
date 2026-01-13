@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-a11y",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Accessibility auditing plugin for TanStack Devtools powered by axe-core",
   "author": "TanStack",
   "license": "MIT",

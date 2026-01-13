@@ -206,6 +206,9 @@ importers:
         specifier: ^4.1.11
         version: 4.1.13
     devDependencies:
+      '@tanstack/devtools-a11y':
+        specifier: workspace:^
+        version: link:../../../packages/devtools-a11y
       '@tanstack/devtools-ui':
         specifier: 0.4.4
         version: link:../../../packages/devtools-ui

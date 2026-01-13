@@ -13,6 +13,7 @@ export const DEFAULT_CONFIG: Required<A11yPluginOptions> = {
   persistSettings: true,
   engine: 'axe-core',
   disabledRules: [],
+  rootSelector: '',
 }
 
 /**

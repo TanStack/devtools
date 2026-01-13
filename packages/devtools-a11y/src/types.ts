@@ -145,6 +145,12 @@ export interface A11yAuditOptions {
   exclude?: Array<string>
   /** Configuration for custom rules (default: all enabled) */
   customRules?: CustomRulesConfig
+  /**
+   * CSS selector for the root element to audit.
+   * If specified, only this element and its children will be scanned.
+   * This is the recommended way to scope audits to your app.
+   */
+  rootSelector?: string
 }
 
 /**
@@ -165,6 +171,12 @@ export interface A11yPluginOptions {
   engine?: ScannerEngine
   /** Rules to disable (by rule ID) */
   disabledRules?: Array<string>
+  /**
+   * CSS selector for the root element to audit (default: auto-detect)
+   * Common values: '#root', '#app', 'main', '[data-app]'
+   * If not specified, will try common framework root selectors
+   */
+  rootSelector?: string
 }
 
 /**

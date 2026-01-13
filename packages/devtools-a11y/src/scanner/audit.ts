@@ -209,17 +209,31 @@ function getContextDescription(context: Document | Element | string): string {
 }
 
 /**
- * Default selectors to exclude from auditing (devtools panels, overlays, etc.)
+ * Common app root selectors used by frameworks.
+ * These are tried in order when no rootSelector is specified.
  */
-const DEFAULT_EXCLUDE_SELECTORS = [
-  // TanStack Devtools root container
-  '[data-testid="tanstack_devtools"]',
-  // A11y overlay elements
-  '[data-a11y-overlay]',
-  // Common devtools patterns
-  '[data-devtools]',
-  '[data-devtools-panel]',
+const COMMON_ROOT_SELECTORS = [
+  '#root', // React (Create React App, Vite)
+  '#app', // Vue, common pattern
+  '#__next', // Next.js
+  '#__nuxt', // Nuxt
+  '[data-app]', // Vuetify
+  '#app-root', // Angular
+  'main', // Semantic HTML
 ]
+
+/**
+ * Find the app root element using common selectors
+ */
+function findAppRoot(): Element | null {
+  for (const selector of COMMON_ROOT_SELECTORS) {
+    const el = document.querySelector(selector)
+    if (el) {
+      return el
+    }
+  }
+  return null
+}
 
 /**
  * Run an accessibility audit using axe-core
@@ -229,19 +243,59 @@ export async function runAudit(
 ): Promise<A11yAuditResult> {
   const {
     threshold = 'serious',
-    context = document,
+    context,
     ruleSet = 'wcag21aa',
     enabledRules,
     disabledRules,
     exclude = [],
     customRules = {},
+    rootSelector,
   } = options
 
-  // Merge user exclusions with default devtools exclusions
-  const allExclusions = [...DEFAULT_EXCLUDE_SELECTORS, ...exclude]
-
   const startTime = performance.now()
-  const contextDescription = getContextDescription(context)
+
+  // Determine the audit context:
+  // 1. If rootSelector is specified, use that element
+  // 2. If context is specified, use that
+  // 3. Otherwise, try to auto-detect the app root
+  // 4. Fall back to document
+  let auditRoot: Document | Element
+  let contextDescription: string
+
+  if (rootSelector) {
+    const el = document.querySelector(rootSelector)
+    if (el) {
+      auditRoot = el
+      contextDescription = rootSelector
+    } else {
+      console.warn(
+        `[A11y Audit] Root selector "${rootSelector}" not found, falling back to document`,
+      )
+      auditRoot = document
+      contextDescription = 'document'
+    }
+  } else if (context) {
+    if (typeof context === 'string') {
+      const el = document.querySelector(context)
+      auditRoot = el || document
+      contextDescription = el ? context : 'document'
+    } else {
+      auditRoot = context
+      contextDescription = getContextDescription(context)
+    }
+  } else {
+    // Auto-detect app root
+    const appRoot = findAppRoot()
+    if (appRoot) {
+      auditRoot = appRoot
+      contextDescription = appRoot.id
+        ? `#${appRoot.id}`
+        : appRoot.tagName.toLowerCase()
+    } else {
+      auditRoot = document
+      contextDescription = 'document'
+    }
+  }
 
   try {
     // Build axe-core options
@@ -267,19 +321,27 @@ export async function runAudit(
       axeOptions.rules = rules
     }
 
-    // Determine the context to audit
-    let auditContext: axe.ElementContext = context as axe.ElementContext
+    // Build the audit context - scan only within the root element
+    let axeContext: axe.ElementContext
 
-    // Add exclusions if specified (always include devtools exclusions)
-    if (allExclusions.length > 0) {
-      auditContext = {
-        include: [auditContext as Element],
-        exclude: allExclusions.map((sel) => [sel]),
-      } as axe.ElementContext
+    if (auditRoot === document) {
+      // Scanning document - exclude devtools and any user exclusions
+      const allExclusions = [...exclude]
+      if (allExclusions.length > 0) {
+        axeContext = {
+          exclude: allExclusions.map((sel) => [sel]),
+        } as axe.ElementContext
+      } else {
+        axeContext = document as axe.ElementContext
+      }
+    } else {
+      // Scanning a specific element - include only that element
+      // No need to exclude devtools since we're scoped to the app root
+      axeContext = auditRoot as axe.ElementContext
     }
 
     // Run the axe-core audit
-    const results = await axe.run(auditContext, axeOptions)
+    const results = await axe.run(axeContext, axeOptions)
 
     // Convert axe-core results to our format
     const axeIssues = convertToIssues(results, threshold)
@@ -297,15 +359,8 @@ export async function runAudit(
         !disabledRules?.includes('static-element-interaction'),
     }
 
-    const contextElement =
-      typeof context === 'string'
-        ? document.querySelector(context) || document
-        : context
-
-    const customIssues = runCustomRules(
-      contextElement,
-      customRulesConfig,
-    )
+    // Run custom rules on the same context
+    const customIssues = runCustomRules(auditRoot, customRulesConfig)
 
     // Merge all issues
     const allIssues = [...axeIssues, ...customIssues]
