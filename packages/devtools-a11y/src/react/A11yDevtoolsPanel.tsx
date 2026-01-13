@@ -311,6 +311,24 @@ export function A11yDevtoolsPanel({
   }
 
   const handleIssueClick = (issueId: string) => {
+    // Toggle behavior: if clicking the same issue, deselect and show all
+    if (selectedIssueId === issueId) {
+      setSelectedIssueId(null)
+      clearHighlights()
+      // Restore all highlights if overlays are enabled
+      if (config.showOverlays && results) {
+        const issuesAboveThreshold = filterByThreshold(
+          results.issues,
+          config.threshold,
+        ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
+        if (issuesAboveThreshold.length > 0) {
+          highlightAllIssues(issuesAboveThreshold)
+        }
+      }
+      return
+    }
+
+    // Select new issue
     setSelectedIssueId(issueId)
     clearHighlights()
     const issue = results?.issues.find((i) => i.id === issueId)

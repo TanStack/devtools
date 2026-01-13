@@ -163,14 +163,11 @@ function isInteractiveElement(element: Element): boolean {
   // Check if it's an inherently interactive element
   if (INTERACTIVE_ELEMENTS.has(tagName)) {
     // Disabled elements are not interactive
-    return !element.hasAttribute('disabled');
-
+    return !element.hasAttribute('disabled')
   }
 
   // Check if it's an element that becomes interactive with href
-  return INTERACTIVE_WITH_HREF.has(tagName) && element.hasAttribute('href');
-
-
+  return INTERACTIVE_WITH_HREF.has(tagName) && element.hasAttribute('href')
 }
 
 /**
@@ -281,6 +278,20 @@ function hasKeyboardHandler(element: Element): boolean {
 }
 
 /**
+ * Class prefixes to exclude from selectors (devtools overlay classes)
+ */
+const EXCLUDED_CLASS_PREFIXES = ['tsd-a11y-']
+
+/**
+ * Filter out devtools-injected classes from class list
+ */
+function filterClasses(classList: DOMTokenList): Array<string> {
+  return Array.from(classList).filter(
+    (cls) => !EXCLUDED_CLASS_PREFIXES.some((prefix) => cls.startsWith(prefix)),
+  )
+}
+
+/**
  * Get a unique selector for an element
  */
 function getSelector(element: Element): string {
@@ -290,7 +301,8 @@ function getSelector(element: Element): string {
   }
 
   const tagName = element.tagName.toLowerCase()
-  const classes = Array.from(element.classList).join('.')
+  // Filter out devtools overlay classes (tsd-a11y-highlight, etc.)
+  const classes = filterClasses(element.classList).join('.')
   const classSelector = classes ? `.${classes}` : ''
 
   // Build path from parent

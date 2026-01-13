@@ -13,6 +13,16 @@ let scrollHandler: (() => void) | null = null
 const TOOLTIP_HEIGHT = 28
 
 /**
+ * Severity levels mapped to numeric values for comparison (higher = more severe)
+ */
+const SEVERITY_ORDER: Record<SeverityThreshold, number> = {
+  critical: 4,
+  serious: 3,
+  moderate: 2,
+  minor: 1,
+}
+
+/**
  * Selectors for devtools elements that should never be highlighted
  */
 const DEVTOOLS_SELECTORS = [
@@ -107,6 +117,9 @@ function injectStyles(): void {
       z-index: 99990;
       pointer-events: none;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .${TOOLTIP_CLASS}--critical {
@@ -221,16 +234,51 @@ function stopScrollListener(): void {
 }
 
 /**
- * Create a tooltip element for an issue and position it above the target element
+ * Issue info for tooltip display
+ */
+interface TooltipIssue {
+  ruleId: string
+  impact: SeverityThreshold
+}
+
+/**
+ * Create a tooltip element for issues and position it above the target element
  */
 function createTooltip(
-  ruleId: string,
-  impact: SeverityThreshold,
+  issues: Array<TooltipIssue>,
   targetElement: Element,
-): HTMLElement {
+): HTMLElement | null {
+  if (issues.length === 0) {
+    return null
+  }
+
+  // Sort issues by severity (most severe first)
+  const sortedIssues = [...issues].sort(
+    (a, b) => SEVERITY_ORDER[b.impact] - SEVERITY_ORDER[a.impact],
+  )
+
+  const firstIssue = sortedIssues[0]
+  if (!firstIssue) {
+    return null
+  }
+
+  const mostSevere = firstIssue.impact
   const tooltip = document.createElement('div')
-  tooltip.className = `${TOOLTIP_CLASS} ${TOOLTIP_CLASS}--${impact}`
-  tooltip.textContent = `${impact.toUpperCase()}: ${ruleId}`
+  tooltip.className = `${TOOLTIP_CLASS} ${TOOLTIP_CLASS}--${mostSevere}`
+
+  // Build tooltip content showing all issues
+  if (sortedIssues.length === 1) {
+    tooltip.textContent = `${mostSevere.toUpperCase()}: ${firstIssue.ruleId}`
+  } else {
+    // Multiple issues - show count and list
+    const issueList = sortedIssues
+      .map(
+        (issue) => `${issue.impact.charAt(0).toUpperCase()}: ${issue.ruleId}`,
+      )
+      .join(' | ')
+    tooltip.textContent = `${sortedIssues.length} issues: ${issueList}`
+  }
+
   // Mark as overlay element so it's excluded from a11y scans
   tooltip.setAttribute('data-a11y-overlay', 'true')
 
@@ -280,9 +328,10 @@ export function highlightElement(
 
       // Add tooltip to first highlighted element only
       if (showTooltip && highlightedCount === 0 && ruleId) {
-        const tooltip = createTooltip(ruleId, impact, el)
-        // Append tooltip to body with fixed positioning instead of to the element
-        document.body.appendChild(tooltip)
+        const tooltip = createTooltip([{ ruleId, impact }], el)
+        if (tooltip) {
+          document.body.appendChild(tooltip)
+        }
       }
 
       highlightedCount++
@@ -299,53 +348,76 @@ export function highlightElement(
 }
 
 /**
- * Severity levels mapped to numeric values for comparison (higher = more severe)
- */
-const SEVERITY_ORDER: Record<SeverityThreshold, number> = {
-  critical: 4,
-  serious: 3,
-  moderate: 2,
-  minor: 1,
-}
-
-/**
  * Highlight all elements with issues.
- * When multiple issues affect the same element, the most severe one is shown.
+ * Shows all issues per element in the tooltip, using the most severe for highlighting.
  */
 export function highlightAllIssues(issues: Array<A11yIssue>): void {
   injectStyles()
   clearHighlights()
 
-  // Track the most severe issue for each selector
-  // Map: selector -> { impact, ruleId }
-  const selectorSeverity = new Map<
-    string,
-    { impact: SeverityThreshold; ruleId: string }
-  >()
+  // Track ALL issues for each selector
+  // Map: selector -> Array<{ ruleId, impact }>
+  const selectorIssues = new Map<string, Array<TooltipIssue>>()
 
-  // First pass: determine the most severe issue for each selector
+  // Collect all issues per selector
   for (const issue of issues) {
     for (const node of issue.nodes) {
       const selector = node.selector
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       const impact = issue.impact ?? 'minor'
-      const existing = selectorSeverity.get(selector)
 
-      if (
-        !existing ||
-        SEVERITY_ORDER[impact] > SEVERITY_ORDER[existing.impact]
-      ) {
-        selectorSeverity.set(selector, { impact, ruleId: issue.ruleId })
+      const existing = selectorIssues.get(selector) || []
+      // Avoid duplicate rule IDs for the same selector
+      if (!existing.some((e) => e.ruleId === issue.ruleId)) {
+        existing.push({ ruleId: issue.ruleId, impact })
+        selectorIssues.set(selector, existing)
       }
     }
   }
 
-  // Second pass: highlight each selector with its most severe issue
-  for (const [selector, { impact, ruleId }] of selectorSeverity) {
-    highlightElement(selector, impact, {
-      showTooltip: true,
-      ruleId,
-    })
+  // Highlight each selector with its most severe issue, but show all in tooltip
+  for (const [selector, issueList] of selectorIssues) {
+    // Skip empty lists (shouldn't happen, but guards against undefined)
+    if (issueList.length === 0) {
+      continue
+    }
+
+    // Find most severe impact for highlighting
+    const mostSevereImpact = issueList.reduce((max, issue) =>
+      SEVERITY_ORDER[issue.impact] > SEVERITY_ORDER[max.impact] ? issue : max,
+    ).impact
+
+    try {
+      const elements = document.querySelectorAll(selector)
+      if (elements.length === 0) {
+        continue
+      }
+
+      let highlightedCount = 0
+      elements.forEach((el) => {
+        // Skip elements inside devtools
+        if (isInsideDevtools(el)) {
+          return
+        }
+
+        el.classList.add(
+          HIGHLIGHT_CLASS,
+          `${HIGHLIGHT_CLASS}--${mostSevereImpact}`,
+        )
+
+        // Add tooltip to first highlighted element only, showing ALL issues
+        if (highlightedCount === 0) {
+          const tooltip = createTooltip(issueList, el)
+          if (tooltip) {
+            document.body.appendChild(tooltip)
+          }
+        }
+
+        highlightedCount++
+      })
+    } catch (error) {
+      console.error('[A11y Overlay] Error highlighting element:', error)
+    }
   }
 }
 
