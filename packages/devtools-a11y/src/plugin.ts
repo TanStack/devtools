@@ -1,10 +1,5 @@
 import { a11yEventClient } from './event-client'
-import {
-  filterByThreshold,
-  getLiveMonitor,
-  groupIssuesByImpact,
-  runAudit,
-} from './scanner'
+import { filterByThreshold, groupIssuesByImpact, runAudit } from './scanner'
 import {
   clearHighlights,
   highlightAllIssues,
@@ -203,10 +198,6 @@ export function createA11yPlugin(
                   <option value="best-practice" ${config.ruleSet === 'best-practice' ? 'selected' : ''}>Best Practice</option>
                   <option value="all" ${config.ruleSet === 'all' ? 'selected' : ''}>All Rules</option>
                 </select>
-              </label>
-              <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
-                <input type="checkbox" id="live-monitor-checkbox" ${config.liveMonitoring ? 'checked' : ''} />
-                <span>Live Monitoring</span>
               </label>
             </div>
 
@@ -528,38 +519,6 @@ export function createA11yPlugin(
           }
         }
 
-        // Live monitoring checkbox
-        const liveMonitorCheckbox = el.querySelector<HTMLInputElement>(
-          '#live-monitor-checkbox',
-        )
-        if (liveMonitorCheckbox) {
-          liveMonitorCheckbox.onchange = () => {
-            config.liveMonitoring = liveMonitorCheckbox.checked
-            saveConfig({ liveMonitoring: config.liveMonitoring })
-
-            const monitor = getLiveMonitor({
-              debounceMs: config.liveMonitoringDelay,
-              auditOptions: {
-                threshold: config.threshold,
-                ruleSet: config.ruleSet,
-              },
-              onAuditComplete: (result) => {
-                currentResults = result
-                if (config.showOverlays && result.issues.length > 0) {
-                  highlightAllIssues(result.issues)
-                }
-                renderPanel()
-              },
-            })
-
-            if (config.liveMonitoring) {
-              monitor.start()
-            } else {
-              monitor.stop()
-            }
-          }
-        }
-
         // Issue card clicks
         const issueCards = el.querySelectorAll('.issue-card')
         issueCards.forEach((card) => {
@@ -598,7 +557,6 @@ export function createA11yPlugin(
         overlayCleanup = null
       }
       clearHighlights()
-      getLiveMonitor().stop()
       currentResults = null
       selectedIssueId = null
     },

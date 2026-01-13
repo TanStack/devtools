@@ -6,7 +6,6 @@ export {
   useA11yAudit,
   useA11yRef,
   useA11yOverlay,
-  useA11yLiveMonitor,
   useA11yEvents,
 } from './hooks'
 

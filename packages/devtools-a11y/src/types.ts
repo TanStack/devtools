@@ -155,10 +155,6 @@ export interface A11yPluginOptions {
   threshold?: SeverityThreshold
   /** Run audit automatically on mount (default: false) */
   runOnMount?: boolean
-  /** Enable live monitoring with MutationObserver (default: false) */
-  liveMonitoring?: boolean
-  /** Debounce delay for live monitoring in ms (default: 1000) */
-  liveMonitoringDelay?: number
   /** Rule set preset (default: 'wcag21aa') */
   ruleSet?: RuleSetPreset
   /** Show visual overlays on page (default: true) */
@@ -187,8 +183,6 @@ export interface A11yPluginState {
   selectedIssueId: string | null
   /** Whether overlays are visible */
   overlaysVisible: boolean
-  /** Whether live monitoring is active */
-  isLiveMonitoring: boolean
   /** Error message if any */
   error: string | null
 }
@@ -219,8 +213,6 @@ export interface A11yEventMap {
   'a11y:highlight-all': { issues: Array<A11yIssue> }
   /** Configuration changed */
   'a11y:config-change': Partial<A11yPluginOptions>
-  /** Live monitoring status changed */
-  'a11y:live-monitoring': { enabled: boolean }
   /** New issues detected (diff from previous scan) */
   'a11y:new-issues': { issues: Array<A11yIssue> }
   /** Issues resolved (diff from previous scan) */

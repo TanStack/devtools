@@ -1,8 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { a11yEventClient } from '../event-client'
-import { getLiveMonitor, runAudit } from '../scanner'
-import { clearHighlights, highlightAllIssues, initOverlayAdapter, } from '../overlay'
-import type { A11yAuditOptions, A11yAuditResult, A11yPluginOptions, } from '../types'
+import { runAudit } from '../scanner'
+import {
+  clearHighlights,
+  highlightAllIssues,
+  initOverlayAdapter,
+} from '../overlay'
+import type { A11yAuditOptions, A11yAuditResult } from '../types'
 
 /**
  * Hook to run accessibility audits on a component
@@ -100,50 +104,6 @@ export function useA11yOverlay() {
     },
     highlightAll: highlightAllIssues,
     clear: clearHighlights,
-  }
-}
-
-/**
- * Hook for live monitoring
- */
-export function useA11yLiveMonitor(
-  options: A11yPluginOptions & { enabled?: boolean } = {},
-) {
-  const { enabled = false, ...monitorOptions } = options
-  const [results, setResults] = useState<A11yAuditResult | null>(null)
-  const [isActive, setIsActive] = useState(false)
-
-  useEffect(() => {
-    if (!enabled) return
-
-    const monitor = getLiveMonitor({
-      debounceMs: monitorOptions.liveMonitoringDelay,
-      auditOptions: {
-        threshold: monitorOptions.threshold,
-        ruleSet: monitorOptions.ruleSet,
-      },
-      onAuditComplete: (result) => {
-        setResults(result)
-      },
-    })
-
-    monitor.start()
-    setIsActive(true)
-
-    return () => {
-      monitor.stop()
-      setIsActive(false)
-    }
-  }, [
-    enabled,
-    monitorOptions.liveMonitoringDelay,
-    monitorOptions.threshold,
-    monitorOptions.ruleSet,
-  ])
-
-  return {
-    results,
-    isActive,
   }
 }
 

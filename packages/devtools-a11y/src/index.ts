@@ -13,8 +13,6 @@ export {
   meetsThreshold,
   diffAuditResults,
   getAvailableRules,
-  LiveMonitor,
-  getLiveMonitor,
 } from './scanner'
 
 // Overlay

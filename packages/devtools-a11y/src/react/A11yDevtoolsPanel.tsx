@@ -3,7 +3,6 @@ import { a11yEventClient } from '../event-client'
 import {
   filterByThreshold,
   getAvailableRules,
-  getLiveMonitor,
   groupIssuesByImpact,
   runAudit,
 } from '../scanner'
@@ -271,37 +270,6 @@ export function A11yDevtoolsPanel({
     a11yEventClient.emit('config-change', { ruleSet })
   }
 
-  const handleLiveMonitoringChange = (enabled: boolean) => {
-    setConfig((prev) => ({ ...prev, liveMonitoring: enabled }))
-    saveConfig({ liveMonitoring: enabled })
-
-    const monitor = getLiveMonitor({
-      debounceMs: config.liveMonitoringDelay,
-      auditOptions: {
-        threshold: config.threshold,
-        ruleSet: config.ruleSet,
-        disabledRules: config.disabledRules,
-      },
-      onAuditComplete: (result) => {
-        setResults(result)
-        // Highlight only issues that meet the threshold and are not disabled
-        const issuesAboveThreshold = filterByThreshold(
-          result.issues,
-          config.threshold,
-        ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
-        if (config.showOverlays && issuesAboveThreshold.length > 0) {
-          highlightAllIssues(issuesAboveThreshold)
-        }
-      },
-    })
-
-    if (enabled) {
-      monitor.start()
-    } else {
-      monitor.stop()
-    }
-  }
-
   const handleOpenSettings = () => {
     const rules = getAvailableRules()
     setAvailableRules(rules)
@@ -499,7 +467,6 @@ export function A11yDevtoolsPanel({
         <span>
           {SEVERITY_LABELS[config.threshold]}+ |{' '}
           {RULE_SET_LABELS[config.ruleSet]}
-          {config.liveMonitoring && ' | Live'}
           {config.disabledRules.length > 0 &&
             ` | ${config.disabledRules.length} rule(s) disabled`}
         </span>
@@ -990,39 +957,6 @@ export function A11yDevtoolsPanel({
                   <option value="all">All Rules</option>
                 </select>
               </div>
-
-              {/* Live Monitoring */}
-              <label
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 0',
-                  borderBottom: `1px solid ${borderColor}`,
-                  cursor: 'pointer',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 500 }}>
-                    Live Monitoring
-                  </div>
-                  <div
-                    style={{
-                      fontSize: '11px',
-                      color: isDark ? '#94a3b8' : '#64748b',
-                      marginTop: '2px',
-                    }}
-                  >
-                    Automatically re-scan when DOM changes
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={config.liveMonitoring}
-                  onChange={(e) => handleLiveMonitoringChange(e.target.checked)}
-                  style={{ width: '16px', height: '16px' }}
-                />
-              </label>
             </div>
 
             {/* Disabled Rules Section */}

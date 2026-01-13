@@ -96,19 +96,6 @@ function injectStyles(): void {
       background-color: ${SEVERITY_COLORS.minor.bg} !important;
     }
 
-    .${HIGHLIGHT_CLASS}--pulse {
-      animation: tsd-a11y-pulse 1.5s ease-in-out infinite !important;
-    }
-
-    @keyframes tsd-a11y-pulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.7;
-      }
-    }
-
     .${TOOLTIP_CLASS} {
       position: fixed;
       padding: 4px 8px;
@@ -269,9 +256,9 @@ function createTooltip(
 export function highlightElement(
   selector: string,
   impact: SeverityThreshold = 'serious',
-  options: { pulse?: boolean; showTooltip?: boolean; ruleId?: string } = {},
+  options: { showTooltip?: boolean; ruleId?: string } = {},
 ): void {
-  const { pulse = false, showTooltip = true, ruleId } = options
+  const { showTooltip = true, ruleId } = options
 
   try {
     injectStyles()
@@ -290,10 +277,6 @@ export function highlightElement(
       }
 
       el.classList.add(HIGHLIGHT_CLASS, `${HIGHLIGHT_CLASS}--${impact}`)
-
-      if (pulse) {
-        el.classList.add(`${HIGHLIGHT_CLASS}--pulse`)
-      }
 
       // Add tooltip to first highlighted element only
       if (showTooltip && highlightedCount === 0 && ruleId) {
@@ -360,7 +343,6 @@ export function highlightAllIssues(issues: Array<A11yIssue>): void {
   // Second pass: highlight each selector with its most severe issue
   for (const [selector, { impact, ruleId }] of selectorSeverity) {
     highlightElement(selector, impact, {
-      pulse: false,
       showTooltip: true,
       ruleId,
     })
@@ -380,7 +362,6 @@ export function clearHighlights(): void {
       `${HIGHLIGHT_CLASS}--serious`,
       `${HIGHLIGHT_CLASS}--moderate`,
       `${HIGHLIGHT_CLASS}--minor`,
-      `${HIGHLIGHT_CLASS}--pulse`,
     )
   })
 
@@ -410,7 +391,7 @@ export function initOverlayAdapter(): () => void {
   const cleanupHighlight = a11yEventClient.on('highlight', (event) => {
     const { selector, impact } = event.payload
     clearHighlights()
-    highlightElement(selector, impact, { pulse: true })
+    highlightElement(selector, impact)
   })
 
   const cleanupClear = a11yEventClient.on('clear-highlights', () => {
