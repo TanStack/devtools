@@ -114,8 +114,13 @@ export function A11yDevtoolsPanel({
         issueCount: result.issues.length,
       })
 
-      if (config.showOverlays && result.issues.length > 0) {
-        highlightAllIssues(result.issues)
+      // Highlight only issues that meet the threshold
+      const issuesAboveThreshold = filterByThreshold(
+        result.issues,
+        config.threshold,
+      )
+      if (config.showOverlays && issuesAboveThreshold.length > 0) {
+        highlightAllIssues(issuesAboveThreshold)
       }
     } catch (error) {
       console.error('[A11y Panel] Scan failed:', error)
@@ -138,8 +143,15 @@ export function A11yDevtoolsPanel({
     setConfig((prev) => ({ ...prev, showOverlays: newValue }))
     saveConfig({ showOverlays: newValue })
 
-    if (newValue && results && results.issues.length > 0) {
-      highlightAllIssues(results.issues)
+    if (newValue && results) {
+      // Highlight only issues that meet the threshold
+      const issuesAboveThreshold = filterByThreshold(
+        results.issues,
+        config.threshold,
+      )
+      if (issuesAboveThreshold.length > 0) {
+        highlightAllIssues(issuesAboveThreshold)
+      }
     } else {
       clearHighlights()
     }
@@ -149,6 +161,15 @@ export function A11yDevtoolsPanel({
     setConfig((prev) => ({ ...prev, threshold }))
     saveConfig({ threshold })
     a11yEventClient.emit('config-change', { threshold })
+
+    // Re-highlight with new threshold if overlays are enabled
+    if (config.showOverlays && results) {
+      clearHighlights()
+      const issuesAboveThreshold = filterByThreshold(results.issues, threshold)
+      if (issuesAboveThreshold.length > 0) {
+        highlightAllIssues(issuesAboveThreshold)
+      }
+    }
   }
 
   const handleRuleSetChange = (ruleSet: RuleSetPreset) => {
@@ -169,8 +190,13 @@ export function A11yDevtoolsPanel({
       },
       onAuditComplete: (result) => {
         setResults(result)
-        if (config.showOverlays && result.issues.length > 0) {
-          highlightAllIssues(result.issues)
+        // Highlight only issues that meet the threshold
+        const issuesAboveThreshold = filterByThreshold(
+          result.issues,
+          config.threshold,
+        )
+        if (config.showOverlays && issuesAboveThreshold.length > 0) {
+          highlightAllIssues(issuesAboveThreshold)
         }
       },
     })
@@ -330,6 +356,7 @@ export function A11yDevtoolsPanel({
           alignItems: 'center',
           flexShrink: 0,
           fontSize: '13px',
+          flexWrap: 'wrap',
         }}
       >
         <label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
