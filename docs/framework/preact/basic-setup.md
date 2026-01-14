@@ -13,20 +13,23 @@ Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/preact-d
 npm i @tanstack/preact-devtools
 ```
 
-Next in the root of your application import the `TanStackDevtools` from the required framework adapter (in this case @tanstack/preact-devtools).
+Next, render the `TanStackDevtools` inside the providers required by the plugins you use (for example, `QueryClientProvider`). If you use TanStack Router devtools, you must pass the router instance to the router panel.
 
 ```tsx
+import { QueryClient, QueryClientProvider } from '@tanstack/preact-query'
 import { TanStackDevtools } from '@tanstack/preact-devtools'
 import { render } from 'preact'
 
 import App from './App'
 
+const queryClient = new QueryClient()
+
 render(
-  <>
+  <QueryClientProvider client={queryClient}>
     <App />
 
     <TanStackDevtools />
-  </>,
+  </QueryClientProvider>,
   document.getElementById('root')!,
 )
 ```
@@ -42,24 +45,33 @@ Currently TanStack offers:
 
 ```tsx
 import { render } from 'preact'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/preact-query'
 import { TanStackDevtools } from '@tanstack/preact-devtools'
+import { PreactQueryDevtoolsPanel } from '@tanstack/preact-query-devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/preact-router-devtools'
 
 import App from './App'
 
+const queryClient = new QueryClient()
+const router = /* create or import your TanStack Router instance */
+
 render(
-  <>
+  <QueryClientProvider client={queryClient}>
     <App />
 
     <TanStackDevtools
       plugins={[
         {
-          name: 'Your Plugin',
-          render: <YourPluginComponent />,
+          name: 'TanStack Query',
+          render: <PreactQueryDevtoolsPanel />,
+        },
+        {
+          name: 'TanStack Router',
+          render: <TanStackRouterDevtoolsPanel router={router} />,
         },
       ]}
     />
-  </>,
+  </QueryClientProvider>,
   document.getElementById('root')!,
 )
 ```

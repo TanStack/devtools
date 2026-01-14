@@ -13,20 +13,25 @@ Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/solid-de
 npm i @tanstack/solid-devtools
 ```
 
-Next in the root of your application import the `TanStackDevtools` from the required framework adapter (in this case @tanstack/solid-devtools).
+Next, render the `TanStackDevtools` inside the providers required by the plugins you use (for example, `QueryClientProvider`). If you use TanStack Router devtools, you must pass the router instance to the router panel.
 
 ```tsx
+import { render } from 'solid-js/web'
+import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
+import { RouterProvider, createRouter } from '@tanstack/solid-router'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 
-import App from './App'
+import { routeTree } from './routeTree.gen'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
+const queryClient = new QueryClient()
+const router = createRouter({ routeTree })
 
+render(() => (
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
     <TanStackDevtools />
-  </StrictMode>,
-)
+  </QueryClientProvider>
+), document.getElementById('root')!)
 ```
 
 Import the desired devtools and provide it to the `TanStackDevtools` component along with a label for the menu.
@@ -38,25 +43,31 @@ Currently TanStack offers:
 - `FormDevtools`
 
 ```tsx
-import { render } from 'solid-js/web';
-
+import { render } from 'solid-js/web'
+import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
+import { RouterProvider, createRouter } from '@tanstack/solid-router'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
-
 import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'
 import { SolidFormDevtoolsPanel } from '@tanstack/solid-form'
 
-import App from './App'
+import { routeTree } from './routeTree.gen'
+
+const queryClient = new QueryClient()
+const router = createRouter({ routeTree })
 
 render(() => (
-  <>
-    <App />
-
+  <QueryClientProvider client={queryClient}>
+    <RouterProvider router={router} />
     <TanStackDevtools
       plugins={[
         {
-          name: 'TanStack router',
-          render: () => <TanStackRouterDevtoolsPanel />,
+          name: 'TanStack Query',
+          render: () => <SolidQueryDevtoolsPanel />,
+        },
+        {
+          name: 'TanStack Router',
+          render: () => <TanStackRouterDevtoolsPanel router={router} />,
         },
         {
           name: 'TanStack Form',
@@ -64,7 +75,7 @@ render(() => (
         },
       ]}
     />
-  </>
+  </QueryClientProvider>
 ), document.getElementById('root')!)
 ```
 
