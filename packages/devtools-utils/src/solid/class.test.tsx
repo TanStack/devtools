@@ -41,7 +41,7 @@ describe('constructCoreClass', () => {
       <div>Test Component</div>
     ))
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
+    await instance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true })
     expect(renderMock).toHaveBeenCalled()
   })
 
@@ -50,9 +50,9 @@ describe('constructCoreClass', () => {
       <div>Test Component</div>
     ))
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
+    await instance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true })
     await expect(
-      instance.mount(document.createElement('div'), 'dark'),
+      instance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true }),
     ).rejects.toThrow('Devtools is already mounted')
   })
 
@@ -69,10 +69,10 @@ describe('constructCoreClass', () => {
       <div>Test Component</div>
     ))
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
+    await instance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true })
     instance.unmount()
     await expect(
-      instance.mount(document.createElement('div'), 'dark'),
+      instance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true }),
     ).resolves.not.toThrow()
   })
 
@@ -81,7 +81,7 @@ describe('constructCoreClass', () => {
       <div>Test Component</div>
     ))
     const noOpInstance = new NoOpDevtoolsCore()
-    await noOpInstance.mount(document.createElement('div'), 'dark')
+    await noOpInstance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true })
 
     expect(lazyImportMock).not.toHaveBeenCalled()
     expect(renderMock).not.toHaveBeenCalled()
@@ -93,9 +93,9 @@ describe('constructCoreClass', () => {
       <div>Test Component</div>
     ))
     const noOpInstance = new NoOpDevtoolsCore()
-    await noOpInstance.mount(document.createElement('div'), 'dark')
+    await noOpInstance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true })
     await expect(
-      noOpInstance.mount(document.createElement('div'), 'dark'),
+      noOpInstance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true }),
     ).resolves.not.toThrow()
   })
 
@@ -112,7 +112,7 @@ describe('constructCoreClass', () => {
       <div>Test Component</div>
     ))
     const noOpInstance = new NoOpDevtoolsCore()
-    await noOpInstance.mount(document.createElement('div'), 'dark')
+    await noOpInstance.mount(document.createElement('div'), { theme: 'dark', devtoolsOpen: true })
     expect(() => noOpInstance.unmount()).not.toThrow()
   })
 })
