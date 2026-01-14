@@ -89,9 +89,9 @@ export const PluginsTab = (props: { isOpen: boolean }) => {
                       typeof plugin.name === 'string'
                         ? (pluginHeading.textContent = plugin.name)
                         : plugin.name(pluginHeading, {
-                          theme: theme(),
-                          devtoolsOpen: props.isOpen,
-                        })
+                            theme: theme(),
+                            devtoolsOpen: props.isOpen,
+                          })
                     }
                   })
 

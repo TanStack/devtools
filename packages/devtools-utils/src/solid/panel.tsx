@@ -4,12 +4,11 @@ import { createSignal, onCleanup, onMount } from 'solid-js'
 import type { ClassType } from './class'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
-export function createSolidPanel<
-  TComponentProps extends DevtoolsPanelProps,
->(CoreClass: ClassType) {
+export function createSolidPanel<TComponentProps extends DevtoolsPanelProps>(
+  CoreClass: ClassType,
+) {
   function Panel(props: TComponentProps) {
     let devToolRef: HTMLDivElement | undefined
     const [devtools] = createSignal(new CoreClass())

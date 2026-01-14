@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
-import type { TanStackDevtoolsPluginProps } from "@tanstack/devtools"
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
 /**
  * Creates a React component that dynamically imports and mounts a devtools panel. SSR friendly.

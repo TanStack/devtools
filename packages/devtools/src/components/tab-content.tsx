@@ -7,9 +7,13 @@ import type { JSX } from 'solid-js'
 export const TabContent = (props: { isOpen: boolean }) => {
   const { state } = useDevtoolsState()
   const styles = useStyles()
-  const component = createMemo<((props: { isOpen: boolean }) => JSX.Element) | null>(
-    () => tabs.find((t) => t.id === state().activeTab)?.component || null,
-  )
+  const component = createMemo<
+    ((props: { isOpen: boolean }) => JSX.Element) | null
+  >(() => tabs.find((t) => t.id === state().activeTab)?.component || null)
 
-  return <div class={styles().tabContent}>{component()?.({ isOpen: props.isOpen })}</div>
+  return (
+    <div class={styles().tabContent}>
+      {component()?.({ isOpen: props.isOpen })}
+    </div>
+  )
 }

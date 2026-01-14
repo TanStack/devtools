@@ -18,9 +18,9 @@ import type {
 type SolidPluginRender =
   | JSX.Element
   | ((
-    el: HTMLDivElement | HTMLHeadingElement,
-    props: TanStackDevtoolsPluginProps,
-  ) => JSX.Element)
+      el: HTMLDivElement | HTMLHeadingElement,
+      props: TanStackDevtoolsPluginProps,
+    ) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
@@ -107,8 +107,8 @@ export interface TanStackDevtoolsInit {
      * An optional custom function to render the dev tools trigger component.
      */
     customTrigger?:
-    | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
-    | JSX.Element
+      | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
+      | JSX.Element
   }
   /**
    * Configuration for the TanStack Devtools client event bus.
@@ -129,8 +129,8 @@ export default function SolidDevtoolsCore({
         typeof plugin.name === 'string'
           ? plugin.name
           : // The check above confirms that `plugin.name` is of Render type
-          (el, props) =>
-            convertRender(el, plugin.name as SolidPluginRender, props),
+            (el, props) =>
+              convertRender(el, plugin.name as SolidPluginRender, props),
       render: (el: HTMLDivElement, props: TanStackDevtoolsPluginProps) =>
         convertRender(el, plugin.render, props),
     })),

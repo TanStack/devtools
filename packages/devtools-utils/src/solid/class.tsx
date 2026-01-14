@@ -21,9 +21,12 @@ export function constructCoreClass(Component: () => JSX.Element) {
     #Component: any
     #ThemeProvider: any
 
-    constructor() { }
+    constructor() {}
 
-    async mount<T extends HTMLElement>(el: T, props: TanStackDevtoolsPluginProps) {
+    async mount<T extends HTMLElement>(
+      el: T,
+      props: TanStackDevtoolsPluginProps,
+    ) {
       this.#isMounting = true
       const { lazy } = await import('solid-js')
       const { render, Portal } = await import('solid-js/web')
@@ -45,7 +48,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
         return (
           <Portal mount={mountTo}>
             <div style={{ height: '100%' }}>
-              <ThemeProvider theme={props.theme} >
+              <ThemeProvider theme={props.theme}>
                 <Devtools {...props} />
               </ThemeProvider>
             </div>
@@ -80,8 +83,11 @@ export function constructCoreClass(Component: () => JSX.Element) {
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _props: TanStackDevtoolsPluginProps) { }
-    unmount() { }
+    async mount<T extends HTMLElement>(
+      _el: T,
+      _props: TanStackDevtoolsPluginProps,
+    ) {}
+    unmount() {}
   }
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }

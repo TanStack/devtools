@@ -3,9 +3,7 @@
 import { useEffect, useRef } from 'preact/hooks'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
-
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
 /**
  * Creates a Preact component that dynamically imports and mounts a devtools panel. SSR friendly.
