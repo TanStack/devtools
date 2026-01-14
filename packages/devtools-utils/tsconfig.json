@@ -10,6 +10,7 @@
     "eslint.config.js",
     "vite.config.ts",
     "vite.config.preact.ts",
+    "vite.config.vue.ts",
     "tests",
     "vite.config.solid.ts"
   ]
