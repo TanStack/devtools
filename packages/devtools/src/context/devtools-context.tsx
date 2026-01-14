@@ -12,6 +12,10 @@ import { initialState } from './devtools-store'
 import type { DevtoolsStore } from './devtools-store'
 import type { JSX, Setter } from 'solid-js'
 
+export interface TanStackDevtoolsPluginProps {
+  theme: DevtoolsStore['settings']['theme']
+  devtoolsOpen: boolean
+}
 export interface TanStackDevtoolsPlugin {
   /**
    * Name to be displayed in the devtools UI.
@@ -40,11 +44,11 @@ export interface TanStackDevtoolsPlugin {
    * ```
    */
   name:
-    | string
-    | ((
-        el: HTMLHeadingElement,
-        theme: DevtoolsStore['settings']['theme'],
-      ) => void)
+  | string
+  | ((
+    el: HTMLHeadingElement,
+    props: TanStackDevtoolsPluginProps,
+  ) => void)
   /**
    * Unique identifier for the plugin.
    * If not provided, it will be generated based on the name.
@@ -71,9 +75,8 @@ export interface TanStackDevtoolsPlugin {
    */
   render: (
     el: HTMLDivElement,
-    theme: DevtoolsStore['settings']['theme'],
+    props: TanStackDevtoolsPluginProps,
   ) => void
-
   destroy?: (pluginId: string) => void
 }
 export const DevtoolsContext = createContext<{

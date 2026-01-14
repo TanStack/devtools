@@ -4,12 +4,12 @@ import { tabs } from '../tabs'
 import { useStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js'
 
-export const TabContent = () => {
+export const TabContent = (props: { isOpen: boolean }) => {
   const { state } = useDevtoolsState()
   const styles = useStyles()
-  const component = createMemo<(() => JSX.Element) | null>(
+  const component = createMemo<((props: { isOpen: boolean }) => JSX.Element) | null>(
     () => tabs.find((t) => t.id === state().activeTab)?.component || null,
   )
 
-  return <div class={styles().tabContent}>{component()?.()}</div>
+  return <div class={styles().tabContent}>{component()?.({ isOpen: props.isOpen })}</div>
 }

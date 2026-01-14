@@ -2,20 +2,20 @@
 
 import { createSignal, onCleanup, onMount } from 'solid-js'
 import type { ClassType } from './class'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps {
-  theme?: 'light' | 'dark'
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
 }
 
 export function createSolidPanel<
-  TComponentProps extends DevtoolsPanelProps | undefined,
+  TComponentProps extends DevtoolsPanelProps,
 >(CoreClass: ClassType) {
   function Panel(props: TComponentProps) {
     let devToolRef: HTMLDivElement | undefined
     const [devtools] = createSignal(new CoreClass())
     onMount(() => {
       if (devToolRef) {
-        devtools().mount(devToolRef, props?.theme ?? 'dark')
+        devtools().mount(devToolRef, props)
       }
       onCleanup(() => {
         devtools().unmount()

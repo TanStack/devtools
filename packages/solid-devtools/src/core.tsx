@@ -12,21 +12,22 @@ import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
+  TanStackDevtoolsPluginProps,
 } from '@tanstack/devtools'
 
 type SolidPluginRender =
   | JSX.Element
   | ((
-      el: HTMLDivElement | HTMLHeadingElement,
-      theme: 'dark' | 'light',
-    ) => JSX.Element)
+    el: HTMLDivElement | HTMLHeadingElement,
+    props: TanStackDevtoolsPluginProps,
+  ) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
-  theme: 'dark' | 'light',
+  props: TanStackDevtoolsPluginProps,
 ) => (
   <Portal mount={el}>
-    {typeof Component === 'function' ? Component(el, theme) : Component}
+    {typeof Component === 'function' ? Component(el, props) : Component}
   </Portal>
 )
 
@@ -106,8 +107,8 @@ export interface TanStackDevtoolsInit {
      * An optional custom function to render the dev tools trigger component.
      */
     customTrigger?:
-      | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
-      | JSX.Element
+    | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
+    | JSX.Element
   }
   /**
    * Configuration for the TanStack Devtools client event bus.
@@ -128,10 +129,10 @@ export default function SolidDevtoolsCore({
         typeof plugin.name === 'string'
           ? plugin.name
           : // The check above confirms that `plugin.name` is of Render type
-            (el, theme) =>
-              convertRender(el, plugin.name as SolidPluginRender, theme),
-      render: (el: HTMLDivElement, theme: 'dark' | 'light') =>
-        convertRender(el, plugin.render, theme),
+          (el, props) =>
+            convertRender(el, plugin.name as SolidPluginRender, props),
+      render: (el: HTMLDivElement, props: TanStackDevtoolsPluginProps) =>
+        convertRender(el, plugin.render, props),
     })),
   )
 
