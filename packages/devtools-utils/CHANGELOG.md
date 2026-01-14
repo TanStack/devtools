@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.3.0
+
+### Minor Changes
+
+- add /vue export ([#316](https://github.com/TanStack/devtools/pull/316))
+
 ## 0.2.4
 
 ### Patch Changes
