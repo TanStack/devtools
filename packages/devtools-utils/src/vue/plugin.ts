@@ -9,10 +9,10 @@ const EmptyComponent = defineComponent({
 })
 
 export function createVuePlugin<
-  TComponentProps extends Record<string, unknown>,
+  TComponentProps extends Record<string, any>,
 >(
   name: string,
-  component: DefineComponent<TComponentProps, Record<string, never>, unknown>,
+  component: DefineComponent<TComponentProps, {}, unknown>,
 ) {
   function Plugin(props: TComponentProps) {
     return {
