@@ -8,14 +8,17 @@ describe('createVuePlugin', () => {
     const TestComponent = defineComponent({
       name: 'TestComponent',
       props: {
-        test: String
+        test: String,
       },
       setup() {
         return () => null
-      }
+      },
     })
 
-    const [Plugin, NoOpPlugin] = createVuePlugin<{ test: string }>('Test', TestComponent)
+    const [Plugin, NoOpPlugin] = createVuePlugin<{ test: string }>(
+      'Test',
+      TestComponent,
+    )
 
     // Test that plugins can be created
     const plugin = Plugin({ test: 'value' })
@@ -40,7 +43,7 @@ describe('createVuePlugin', () => {
       name: 'TestComponent',
       setup() {
         return () => null
-      }
+      },
     })
 
     const [Plugin, NoOpPlugin] = createVuePlugin('Test', TestComponent)

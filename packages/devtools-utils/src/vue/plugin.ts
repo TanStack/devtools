@@ -8,7 +8,9 @@ const EmptyComponent = defineComponent({
   },
 })
 
-export function createVuePlugin<TComponentProps extends Record<string, unknown>>(
+export function createVuePlugin<
+  TComponentProps extends Record<string, unknown>,
+>(
   name: string,
   component: DefineComponent<TComponentProps, Record<string, never>, unknown>,
 ) {
