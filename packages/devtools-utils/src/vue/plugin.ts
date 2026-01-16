@@ -1,9 +1,16 @@
-import { Fragment } from 'vue'
+import { defineComponent } from 'vue'
 import type { DefineComponent } from 'vue'
 
-export function createVuePlugin<TComponentProps extends Record<string, any>>(
+const EmptyComponent = defineComponent({
+  name: 'EmptyComponent',
+  setup() {
+    return () => null
+  },
+})
+
+export function createVuePlugin<TComponentProps extends Record<string, unknown>>(
   name: string,
-  component: DefineComponent<TComponentProps, {}, unknown>,
+  component: DefineComponent<TComponentProps, Record<string, never>, unknown>,
 ) {
   function Plugin(props: TComponentProps) {
     return {
@@ -15,7 +22,7 @@ export function createVuePlugin<TComponentProps extends Record<string, any>>(
   function NoOpPlugin(props: TComponentProps) {
     return {
       name,
-      component: Fragment,
+      component: EmptyComponent,
       props,
     }
   }
