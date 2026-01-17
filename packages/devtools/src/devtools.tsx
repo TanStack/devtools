@@ -165,10 +165,21 @@ export default function DevTools() {
     }
   })
   createEffect(() => {
+    const isEditableTarget = (element: Element | null) => {
+      if (!element || !(element instanceof HTMLElement)) return false
+      if (element.isContentEditable) return true
+      const tagName = element.tagName
+      if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') {
+        return true
+      }
+      return element.getAttribute('role') === 'textbox'
+    }
+
     const permutations = getHotkeyPermutations(settings().openHotkey)
 
     for (const permutation of permutations) {
       createShortcut(permutation, () => {
+        if (isEditableTarget(document.activeElement)) return
         toggleOpen()
       })
     }
