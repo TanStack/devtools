@@ -22,7 +22,6 @@
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@tanstack/devtools-a11y": "workspace:^",
     "@tanstack/devtools-ui": "0.4.4",
     "@tanstack/devtools-vite": "0.4.1",
     "@tanstack/react-form-devtools": "^0.1.7",

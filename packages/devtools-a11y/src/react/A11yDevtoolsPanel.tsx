@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { a11yEventClient } from '../event-client'
 import {
   filterByThreshold,
@@ -6,6 +6,7 @@ import {
   groupIssuesByImpact,
   runAudit,
 } from '../scanner'
+import { createLiveMonitoringController } from '../live-monitoring'
 import {
   clearHighlights,
   highlightAllIssues,
@@ -138,17 +139,49 @@ export function A11yDevtoolsPanel({
 }: A11yDevtoolsPanelProps): JSX.Element {
   const [config, setConfig] = useState(() => mergeConfig(options))
   const [results, setResults] = useState<A11yAuditResult | null>(null)
+  const resultsRef = useRef<A11yAuditResult | null>(null)
   const [isScanning, setIsScanning] = useState(false)
+  const [isLive, setIsLive] = useState(config.liveMonitoring)
+  const toastTimeoutIdRef = useRef<number | null>(null)
+  const liveControllerRef = useRef<ReturnType<
+    typeof createLiveMonitoringController
+  > | null>(null)
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null)
   const [selectedSeverity, setSelectedSeverity] = useState<
     'all' | SeverityThreshold
   >('all')
   const [showSettings, setShowSettings] = useState(false)
+  const [toast, setToast] = useState<null | {
+    message: string
+    color: string
+    timestamp: number
+  }>(null)
   const [availableRules, setAvailableRules] = useState<Array<RuleInfo>>([])
   const [ruleSearchQuery, setRuleSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<RuleCategory>('all')
 
   const isDark = theme === 'dark'
+
+  // Auto-dismiss toast
+  useEffect(() => {
+    if (!toast) return
+
+    if (toastTimeoutIdRef.current != null) {
+      window.clearTimeout(toastTimeoutIdRef.current)
+    }
+
+    toastTimeoutIdRef.current = window.setTimeout(() => {
+      setToast(null)
+      toastTimeoutIdRef.current = null
+    }, 3000)
+
+    return () => {
+      if (toastTimeoutIdRef.current != null) {
+        window.clearTimeout(toastTimeoutIdRef.current)
+        toastTimeoutIdRef.current = null
+      }
+    }
+  }, [toast])
   const bg = isDark ? '#1a1a2e' : '#ffffff'
   const fg = isDark ? '#e2e8f0' : '#1e293b'
   const borderColor = isDark ? '#374151' : '#e2e8f0'
@@ -158,6 +191,83 @@ export function A11yDevtoolsPanel({
   useEffect(() => {
     return initOverlayAdapter()
   }, [])
+
+  // Keep refs in sync
+  useEffect(() => {
+    resultsRef.current = results
+  }, [results])
+
+  // Live monitoring (flags anything that pops up)
+  useEffect(() => {
+    if (!isLive) {
+      liveControllerRef.current?.stop()
+      liveControllerRef.current = null
+      return
+    }
+
+    const controller = createLiveMonitoringController(
+      {
+        delay: config.liveMonitoringDelay,
+        threshold: config.threshold,
+        disabledRules: config.disabledRules,
+        context: document,
+      },
+      {
+        onResults: (next) => {
+          setResults(next)
+
+          const issuesAboveThreshold = filterByThreshold(
+            next.issues,
+            config.threshold,
+          ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
+
+          clearHighlights()
+          if (config.showOverlays && issuesAboveThreshold.length > 0) {
+            highlightAllIssues(issuesAboveThreshold)
+          }
+
+          // Update ref after highlights
+          resultsRef.current = next
+        },
+        onDiff: ({ newIssues, resolvedIssues }) => {
+          if (newIssues.length > 0) {
+            a11yEventClient.emit('new-issues', { issues: newIssues })
+            setToast({
+              message: `+${newIssues.length} new issue${newIssues.length === 1 ? '' : 's'}`,
+              color: '#ef4444',
+              timestamp: Date.now(),
+            })
+          }
+
+          if (resolvedIssues.length > 0) {
+            a11yEventClient.emit('resolved-issues', { issues: resolvedIssues })
+            setToast({
+              message: `-${resolvedIssues.length} resolved issue${resolvedIssues.length === 1 ? '' : 's'}`,
+              color: '#10b981',
+              timestamp: Date.now(),
+            })
+          }
+        },
+      },
+    )
+
+    liveControllerRef.current = controller
+    controller.start()
+
+    return () => {
+      controller.stop()
+      if (liveControllerRef.current === controller) {
+        liveControllerRef.current = null
+      }
+    }
+  }, [
+    isLive,
+    config.disabledRules,
+    config.liveMonitoringDelay,
+    config.ruleSet,
+    config.showOverlays,
+    config.threshold,
+  ])
 
   // Run on mount if configured
   useEffect(() => {
@@ -194,7 +304,6 @@ export function A11yDevtoolsPanel({
         threshold: config.threshold,
         ruleSet: config.ruleSet,
         disabledRules: config.disabledRules,
-        rootSelector: config.rootSelector,
       })
 
       setResults(result)
@@ -209,11 +318,6 @@ export function A11yDevtoolsPanel({
         result.issues,
         config.threshold,
       ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
-      console.log('[A11y Panel] After scan:', {
-        totalIssues: result.issues.length,
-        issuesAboveThreshold: issuesAboveThreshold.length,
-        showOverlays: config.showOverlays,
-      })
       if (config.showOverlays && issuesAboveThreshold.length > 0) {
         highlightAllIssues(issuesAboveThreshold)
       }
@@ -227,10 +331,23 @@ export function A11yDevtoolsPanel({
     }
   }
 
-  const handleExport = () => {
+  const handleExport = (format: 'json' | 'csv') => {
     if (results) {
-      exportAuditResults(results, { format: 'json' })
+      exportAuditResults(results, { format })
     }
+  }
+
+  const handleToggleLive = () => {
+    const next = !isLive
+    setIsLive(next)
+    setConfig((prev) => ({ ...prev, liveMonitoring: next }))
+    saveConfig({ liveMonitoring: next })
+
+    setToast({
+      message: next ? 'Live monitoring enabled' : 'Live monitoring paused',
+      color: next ? '#10b981' : isDark ? '#94a3b8' : '#64748b',
+      timestamp: Date.now(),
+    })
   }
 
   const handleToggleOverlays = () => {
@@ -394,6 +511,38 @@ export function A11yDevtoolsPanel({
         position: 'relative',
       }}
     >
+      {toast && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '12px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            padding: '8px 12px',
+            borderRadius: '999px',
+            background: isDark ? '#0b1220' : '#ffffff',
+            border: `1px solid ${borderColor}`,
+            boxShadow: '0 10px 20px rgba(0,0,0,0.12)',
+            color: fg,
+            fontSize: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            zIndex: 20,
+          }}
+        >
+          <span
+            style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '999px',
+              background: toast.color,
+            }}
+          />
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div
         style={{
@@ -441,20 +590,36 @@ export function A11yDevtoolsPanel({
           </button>
           {results && (
             <>
-              <button
-                onClick={handleExport}
-                style={{
-                  padding: '8px 12px',
-                  background: secondaryBg,
-                  color: fg,
-                  border: `1px solid ${borderColor}`,
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                }}
-              >
-                Export
-              </button>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  onClick={() => handleExport('json')}
+                  style={{
+                    padding: '8px 12px',
+                    background: secondaryBg,
+                    color: fg,
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                  }}
+                >
+                  Export JSON
+                </button>
+                <button
+                  onClick={() => handleExport('csv')}
+                  style={{
+                    padding: '8px 12px',
+                    background: secondaryBg,
+                    color: fg,
+                    border: `1px solid ${borderColor}`,
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '13px',
+                  }}
+                >
+                  Export CSV
+                </button>
+              </div>
               <button
                 onClick={handleToggleOverlays}
                 style={{
@@ -493,8 +658,24 @@ export function A11yDevtoolsPanel({
           {RULE_SET_LABELS[config.ruleSet]}
           {config.disabledRules.length > 0 &&
             ` | ${config.disabledRules.length} rule(s) disabled`}
+          {isLive && ` | Live (${config.liveMonitoringDelay}ms)`}
         </span>
         <div style={{ flex: 1 }} />
+        <button
+          onClick={handleToggleLive}
+          style={{
+            padding: '4px 10px',
+            background: isLive ? '#10b981' : 'transparent',
+            color: isLive ? '#fff' : '#0ea5e9',
+            border: `1px solid ${isLive ? '#10b981' : borderColor}`,
+            borderRadius: '999px',
+            cursor: 'pointer',
+            fontSize: '11px',
+            fontWeight: 600,
+          }}
+        >
+          {isLive ? 'Live' : 'Live'}
+        </button>
         <button
           onClick={handleOpenSettings}
           style={{

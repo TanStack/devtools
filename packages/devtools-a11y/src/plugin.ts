@@ -1,9 +1,9 @@
 import { a11yEventClient } from './event-client'
 import { filterByThreshold, groupIssuesByImpact, runAudit } from './scanner'
+import { createLiveMonitoringController } from './live-monitoring'
 import {
   clearHighlights,
   highlightAllIssues,
-  highlightElement,
   initOverlayAdapter,
 } from './overlay'
 import { mergeConfig, saveConfig } from './config'
@@ -24,6 +24,12 @@ export interface A11yDevtoolsPlugin {
   name: string
   render: (el: HTMLDivElement, theme: 'light' | 'dark') => void
   destroy?: () => void
+
+  // Optional programmatic API (non-React)
+  scan?: () => Promise<A11yAuditResult>
+  startLiveMonitoring?: () => void
+  stopLiveMonitoring?: () => void
+  onScan?: (cb: (result: A11yAuditResult) => void) => () => void
 }
 
 /**
@@ -56,10 +62,82 @@ export function createA11yPlugin(
   let currentResults: A11yAuditResult | null = null
   let overlayCleanup: (() => void) | null = null
   let selectedIssueId: string | null = null
+  let monitoringCleanup: (() => void) | null = null
 
-  return {
+  let onScanCallbacks: Array<(result: A11yAuditResult) => void> = []
+  let monitorController: ReturnType<
+    typeof createLiveMonitoringController
+  > | null = null
+
+  const startLiveMonitoring = () => {
+    if (monitorController) return
+
+    monitorController = createLiveMonitoringController(
+      {
+        delay: config.liveMonitoringDelay,
+        threshold: config.threshold,
+        disabledRules: config.disabledRules,
+        context: document,
+      },
+      {
+        onResults: (result) => {
+          currentResults = result
+          for (const cb of onScanCallbacks) {
+            cb(result)
+          }
+        },
+        onDiff: ({ newIssues, resolvedIssues }) => {
+          if (newIssues.length > 0) {
+            a11yEventClient.emit('new-issues', { issues: newIssues })
+          }
+          if (resolvedIssues.length > 0) {
+            a11yEventClient.emit('resolved-issues', { issues: resolvedIssues })
+          }
+        },
+      },
+    )
+
+    monitorController.start()
+  }
+
+  const stopLiveMonitoring = () => {
+    if (!monitorController) return
+    monitorController.stop()
+    monitorController = null
+  }
+  const plugin: A11yDevtoolsPlugin = {
     id: 'devtools-a11y',
     name: 'Accessibility',
+
+    scan: async () => {
+      const result = await runAudit({
+        threshold: config.threshold,
+        ruleSet: config.ruleSet,
+        disabledRules: config.disabledRules,
+      })
+      currentResults = result
+      for (const cb of onScanCallbacks) {
+        cb(result)
+      }
+      return result
+    },
+
+    startLiveMonitoring: () => {
+      config.liveMonitoring = true
+      startLiveMonitoring()
+    },
+
+    stopLiveMonitoring: () => {
+      config.liveMonitoring = false
+      stopLiveMonitoring()
+    },
+
+    onScan: (cb) => {
+      onScanCallbacks.push(cb)
+      return () => {
+        onScanCallbacks = onScanCallbacks.filter((x) => x !== cb)
+      }
+    },
 
     render: (el: HTMLDivElement, theme: 'light' | 'dark') => {
       const isDark = theme === 'dark'
@@ -70,6 +148,29 @@ export function createA11yPlugin(
 
       // Initialize overlay adapter
       overlayCleanup = initOverlayAdapter()
+
+      // Start live monitoring (if enabled)
+      if (config.liveMonitoring && monitoringCleanup == null) {
+        startLiveMonitoring()
+        monitoringCleanup = () => stopLiveMonitoring()
+
+        // Also update UI/overlays while panel is mounted
+        const unsubscribe = plugin.onScan?.((result) => {
+          if (config.showOverlays) {
+            clearHighlights()
+            if (result.issues.length > 0) {
+              highlightAllIssues(result.issues)
+            }
+          }
+          renderPanel()
+        })
+
+        const prevCleanup = monitoringCleanup
+        monitoringCleanup = () => {
+          unsubscribe?.()
+          prevCleanup()
+        }
+      }
 
       // Render initial UI
       renderPanel()
@@ -98,23 +199,14 @@ export function createA11yPlugin(
                 <h2 style="margin: 0; font-size: 16px; font-weight: 600;">Accessibility Audit</h2>
                 ${
                   currentResults
-                    ? (() => {
-                        const count = filterByThreshold(
-                          currentResults.issues,
-                          config.threshold,
-                        ).filter(
-                          (issue) =>
-                            !config.disabledRules.includes(issue.ruleId),
-                        ).length
-                        return `
-                          <span style="
-                            font-size: 12px;
-                            color: ${isDark ? '#94a3b8' : '#64748b'};
-                          ">
-                            ${count} issue${count !== 1 ? 's' : ''}
-                          </span>
-                        `
-                      })()
+                    ? `
+                  <span style="
+                    font-size: 12px;
+                    color: ${isDark ? '#94a3b8' : '#64748b'};
+                  ">
+                    ${currentResults.summary.total} issue${currentResults.summary.total !== 1 ? 's' : ''}
+                  </span>
+                `
                     : ''
                 }
               </div>
@@ -135,17 +227,28 @@ export function createA11yPlugin(
                 ${
                   currentResults
                     ? `
-                  <button id="export-btn" style="
-                    padding: 8px 12px;
-                    background: ${secondaryBg};
-                    color: ${fg};
-                    border: 1px solid ${borderColor};
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-size: 13px;
-                  ">
-                    Export
-                  </button>
+                   <button id="export-btn" style="
+                     padding: 8px 12px;
+                     background: ${secondaryBg};
+                     color: ${fg};
+                     border: 1px solid ${borderColor};
+                     border-radius: 6px;
+                     cursor: pointer;
+                     font-size: 13px;
+                   ">
+                     Export JSON
+                   </button>
+                   <button id="export-csv-btn" style="
+                     padding: 8px 12px;
+                     background: ${secondaryBg};
+                     color: ${fg};
+                     border: 1px solid ${borderColor};
+                     border-radius: 6px;
+                     cursor: pointer;
+                     font-size: 13px;
+                   ">
+                     Export CSV
+                   </button>
                   <button id="toggle-overlay-btn" style="
                     padding: 8px 12px;
                     background: ${config.showOverlays ? '#10b981' : secondaryBg};
@@ -266,28 +369,8 @@ export function createA11yPlugin(
         const filteredIssues = filterByThreshold(
           currentResults.issues,
           config.threshold,
-        ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
+        )
         const grouped = groupIssuesByImpact(filteredIssues)
-
-        // Show "no issues" if all issues are filtered out
-        if (filteredIssues.length === 0) {
-          return `
-            <div style="
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              height: 100%;
-              text-align: center;
-            ">
-              <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-              <p style="font-size: 16px; color: #10b981; font-weight: 600;">No accessibility issues found!</p>
-              <p style="font-size: 12px; color: ${isDark ? '#94a3b8' : '#64748b'}; margin-top: 8px;">
-                Scanned in ${currentResults.duration.toFixed(0)}ms
-              </p>
-            </div>
-          `
-        }
 
         let html = `
           <!-- Summary -->
@@ -307,7 +390,7 @@ export function createA11yPlugin(
                 border-left: 3px solid ${SEVERITY_COLORS[impact]};
               ">
                 <div style="font-size: 24px; font-weight: 700; color: ${SEVERITY_COLORS[impact]};">
-                  ${grouped[impact].length}
+                  ${currentResults!.summary[impact]}
                 </div>
                 <div style="font-size: 11px; color: ${isDark ? '#94a3b8' : '#64748b'}; text-transform: uppercase;">
                   ${SEVERITY_LABELS[impact]}
@@ -471,8 +554,6 @@ export function createA11yPlugin(
               currentResults = await runAudit({
                 threshold: config.threshold,
                 ruleSet: config.ruleSet,
-                disabledRules: config.disabledRules,
-                rootSelector: config.rootSelector,
               })
 
               a11yEventClient.emit('results', currentResults)
@@ -481,17 +562,8 @@ export function createA11yPlugin(
                 issueCount: currentResults.issues.length,
               })
 
-              // Highlight only issues that meet threshold and are not disabled
               if (config.showOverlays && currentResults.issues.length > 0) {
-                const issuesAboveThreshold = filterByThreshold(
-                  currentResults.issues,
-                  config.threshold,
-                ).filter(
-                  (issue) => !config.disabledRules.includes(issue.ruleId),
-                )
-                if (issuesAboveThreshold.length > 0) {
-                  highlightAllIssues(issuesAboveThreshold)
-                }
+                highlightAllIssues(currentResults.issues)
               }
 
               renderPanel()
@@ -504,11 +576,22 @@ export function createA11yPlugin(
           }
         }
 
-        // Export button
+        // Export JSON button
         const exportBtn = el.querySelector<HTMLButtonElement>('#export-btn')
-        if (exportBtn && currentResults) {
+        if (exportBtn) {
           exportBtn.onclick = () => {
-            exportAuditResults(currentResults!, { format: 'json' })
+            if (!currentResults) return
+            exportAuditResults(currentResults, { format: 'json' })
+          }
+        }
+
+        // Export CSV button
+        const exportCsvBtn =
+          el.querySelector<HTMLButtonElement>('#export-csv-btn')
+        if (exportCsvBtn) {
+          exportCsvBtn.onclick = () => {
+            if (!currentResults) return
+            exportAuditResults(currentResults, { format: 'csv' })
           }
         }
 
@@ -526,13 +609,7 @@ export function createA11yPlugin(
               currentResults &&
               currentResults.issues.length > 0
             ) {
-              const issuesAboveThreshold = filterByThreshold(
-                currentResults.issues,
-                config.threshold,
-              ).filter((issue) => !config.disabledRules.includes(issue.ruleId))
-              if (issuesAboveThreshold.length > 0) {
-                highlightAllIssues(issuesAboveThreshold)
-              }
+              highlightAllIssues(currentResults.issues)
             } else {
               clearHighlights()
             }
@@ -566,58 +643,18 @@ export function createA11yPlugin(
           }
         }
 
-        // Issue card clicks - toggle behavior
+        // Issue card clicks
         const issueCards = el.querySelectorAll('.issue-card')
         issueCards.forEach((card) => {
           ;(card as HTMLElement).onclick = () => {
             const issueId = card.getAttribute('data-issue-id')
             const selector = card.getAttribute('data-selector')
 
-            // Toggle behavior: if clicking the same issue, deselect and show all
-            if (selectedIssueId === issueId) {
-              selectedIssueId = null
-              clearHighlights()
-              // Restore all highlights if overlays are enabled
-              if (config.showOverlays && currentResults) {
-                const issuesAboveThreshold = filterByThreshold(
-                  currentResults.issues,
-                  config.threshold,
-                ).filter(
-                  (issue) => !config.disabledRules.includes(issue.ruleId),
-                )
-                if (issuesAboveThreshold.length > 0) {
-                  highlightAllIssues(issuesAboveThreshold)
-                }
-              }
-              renderPanel()
-              return
-            }
-
-            // Select new issue
             selectedIssueId = issueId
-            clearHighlights()
+            renderPanel()
 
             if (selector) {
-              const issue = currentResults?.issues.find((i) => i.id === issueId)
-              if (issue) {
-                // Highlight just this issue's element
-                highlightElement(selector, issue.impact)
-
-                // Try to scroll to the element
-                try {
-                  const element = document.querySelector(selector)
-                  if (element) {
-                    element.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'start',
-                      inline: 'nearest',
-                    })
-                  }
-                } catch {
-                  // Invalid selector, skip
-                }
-              }
-
+              clearHighlights()
               a11yEventClient.emit('highlight', {
                 selector,
                 impact:
@@ -625,8 +662,6 @@ export function createA11yPlugin(
                     ?.impact || 'serious',
               })
             }
-
-            renderPanel()
           }
         })
       }
@@ -641,6 +676,12 @@ export function createA11yPlugin(
     },
 
     destroy: () => {
+      if (monitoringCleanup) {
+        monitoringCleanup()
+        monitoringCleanup = null
+      }
+      stopLiveMonitoring()
+
       if (overlayCleanup) {
         overlayCleanup()
         overlayCleanup = null
@@ -650,4 +691,6 @@ export function createA11yPlugin(
       selectedIssueId = null
     },
   }
+
+  return plugin
 }

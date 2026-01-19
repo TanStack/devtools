@@ -1,4 +1,3 @@
-import path from 'node:path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { devtools } from '@tanstack/devtools-vite'
@@ -20,18 +19,6 @@ export default defineConfig({
       // },
     }),
   ],
-  resolve: {
-    alias: {
-      '@tanstack/devtools-a11y/react': path.resolve(
-        __dirname,
-        '../../../packages/devtools-a11y/src/react',
-      ),
-      '@tanstack/devtools-a11y': path.resolve(
-        __dirname,
-        '../../../packages/devtools-a11y/src',
-      ),
-    },
-  },
   build: {
     sourcemap: true,
   },
