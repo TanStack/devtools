@@ -16,9 +16,6 @@ import type {
   SeverityThreshold,
 } from '../types'
 
-// Re-export RuleObject to suppress unused warning (we use it for type reference)
-export type { RuleObject }
-
 /**
  * Severity levels mapped to numeric values for comparison
  */

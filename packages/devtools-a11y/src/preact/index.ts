@@ -5,6 +5,6 @@ export {
   A11yDevtoolsPanelNoOp,
   a11yDevtoolsPlugin,
   a11yDevtoolsNoOpPlugin,
-  createA11yDevtoolsReactPanel,
-  createA11yDevtoolsReactPlugin,
+  createA11yDevtoolsPreactPanel,
+  createA11yDevtoolsPreactPlugin,
 } from './adapters'

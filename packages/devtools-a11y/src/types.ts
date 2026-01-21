@@ -109,11 +109,6 @@ export interface A11yAuditResult {
 }
 
 /**
- * Scanner engine option
- */
-export type ScannerEngine = 'axe-core' | 'html-codesniffer'
-
-/**
  * Configuration for custom rules
  */
 export interface CustomRulesConfig {
@@ -129,8 +124,6 @@ export interface CustomRulesConfig {
  * Options for running an audit
  */
 export interface A11yAuditOptions {
-  /** Scanner engine to use (default: 'axe-core') */
-  engine?: ScannerEngine
   /** Minimum severity to report (default: 'serious') */
   threshold?: SeverityThreshold
   /** DOM context to audit (default: document) */
@@ -155,18 +148,12 @@ export interface A11yPluginOptions {
   threshold?: SeverityThreshold
   /** Run audit automatically on mount (default: false) */
   runOnMount?: boolean
-  /** Enable live monitoring (MutationObserver-driven rescans) (default: false) */
-  liveMonitoring?: boolean
-  /** Debounce delay for live monitoring rescans, in ms (default: 1000) */
-  liveMonitoringDelay?: number
   /** Rule set preset (default: 'wcag21aa') */
   ruleSet?: RuleSetPreset
   /** Show visual overlays on page (default: true) */
   showOverlays?: boolean
   /** Persist settings to localStorage (default: true) */
   persistSettings?: boolean
-  /** Scanner engine to use (default: 'axe-core') */
-  engine?: ScannerEngine
   /** Rules to disable (by rule ID) */
   disabledRules?: Array<string>
 }
@@ -217,10 +204,6 @@ export interface A11yEventMap {
   'a11y:highlight-all': { issues: Array<A11yIssue> }
   /** Configuration changed */
   'a11y:config-change': Partial<A11yPluginOptions>
-  /** New issues detected (diff from previous scan) */
-  'a11y:new-issues': { issues: Array<A11yIssue> }
-  /** Issues resolved (diff from previous scan) */
-  'a11y:resolved-issues': { issues: Array<A11yIssue> }
 }
 
 /**

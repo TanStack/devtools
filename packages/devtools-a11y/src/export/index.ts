@@ -77,7 +77,7 @@ export function exportToCsv(
 /**
  * Download a file with the given content
  */
-export function downloadFile(
+function downloadFile(
   content: string,
   filename: string,
   mimeType: string,

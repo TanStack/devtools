@@ -330,7 +330,7 @@ function getSelector(element: Element): string {
  * - Elements with interactive ARIA roles
  * - Elements with tabindex for keyboard access
  */
-export function checkClickHandlerOnNonInteractive(
+function checkClickHandlerOnNonInteractive(
   context: Document | Element = document,
 ): Array<A11yIssue> {
   const issues: Array<A11yIssue> = []
@@ -422,7 +422,7 @@ export function checkClickHandlerOnNonInteractive(
  * Detects elements that have mouse event handlers (onmouseover, onmousedown, etc.)
  * without corresponding keyboard event handlers.
  */
-export function checkMouseOnlyEvents(
+function checkMouseOnlyEvents(
   context: Document | Element = document,
 ): Array<A11yIssue> {
   const issues: Array<A11yIssue> = []
@@ -487,7 +487,7 @@ export function checkMouseOnlyEvents(
  * Detects elements like <div> or <span> that have role="button" but lack
  * proper keyboard handling (tabindex and key events).
  */
-export function checkStaticElementInteraction(
+function checkStaticElementInteraction(
   context: Document | Element = document,
 ): Array<A11yIssue> {
   const issues: Array<A11yIssue> = []
@@ -570,11 +570,6 @@ export function checkStaticElementInteraction(
 
   return issues
 }
-
-/**
- * Re-export CustomRulesConfig from types
- */
-export type { CustomRulesConfig } from '../../types'
 
 /**
  * Run all enabled custom rules

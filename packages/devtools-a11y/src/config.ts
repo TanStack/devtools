@@ -8,12 +8,9 @@ const STORAGE_KEY = 'tanstack-devtools-a11y-config'
 export const DEFAULT_CONFIG: Required<A11yPluginOptions> = {
   threshold: 'serious',
   runOnMount: false,
-  liveMonitoring: false,
-  liveMonitoringDelay: 1000,
   ruleSet: 'wcag21aa',
   showOverlays: true,
   persistSettings: true,
-  engine: 'axe-core',
   disabledRules: [],
 }
 

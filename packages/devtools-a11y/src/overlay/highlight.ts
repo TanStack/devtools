@@ -447,7 +447,7 @@ export function clearHighlights(): void {
 /**
  * Remove styles from the document
  */
-export function removeStyles(): void {
+function removeStyles(): void {
   const style = document.getElementById(HIGHLIGHT_STYLE_ID)
   if (style) {
     style.remove()

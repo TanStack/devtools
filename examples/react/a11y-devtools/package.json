@@ -9,8 +9,8 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/react-devtools": "workspace:*",
     "@tanstack/devtools-a11y": "workspace:*",
+    "@tanstack/react-devtools": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

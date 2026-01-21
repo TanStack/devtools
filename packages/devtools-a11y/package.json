@@ -47,6 +47,36 @@
         "default": "./dist/cjs/react/index.cjs"
       }
     },
+    "./solid": {
+      "import": {
+        "types": "./dist/esm/solid/index.d.ts",
+        "default": "./dist/esm/solid/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/solid/index.d.cts",
+        "default": "./dist/cjs/solid/index.cjs"
+      }
+    },
+    "./preact": {
+      "import": {
+        "types": "./dist/esm/preact/index.d.ts",
+        "default": "./dist/esm/preact/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/preact/index.d.cts",
+        "default": "./dist/cjs/preact/index.cjs"
+      }
+    },
+    "./vue": {
+      "import": {
+        "types": "./dist/esm/vue/index.d.ts",
+        "default": "./dist/esm/vue/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/vue/index.d.cts",
+        "default": "./dist/cjs/vue/index.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -69,22 +99,31 @@
   },
   "dependencies": {
     "@tanstack/devtools-event-client": "workspace:*",
-    "axe-core": "^4.10.0"
+    "@tanstack/devtools-utils": "workspace:^",
+    "axe-core": "^4.10.0",
+    "goober": "^2.1.16"
   },
   "devDependencies": {
-    "@types/react": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.4",
-    "react": "^19.2.0"
+    "vite-plugin-solid": "^2.11.8"
   },
   "peerDependencies": {
     "@types/react": ">=17.0.0",
-    "react": ">=17.0.0"
+    "preact": ">=10.0.0",
+    "react": ">=17.0.0",
+    "solid-js": ">=1.9.7",
+    "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
     },
+    "preact": {
+      "optional": true
+    },
     "react": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   }
