@@ -169,7 +169,11 @@ export default function DevTools() {
       if (!element || !(element instanceof HTMLElement)) return false
       if (element.isContentEditable) return true
       const tagName = element.tagName
-      if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') {
+      if (
+        tagName === 'INPUT' ||
+        tagName === 'TEXTAREA' ||
+        tagName === 'SELECT'
+      ) {
         return true
       }
       return element.getAttribute('role') === 'textbox'
