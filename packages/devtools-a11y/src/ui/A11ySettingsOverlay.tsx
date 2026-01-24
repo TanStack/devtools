@@ -2,6 +2,7 @@
 
 import { For, Show, createMemo } from 'solid-js'
 import { CATEGORIES, CATEGORY_LABELS } from './styles'
+import type { createA11yPanelStyles } from './styles'
 import type {
   A11yPluginOptions,
   RuleCategory,
@@ -10,7 +11,7 @@ import type {
   SeverityThreshold,
 } from '../types'
 
-type PanelStyles = ReturnType<typeof import('./styles').createA11yPanelStyles>
+type PanelStyles = ReturnType<typeof createA11yPanelStyles>
 
 interface A11ySettingsOverlayProps {
   styles: PanelStyles

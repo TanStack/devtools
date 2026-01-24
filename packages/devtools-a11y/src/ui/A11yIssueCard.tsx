@@ -1,9 +1,10 @@
 /** @jsxImportSource solid-js */
 
 import { For, Show } from 'solid-js'
+import type { createA11yPanelStyles } from './styles'
 import type { A11yIssue, SeverityThreshold } from '../types'
 
-type PanelStyles = ReturnType<typeof import('./styles').createA11yPanelStyles>
+type PanelStyles = ReturnType<typeof createA11yPanelStyles>
 
 interface A11yIssueCardProps {
   styles: PanelStyles
