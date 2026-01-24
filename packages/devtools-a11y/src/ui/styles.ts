@@ -1,5 +1,5 @@
 import * as goober from 'goober'
-import type { RuleSetPreset, SeverityThreshold } from '../types'
+import type { RuleCategory, RuleSetPreset, SeverityThreshold } from '../types'
 
 const SEVERITY_COLORS: Record<SeverityThreshold, string> = {
   critical: '#dc2626',
@@ -24,22 +24,6 @@ export const RULE_SET_LABELS: Record<RuleSetPreset, string> = {
   'best-practice': 'Best Practice',
   all: 'All Rules',
 }
-
-export type RuleCategory =
-  | 'all'
-  | 'cat.aria'
-  | 'cat.color'
-  | 'cat.forms'
-  | 'cat.keyboard'
-  | 'cat.language'
-  | 'cat.name-role-value'
-  | 'cat.parsing'
-  | 'cat.semantics'
-  | 'cat.sensory-and-visual-cues'
-  | 'cat.structure'
-  | 'cat.tables'
-  | 'cat.text-alternatives'
-  | 'cat.time-and-media'
 
 export const CATEGORY_LABELS: Record<RuleCategory, string> = {
   all: 'All Categories',

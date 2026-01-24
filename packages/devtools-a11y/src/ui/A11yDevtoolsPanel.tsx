@@ -1,7 +1,6 @@
 /** @jsxImportSource solid-js */
 
 import {
-  For,
   Match,
   Show,
   Switch,
@@ -17,25 +16,20 @@ import { getAvailableRules, groupIssuesByImpact } from '../scanner'
 import { clearHighlights, highlightElement } from '../overlay'
 import { getA11yRuntime } from '../runtime'
 import {
-  CATEGORIES,
-  CATEGORY_LABELS,
   RULE_SET_LABELS,
   SEVERITY_LABELS,
   createA11yPanelStyles,
 } from './styles'
+import { A11yIssueList } from './A11yIssueList'
+import { A11ySettingsOverlay } from './A11ySettingsOverlay'
+import { filterIssuesAboveThreshold } from './panelUtils'
 import type {
   A11yAuditResult,
   A11yPluginOptions,
-  RuleSetPreset,
+  RuleCategory,
+  RuleInfo,
   SeverityThreshold,
 } from '../types'
-import type { RuleCategory } from './styles'
-
-interface RuleInfo {
-  id: string
-  description: string
-  tags: Array<string>
-}
 
 interface A11yDevtoolsPanelProps {
   options?: A11yPluginOptions
@@ -217,17 +211,7 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
       clearHighlights()
 
       if (config().showOverlays && r) {
-        const issuesAboveThreshold = r.issues
-          .filter((issue) => !config().disabledRules.includes(issue.ruleId))
-          .filter((issue) => {
-            const order: Record<SeverityThreshold, number> = {
-              critical: 4,
-              serious: 3,
-              moderate: 2,
-              minor: 1,
-            }
-            return order[issue.impact] >= order[config().threshold]
-          })
+        const issuesAboveThreshold = filteredIssues()
         if (issuesAboveThreshold.length > 0) {
           a11yEventClient.emit('highlight-all', {
             issues: issuesAboveThreshold,
@@ -273,15 +257,11 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
     const r = results()
     if (!r) return []
 
-    const order: Record<SeverityThreshold, number> = {
-      critical: 4,
-      serious: 3,
-      moderate: 2,
-      minor: 1,
-    }
-    return r.issues
-      .filter((issue) => order[issue.impact] >= order[config().threshold])
-      .filter((issue) => !config().disabledRules.includes(issue.ruleId))
+    return filterIssuesAboveThreshold(
+      r.issues,
+      config().threshold,
+      config().disabledRules,
+    )
   })
 
   const grouped = createMemo(() => groupIssuesByImpact(filteredIssues()))
@@ -307,17 +287,7 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
     }
 
     const severity = uiState.selectedSeverity
-    const issuesAboveThreshold = r.issues
-      .filter((issue) => !config().disabledRules.includes(issue.ruleId))
-      .filter((issue) => {
-        const order: Record<SeverityThreshold, number> = {
-          critical: 4,
-          serious: 3,
-          moderate: 2,
-          minor: 1,
-        }
-        return order[issue.impact] >= order[config().threshold]
-      })
+    const issuesAboveThreshold = filteredIssues()
 
     const issues =
       severity === 'all'
@@ -450,322 +420,41 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
           </Match>
 
           <Match when={results() && filteredIssues().length > 0}>
-            <div>
-              <div class={styles().summaryGrid}>
-                <For
-                  each={['critical', 'serious', 'moderate', 'minor'] as const}
-                >
-                  {(impact) => {
-                    const count = () => grouped()[impact].length
-                    const active = () => uiState.selectedSeverity === impact
-                    return (
-                      <button
-                        class={styles().summaryButton}
-                        classList={{
-                          [styles().summaryButtonActive(impact)]: active(),
-                        }}
-                        onClick={() =>
-                          setUiState(
-                            'selectedSeverity',
-                            uiState.selectedSeverity === impact
-                              ? 'all'
-                              : impact,
-                          )
-                        }
-                      >
-                        <div class={styles().summaryCount(impact)}>
-                          {count()}
-                        </div>
-                        <div class={styles().summaryLabel}>
-                          {SEVERITY_LABELS[impact]}
-                        </div>
-                      </button>
-                    )
-                  }}
-                </For>
-              </div>
-
-              <For each={['critical', 'serious', 'moderate', 'minor'] as const}>
-                {(impact) => {
-                  const issues = () => visibleGrouped()[impact]
-                  const shouldRender = () => {
-                    const severity = uiState.selectedSeverity
-                    if (severity !== 'all' && severity !== impact) {
-                      return false
-                    }
-                    if (severity === 'all' && issues().length === 0) {
-                      return false
-                    }
-                    return true
-                  }
-
-                  return (
-                    <Show when={shouldRender()}>
-                      <div class={styles().section}>
-                        <h3 class={styles().sectionTitle(impact)}>
-                          {SEVERITY_LABELS[impact]} ({issues().length})
-                        </h3>
-
-                        <For each={issues()}>
-                          {(issue) => {
-                            const selector =
-                              issue.nodes[0]?.selector || 'unknown'
-                            const selected = () =>
-                              uiState.selectedIssueId === issue.id
-
-                            return (
-                              <div
-                                class={styles().issueCard}
-                                classList={{
-                                  [styles().issueCardSelected]: selected(),
-                                }}
-                                onClick={() => handleIssueClick(issue.id)}
-                              >
-                                <div class={styles().issueRow}>
-                                  <div class={styles().issueMain}>
-                                    <div class={styles().issueTitleRow}>
-                                      <span class={styles().dot(impact)} />
-                                      <span>{issue.ruleId}</span>
-                                    </div>
-                                    <p class={styles().issueMessage}>
-                                      {issue.message}
-                                    </p>
-                                    <div class={styles().selector}>
-                                      {selector}
-                                    </div>
-                                  </div>
-
-                                  <div class={styles().issueAside}>
-                                    <a
-                                      class={styles().helpLink}
-                                      href={issue.helpUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      Learn more
-                                    </a>
-                                    <button
-                                      class={styles().disableRule}
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        actions.disableRule(issue.ruleId)
-                                      }}
-                                    >
-                                      Disable rule
-                                    </button>
-                                  </div>
-                                </div>
-
-                                <Show when={issue.wcagTags.length > 0}>
-                                  <div class={styles().tags}>
-                                    <For each={issue.wcagTags.slice(0, 3)}>
-                                      {(tag) => (
-                                        <span class={styles().tag}>{tag}</span>
-                                      )}
-                                    </For>
-                                  </div>
-                                </Show>
-                              </div>
-                            )
-                          }}
-                        </For>
-                      </div>
-                    </Show>
-                  )
-                }}
-              </For>
-            </div>
+            <A11yIssueList
+              styles={styles()}
+              grouped={grouped()}
+              visibleGrouped={visibleGrouped()}
+              selectedSeverity={uiState.selectedSeverity}
+              selectedIssueId={uiState.selectedIssueId}
+              onSelectSeverity={(severity) =>
+                setUiState('selectedSeverity', severity)
+              }
+              onIssueClick={handleIssueClick}
+              onDisableRule={actions.disableRule}
+            />
           </Match>
         </Switch>
       </div>
 
       <Show when={uiState.showSettings}>
-        <div class={styles().settingsOverlay}>
-          <div class={styles().settingsHeader}>
-            <h3 class={styles().settingsTitle}>Settings</h3>
-            <button class={styles().doneButton} onClick={actions.closeSettings}>
-              Done
-            </button>
-          </div>
-
-          <div class={styles().settingsContent}>
-            <div class={styles().settingsSection}>
-              <h4 class={styles().settingsSectionLabel}>General</h4>
-
-              <div class={styles().settingsRow}>
-                <div>
-                  <div class={styles().settingsRowTitle}>
-                    Severity Threshold
-                  </div>
-                  <div class={styles().settingsRowDesc}>
-                    Only show issues at or above this level
-                  </div>
-                </div>
-                <select
-                  class={styles().select}
-                  value={config().threshold}
-                  onChange={(e) =>
-                    updateConfig({
-                      threshold: e.currentTarget.value as SeverityThreshold,
-                    })
-                  }
-                >
-                  <option value="critical">Critical</option>
-                  <option value="serious">Serious</option>
-                  <option value="moderate">Moderate</option>
-                  <option value="minor">Minor</option>
-                </select>
-              </div>
-
-              <div class={styles().settingsRow}>
-                <div>
-                  <div class={styles().settingsRowTitle}>Rule Set</div>
-                  <div class={styles().settingsRowDesc}>
-                    WCAG conformance level or standard
-                  </div>
-                </div>
-                <select
-                  class={styles().select}
-                  value={config().ruleSet}
-                  onChange={(e) =>
-                    updateConfig({
-                      ruleSet: e.currentTarget.value as RuleSetPreset,
-                    })
-                  }
-                >
-                  <option value="wcag2a">WCAG 2.0 A</option>
-                  <option value="wcag2aa">WCAG 2.0 AA</option>
-                  <option value="wcag21aa">WCAG 2.1 AA</option>
-                  <option value="wcag22aa">WCAG 2.2 AA</option>
-                  <option value="section508">Section 508</option>
-                  <option value="best-practice">Best Practice</option>
-                  <option value="all">All Rules</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <div class={styles().rulesHeaderRow}>
-                <h4 class={styles().settingsSectionLabel}>
-                  Rules ({uiState.availableRules.length} total,{' '}
-                  {config().disabledRules.length} disabled)
-                </h4>
-                <div class={styles().rulesHeaderActions}>
-                  <button
-                    class={styles().smallAction('success')}
-                    onClick={actions.enableAllRules}
-                  >
-                    Enable All
-                  </button>
-                  <button
-                    class={styles().smallAction('danger')}
-                    onClick={actions.disableAllRules}
-                  >
-                    Disable All
-                  </button>
-                </div>
-              </div>
-
-              <div class={styles().filtersRow}>
-                <select
-                  class={styles().select}
-                  value={uiState.selectedCategory}
-                  onChange={(e) =>
-                    setUiState(
-                      'selectedCategory',
-                      e.currentTarget.value as RuleCategory,
-                    )
-                  }
-                >
-                  <For each={CATEGORIES}>
-                    {(cat) => (
-                      <option value={cat}>{CATEGORY_LABELS[cat]}</option>
-                    )}
-                  </For>
-                </select>
-
-                <input
-                  class={styles().search}
-                  type="text"
-                  placeholder="Search rules..."
-                  value={uiState.ruleSearchQuery}
-                  onInput={(e) =>
-                    setUiState('ruleSearchQuery', e.currentTarget.value)
-                  }
-                />
-              </div>
-
-              <div class={styles().rulesList}>
-                <For each={filteredRules()}>
-                  {(rule, idx) => {
-                    const isDisabled = () =>
-                      config().disabledRules.includes(rule.id)
-                    const isBestPracticeOnly = () =>
-                      rule.tags.includes('best-practice') &&
-                      !rule.tags.some(
-                        (t) =>
-                          t.startsWith('wcag') || t.startsWith('section508'),
-                      )
-                    const categoryTag = () =>
-                      rule.tags.find((t) => t.startsWith('cat.'))
-                    const hasBorder = () => idx() < filteredRules().length - 1
-
-                    return (
-                      <label
-                        class={styles().ruleRow}
-                        classList={{
-                          [styles().ruleRowDisabled]: isDisabled(),
-                          [styles().ruleRowBorder]: hasBorder(),
-                        }}
-                      >
-                        <input
-                          class={styles().ruleCheckbox}
-                          type="checkbox"
-                          checked={!isDisabled()}
-                          onChange={() => actions.toggleRule(rule.id)}
-                        />
-                        <div class={styles().ruleInfo}>
-                          <div class={styles().ruleTop}>
-                            <span
-                              class={styles().ruleId}
-                              classList={{
-                                [styles().ruleIdDisabled]: isDisabled(),
-                              }}
-                            >
-                              {rule.id}
-                            </span>
-                            <Show when={isBestPracticeOnly()}>
-                              <span
-                                class={styles().bpBadge}
-                                title="Best Practice only"
-                              >
-                                BP
-                              </span>
-                            </Show>
-                          </div>
-                          <div class={styles().ruleDesc}>
-                            {rule.description}
-                          </div>
-                          <Show when={categoryTag()}>
-                            {(tag) => (
-                              <div class={styles().catTagRow}>
-                                <span class={styles().catTag}>
-                                  {CATEGORY_LABELS[tag() as RuleCategory] ||
-                                    tag().replace('cat.', '')}
-                                </span>
-                              </div>
-                            )}
-                          </Show>
-                        </div>
-                      </label>
-                    )
-                  }}
-                </For>
-              </div>
-            </div>
-          </div>
-        </div>
+        <A11ySettingsOverlay
+          styles={styles()}
+          config={config()}
+          availableRules={uiState.availableRules}
+          filteredRules={filteredRules()}
+          ruleSearchQuery={uiState.ruleSearchQuery}
+          selectedCategory={uiState.selectedCategory}
+          onClose={actions.closeSettings}
+          onThresholdChange={(threshold) => updateConfig({ threshold })}
+          onRuleSetChange={(ruleSet) => updateConfig({ ruleSet })}
+          onSelectCategory={(category) =>
+            setUiState('selectedCategory', category)
+          }
+          onSearchQueryChange={(value) => setUiState('ruleSearchQuery', value)}
+          onToggleRule={actions.toggleRule}
+          onEnableAllRules={actions.enableAllRules}
+          onDisableAllRules={actions.disableAllRules}
+        />
       </Show>
     </div>
   )

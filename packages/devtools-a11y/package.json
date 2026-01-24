@@ -47,16 +47,6 @@
         "default": "./dist/cjs/react/index.cjs"
       }
     },
-    "./solid": {
-      "import": {
-        "types": "./dist/esm/solid/index.d.ts",
-        "default": "./dist/esm/solid/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/solid/index.d.cts",
-        "default": "./dist/cjs/solid/index.cjs"
-      }
-    },
     "./preact": {
       "import": {
         "types": "./dist/esm/preact/index.d.ts",
@@ -65,16 +55,6 @@
       "require": {
         "types": "./dist/cjs/preact/index.d.cts",
         "default": "./dist/cjs/preact/index.cjs"
-      }
-    },
-    "./vue": {
-      "import": {
-        "types": "./dist/esm/vue/index.d.ts",
-        "default": "./dist/esm/vue/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/vue/index.d.cts",
-        "default": "./dist/cjs/vue/index.cjs"
       }
     },
     "./package.json": "./package.json"

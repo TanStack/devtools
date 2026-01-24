@@ -28,6 +28,34 @@ export type RuleSetPreset =
   | 'all'
 
 /**
+ * Rule categories (axe-core tags)
+ */
+export type RuleCategory =
+  | 'all'
+  | 'cat.aria'
+  | 'cat.color'
+  | 'cat.forms'
+  | 'cat.keyboard'
+  | 'cat.language'
+  | 'cat.name-role-value'
+  | 'cat.parsing'
+  | 'cat.semantics'
+  | 'cat.sensory-and-visual-cues'
+  | 'cat.structure'
+  | 'cat.tables'
+  | 'cat.text-alternatives'
+  | 'cat.time-and-media'
+
+/**
+ * Rule metadata for settings UI
+ */
+export interface RuleInfo {
+  id: string
+  description: string
+  tags: Array<string>
+}
+
+/**
  * Represents a single node affected by an accessibility issue
  */
 export interface A11yNode {

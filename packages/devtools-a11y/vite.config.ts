@@ -21,9 +21,7 @@ export default mergeConfig(
     entry: [
       './src/index.ts',
       './src/react/index.ts',
-      './src/solid/index.ts',
       './src/preact/index.ts',
-      './src/vue/index.ts',
     ],
     srcDir: './src',
     cjs: true,
