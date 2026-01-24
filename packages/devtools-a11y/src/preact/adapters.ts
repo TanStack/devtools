@@ -15,7 +15,9 @@ const [A11yDevtoolsPanel, A11yDevtoolsPanelNoOp] =
 
 export { A11yDevtoolsPanel, A11yDevtoolsPanelNoOp }
 
-export function createA11yDevtoolsPreactPlugin(options: A11yPluginOptions = {}) {
+export function createA11yDevtoolsPreactPlugin(
+  options: A11yPluginOptions = {},
+) {
   const [Panel] = createA11yDevtoolsPreactPanel(options)
   return createPreactPlugin({
     Component: Panel,

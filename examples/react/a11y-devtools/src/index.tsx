@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
     <App />
 
     <TanStackDevtools
-      plugins={[(createA11yDevtoolsReactPlugin({ runOnMount: false })[0])()]}
+      plugins={[createA11yDevtoolsReactPlugin({ runOnMount: false })[0]()]}
     />
   </StrictMode>,
 )

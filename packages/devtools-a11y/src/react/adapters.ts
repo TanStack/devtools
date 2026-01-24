@@ -1,4 +1,7 @@
-import { createReactPanel, createReactPlugin } from '@tanstack/devtools-utils/react'
+import {
+  createReactPanel,
+  createReactPlugin,
+} from '@tanstack/devtools-utils/react'
 import { createA11yDevtoolsCoreClass } from '../core/create-core-class'
 import type { A11yPluginOptions } from '../types'
 
@@ -7,7 +10,8 @@ export function createA11yDevtoolsReactPanel(options: A11yPluginOptions = {}) {
   return createReactPanel(CoreClass)
 }
 
-const [A11yDevtoolsPanel, A11yDevtoolsPanelNoOp] = createA11yDevtoolsReactPanel()
+const [A11yDevtoolsPanel, A11yDevtoolsPanelNoOp] =
+  createA11yDevtoolsReactPanel()
 
 export { A11yDevtoolsPanel, A11yDevtoolsPanelNoOp }
 
