@@ -105,6 +105,10 @@ function createRuntime(initOpts: A11yPluginOptions = {}): A11yRuntime {
     ensureOverlayAdapter()
     a11yEventClient.emit('scan-start', { context: 'document' })
 
+    if (config.showOverlays) {
+      clearHighlights()
+    }
+
     try {
       const next = await runAudit({
         threshold: config.threshold,

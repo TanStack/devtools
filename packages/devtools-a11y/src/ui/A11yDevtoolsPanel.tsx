@@ -388,7 +388,7 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
           {SEVERITY_LABELS[config().threshold]}+ |{' '}
           {RULE_SET_LABELS[config().ruleSet]}
           <Show when={config().disabledRules.length > 0}>
-            ` | ${config().disabledRules.length} rule(s) disabled`
+            {` | ${config().disabledRules.length} rule(s) disabled`}
           </Show>
         </span>
         <div class={styles().statusSpacer} />
