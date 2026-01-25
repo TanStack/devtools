@@ -79,6 +79,7 @@
   },
   "dependencies": {
     "@tanstack/devtools-event-client": "workspace:*",
+    "@tanstack/devtools-ui": "workspace:*",
     "@tanstack/devtools-utils": "workspace:^",
     "axe-core": "^4.10.0",
     "goober": "^2.1.16"

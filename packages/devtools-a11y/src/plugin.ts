@@ -27,40 +27,32 @@ export function createA11yPlugin(
 ): A11yDevtoolsPlugin {
   const runtime = getA11yRuntime(opts)
   const core = new A11yDevtoolsCore(opts)
+  let isMounted = false
 
   return {
     id: 'devtools-a11y',
     name: 'Accessibility',
     render: (el, theme) => {
-      // The devtools may call render whenever the global theme changes.
-      // Our core.mount currently only supports a first-time mount and throws
-      // if called when already mounted. Handle that by unmounting and
-      // re-mounting with the new theme so the panel updates correctly.
-      void core.mount(el, theme).catch(async (err) => {
-        // If it's already mounted, unmount and try mounting again with
-        // the updated theme. Otherwise, log the error.
-        try {
-          if (err instanceof Error && /already mounted/.test(err.message)) {
-            try {
-              core.unmount()
-            } catch (e) {
-              // If unmounting fails for some reason, still attempt a fresh
-              // mount after a short tick to avoid leaving the UI in a bad state.
-              await Promise.resolve()
-            }
+      // The devtools calls render whenever the global theme changes.
+      // If already mounted, just update the theme reactively instead of
+      // unmounting/remounting the entire panel.
+      if (isMounted) {
+        core.setTheme(theme)
+        return
+      }
 
-            await core.mount(el, theme)
-            return
-          }
-        } catch (e) {
-          // fall through to logging below
-        }
-
-        console.error('[A11y Plugin] Failed to mount panel:', err)
-      })
+      void core
+        .mount(el, theme)
+        .then(() => {
+          isMounted = true
+        })
+        .catch((err) => {
+          console.error('[A11y Plugin] Failed to mount panel:', err)
+        })
     },
     destroy: () => {
       core.unmount()
+      isMounted = false
       runtime.destroy()
     },
     scan: () => runtime.scan(),

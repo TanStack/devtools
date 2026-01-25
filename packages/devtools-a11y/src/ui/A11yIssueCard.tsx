@@ -1,6 +1,7 @@
 /** @jsxImportSource solid-js */
 
 import { For, Show } from 'solid-js'
+import { Button } from '@tanstack/devtools-ui'
 import type { createA11yPanelStyles } from './styles'
 import type { A11yIssue, SeverityThreshold } from '../types'
 
@@ -46,15 +47,17 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
           >
             Learn more
           </a>
-          <button
-            class={props.styles.disableRule}
-            onClick={(event) => {
+          <Button
+            variant="secondary"
+            outline
+            className={props.styles.compactButton}
+            onClick={(event: MouseEvent) => {
               event.stopPropagation()
               props.onDisableRule(props.issue.ruleId)
             }}
           >
             Disable rule
-          </button>
+          </Button>
         </div>
       </div>
 

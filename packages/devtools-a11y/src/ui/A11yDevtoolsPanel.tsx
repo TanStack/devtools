@@ -11,6 +11,12 @@ import {
   onMount,
 } from 'solid-js'
 import { createStore, produce } from 'solid-js/store'
+import {
+  Button,
+  Header,
+  MainPanel,
+  ThemeContextProvider,
+} from '@tanstack/devtools-ui'
 import { a11yEventClient } from '../event-client'
 import { getAvailableRules, groupIssuesByImpact } from '../scanner'
 import { clearHighlights, highlightElement } from '../overlay'
@@ -319,143 +325,149 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
   })
 
   return (
-    <div class={styles().root}>
-      <Show when={uiState.toast}>
-        {(t) => (
-          <div class={styles().toast}>
-            <span class={styles().toastDot(t().color)} />
-            <span>{t().message}</span>
+    <ThemeContextProvider theme={theme()}>
+      <MainPanel class={styles().root} withPadding={false}>
+        <Show when={uiState.toast}>
+          {(t) => (
+            <div class={styles().toast}>
+              <span class={styles().toastDot} />
+              <span>{t().message}</span>
+            </div>
+          )}
+        </Show>
+
+        <Header class={styles().header}>
+          <div class={styles().headerTitleRow}>
+            <h2 class={styles().headerTitle}>Accessibility Audit</h2>
+            <Show when={results()}>
+              <span class={styles().headerSub}>
+                {filteredIssues().length} issue
+                {filteredIssues().length !== 1 ? 's' : ''}
+              </span>
+            </Show>
           </div>
-        )}
-      </Show>
 
-      <div class={styles().header}>
-        <div class={styles().headerTitleRow}>
-          <h2 class={styles().headerTitle}>Accessibility Audit</h2>
-          <Show when={results()}>
-            <span class={styles().headerSub}>
-              {filteredIssues().length} issue
-              {filteredIssues().length !== 1 ? 's' : ''}
-            </span>
-          </Show>
-        </div>
-
-        <div class={styles().headerActions}>
-          <button
-            class={styles().primaryButton}
-            classList={{
-              [styles().primaryButtonDisabled]: uiState.isScanning,
-            }}
-            onClick={actions.scan}
-            disabled={uiState.isScanning}
-          >
-            {uiState.isScanning ? 'Scanning...' : 'Run Audit'}
-          </button>
-
-          <Show when={results()}>
-            <div class={styles().buttonRow}>
-              <button
-                class={styles().button}
-                onClick={() => handleExport('json')}
-              >
-                Export JSON
-              </button>
-              <button
-                class={styles().button}
-                onClick={() => handleExport('csv')}
-              >
-                Export CSV
-              </button>
-            </div>
-
-            <button
-              class={styles().toggleOverlay}
-              classList={{
-                [styles().toggleOverlayOn]: config().showOverlays,
-              }}
-              onClick={() =>
-                updateConfig({ showOverlays: !config().showOverlays })
-              }
+          <div class={styles().headerActions}>
+            <Button
+              variant="primary"
+              onClick={actions.scan}
+              disabled={uiState.isScanning}
             >
-              {config().showOverlays ? 'Hide' : 'Show'} Overlays
-            </button>
-          </Show>
+              {uiState.isScanning ? 'Scanning...' : 'Run Audit'}
+            </Button>
+
+            <Show when={results()}>
+              <div class={styles().buttonRow}>
+                <Button
+                  variant="secondary"
+                  outline
+                  onClick={() => handleExport('json')}
+                >
+                  Export JSON
+                </Button>
+                <Button
+                  variant="secondary"
+                  outline
+                  onClick={() => handleExport('csv')}
+                >
+                  Export CSV
+                </Button>
+              </div>
+
+              <Button
+                variant={config().showOverlays ? 'success' : 'secondary'}
+                outline={!config().showOverlays}
+                onClick={() =>
+                  updateConfig({ showOverlays: !config().showOverlays })
+                }
+              >
+                {config().showOverlays ? 'Hide' : 'Show'} Overlays
+              </Button>
+            </Show>
+          </div>
+        </Header>
+
+        <div class={styles().statusBar}>
+          <span>
+            {SEVERITY_LABELS[config().threshold]}+ |{' '}
+            {RULE_SET_LABELS[config().ruleSet]}
+            <Show when={config().disabledRules.length > 0}>
+              {` | ${config().disabledRules.length} rule(s) disabled`}
+            </Show>
+          </span>
+          <div class={styles().statusSpacer} />
+          <Button
+            variant="secondary"
+            outline
+            className={styles().compactButton}
+            onClick={actions.openSettings}
+          >
+            Settings
+          </Button>
         </div>
-      </div>
 
-      <div class={styles().statusBar}>
-        <span>
-          {SEVERITY_LABELS[config().threshold]}+ |{' '}
-          {RULE_SET_LABELS[config().ruleSet]}
-          <Show when={config().disabledRules.length > 0}>
-            {` | ${config().disabledRules.length} rule(s) disabled`}
-          </Show>
-        </span>
-        <div class={styles().statusSpacer} />
-        <button class={styles().smallLinkButton} onClick={actions.openSettings}>
-          Settings
-        </button>
-      </div>
+        <div class={styles().content}>
+          <Switch>
+            <Match when={!results()}>
+              <div class={styles().emptyState}>
+                <p class={styles().emptyPrimary}>No audit results yet</p>
+                <p class={styles().emptySecondary}>
+                  Click "Run Audit" to scan for accessibility issues
+                </p>
+              </div>
+            </Match>
 
-      <div class={styles().content}>
-        <Switch>
-          <Match when={!results()}>
-            <div class={styles().emptyState}>
-              <p class={styles().emptyPrimary}>No audit results yet</p>
-              <p class={styles().emptySecondary}>
-                Click "Run Audit" to scan for accessibility issues
-              </p>
-            </div>
-          </Match>
+            <Match when={results() && results()!.issues.length === 0}>
+              <div class={styles().successState}>
+                <p class={styles().successTitle}>
+                  No accessibility issues found!
+                </p>
+                <p class={styles().successSub}>
+                  Scanned in {results()!.duration.toFixed(0)}ms
+                </p>
+              </div>
+            </Match>
 
-          <Match when={results() && results()!.issues.length === 0}>
-            <div class={styles().successState}>
-              <p class={styles().successTitle}>
-                No accessibility issues found!
-              </p>
-              <p class={styles().successSub}>
-                Scanned in {results()!.duration.toFixed(0)}ms
-              </p>
-            </div>
-          </Match>
+            <Match when={results() && filteredIssues().length > 0}>
+              <A11yIssueList
+                styles={styles()}
+                grouped={grouped()}
+                visibleGrouped={visibleGrouped()}
+                selectedSeverity={uiState.selectedSeverity}
+                selectedIssueId={uiState.selectedIssueId}
+                onSelectSeverity={(severity) =>
+                  setUiState('selectedSeverity', severity)
+                }
+                onIssueClick={handleIssueClick}
+                onDisableRule={actions.disableRule}
+              />
+            </Match>
+          </Switch>
+        </div>
 
-          <Match when={results() && filteredIssues().length > 0}>
-            <A11yIssueList
-              styles={styles()}
-              grouped={grouped()}
-              visibleGrouped={visibleGrouped()}
-              selectedSeverity={uiState.selectedSeverity}
-              selectedIssueId={uiState.selectedIssueId}
-              onSelectSeverity={(severity) =>
-                setUiState('selectedSeverity', severity)
-              }
-              onIssueClick={handleIssueClick}
-              onDisableRule={actions.disableRule}
-            />
-          </Match>
-        </Switch>
-      </div>
-
-      <Show when={uiState.showSettings}>
-        <A11ySettingsOverlay
-          styles={styles()}
-          config={config()}
-          availableRules={uiState.availableRules}
-          filteredRules={filteredRules()}
-          ruleSearchQuery={uiState.ruleSearchQuery}
-          selectedCategory={uiState.selectedCategory}
-          onClose={actions.closeSettings}
-          onThresholdChange={(threshold) => updateConfig({ threshold })}
-          onRuleSetChange={(ruleSet) => updateConfig({ ruleSet })}
-          onSelectCategory={(category) =>
-            setUiState('selectedCategory', category)
-          }
-          onSearchQueryChange={(value) => setUiState('ruleSearchQuery', value)}
-          onToggleRule={actions.toggleRule}
-          onEnableAllRules={actions.enableAllRules}
-          onDisableAllRules={actions.disableAllRules}
-        />
-      </Show>
-    </div>
+        <Show when={uiState.showSettings}>
+          <A11ySettingsOverlay
+            styles={styles()}
+            config={config()}
+            availableRules={uiState.availableRules}
+            filteredRules={filteredRules()}
+            ruleSearchQuery={uiState.ruleSearchQuery}
+            selectedCategory={uiState.selectedCategory}
+            onClose={actions.closeSettings}
+            onThresholdChange={(threshold) => updateConfig({ threshold })}
+            onRuleSetChange={(ruleSet) => updateConfig({ ruleSet })}
+            onSelectCategory={(category) =>
+              setUiState('selectedCategory', category)
+            }
+            onSearchQueryChange={(value) =>
+              setUiState('ruleSearchQuery', value)
+            }
+            onToggleRule={actions.toggleRule}
+            onEnableAllRules={actions.enableAllRules}
+            onDisableAllRules={actions.disableAllRules}
+          />
+        </Show>
+      </MainPanel>
+    </ThemeContextProvider>
   )
 }

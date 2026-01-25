@@ -1,7 +1,30 @@
 /** @jsxImportSource solid-js */
 
+import { createSignal, type Accessor } from 'solid-js'
 import { A11yDevtoolsPanel } from '../ui/A11yDevtoolsPanel'
 import type { A11yPluginOptions } from '../types'
+
+function resolveTheme(theme: 'light' | 'dark' | 'system'): 'light' | 'dark' {
+  if (theme === 'system') {
+    return typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light'
+  }
+  return theme
+}
+
+/**
+ * Wrapper component that properly tracks the theme signal and passes it to the panel.
+ * This ensures Solid's reactivity works correctly when the theme changes.
+ */
+function A11yDevtoolsPanelWrapper(props: {
+  theme: Accessor<'light' | 'dark'>
+  options: A11yPluginOptions
+}) {
+  // Calling props.theme() inside the JSX makes it reactive
+  return <A11yDevtoolsPanel theme={props.theme()} options={props.options} />
+}
 
 export class A11yDevtoolsCore {
   #dispose: (() => void) | null = null
@@ -9,6 +32,7 @@ export class A11yDevtoolsCore {
   #isMounting = false
   #mountCb: (() => void) | null = null
   #options: A11yPluginOptions
+  #setTheme: ((theme: 'light' | 'dark') => void) | null = null
 
   constructor(options: A11yPluginOptions = {}) {
     this.#options = options
@@ -22,16 +46,15 @@ export class A11yDevtoolsCore {
       throw new Error('A11yDevtoolsCore is already mounted')
     }
 
-    const resolvedTheme: 'light' | 'dark' =
-      theme === 'system'
-        ? typeof window !== 'undefined' &&
-          window.matchMedia?.('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light'
-        : theme
+    const [getTheme, setTheme] = createSignal<'light' | 'dark'>(
+      resolveTheme(theme),
+    )
+    this.#setTheme = setTheme
 
     this.#dispose = render(
-      () => <A11yDevtoolsPanel theme={resolvedTheme} options={this.#options} />,
+      () => (
+        <A11yDevtoolsPanelWrapper theme={getTheme} options={this.#options} />
+      ),
       el,
     )
     this.#isMounted = true
@@ -40,6 +63,12 @@ export class A11yDevtoolsCore {
     if (this.#mountCb) {
       this.#mountCb()
       this.#mountCb = null
+    }
+  }
+
+  setTheme(theme: 'light' | 'dark' | 'system') {
+    if (this.#setTheme) {
+      this.#setTheme(resolveTheme(theme))
     }
   }
 

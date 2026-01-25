@@ -1,6 +1,7 @@
 /** @jsxImportSource solid-js */
 
 import { For, Show, createMemo } from 'solid-js'
+import { Button, Input, Select } from '@tanstack/devtools-ui'
 import { CATEGORIES, CATEGORY_LABELS } from './styles'
 import type { createA11yPanelStyles } from './styles'
 import type {
@@ -37,64 +38,51 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
     <div class={props.styles.settingsOverlay}>
       <div class={props.styles.settingsHeader}>
         <h3 class={props.styles.settingsTitle}>Settings</h3>
-        <button class={props.styles.doneButton} onClick={props.onClose}>
+        <Button
+          variant="secondary"
+          outline
+          className={props.styles.compactButton}
+          onClick={props.onClose}
+        >
           Done
-        </button>
+        </Button>
       </div>
 
       <div class={props.styles.settingsContent}>
         <div class={props.styles.settingsSection}>
           <h4 class={props.styles.settingsSectionLabel}>General</h4>
-
-          <div class={props.styles.settingsRow}>
-            <div>
-              <div class={props.styles.settingsRowTitle}>
-                Severity Threshold
-              </div>
-              <div class={props.styles.settingsRowDesc}>
-                Only show issues at or above this level
-              </div>
-            </div>
-            <select
-              class={props.styles.select}
+          <div class={props.styles.settingsRowStack}>
+            <Select<SeverityThreshold>
+              label="Severity Threshold"
+              description="Only show issues at or above this level"
               value={props.config.threshold}
-              onChange={(event) =>
-                props.onThresholdChange(
-                  event.currentTarget.value as SeverityThreshold,
-                )
+              options={[
+                { value: 'critical', label: 'Critical' },
+                { value: 'serious', label: 'Serious' },
+                { value: 'moderate', label: 'Moderate' },
+                { value: 'minor', label: 'Minor' },
+              ]}
+              onChange={(value: string) =>
+                props.onThresholdChange(value as SeverityThreshold)
               }
-            >
-              <option value="critical">Critical</option>
-              <option value="serious">Serious</option>
-              <option value="moderate">Moderate</option>
-              <option value="minor">Minor</option>
-            </select>
-          </div>
-
-          <div class={props.styles.settingsRow}>
-            <div>
-              <div class={props.styles.settingsRowTitle}>Rule Set</div>
-              <div class={props.styles.settingsRowDesc}>
-                WCAG conformance level or standard
-              </div>
-            </div>
-            <select
-              class={props.styles.select}
+            />
+            <Select<RuleSetPreset>
+              label="Rule Set"
+              description="WCAG conformance level or standard"
               value={props.config.ruleSet}
-              onChange={(event) =>
-                props.onRuleSetChange(
-                  event.currentTarget.value as RuleSetPreset,
-                )
+              options={[
+                { value: 'wcag2a', label: 'WCAG 2.0 A' },
+                { value: 'wcag2aa', label: 'WCAG 2.0 AA' },
+                { value: 'wcag21aa', label: 'WCAG 2.1 AA' },
+                { value: 'wcag22aa', label: 'WCAG 2.2 AA' },
+                { value: 'section508', label: 'Section 508' },
+                { value: 'best-practice', label: 'Best Practice' },
+                { value: 'all', label: 'All Rules' },
+              ]}
+              onChange={(value: string) =>
+                props.onRuleSetChange(value as RuleSetPreset)
               }
-            >
-              <option value="wcag2a">WCAG 2.0 A</option>
-              <option value="wcag2aa">WCAG 2.0 AA</option>
-              <option value="wcag21aa">WCAG 2.1 AA</option>
-              <option value="wcag22aa">WCAG 2.2 AA</option>
-              <option value="section508">Section 508</option>
-              <option value="best-practice">Best Practice</option>
-              <option value="all">All Rules</option>
-            </select>
+            />
           </div>
         </div>
 
@@ -105,44 +93,42 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
               {props.config.disabledRules.length} disabled)
             </h4>
             <div class={props.styles.rulesHeaderActions}>
-              <button
-                class={props.styles.smallAction('success')}
+              <Button
+                variant="success"
+                outline
+                className={props.styles.compactButton}
                 onClick={props.onEnableAllRules}
               >
                 Enable All
-              </button>
-              <button
-                class={props.styles.smallAction('danger')}
+              </Button>
+              <Button
+                variant="danger"
+                outline
+                className={props.styles.compactButton}
                 onClick={props.onDisableAllRules}
               >
                 Disable All
-              </button>
+              </Button>
             </div>
           </div>
 
           <div class={props.styles.filtersRow}>
-            <select
-              class={props.styles.select}
+            <Select<RuleCategory>
+              label="Category"
               value={props.selectedCategory}
-              onChange={(event) =>
-                props.onSelectCategory(
-                  event.currentTarget.value as RuleCategory,
-                )
+              options={CATEGORIES.map((cat) => ({
+                value: cat,
+                label: CATEGORY_LABELS[cat],
+              }))}
+              onChange={(value: string) =>
+                props.onSelectCategory(value as RuleCategory)
               }
-            >
-              <For each={CATEGORIES}>
-                {(cat) => <option value={cat}>{CATEGORY_LABELS[cat]}</option>}
-              </For>
-            </select>
-
-            <input
-              class={props.styles.search}
-              type="text"
+            />
+            <Input
+              label="Search"
               placeholder="Search rules..."
               value={props.ruleSearchQuery}
-              onInput={(event) =>
-                props.onSearchQueryChange(event.currentTarget.value)
-              }
+              onChange={(value: string) => props.onSearchQueryChange(value)}
             />
           </div>
 

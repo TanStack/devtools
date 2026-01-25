@@ -66,23 +66,16 @@ const fontPx = (size: number) => `calc(${size}px * ${FONT_SCALE})`
 export function createA11yPanelStyles(theme: 'light' | 'dark') {
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
-  const bg = t('#ffffff', '#1a1a2e')
+  const bg = t('#ffffff', '#191c24')
   const fg = t('#1e293b', '#e2e8f0')
-  const border = t('#e2e8f0', '#374151')
-  const secondaryBg = t('#f8fafc', '#0f172a')
+  const border = t('#e2e8f0', '#292e3d')
   const muted = t('#64748b', '#94a3b8')
   const muted2 = t('#94a3b8', '#64748b')
 
   return {
-    colors: { bg, fg, border, secondaryBg, muted, muted2, theme },
+    colors: { bg, fg, border, muted, muted2, theme },
 
     root: css`
-      font-family:
-        system-ui,
-        -apple-system,
-        sans-serif;
-      color: ${fg};
-      background: ${bg};
       height: 100%;
       display: flex;
       flex-direction: column;
@@ -96,7 +89,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       position-area: top center;
       padding: 8px 12px;
       border-radius: 999px;
-      background: ${t('#ffffff', '#0b1220')};
       border: 1px solid ${border};
       box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
       color: ${fg};
@@ -106,11 +98,10 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       gap: 8px;
       z-index: 20;
     `,
-    toastDot: (color: string) => css`
+    toastDot: css`
       width: 8px;
       height: 8px;
       border-radius: 999px;
-      background: ${color};
       flex-shrink: 0;
     `,
 
@@ -148,9 +139,7 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     primaryButton: css`
       padding: 8px 16px;
-      background: #0ea5e9;
       color: #fff;
-      border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: 500;
@@ -163,21 +152,28 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     button: css`
       padding: 8px 12px;
-      background: ${secondaryBg};
       color: ${fg};
       border: 1px solid ${border};
       border-radius: 6px;
       cursor: pointer;
-      font-size: ${fontPx(13)};
+      font-size: ${fontPx(11)};
     `,
     buttonRow: css`
       display: flex;
       gap: 6px;
       align-items: center;
     `,
+    compactButton: css`
+      padding: 4px 12px;
+      font-size: 12px;
+      line-height: 1.2;
+      border-radius: 4px;
+      border: 1px solid currentColor;
+      background: transparent;
+      opacity: 0.7;
+    `,
     toggleOverlay: css`
       padding: 8px 12px;
-      background: ${secondaryBg};
       color: ${fg};
       border: 1px solid ${border};
       border-radius: 6px;
@@ -192,7 +188,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
 
     statusBar: css`
       padding: 8px 16px;
-      background: ${secondaryBg};
       border-bottom: 1px solid ${border};
       display: flex;
       gap: 12px;
@@ -280,7 +275,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     summaryButton: css`
       padding: 12px;
-      background: ${secondaryBg};
       color: ${fg};
       border-radius: 8px;
       border: 1px solid ${border};
@@ -317,7 +311,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     issueCard: css`
       padding: 12px;
       margin-bottom: 8px;
-      background: ${secondaryBg};
       border: 1px solid ${border};
       border-radius: 6px;
       cursor: pointer;
@@ -419,7 +412,7 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     tag: css`
       font-size: ${fontPx(10)};
       padding: 2px 6px;
-      background: ${t('#e2e8f0', '#374151')};
+      border: 1px solid ${border};
       border-radius: 4px;
       color: ${muted};
     `,
@@ -462,6 +455,10 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     settingsSection: css`
       margin-bottom: 24px;
+    `,
+    settingsRowStack: css`
+      display: grid;
+      gap: 12px;
     `,
     settingsSectionLabel: css`
       margin: 0 0 12px 0;
@@ -552,13 +549,12 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     ruleRowDisabled: css`
       opacity: 0.6;
-      background: ${secondaryBg};
     `,
     ruleRowBorder: css`
       border-bottom: 1px solid ${border};
     `,
     ruleCheckbox: css`
-      margin-top: 2px;
+      margin-top: 4px;
       flex-shrink: 0;
     `,
     ruleInfo: css`
@@ -590,7 +586,7 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     ruleDesc: css`
       font-size: ${fontPx(11)};
       color: ${muted};
-      line-height: 1.3;
+      line-height: 2;
     `,
     catTagRow: css`
       display: flex;
@@ -600,7 +596,7 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     catTag: css`
       font-size: ${fontPx(9)};
       padding: 1px 4px;
-      background: ${t('#e2e8f0', '#374151')};
+      border: 1px solid ${muted};
       border-radius: 3px;
       color: ${muted};
     `,
