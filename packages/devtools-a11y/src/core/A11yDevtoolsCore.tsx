@@ -1,13 +1,14 @@
 /** @jsxImportSource solid-js */
 
-import { createSignal, type Accessor } from 'solid-js'
+import { createSignal } from 'solid-js'
 import { A11yDevtoolsPanel } from '../ui/A11yDevtoolsPanel'
+import type {Accessor} from 'solid-js';
 import type { A11yPluginOptions } from '../types'
 
 function resolveTheme(theme: 'light' | 'dark' | 'system'): 'light' | 'dark' {
   if (theme === 'system') {
     return typeof window !== 'undefined' &&
-      window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
       : 'light'
   }
