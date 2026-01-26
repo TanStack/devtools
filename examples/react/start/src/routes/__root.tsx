@@ -9,11 +9,6 @@ import { RouteNavigationPanel } from '../devtools'
 
 import appCss from '../styles.css?url'
 
-const A11yDevtoolsPanel = React.lazy(async () => {
-  const mod = await import('@tanstack/devtools-a11y/react')
-  return { default: mod.A11yDevtoolsPanel }
-})
-
 export const Route = createRootRoute({
   head: () => ({
     meta: [
@@ -41,7 +36,6 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   console.log('Rendering Root Document')
-  const isServer = typeof window === 'undefined'
   const plugins = [
     {
       name: 'Tanstack Router',
@@ -51,20 +45,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       id: 'route-navigation',
       name: 'Route Navigation',
       render: <RouteNavigationPanel />,
-    },
-    ...(isServer
-      ? []
-      : [
-          {
-            id: 'a11y',
-            name: 'Accessibility',
-            render: (
-              <React.Suspense fallback={null}>
-                <A11yDevtoolsPanel />
-              </React.Suspense>
-            ),
-          },
-        ]),
+    }
   ]
 
   return (
