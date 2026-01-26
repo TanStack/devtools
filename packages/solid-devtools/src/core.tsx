@@ -20,15 +20,39 @@ type SolidPluginRender =
       el: HTMLDivElement | HTMLHeadingElement,
       theme: 'dark' | 'light',
     ) => JSX.Element)
+  | ((props: { theme: 'dark' | 'light' }) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
   theme: 'dark' | 'light',
-) => (
-  <Portal mount={el}>
-    {typeof Component === 'function' ? Component(el, theme) : Component}
-  </Portal>
-)
+) => {
+  el.style.display = 'block'
+  el.style.height = '100%'
+  el.style.width = '100%'
+  el.style.minHeight = '0'
+  el.style.minWidth = '0'
+
+  let element: JSX.Element
+
+  if (typeof Component === 'function') {
+    if (Component.length >= 2) {
+      element = (
+        Component as (
+          el: HTMLDivElement | HTMLHeadingElement,
+          theme: 'dark' | 'light',
+        ) => JSX.Element
+      )(el, theme)
+    } else {
+      element = (
+        Component as (props: { theme: 'dark' | 'light' }) => JSX.Element
+      )({ theme })
+    }
+  } else {
+    element = Component
+  }
+
+  return <Portal mount={el}>{element}</Portal>
+}
 
 export type TanStackDevtoolsSolidPlugin = Omit<
   TanStackDevtoolsPlugin,
@@ -38,10 +62,15 @@ export type TanStackDevtoolsSolidPlugin = Omit<
    * The render function can be a SolidJS element or a function that returns a SolidJS element.
    * If it's a function, it will be called to render the plugin, otherwise it will be rendered directly.
    *
+   * The render function can optionally accept the current theme.
+   *
    * Example:
    * ```ts
    *   {
    *     render: () => <CustomPluginComponent />,
+   *   }
+   *   {
+   *     render: ({ theme }) => <CustomPluginComponent theme={theme} />,
    *   }
    * ```
    * or

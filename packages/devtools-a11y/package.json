@@ -57,6 +57,16 @@
         "default": "./dist/cjs/preact/index.cjs"
       }
     },
+    "./solid": {
+      "import": {
+        "types": "./dist/esm/solid/index.d.ts",
+        "default": "./dist/esm/solid/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/solid/index.d.cts",
+        "default": "./dist/cjs/solid/index.cjs"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,

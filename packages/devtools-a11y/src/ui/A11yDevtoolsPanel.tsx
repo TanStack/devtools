@@ -16,6 +16,7 @@ import {
   Header,
   MainPanel,
   ThemeContextProvider,
+  useTheme,
 } from '@tanstack/devtools-ui'
 import { a11yEventClient } from '../event-client'
 import { getAvailableRules, groupIssuesByImpact } from '../scanner'
@@ -61,7 +62,43 @@ function scrollToElement(selector: string): boolean {
 }
 
 export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
-  const theme = () => props.theme ?? 'light'
+  let inheritedTheme: undefined | (() => 'light' | 'dark')
+  const [datasetTheme, setDatasetTheme] = createSignal<
+    'light' | 'dark' | undefined
+  >(undefined)
+
+  try {
+    inheritedTheme = useTheme().theme
+  } catch {
+    inheritedTheme = undefined
+  }
+
+  onMount(() => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
+    const root = document.documentElement
+    const updateTheme = () => {
+      const value = root.dataset.tanstackDevtoolsTheme
+      if (value === 'light' || value === 'dark') {
+        setDatasetTheme(value)
+      }
+    }
+
+    updateTheme()
+
+    const observer = new MutationObserver(updateTheme)
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ['data-tanstack-devtools-theme'],
+    })
+
+    onCleanup(() => observer.disconnect())
+  })
+
+  const theme = () =>
+    props.theme ?? inheritedTheme?.() ?? datasetTheme() ?? 'light'
   const styles = createMemo(() => createA11yPanelStyles(theme()))
 
   const runtime = getA11yRuntime(props.options ?? {})
@@ -368,7 +405,8 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
                 <Button
                   variant="secondary"
                   outline
-                  onClick={() => handleExport('csv')}>
+                  onClick={() => handleExport('csv')}
+                >
                   Export CSV
                 </Button>
               </div>
@@ -395,11 +433,7 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
             </Show>
           </span>
           <div class={styles().statusSpacer} />
-          <Button
-            variant="secondary"
-            outline
-            onClick={actions.openSettings}
-          >
+          <Button variant="secondary" outline onClick={actions.openSettings}>
             Settings
           </Button>
         </div>

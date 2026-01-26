@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/solid-query'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'
+import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/solid'
 
 // router implementation
 import Router, { router } from './setup'
@@ -31,6 +32,7 @@ function App() {
             name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
+          a11yDevtoolsPlugin(),
         ]}
       />
     </QueryClientProvider>
