@@ -210,7 +210,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
       height: ${size[12]};
       font-family: ${fontFamily.sans};
       gap: ${tokens.size[0.5]};
-      padding: 0px;
+      padding: 0;
       &:hover {
         opacity: 0.7;
       }
@@ -474,7 +474,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
         color: ${t(colors.gray[500], colors.gray[500])};
         border: none;
         display: inline-flex;
-        padding: 0px;
+        padding: 0;
         align-items: center;
         justify-content: center;
         cursor: pointer;
@@ -608,7 +608,7 @@ const stylesFactory = (theme: Theme = 'dark') => {
         background-color: transparent;
         border: none;
         gap: ${tokens.size[0.5]};
-        padding: 0px;
+        padding: 0;
         &:hover {
           opacity: 0.7;
         }
