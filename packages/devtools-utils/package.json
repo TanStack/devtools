@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -47,6 +47,12 @@
       "types": "./dist/solid/esm/index.d.ts",
       "import": "./dist/solid/esm/index.js"
     },
+    "./vue": {
+      "import": {
+        "types": "./dist/vue/esm/index.d.ts",
+        "default": "./dist/vue/esm/index.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -92,7 +98,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && vite build --config vite.config.preact.ts && tsup "
+    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && tsup "
   },
   "devDependencies": {
     "tsup": "^8.5.0",
