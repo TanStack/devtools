@@ -47,16 +47,6 @@
         "default": "./dist/cjs/react/index.cjs"
       }
     },
-    "./preact": {
-      "import": {
-        "types": "./dist/esm/preact/index.d.ts",
-        "default": "./dist/esm/preact/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/preact/index.d.cts",
-        "default": "./dist/cjs/preact/index.cjs"
-      }
-    },
     "./solid": {
       "import": {
         "types": "./dist/esm/solid/index.d.ts",
