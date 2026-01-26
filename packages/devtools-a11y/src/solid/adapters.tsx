@@ -1,8 +1,6 @@
-/** @jsxImportSource solid-js */
-
 import { createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { createA11yDevtoolsCoreClass } from '../core/create-core-class'
-import type {DevtoolsPanelProps} from '@tanstack/devtools-utils/solid';
+import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/solid'
 import type { A11yPluginOptions } from '../types'
 
 export function createA11yDevtoolsSolidPanel(options: A11yPluginOptions = {}) {
@@ -60,7 +58,7 @@ export function createA11yDevtoolsSolidPlugin(options: A11yPluginOptions = {}) {
     const [devtools] = createSignal(new CoreClass())
 
     createEffect(() => {
-      devtools().setTheme?.(props.theme)
+      devtools().setTheme(props.theme)
     })
 
     onMount(() => {
