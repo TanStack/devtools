@@ -368,8 +368,7 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
                 <Button
                   variant="secondary"
                   outline
-                  onClick={() => handleExport('csv')}
-                >
+                  onClick={() => handleExport('csv')}>
                   Export CSV
                 </Button>
               </div>
@@ -399,7 +398,6 @@ export function A11yDevtoolsPanel(props: A11yDevtoolsPanelProps) {
           <Button
             variant="secondary"
             outline
-            className={styles().compactButton}
             onClick={actions.openSettings}
           >
             Settings

@@ -66,7 +66,7 @@ const fontPx = (size: number) => `calc(${size}px * ${FONT_SCALE})`
 export function createA11yPanelStyles(theme: 'light' | 'dark') {
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
-  const bg = t('#ffffff', '#191c24')
+  const bg = t('#f9fafb;', '#191c24')
   const fg = t('#1e293b', '#e2e8f0')
   const border = t('#e2e8f0', '#292e3d')
   const muted = t('#64748b', '#94a3b8')
@@ -163,15 +163,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       gap: 6px;
       align-items: center;
     `,
-    compactButton: css`
-      padding: 4px 12px;
-      font-size: 12px;
-      line-height: 1.2;
-      border-radius: 4px;
-      border: 1px solid currentColor;
-      background: transparent;
-      opacity: 0.7;
-    `,
     toggleOverlay: css`
       padding: 8px 12px;
       color: ${fg};
@@ -198,16 +189,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     statusSpacer: css`
       flex: 1;
-    `,
-    pill: (active: boolean) => css`
-      padding: 4px 10px;
-      background: ${active ? '#10b981' : 'transparent'};
-      color: ${active ? '#fff' : '#0ea5e9'};
-      border: 1px solid ${active ? '#10b981' : border};
-      border-radius: 999px;
-      cursor: pointer;
-      font-size: ${fontPx(11)};
-      font-weight: 600;
     `,
     smallLinkButton: css`
       padding: 4px 10px;
@@ -276,11 +257,16 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     summaryButton: css`
       padding: 12px;
       color: ${fg};
+      background: ${bg};
       border-radius: 8px;
       border: 1px solid ${border};
       text-align: left;
       cursor: pointer;
       box-shadow: none;
+
+      &:hover {
+        background: ${t('#f0f2f5', '#111318')};
+      }
     `,
     summaryButtonActive: (impact: SeverityThreshold) => css`
       box-shadow: 0 0 0 2px ${SEVERITY_COLORS[impact]};
@@ -368,8 +354,9 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       flex-shrink: 0;
     `,
     helpLink: css`
-      font-size: ${fontPx(11)};
+      font-size: ${fontPx(12)};
       color: #0ea5e9;
+      padding: 0 12px;
       font-weight: 600;
       text-decoration: underline;
       text-underline-offset: 2px;
@@ -440,8 +427,8 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     `,
     doneButton: css`
       padding: 6px 12px;
-      background: #0ea5e9;
-      color: #fff;
+      background: ${bg};
+      color: ${bg};
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -505,16 +492,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       display: flex;
       gap: 6px;
     `,
-    smallAction: (variant: 'success' | 'danger') => css`
-      padding: 4px 8px;
-      background: ${variant === 'success' ? '#10b981' : '#ef4444'};
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: ${fontPx(10)};
-      font-weight: 500;
-    `,
     filtersRow: css`
       display: flex;
       gap: 8px;
@@ -546,6 +523,10 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       cursor: pointer;
       opacity: 1;
       background: transparent;
+
+      &:hover {
+        background: ${t('#f0f2f5', '#111318')};
+      }
     `,
     ruleRowDisabled: css`
       opacity: 0.6;
@@ -554,7 +535,7 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       border-bottom: 1px solid ${border};
     `,
     ruleCheckbox: css`
-      margin-top: 4px;
+      margin-top: 2px;
       flex-shrink: 0;
     `,
     ruleInfo: css`

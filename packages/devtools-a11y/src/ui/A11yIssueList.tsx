@@ -3,8 +3,8 @@
 import { For, Show } from 'solid-js'
 import { IMPACTS } from './panelUtils'
 import { SEVERITY_LABELS } from './styles'
-import type { createA11yPanelStyles } from './styles'
 import { A11yIssueCard } from './A11yIssueCard'
+import type { createA11yPanelStyles } from './styles'
 import type { GroupedIssues, SeverityThreshold } from '../types'
 
 type PanelStyles = ReturnType<typeof createA11yPanelStyles>

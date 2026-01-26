@@ -41,7 +41,6 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
         <Button
           variant="secondary"
           outline
-          className={props.styles.compactButton}
           onClick={props.onClose}
         >
           Done
@@ -96,7 +95,6 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
               <Button
                 variant="success"
                 outline
-                className={props.styles.compactButton}
                 onClick={props.onEnableAllRules}
               >
                 Enable All
@@ -104,7 +102,6 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
               <Button
                 variant="danger"
                 outline
-                className={props.styles.compactButton}
                 onClick={props.onDisableAllRules}
               >
                 Disable All

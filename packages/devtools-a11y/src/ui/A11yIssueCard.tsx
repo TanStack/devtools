@@ -49,8 +49,7 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
           </a>
           <Button
             variant="secondary"
-            outline
-            className={props.styles.compactButton}
+            ghost
             onClick={(event: MouseEvent) => {
               event.stopPropagation()
               props.onDisableRule(props.issue.ruleId)

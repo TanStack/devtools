@@ -7,49 +7,114 @@ import type { Theme } from '../components/theme'
 
 const buttonVariantColors: Record<
   ButtonVariant,
-  { bg: string; hover: string; active: string; text: string; border: string }
+  {
+    bg: { light: string; dark: string }
+    hover: { light: string; dark: string }
+    active: { light: string; dark: string }
+    text: { light: string; dark: string }
+    border: { light: string; dark: string }
+    outline: { light: string; dark: string }
+    outlineHover: { light: string; dark: string }
+  }
 > = {
   primary: {
-    bg: tokens.colors.gray[900],
-    hover: tokens.colors.gray[800],
-    active: tokens.colors.gray[700],
-    text: '#fff',
-    border: tokens.colors.gray[900],
+    bg: { light: tokens.colors.gray[900], dark: tokens.colors.gray[100] },
+    hover: { light: tokens.colors.gray[800], dark: tokens.colors.gray[200] },
+    active: { light: tokens.colors.gray[700], dark: tokens.colors.gray[300] },
+    text: { light: '#fff', dark: tokens.colors.gray[900] },
+    border: { light: tokens.colors.gray[800], dark: tokens.colors.gray[200] },
+    outline: {
+      light: tokens.colors.gray[900],
+      dark: tokens.colors.gray[100],
+    },
+    outlineHover: {
+      light: tokens.colors.gray[800],
+      dark: tokens.colors.gray[200],
+    },
   },
   secondary: {
-    bg: tokens.colors.gray[100],
-    hover: tokens.colors.gray[200],
-    active: tokens.colors.gray[300],
-    text: tokens.colors.gray[900],
-    border: tokens.colors.gray[300],
+    bg: { light: tokens.colors.gray[100], dark: tokens.colors.gray[100] },
+    hover: { light: tokens.colors.gray[200], dark: tokens.colors.gray[200] },
+    active: { light: tokens.colors.gray[300], dark: tokens.colors.gray[300] },
+    text: { light: tokens.colors.gray[900], dark: tokens.colors.gray[900] },
+    border: { light: tokens.colors.gray[300], dark: tokens.colors.gray[300] },
+    outline: {
+      light: tokens.colors.gray[700],
+      dark: tokens.colors.gray[300],
+    },
+    outlineHover: {
+      light: tokens.colors.gray[800],
+      dark: tokens.colors.gray[200],
+    },
   },
   info: {
-    bg: tokens.colors.blue[500],
-    hover: tokens.colors.blue[600],
-    active: tokens.colors.blue[700],
-    text: '#fff',
-    border: tokens.colors.blue[500],
+    bg: { light: tokens.colors.blue[500], dark: tokens.colors.blue[500] },
+    hover: { light: tokens.colors.blue[600], dark: tokens.colors.blue[600] },
+    active: { light: tokens.colors.blue[700], dark: tokens.colors.blue[700] },
+    text: { light: '#fff', dark: '#fff' },
+    border: { light: tokens.colors.blue[500], dark: tokens.colors.blue[500] },
+    outline: {
+      light: tokens.colors.blue[700],
+      dark: tokens.colors.blue[300],
+    },
+    outlineHover: {
+      light: tokens.colors.blue[600],
+      dark: tokens.colors.blue[200],
+    },
   },
   warning: {
-    bg: tokens.colors.yellow[500],
-    hover: tokens.colors.yellow[600],
-    active: tokens.colors.yellow[700],
-    text: '#fff',
-    border: tokens.colors.yellow[500],
+    bg: { light: tokens.colors.yellow[500], dark: tokens.colors.yellow[500] },
+    hover: {
+      light: tokens.colors.yellow[600],
+      dark: tokens.colors.yellow[600],
+    },
+    active: {
+      light: tokens.colors.yellow[700],
+      dark: tokens.colors.yellow[700],
+    },
+    text: { light: '#fff', dark: '#fff' },
+    border: {
+      light: tokens.colors.yellow[500],
+      dark: tokens.colors.yellow[500],
+    },
+    outline: {
+      light: tokens.colors.yellow[700],
+      dark: tokens.colors.yellow[300],
+    },
+    outlineHover: {
+      light: tokens.colors.yellow[600],
+      dark: tokens.colors.yellow[200],
+    },
   },
   danger: {
-    bg: tokens.colors.red[500],
-    hover: tokens.colors.red[600],
-    active: tokens.colors.red[700],
-    text: '#fff',
-    border: tokens.colors.red[500],
+    bg: { light: tokens.colors.red[500], dark: tokens.colors.red[500] },
+    hover: { light: tokens.colors.red[600], dark: tokens.colors.red[600] },
+    active: { light: tokens.colors.red[700], dark: tokens.colors.red[700] },
+    text: { light: '#fff', dark: '#fff' },
+    border: { light: tokens.colors.red[500], dark: tokens.colors.red[500] },
+    outline: {
+      light: tokens.colors.red[700],
+      dark: tokens.colors.red[300],
+    },
+    outlineHover: {
+      light: tokens.colors.red[600],
+      dark: tokens.colors.red[200],
+    },
   },
   success: {
-    bg: tokens.colors.green[500],
-    hover: tokens.colors.green[600],
-    active: tokens.colors.green[700],
-    text: '#fff',
-    border: tokens.colors.green[500],
+    bg: { light: tokens.colors.green[500], dark: tokens.colors.green[500] },
+    hover: { light: tokens.colors.green[600], dark: tokens.colors.green[600] },
+    active: { light: tokens.colors.green[700], dark: tokens.colors.green[700] },
+    text: { light: '#fff', dark: '#fff' },
+    border: { light: tokens.colors.green[500], dark: tokens.colors.green[500] },
+    outline: {
+      light: tokens.colors.green[700],
+      dark: tokens.colors.green[300],
+    },
+    outlineHover: {
+      light: tokens.colors.green[600],
+      dark: tokens.colors.green[200],
+    },
   },
 }
 export const css = goober.css
@@ -58,6 +123,79 @@ const stylesFactory = (theme: Theme = 'dark') => {
   const { fontFamily } = font
 
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
+  const buildButtonVariant = (variant: ButtonVariant) => {
+    const v = buttonVariantColors[variant]
+    const outlineColor = t(v.outline.light, v.outline.dark)
+    const outlineHoverColor = t(v.outlineHover.light, v.outlineHover.dark)
+    const solidBg = t(v.bg.light, v.bg.dark)
+    const solidHover = t(v.hover.light, v.hover.dark)
+    const solidActive = t(v.active.light, v.active.dark)
+    const solidText = t(v.text.light, v.text.dark)
+    const solidBorder = t(v.border.light, v.border.dark)
+
+    return {
+      ghost: css`
+        background: transparent;
+        color: ${outlineColor};
+        border-color: transparent;
+        &:hover {
+          background: ${t(colors.gray[100], colors.darkGray[800])};
+          color: ${outlineHoverColor};
+        }
+        &:active {
+          background: ${t(colors.gray[200], colors.darkGray[700])};
+          color: ${outlineHoverColor};
+        }
+      `,
+      outline: css`
+        background: transparent;
+        color: ${outlineColor};
+        border-color: ${outlineColor};
+        &:hover {
+          background: ${t(colors.gray[50], colors.darkGray[800])};
+          color: ${outlineHoverColor};
+          border-color: ${outlineHoverColor};
+        }
+        &:active {
+          background: ${t(colors.gray[100], colors.darkGray[700])};
+          color: ${outlineHoverColor};
+          border-color: ${outlineHoverColor};
+        }
+      `,
+      solid: css`
+        background: ${solidBg};
+        color: ${solidText};
+        border-color: ${solidBorder};
+        &:hover {
+          background: ${solidHover};
+          border-color: ${solidHover};
+          box-shadow: ${t(
+            tokens.shadow.xs('rgb(0 0 0 / 0.12)'),
+            tokens.shadow.xs('rgb(0 0 0 / 0.5)'),
+          )};
+        }
+        &:active {
+          background: ${solidActive};
+          border-color: ${solidActive};
+          box-shadow: ${t(
+            tokens.shadow.inner('rgb(0 0 0 / 0.2)'),
+            tokens.shadow.inner('rgb(0 0 0 / 0.6)'),
+          )};
+        }
+      `,
+    }
+  }
+  const buttonVariants: Record<
+    ButtonVariant,
+    { ghost: string; outline: string; solid: string }
+  > = {
+    primary: buildButtonVariant('primary'),
+    secondary: buildButtonVariant('secondary'),
+    info: buildButtonVariant('info'),
+    warning: buildButtonVariant('warning'),
+    danger: buildButtonVariant('danger'),
+    success: buildButtonVariant('success'),
+  }
 
   const wrapperSize = 320
 
@@ -268,49 +406,14 @@ const stylesFactory = (theme: Theme = 'dark') => {
         border-style: solid;
       `,
       variant(variant: ButtonVariant, outline?: boolean, ghost?: boolean) {
-        const v = buttonVariantColors[variant]
+        const v = buttonVariants[variant]
         if (ghost) {
-          return css`
-            background: transparent;
-            color: ${t(v.bg, v.bg)};
-            border-color: transparent;
-            &:hover {
-              background: ${t(colors.gray[100], colors.darkGray[800])};
-            }
-            &:active {
-              background: ${t(colors.gray[200], colors.darkGray[700])};
-            }
-          `
+          return v.ghost
         }
         if (outline) {
-          return css`
-            background: transparent;
-            color: ${t(v.bg, v.bg)};
-            border-color: ${t(v.bg, v.bg)};
-            &:hover {
-              background: ${t(colors.gray[50], colors.darkGray[800])};
-              border-color: ${t(v.hover, v.hover)};
-            }
-            &:active {
-              background: ${t(colors.gray[100], colors.darkGray[700])};
-              border-color: ${t(v.active, v.active)};
-            }
-          `
+          return v.outline
         }
-        // Default solid button
-        return css`
-          background: ${t(v.bg, v.bg)};
-          color: ${t(v.text, v.text)};
-          border-color: ${t(v.border, v.border)};
-          &:hover {
-            background: ${t(v.hover, v.hover)};
-            border-color: ${t(v.hover, v.hover)};
-          }
-          &:active {
-            background: ${t(v.active, v.active)};
-            border-color: ${t(v.active, v.active)};
-          }
-        `
+        return v.solid
       },
     },
     tag: {
