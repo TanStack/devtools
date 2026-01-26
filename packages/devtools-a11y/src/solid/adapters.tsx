@@ -13,7 +13,7 @@ export function createA11yDevtoolsSolidPanel(options: A11yPluginOptions = {}) {
     const [devtools] = createSignal(new CoreClass())
 
     createEffect(() => {
-      devtools().setTheme?.(props.theme ?? 'dark')
+      devtools().setTheme(props.theme ?? 'dark')
     })
 
     onMount(() => {
