@@ -95,16 +95,7 @@
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    },
-    "preact": {
-      "optional": true
-    },
     "react": {
-      "optional": true
-    },
-    "vue": {
       "optional": true
     }
   }
