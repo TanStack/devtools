@@ -1,47 +1,43 @@
 /** @jsxImportSource solid-js */
 
 import { For, Show } from 'solid-js'
+import { useAllyContext } from '../contexts/allyContext'
 import { IMPACTS } from './panelUtils'
-import { SEVERITY_LABELS } from './styles'
+import { SEVERITY_LABELS, useStyles } from './styles'
 import { A11yIssueCard } from './A11yIssueCard'
-import type { createA11yPanelStyles } from './styles'
-import type { GroupedIssues, SeverityThreshold } from '../types'
-
-type PanelStyles = ReturnType<typeof createA11yPanelStyles>
 
 interface A11yIssueListProps {
-  styles: PanelStyles
-  grouped: GroupedIssues
-  visibleGrouped: GroupedIssues
-  selectedSeverity: 'all' | SeverityThreshold
   selectedIssueId: string | null
-  onSelectSeverity: (severity: 'all' | SeverityThreshold) => void
   onIssueClick: (issueId: string) => void
   onDisableRule: (ruleId: string) => void
 }
 
 export function A11yIssueList(props: A11yIssueListProps) {
+  const styles = useStyles()
+
+  const { filteredIssues, audit, impactKey, setImpactKey } = useAllyContext()
+
   return (
     <div>
-      <div class={props.styles.summaryGrid}>
+      <div class={styles().summaryGrid}>
         <For each={IMPACTS}>
           {(impact) => {
-            const count = () => props.grouped[impact].length
-            const active = () => props.selectedSeverity === impact
+            const count = () =>
+              audit?.issues.filter((issue) => issue.impact === impact).length ||
+              0
+            const active = () => impactKey() === impact
             return (
               <button
-                class={props.styles.summaryButton}
+                class={styles().summaryButton}
                 classList={{
-                  [props.styles.summaryButtonActive(impact)]: active(),
+                  [styles().summaryButtonActive(impact)]: active(),
                 }}
                 onClick={() =>
-                  props.onSelectSeverity(
-                    props.selectedSeverity === impact ? 'all' : impact,
-                  )
+                  setImpactKey(impactKey() === impact ? 'all' : impact)
                 }
               >
-                <div class={props.styles.summaryCount(impact)}>{count()}</div>
-                <div class={props.styles.summaryLabel}>
+                <div class={styles().summaryCount(impact)}>{count()}</div>
+                <div class={styles().summaryLabel}>
                   {SEVERITY_LABELS[impact]}
                 </div>
               </button>
@@ -52,25 +48,25 @@ export function A11yIssueList(props: A11yIssueListProps) {
 
       <For each={IMPACTS}>
         {(impact) => {
-          const issues = () => props.visibleGrouped[impact]
+          const issues = () =>
+            filteredIssues().filter((issue) => issue.impact === impact)
           const shouldRender = () => {
-            if (props.selectedSeverity !== 'all') {
-              return props.selectedSeverity === impact
+            if (impactKey() !== 'all') {
+              return impactKey() === impact
             }
             return issues().length > 0
           }
 
           return (
             <Show when={shouldRender()}>
-              <div class={props.styles.section}>
-                <h3 class={props.styles.sectionTitle(impact)}>
+              <div class={styles().section}>
+                <h3 class={styles().sectionTitle(impact)}>
                   {SEVERITY_LABELS[impact]} ({issues().length})
                 </h3>
 
                 <For each={issues()}>
                   {(issue) => (
                     <A11yIssueCard
-                      styles={props.styles}
                       issue={issue}
                       impact={impact}
                       selected={props.selectedIssueId === issue.id}

@@ -2,7 +2,7 @@
 
 import { createSignal } from 'solid-js'
 import { A11yDevtoolsPanel } from '../ui/A11yDevtoolsPanel'
-import type {Accessor} from 'solid-js';
+import type { Accessor } from 'solid-js'
 import type { A11yPluginOptions } from '../types'
 
 function resolveTheme(theme: 'light' | 'dark' | 'system'): 'light' | 'dark' {

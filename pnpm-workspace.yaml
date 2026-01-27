@@ -5,3 +5,4 @@ preferWorkspacePackages: true
 packages:
   - examples/**/*
   - packages/*
+  - plugins/*

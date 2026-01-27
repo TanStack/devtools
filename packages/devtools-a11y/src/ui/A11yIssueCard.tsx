@@ -2,13 +2,10 @@
 
 import { For, Show } from 'solid-js'
 import { Button } from '@tanstack/devtools-ui'
-import type { createA11yPanelStyles } from './styles'
+import { useStyles } from './styles'
 import type { A11yIssue, SeverityThreshold } from '../types'
 
-type PanelStyles = ReturnType<typeof createA11yPanelStyles>
-
 interface A11yIssueCardProps {
-  styles: PanelStyles
   issue: A11yIssue
   impact: SeverityThreshold
   selected: boolean
@@ -19,27 +16,29 @@ interface A11yIssueCardProps {
 export function A11yIssueCard(props: A11yIssueCardProps) {
   const selector = () => props.issue.nodes[0]?.selector || 'unknown'
 
+  const styles = useStyles()
+
   return (
     <div
-      class={props.styles.issueCard}
+      class={styles().issueCard}
       classList={{
-        [props.styles.issueCardSelected]: props.selected,
+        [styles().issueCardSelected]: props.selected,
       }}
       onClick={props.onSelect}
     >
-      <div class={props.styles.issueRow}>
-        <div class={props.styles.issueMain}>
-          <div class={props.styles.issueTitleRow}>
-            <span class={props.styles.dot(props.impact)} />
+      <div class={styles().issueRow}>
+        <div class={styles().issueMain}>
+          <div class={styles().issueTitleRow}>
+            <span class={styles().dot(props.impact)} />
             <span>{props.issue.ruleId}</span>
           </div>
-          <p class={props.styles.issueMessage}>{props.issue.message}</p>
-          <div class={props.styles.selector}>{selector()}</div>
+          <p class={styles().issueMessage}>{props.issue.message}</p>
+          <div class={styles().selector}>{selector()}</div>
         </div>
 
-        <div class={props.styles.issueAside}>
+        <div class={styles().issueAside}>
           <a
-            class={props.styles.helpLink}
+            class={styles().helpLink}
             href={props.issue.helpUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -61,9 +60,9 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
       </div>
 
       <Show when={props.issue.wcagTags.length > 0}>
-        <div class={props.styles.tags}>
+        <div class={styles().tags}>
           <For each={props.issue.wcagTags.slice(0, 3)}>
-            {(tag) => <span class={props.styles.tag}>{tag}</span>}
+            {(tag) => <span class={styles().tag}>{tag}</span>}
           </For>
         </div>
       </Show>

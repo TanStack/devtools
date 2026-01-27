@@ -2,8 +2,7 @@
 
 import { For, Show, createMemo } from 'solid-js'
 import { Button, Input, Select } from '@tanstack/devtools-ui'
-import { CATEGORIES, CATEGORY_LABELS } from './styles'
-import type { createA11yPanelStyles } from './styles'
+import { CATEGORIES, CATEGORY_LABELS, useStyles } from './styles'
 import type {
   A11yPluginOptions,
   RuleCategory,
@@ -12,10 +11,7 @@ import type {
   SeverityThreshold,
 } from '../types'
 
-type PanelStyles = ReturnType<typeof createA11yPanelStyles>
-
 interface A11ySettingsOverlayProps {
-  styles: PanelStyles
   config: Required<A11yPluginOptions>
   availableRules: Array<RuleInfo>
   filteredRules: Array<RuleInfo>
@@ -33,24 +29,21 @@ interface A11ySettingsOverlayProps {
 
 export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
   const disabledRulesSet = createMemo(() => new Set(props.config.disabledRules))
+  const styles = useStyles()
 
   return (
-    <div class={props.styles.settingsOverlay}>
-      <div class={props.styles.settingsHeader}>
-        <h3 class={props.styles.settingsTitle}>Settings</h3>
-        <Button
-          variant="secondary"
-          outline
-          onClick={props.onClose}
-        >
+    <div class={styles().settingsOverlay}>
+      <div class={styles().settingsHeader}>
+        <h3 class={styles().settingsTitle}>Settings</h3>
+        <Button variant="secondary" outline onClick={props.onClose}>
           Done
         </Button>
       </div>
 
-      <div class={props.styles.settingsContent}>
-        <div class={props.styles.settingsSection}>
-          <h4 class={props.styles.settingsSectionLabel}>General</h4>
-          <div class={props.styles.settingsRowStack}>
+      <div class={styles().settingsContent}>
+        <div class={styles().settingsSection}>
+          <h4 class={styles().settingsSectionLabel}>General</h4>
+          <div class={styles().settingsRowStack}>
             <Select<SeverityThreshold>
               label="Severity Threshold"
               description="Only show issues at or above this level"
@@ -86,12 +79,12 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
         </div>
 
         <div>
-          <div class={props.styles.rulesHeaderRow}>
-            <h4 class={props.styles.settingsSectionLabel}>
+          <div class={styles().rulesHeaderRow}>
+            <h4 class={styles().settingsSectionLabel}>
               Rules ({props.availableRules.length} total,{' '}
               {props.config.disabledRules.length} disabled)
             </h4>
-            <div class={props.styles.rulesHeaderActions}>
+            <div class={styles().rulesHeaderActions}>
               <Button
                 variant="success"
                 outline
@@ -109,7 +102,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
             </div>
           </div>
 
-          <div class={props.styles.filtersRow}>
+          <div class={styles().filtersRow}>
             <Select<RuleCategory>
               label="Category"
               value={props.selectedCategory}
@@ -129,7 +122,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
             />
           </div>
 
-          <div class={props.styles.rulesList}>
+          <div class={styles().rulesList}>
             <For each={props.filteredRules}>
               {(rule, idx) => {
                 const isDisabled = () => disabledRulesSet().has(rule.id)
@@ -145,44 +138,42 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
 
                 return (
                   <label
-                    class={props.styles.ruleRow}
+                    class={styles().ruleRow}
                     classList={{
-                      [props.styles.ruleRowDisabled]: isDisabled(),
-                      [props.styles.ruleRowBorder]: hasBorder(),
+                      [styles().ruleRowDisabled]: isDisabled(),
+                      [styles().ruleRowBorder]: hasBorder(),
                     }}
                   >
                     <input
-                      class={props.styles.ruleCheckbox}
+                      class={styles().ruleCheckbox}
                       type="checkbox"
                       checked={!isDisabled()}
                       onChange={() => props.onToggleRule(rule.id)}
                     />
-                    <div class={props.styles.ruleInfo}>
-                      <div class={props.styles.ruleTop}>
+                    <div class={styles().ruleInfo}>
+                      <div class={styles().ruleTop}>
                         <span
-                          class={props.styles.ruleId}
+                          class={styles().ruleId}
                           classList={{
-                            [props.styles.ruleIdDisabled]: isDisabled(),
+                            [styles().ruleIdDisabled]: isDisabled(),
                           }}
                         >
                           {rule.id}
                         </span>
                         <Show when={isBestPracticeOnly()}>
                           <span
-                            class={props.styles.bpBadge}
+                            class={styles().bpBadge}
                             title="Best Practice only"
                           >
                             BP
                           </span>
                         </Show>
                       </div>
-                      <div class={props.styles.ruleDesc}>
-                        {rule.description}
-                      </div>
+                      <div class={styles().ruleDesc}>{rule.description}</div>
                       <Show when={categoryTag()}>
                         {(tag) => (
-                          <div class={props.styles.catTagRow}>
-                            <span class={props.styles.catTag}>
+                          <div class={styles().catTagRow}>
+                            <span class={styles().catTag}>
                               {CATEGORY_LABELS[tag() as RuleCategory] ||
                                 tag().replace('cat.', '')}
                             </span>

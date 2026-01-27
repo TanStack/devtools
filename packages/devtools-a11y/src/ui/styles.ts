@@ -1,4 +1,7 @@
 import * as goober from 'goober'
+import { useTheme } from '@tanstack/devtools-ui'
+import { createEffect, createMemo, createSignal } from 'solid-js'
+
 import type { RuleCategory, RuleSetPreset, SeverityThreshold } from '../types'
 
 const SEVERITY_COLORS: Record<SeverityThreshold, string> = {
@@ -582,4 +585,11 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       color: ${muted};
     `,
   }
+}
+
+export function useStyles() {
+  const { theme } = useTheme()
+  const styles = createMemo(() => createA11yPanelStyles(theme()))
+
+  return styles
 }
