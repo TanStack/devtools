@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/react-devtools",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your React application.",
   "author": "Tanner Linsley",
   "license": "MIT",
