@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.4
+
+### Patch Changes
+
+- Ignore the hotkey while focus is in an editable element by guarding the createShortcut callback ([#325](https://github.com/TanStack/devtools/pull/325))
+
 ## 0.10.3
 
 ### Patch Changes
