@@ -147,6 +147,15 @@ export const TanStackDevtools = ({
   config,
   eventBusConfig,
 }: TanStackDevtoolsReactInit): ReactElement | null => {
+  // Track if the component has mounted to avoid hydration mismatch
+  // Server renders null, so client must also render null until mounted
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    // eslint-disable-next-line @eslint-react/hooks-extra/no-direct-set-state-in-use-effect
+    setIsMounted(true)
+  }, [])
+
   const devToolRef = useRef<HTMLDivElement>(null)
 
   const [pluginContainers, setPluginContainers] = useState<
@@ -213,9 +222,11 @@ export const TanStackDevtools = ({
     [plugins],
   )
 
-  const [devtools] = useState(() => {
+  const [devtools, setDevtools] = useState<TanStackDevtoolsCore | null>(null)
+
+  useEffect(() => {
     const { customTrigger, ...coreConfig } = config || {}
-    return new TanStackDevtoolsCore({
+    const instance = new TanStackDevtoolsCore({
       config: {
         ...coreConfig,
         customTrigger: customTrigger
@@ -228,21 +239,29 @@ export const TanStackDevtools = ({
       eventBusConfig,
       plugins: pluginsMap,
     })
-  })
+    setDevtools(instance)
+  }, []) // Only run once on mount
 
   useEffect(() => {
+    if (!devtools) return
     devtools.setConfig({
       plugins: pluginsMap,
     })
   }, [devtools, pluginsMap])
 
   useEffect(() => {
+    if (!devtools) return
     if (devToolRef.current) {
       devtools.mount(devToolRef.current)
     }
 
     return () => devtools.unmount()
   }, [devtools])
+
+  // Return null until mounted to match server-side render (which returns null)
+  if (!isMounted) {
+    return null
+  }
 
   const hasPlugins =
     Object.values(pluginContainers).length > 0 &&

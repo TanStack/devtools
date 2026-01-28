@@ -21,24 +21,39 @@
   "types": "dist/index.d.ts",
   "module": "dist/index.js",
   "exports": {
-    "workerd": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/server.js"
-    },
-    "browser": {
-      "development": {
+    ".": {
+      "workerd": {
         "types": "./dist/index.d.ts",
-        "import": "./dist/dev.js"
+        "import": "./dist/server.js"
+      },
+      "edge-light": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/server.js"
+      },
+      "netlify": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/server.js"
+      },
+      "deno": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/server.js"
+      },
+      "node": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/server.js"
+      },
+      "browser": {
+        "development": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/dev.js"
+        },
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js"
       },
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "node": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/server.js"
-    },
-    "types": "./dist/index.d.ts",
-    "import": "./dist/index.js"
+    "./package.json": "./package.json"
   },
   "sideEffects": false,
   "engines": {

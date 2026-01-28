@@ -17,7 +17,7 @@ export default function Header() {
   const [groupedExpanded, setGroupedExpanded] = useState<
     Record<string, boolean>
   >({})
-
+  console.log('Rendering Header component')
   return (
     <>
       <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
