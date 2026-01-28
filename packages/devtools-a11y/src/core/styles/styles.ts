@@ -49,7 +49,7 @@ const css = goober.css
 const FONT_SCALE = 1.1
 const fontPx = (size: number) => `calc(${size}px * ${FONT_SCALE})`
 
-export function createA11yPanelStyles(theme: 'light' | 'dark') {
+function createA11yPanelStyles(theme: 'light' | 'dark') {
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
   const bg = t('#f9fafb;', '#191c24')

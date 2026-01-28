@@ -6,7 +6,7 @@ import {
   useContext,
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
-import { runAudit } from '../utils/ally-audit.utils'
+import { filterIssuesAboveThreshold, runAudit } from '../utils/ally-audit.utils'
 import { mergeConfig, saveConfig } from '../utils/config.utils'
 import { clearHighlights, highlightAllIssues } from '../utils/ui.utils'
 
@@ -42,6 +42,8 @@ function useAllyValue() {
   const filteredIssues = createMemo(() => {
     if (allyResult.state !== 'done' || !allyResult.audit?.issues) return []
     let results = allyResult.audit.issues
+
+    results = filterIssuesAboveThreshold(results, config.threshold)
 
     // removes excluded rules
     if (config.disabledRules.length > 0) {

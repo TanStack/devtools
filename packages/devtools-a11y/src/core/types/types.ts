@@ -75,16 +75,6 @@ export interface A11yIssue {
 }
 
 /**
- * Grouped issues by impact level
- */
-export interface GroupedIssues {
-  critical: Array<A11yIssue>
-  serious: Array<A11yIssue>
-  moderate: Array<A11yIssue>
-  minor: Array<A11yIssue>
-}
-
-/**
  * Summary statistics for an audit
  */
 export interface A11ySummary {

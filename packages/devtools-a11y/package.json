@@ -27,34 +27,34 @@
   "main": "dist/cjs/index.cjs",
   "module": "dist/esm/index.js",
   "exports": {
-    ".": {
+    "./core": {
       "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/index.d.cts",
-        "default": "./dist/cjs/index.cjs"
+        "types": "./dist/esm/core/index.d.ts",
+        "default": "./dist/esm/core/index.js"
       }
     },
     "./react": {
       "import": {
         "types": "./dist/esm/react/index.d.ts",
         "default": "./dist/esm/react/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/react/index.d.cts",
-        "default": "./dist/cjs/react/index.cjs"
+      }
+    },
+    "./react/production": {
+      "import": {
+        "types": "./dist/esm/react/production.d.ts",
+        "default": "./dist/esm/react/production.js"
       }
     },
     "./solid": {
       "import": {
         "types": "./dist/esm/solid/index.d.ts",
         "default": "./dist/esm/solid/index.js"
-      },
-      "require": {
-        "types": "./dist/cjs/solid/index.d.cts",
-        "default": "./dist/cjs/solid/index.cjs"
+      }
+    },
+    "./solid/production": {
+      "import": {
+        "types": "./dist/esm/solid/production.d.ts",
+        "default": "./dist/esm/solid/production.js"
       }
     },
     "./package.json": "./package.json"
@@ -78,7 +78,6 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "workspace:*",
     "@tanstack/devtools-ui": "workspace:*",
     "@tanstack/devtools-utils": "workspace:^",
     "axe-core": "^4.10.0",

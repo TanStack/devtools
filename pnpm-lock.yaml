@@ -767,9 +767,6 @@ importers:
 
   packages/devtools-a11y:
     dependencies:
-      '@tanstack/devtools-event-client':
-        specifier: workspace:*
-        version: link:../event-bus-client
       '@tanstack/devtools-ui':
         specifier: workspace:*
         version: link:../devtools-ui

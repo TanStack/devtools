@@ -9,6 +9,7 @@
     "test:types": "tsc"
   },
   "dependencies": {
+    "@tanstack/devtools-a11y": "workspace:*",
     "@tanstack/devtools-client": "0.0.5",
     "@tanstack/devtools-event-client": "0.4.0",
     "@tanstack/react-devtools": "^0.9.3",
@@ -17,7 +18,6 @@
     "@tanstack/react-query-devtools": "^5.90.1",
     "@tanstack/react-router": "^1.132.0",
     "@tanstack/react-router-devtools": "^1.132.0",
-    "@tanstack/devtools-a11y": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "zod": "^4.3.5"

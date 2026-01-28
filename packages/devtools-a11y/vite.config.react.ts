@@ -1,15 +1,9 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/vite-config'
-import solid from 'vite-plugin-solid'
 import packageJson from './package.json'
-import tsconfig from './tsconfig.json'
 
 const config = defineConfig({
-  plugins: [
-    solid({
-      ssr: true,
-    }) as any,
-  ],
+  plugins: [],
   test: {
     name: packageJson.name,
     dir: './',
@@ -18,18 +12,15 @@ const config = defineConfig({
     setupFiles: ['./tests/test-setup.ts'],
     globals: true,
   },
-  esbuild: {
-    tsconfigRaw: JSON.stringify(tsconfig),
-  },
 })
 
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/core/index.ts'],
-    srcDir: './src/core',
-    tsconfigPath: './tsconfig.json',
-    outDir: './dist/core',
+    entry: ['./src/react/index.ts'],
+    srcDir: './src/react',
+    outDir: './dist/react',
+    tsconfigPath: './tsconfig.react.json',
     cjs: false,
   }),
 )

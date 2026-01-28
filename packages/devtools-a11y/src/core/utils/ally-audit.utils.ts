@@ -14,7 +14,6 @@ import type {
   A11yNode,
   A11ySummary,
   CustomRulesConfig,
-  GroupedIssues,
   RuleSetPreset,
   SeverityThreshold,
 } from '../types/types.js'
@@ -77,7 +76,7 @@ const RULE_SET_CONFIGS: Record<RuleSetPreset, Partial<RunOptions>> = {
 /**
  * Check if an impact level meets or exceeds the threshold
  */
-export function meetsThreshold(
+function meetsThreshold(
   impact: SeverityThreshold | null | undefined,
   threshold: SeverityThreshold,
 ): boolean {
@@ -157,39 +156,6 @@ function createSummary(
   }
 
   return summary
-}
-
-/**
- * Group issues by their impact level
- */
-export function groupIssuesByImpact(issues: Array<A11yIssue>): GroupedIssues {
-  const grouped: GroupedIssues = {
-    critical: [],
-    serious: [],
-    moderate: [],
-    minor: [],
-  }
-
-  for (const issue of issues) {
-    const impact = issue.impact
-    if (impact === 'critical') grouped.critical.push(issue)
-    else if (impact === 'serious') grouped.serious.push(issue)
-    else if (impact === 'moderate') grouped.moderate.push(issue)
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    else if (impact === 'minor') grouped.minor.push(issue)
-  }
-
-  return grouped
-}
-
-/**
- * Filter issues by severity threshold
- */
-export function filterByThreshold(
-  issues: Array<A11yIssue>,
-  threshold: SeverityThreshold,
-): Array<A11yIssue> {
-  return issues.filter((issue) => meetsThreshold(issue.impact, threshold))
 }
 
 /**
@@ -344,39 +310,6 @@ export async function runAudit(
 }
 
 /**
- * Compare two audit results and find new/resolved issues
- */
-export function diffAuditResults(
-  previous: A11yAuditResult | null,
-  current: A11yAuditResult,
-): { newIssues: Array<A11yIssue>; resolvedIssues: Array<A11yIssue> } {
-  if (!previous) {
-    return {
-      newIssues: current.issues,
-      resolvedIssues: [],
-    }
-  }
-
-  // Create sets of issue identifiers for comparison
-  const previousIds = new Set(
-    previous.issues.map((i) => `${i.ruleId}:${i.nodes[0]?.selector}`),
-  )
-  const currentIds = new Set(
-    current.issues.map((i) => `${i.ruleId}:${i.nodes[0]?.selector}`),
-  )
-
-  const newIssues = current.issues.filter(
-    (i) => !previousIds.has(`${i.ruleId}:${i.nodes[0]?.selector}`),
-  )
-
-  const resolvedIssues = previous.issues.filter(
-    (i) => !currentIds.has(`${i.ruleId}:${i.nodes[0]?.selector}`),
-  )
-
-  return { newIssues, resolvedIssues }
-}
-
-/**
  * Get a list of all available axe-core rules plus custom rules
  */
 export function getAvailableRules(): Array<{
@@ -402,10 +335,7 @@ export const IMPACTS = ['critical', 'serious', 'moderate', 'minor'] as const
 export const filterIssuesAboveThreshold = (
   issues: A11yAuditResult['issues'],
   threshold: SeverityThreshold,
-  disabledRules: Array<string>,
 ) =>
-  issues
-    .filter((issue) => !disabledRules.includes(issue.ruleId))
-    .filter(
-      (issue) => SEVERITY_ORDER[issue.impact] >= SEVERITY_ORDER[threshold],
-    )
+  issues.filter(
+    (issue) => SEVERITY_ORDER[issue.impact] >= SEVERITY_ORDER[threshold],
+  )
