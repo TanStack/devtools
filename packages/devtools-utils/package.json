@@ -32,6 +32,26 @@
       }
     },
     "./solid": {
+      "workerd": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
+      "edge-light": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
+      "netlify": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
+      "deno": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
+      "node": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
       "browser": {
         "development": {
           "types": "./dist/solid/esm/index.d.ts",
@@ -39,10 +59,6 @@
         },
         "types": "./dist/solid/esm/index.d.ts",
         "import": "./dist/solid/esm/index.js"
-      },
-      "node": {
-        "types": "./dist/solid/esm/index.d.ts",
-        "import": "./dist/solid/esm/server.js"
       },
       "types": "./dist/solid/esm/index.d.ts",
       "import": "./dist/solid/esm/index.js"

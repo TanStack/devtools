@@ -23,6 +23,30 @@
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
+      "workerd": {
+        "types": "./dist/esm/index.d.ts",
+        "import": "./dist/esm/server.js"
+      },
+      "edge-light": {
+        "types": "./dist/esm/index.d.ts",
+        "import": "./dist/esm/server.js"
+      },
+      "netlify": {
+        "types": "./dist/esm/index.d.ts",
+        "import": "./dist/esm/server.js"
+      },
+      "deno": {
+        "types": "./dist/esm/index.d.ts",
+        "import": "./dist/esm/server.js"
+      },
+      "node": {
+        "types": "./dist/esm/index.d.ts",
+        "import": "./dist/esm/server.js"
+      },
+      "browser": {
+        "types": "./dist/esm/index.d.ts",
+        "import": "./dist/esm/index.js"
+      },
       "import": {
         "types": "./dist/esm/index.d.ts",
         "default": "./dist/esm/index.js"

@@ -113,23 +113,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         if (command !== 'serve') {
           return
         }
-
-        /*  const solidDedupeDeps = [
-          'solid-js',
-          'solid-js/web',
-          'solid-js/store',
-          'solid-js/html',
-          'solid-js/h',
-        ]
-
-        return {
-          resolve: {
-            dedupe: solidDedupeDeps,
-          },
-          optimizeDeps: {
-            include: solidDedupeDeps,
-          },
-        } */
       },
     },
     {
