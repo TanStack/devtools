@@ -11,23 +11,23 @@
   "dependencies": {
     "@tanstack/devtools-event-client": "0.4.0",
     "@tanstack/react-devtools": "^0.9.3",
-    "@tanstack/react-query": "^5.90.1",
-    "@tanstack/react-query-devtools": "^5.90.1",
-    "@tanstack/react-router": "^1.132.0",
-    "@tanstack/react-router-devtools": "^1.132.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "zod": "^4.3.5"
+    "@tanstack/react-query": "^5.90.20",
+    "@tanstack/react-query-devtools": "^5.91.2",
+    "@tanstack/react-router": "^1.157.16",
+    "@tanstack/react-router-devtools": "^1.157.16",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tanstack/devtools-ui": "0.4.4",
     "@tanstack/devtools-vite": "0.4.1",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.4",
-    "vite": "^7.1.7",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "vite": "^7.3.1",
     "vite-plugin-inspect": "11.3.3",
-    "vite-plugin-mkcert": "^1.17.8"
+    "vite-plugin-mkcert": "^1.17.9"
   },
   "browserslist": {
     "production": [
