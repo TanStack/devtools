@@ -69,28 +69,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
       position: relative;
     `,
 
-    toast: css`
-      position: absolute;
-      position-anchor: --a11y-toast-anchor;
-      position-area: top center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid ${border};
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
-      color: ${fg};
-      font-size: ${fontPx(12)};
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 20;
-    `,
-    toastDot: css`
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      flex-shrink: 0;
-    `,
-
     header: css`
       padding: 16px;
       border-bottom: 1px solid ${border};
@@ -498,7 +476,6 @@ export function createA11yPanelStyles(theme: 'light' | 'dark') {
     rulesList: css`
       border: 1px solid ${border};
       border-radius: 6px;
-      max-height: 300px;
       overflow-y: auto;
     `,
     ruleRow: css`

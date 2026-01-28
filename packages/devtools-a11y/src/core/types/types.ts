@@ -153,14 +153,19 @@ export interface A11yAuditOptions {
 export interface A11yPluginOptions {
   /** Minimum severity threshold (default: 'serious') */
   threshold?: SeverityThreshold
+
   /** Run audit automatically on mount (default: false) */
   runOnMount?: boolean
+
   /** Rule set preset (default: 'wcag21aa') */
   ruleSet?: RuleSetPreset
+
   /** Show visual overlays on page (default: true) */
   showOverlays?: boolean
+
   /** Persist settings to localStorage (default: true) */
   persistSettings?: boolean
+
   /** Rules to disable (by rule ID) */
   disabledRules?: Array<string>
 }

@@ -1,6 +1,8 @@
-import { createMemo, splitProps } from 'solid-js'
+import { createMemo } from 'solid-js'
 import clsx from 'clsx'
 import { useStyles } from '../styles/use-styles'
+
+// types
 import type { JSX } from 'solid-js'
 
 export type ButtonVariant =
@@ -17,28 +19,21 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
   children?: any
   className?: string
 }
-
 export function Button(props: ButtonProps) {
   const styles = useStyles()
-  const [local, rest] = splitProps(props, [
-    'variant',
-    'outline',
-    'ghost',
-    'children',
-    'className',
-  ])
+
   const classes = createMemo(() => {
-    const variant = local.variant || 'primary'
+    const variant = props.variant || 'primary'
     return clsx(
       styles().button.base,
-      styles().button.variant(variant, local.outline, local.ghost),
-      local.className,
+      styles().button.variant(variant, props.outline, props.ghost),
+      props.className,
     )
   })
 
   return (
-    <button {...rest} class={classes()}>
-      {local.children}
+    <button {...props} class={classes()}>
+      {props.children}
     </button>
   )
 }

@@ -25,8 +25,7 @@ export function A11yIssueList(props: A11yIssueListProps) {
 
   // hooks
   const styles = useStyles()
-  const { filteredIssues, audit, impactKey, setImpactKey, config, setConfig } =
-    useAllyContext()
+  const ally = useAllyContext()
 
   // handlers
   const handleIssueClick = (issueId: string) => {
@@ -34,8 +33,12 @@ export function A11yIssueList(props: A11yIssueListProps) {
       setSelectedIssueId('')
       clearHighlights()
 
-      if (config.showOverlays && audit && filteredIssues.length > 0) {
-        highlightAllIssues(filteredIssues())
+      if (
+        ally.config.showOverlays &&
+        ally.allyResult.audit &&
+        ally.filteredIssues().length > 0
+      ) {
+        highlightAllIssues(ally.filteredIssues())
       }
 
       return
@@ -44,7 +47,7 @@ export function A11yIssueList(props: A11yIssueListProps) {
     setSelectedIssueId(issueId)
     clearHighlights()
 
-    const issue = audit?.issues.find((i) => i.id === issueId)
+    const issue = ally.allyResult.audit?.issues.find((i) => i.id === issueId)
     if (!issue || issue.nodes.length === 0) return
 
     let scrolled = false
@@ -77,18 +80,26 @@ export function A11yIssueList(props: A11yIssueListProps) {
         <For each={IMPACTS}>
           {(impact) => {
             const count = () =>
-              audit?.issues.filter((issue) => issue.impact === impact).length ||
-              0
-            const active = () => impactKey() === impact
+              ally.allyResult.audit?.issues.reduce(
+                (count, issue) => (issue.impact === impact ? count + 1 : count),
+                0,
+              ) || 0
+
+            const active = () => ally.impactKey() === impact
+
             return (
               <button
                 class={styles().summaryButton}
                 classList={{
                   [styles().summaryButtonActive(impact)]: active(),
                 }}
-                onClick={() =>
-                  setImpactKey(impactKey() === impact ? 'all' : impact)
-                }
+                onClick={() => {
+                  ally.setImpactKey(
+                    ally.impactKey() === impact ? 'all' : impact,
+                  )
+
+                  setSelectedIssueId('')
+                }}
               >
                 <div class={styles().summaryCount(impact)}>{count()}</div>
                 <div class={styles().summaryLabel}>
@@ -103,10 +114,11 @@ export function A11yIssueList(props: A11yIssueListProps) {
       <For each={IMPACTS}>
         {(impact) => {
           const issues = () =>
-            filteredIssues().filter((issue) => issue.impact === impact)
+            ally.filteredIssues().filter((issue) => issue.impact === impact)
+
           const shouldRender = () => {
-            if (impactKey() !== 'all') {
-              return impactKey() === impact
+            if (ally.impactKey() !== 'all') {
+              return ally.impactKey() === impact
             }
             return issues().length > 0
           }
@@ -126,8 +138,8 @@ export function A11yIssueList(props: A11yIssueListProps) {
                       selected={selectedIssueId() === issue.id}
                       onSelect={() => handleIssueClick(issue.id)}
                       onDisableRule={() =>
-                        setConfig('disabledRules', [
-                          ...config.disabledRules,
+                        ally.setConfig('disabledRules', [
+                          ...ally.config.disabledRules,
                           issue.ruleId,
                         ])
                       }

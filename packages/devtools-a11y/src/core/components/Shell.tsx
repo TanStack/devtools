@@ -1,6 +1,6 @@
 /** @jsxImportSource solid-js */
 
-import { Match, Show, Switch, createSignal } from 'solid-js'
+import { Match, Show, Switch, createMemo, createSignal } from 'solid-js'
 import { Button, Header, MainPanel } from '@tanstack/devtools-ui'
 import { useAllyContext } from '../contexts/allyContext'
 import { RULE_SET_LABELS, SEVERITY_LABELS } from '../utils/ui.utils'
@@ -12,7 +12,7 @@ export function Shell() {
   const styles = useStyles()
 
   // ally context
-  const { filteredIssues, audit, state, config, setConfig, triggerAllyScan } =
+  const { filteredIssues, allyResult, config, setConfig, triggerAllyScan } =
     useAllyContext()
 
   // ui state
@@ -20,14 +20,16 @@ export function Shell() {
   const [displaySettings, setDisplaySettings] = createSignal<boolean>(false)
 
   const handleExport = (format: 'json' | 'csv') => {
+    if (allyResult.audit) return
     // Keep export logic in runtime via event -> overlay? export is still a direct helper.
     // We keep this import local to avoid pulling export code into the runtime module.
 
-    if (!audit) return
     void import('../utils/export-audit.uitls').then((m) =>
-      m.exportAuditResults(audit, { format }),
+      m.exportAuditResults(allyResult.audit!, { format }),
     )
   }
+
+  const showOverlayState = createMemo(() => config.showOverlays)
 
   return (
     <MainPanel class={styles().root} withPadding={false}>
@@ -37,8 +39,7 @@ export function Shell() {
 
           <Show when={filteredIssues()}>
             <span class={styles().headerSub}>
-              {audit?.issues.length} issue
-              {audit?.issues.length !== 1 ? 's' : ''}
+              {`${allyResult.audit?.issues.length} issue${allyResult.audit?.issues.length !== 1 ? 's' : ''}`}
             </span>
           </Show>
         </div>
@@ -47,12 +48,18 @@ export function Shell() {
           <Button
             variant="primary"
             onClick={triggerAllyScan}
-            disabled={state === 'scanning'}
+            disabled={allyResult.state === 'scanning'}
           >
-            {state === 'scanning' ? 'Scanning...' : 'Run Audit'}
+            {allyResult.state === 'scanning' ? 'Scanning...' : 'Run Audit'}
           </Button>
 
-          <Show when={state === 'done' && audit && audit.issues.length > 0}>
+          <Show
+            when={
+              allyResult.state === 'done' &&
+              allyResult.audit &&
+              allyResult.audit.issues.length > 0
+            }
+          >
             <div class={styles().buttonRow}>
               <Button
                 variant="secondary"
@@ -72,11 +79,10 @@ export function Shell() {
             </div>
 
             <Button
-              variant={config.showOverlays ? 'success' : 'secondary'}
-              outline={!config.showOverlays}
+              variant={showOverlayState() ? 'success' : 'warning'}
               onClick={() => setConfig('showOverlays', !config.showOverlays)}
             >
-              {config.showOverlays ? 'Hide' : 'Show'} Overlays
+              {showOverlayState() ? 'Hide' : 'Show'} Overlays
             </Button>
           </Show>
         </div>
@@ -84,7 +90,7 @@ export function Shell() {
 
       <div class={styles().statusBar}>
         <span>
-          <Show when={state === 'done'}>
+          <Show when={allyResult.state === 'done'}>
             {`${SEVERITY_LABELS[config.threshold]}+ |${RULE_SET_LABELS[config.ruleSet]}`}
 
             <Show when={config.disabledRules.length > 0}>
@@ -106,7 +112,7 @@ export function Shell() {
 
       <div class={styles().content}>
         <Switch>
-          <Match when={state !== 'init'}>
+          <Match when={allyResult.state === 'init'}>
             <div class={styles().emptyState}>
               <p class={styles().emptyPrimary}>No audit results yet</p>
 
@@ -116,19 +122,25 @@ export function Shell() {
             </div>
           </Match>
 
-          <Match when={state === 'done' && audit && audit.issues.length === 0}>
+          <Match
+            when={
+              allyResult.state === 'done' &&
+              allyResult.audit &&
+              allyResult.audit.issues.length === 0
+            }
+          >
             <div class={styles().successState}>
               <p class={styles().successTitle}>
                 No accessibility issues found!
               </p>
 
               <p class={styles().successSub}>
-                Scanned in {audit!.duration.toFixed(0)}ms
+                Scanned in {allyResult.audit!.duration.toFixed(0)}ms
               </p>
             </div>
           </Match>
 
-          <Match when={filteredIssues().length > 0}>
+          <Match when={allyResult.audit && allyResult.audit.issues.length > 0}>
             <A11yIssueList selectedIssueSignal={selectedIssueSignal} />
           </Match>
         </Switch>

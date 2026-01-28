@@ -8,7 +8,7 @@ import {
 import { createStore } from 'solid-js/store'
 import { runAudit } from '../utils/ally-audit.utils'
 import { mergeConfig, saveConfig } from '../utils/config.utils'
-import { highlightAllIssues } from '../utils/ui.utils'
+import { clearHighlights, highlightAllIssues } from '../utils/ui.utils'
 
 // types
 import type {
@@ -30,25 +30,39 @@ function useAllyValue() {
     audit?: A11yAuditResult
     state: 'init' | 'scanning' | 'done'
   }>({ state: 'init' })
+
   const [impactKey, setImpactKey] = createSignal<SeverityThreshold | 'all'>(
     'all',
   )
 
   const triggerAllyScan = async () => {
-    const results = await runAudit(config)
-    setAllyResult({ audit: results, state: 'done' })
+    setAllyResult({ audit: await runAudit(config), state: 'done' })
   }
 
   const filteredIssues = createMemo(() => {
     if (allyResult.state !== 'done' || !allyResult.audit?.issues) return []
-    if (impactKey() === 'all') return allyResult.audit.issues
+    let results = allyResult.audit.issues
 
-    return allyResult.audit.issues.filter((val) => val.impact === impactKey())
+    // removes excluded rules
+    if (config.disabledRules.length > 0) {
+      results = results.filter(
+        (issue) => !config.disabledRules.includes(issue.ruleId),
+      )
+    }
+
+    // early return if all impacts selected
+    if (impactKey() === 'all') return results
+
+    return results.filter((val) => val.impact === impactKey())
   })
 
   createEffect(() => {
-    if (config.showOverlays && allyResult.state === 'done')
-      highlightAllIssues(filteredIssues())
+    if (config.showOverlays === false) {
+      clearHighlights()
+      return
+    }
+
+    if (allyResult.state === 'done') highlightAllIssues(filteredIssues())
   })
 
   createEffect(() => {
@@ -66,8 +80,7 @@ function useAllyValue() {
     setConfig,
     config,
 
-    audit: allyResult.audit,
-    state: allyResult.state,
+    allyResult,
   }
 }
 
