@@ -2,8 +2,10 @@
 
 import { For, Show } from 'solid-js'
 import { Button } from '@tanstack/devtools-ui'
-import { useStyles } from './styles'
-import type { A11yIssue, SeverityThreshold } from '../types'
+import { useStyles } from '../styles/styles'
+
+// types
+import type { A11yIssue, SeverityThreshold } from '../types/types'
 
 interface A11yIssueCardProps {
   issue: A11yIssue
@@ -15,7 +17,6 @@ interface A11yIssueCardProps {
 
 export function A11yIssueCard(props: A11yIssueCardProps) {
   const selector = () => props.issue.nodes[0]?.selector || 'unknown'
-
   const styles = useStyles()
 
   return (
@@ -30,9 +31,11 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
         <div class={styles().issueMain}>
           <div class={styles().issueTitleRow}>
             <span class={styles().dot(props.impact)} />
+
             <span>{props.issue.ruleId}</span>
           </div>
           <p class={styles().issueMessage}>{props.issue.message}</p>
+
           <div class={styles().selector}>{selector()}</div>
         </div>
 
@@ -46,6 +49,7 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
           >
             Learn more
           </a>
+
           <Button
             variant="secondary"
             ghost

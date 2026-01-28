@@ -7,7 +7,7 @@
  * - Static elements with interactive handlers
  */
 
-import type { A11yIssue, CustomRulesConfig } from '../../types'
+import type { A11yIssue, CustomRulesConfig } from '../types/types'
 
 /**
  * Interactive HTML elements that can receive focus and have implicit roles

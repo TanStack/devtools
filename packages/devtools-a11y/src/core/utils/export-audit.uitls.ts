@@ -1,4 +1,4 @@
-import type { A11yAuditResult, ExportOptions } from '../types'
+import type { A11yAuditResult, ExportOptions } from '../types/types'
 
 /**
  * Export audit results to JSON format

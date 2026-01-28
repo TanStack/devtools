@@ -1,11 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   DEFAULT_CONFIG,
-  clearConfig,
   loadConfig,
   mergeConfig,
   saveConfig,
-} from '../src'
+} from '../src/core/utils/config.utils'
 
 describe('config', () => {
   // Mock localStorage
@@ -99,21 +98,6 @@ describe('config', () => {
       )
       expect(stored.ruleSet).toBe('wcag22aa')
       expect(stored.showOverlays).toBe(false)
-    })
-  })
-
-  describe('clearConfig', () => {
-    it('should remove config from localStorage', () => {
-      localStorageMock.setItem(
-        'tanstack-devtools-a11y-config',
-        JSON.stringify({ ruleSet: 'wcag22aa' }),
-      )
-
-      clearConfig()
-
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'tanstack-devtools-a11y-config',
-      )
     })
   })
 

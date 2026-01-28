@@ -1,25 +1,30 @@
-import { createContext, createMemo, createSignal, useContext } from 'solid-js'
+import {
+  createContext,
+  createEffect,
+  createMemo,
+  createSignal,
+  useContext,
+} from 'solid-js'
 import { createStore } from 'solid-js/store'
+import { runAudit } from '../utils/ally-audit.utils'
+import { mergeConfig, saveConfig } from '../utils/config.utils'
+import { highlightAllIssues } from '../utils/ui.utils'
 
-import { runAudit } from '../scanner/audit'
-import { DEFAULT_CONFIG } from '../config'
-
+// types
 import type {
   A11yAuditResult,
   A11yPluginOptions,
   SeverityThreshold,
-} from '../types'
+} from '../types/types'
 import type { ParentComponent } from 'solid-js'
 
-type UseAllyValueProps = {
-  options?: A11yPluginOptions
-}
+//
+// context state
+//
 
-function useAllyValue(props: UseAllyValueProps) {
-  const [config, setConfig] = createStore<A11yPluginOptions>({
-    ...DEFAULT_CONFIG,
-    ...(props.options ?? {}),
-  })
+function useAllyValue() {
+  const [config, setConfig] =
+    createStore<Required<A11yPluginOptions>>(mergeConfig())
 
   const [allyResult, setAllyResult] = createStore<{
     audit?: A11yAuditResult
@@ -41,6 +46,15 @@ function useAllyValue(props: UseAllyValueProps) {
     return allyResult.audit.issues.filter((val) => val.impact === impactKey())
   })
 
+  createEffect(() => {
+    if (config.showOverlays && allyResult.state === 'done')
+      highlightAllIssues(filteredIssues())
+  })
+
+  createEffect(() => {
+    saveConfig(config)
+  })
+
   return {
     impactKey,
     setImpactKey,
@@ -50,6 +64,7 @@ function useAllyValue(props: UseAllyValueProps) {
     triggerAllyScan,
 
     setConfig,
+    config,
 
     audit: allyResult.audit,
     state: allyResult.state,
@@ -58,12 +73,16 @@ function useAllyValue(props: UseAllyValueProps) {
 
 type ContextType = ReturnType<typeof useAllyValue>
 
+//
+// context
+//
+
 const AllyContext = createContext<ContextType | null>(null)
 
-type AllyProviderProps = { options?: A11yPluginOptions }
+type AllyProviderProps = {}
 
 export const AllyProvider: ParentComponent<AllyProviderProps> = (props) => {
-  const value = useAllyValue({ options: props.options })
+  const value = useAllyValue()
 
   return (
     <AllyContext.Provider value={value}>{props.children}</AllyContext.Provider>

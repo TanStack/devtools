@@ -8,9 +8,10 @@ const config = defineConfig({
   plugins: [solid() as any satisfies Plugin],
   test: {
     name: packageJson.name,
-    dir: './tests',
+    dir: './',
     watch: false,
     environment: 'jsdom',
+    setupFiles: ['./tests/test-setup.ts'],
     globals: true,
   },
 })
@@ -18,12 +19,8 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: [
-      './src/index.ts',
-      './src/react/index.ts',
-      './src/solid/index.ts',
-    ],
+    entry: ['./src/index.ts', './src/react/index.ts', './src/solid/index.ts'],
     srcDir: './src',
-    cjs: true,
+    cjs: false,
   }),
 )

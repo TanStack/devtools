@@ -2,20 +2,74 @@
 
 import { For, Show } from 'solid-js'
 import { useAllyContext } from '../contexts/allyContext'
-import { IMPACTS } from './panelUtils'
-import { SEVERITY_LABELS, useStyles } from './styles'
-import { A11yIssueCard } from './A11yIssueCard'
+import {
+  SEVERITY_LABELS,
+  clearHighlights,
+  highlightAllIssues,
+  highlightElement,
+  scrollToElement,
+} from '../utils/ui.utils'
+import { IMPACTS } from '../utils/ally-audit.utils'
+import { useStyles } from '../styles/styles'
+import { A11yIssueCard } from './IssueCard'
+
+// types
+import type { Signal } from 'solid-js'
 
 interface A11yIssueListProps {
-  selectedIssueId: string | null
-  onIssueClick: (issueId: string) => void
-  onDisableRule: (ruleId: string) => void
+  selectedIssueSignal: Signal<string>
 }
 
 export function A11yIssueList(props: A11yIssueListProps) {
-  const styles = useStyles()
+  const [selectedIssueId, setSelectedIssueId] = props.selectedIssueSignal
 
-  const { filteredIssues, audit, impactKey, setImpactKey } = useAllyContext()
+  // hooks
+  const styles = useStyles()
+  const { filteredIssues, audit, impactKey, setImpactKey, config, setConfig } =
+    useAllyContext()
+
+  // handlers
+  const handleIssueClick = (issueId: string) => {
+    if (selectedIssueId() === issueId) {
+      setSelectedIssueId('')
+      clearHighlights()
+
+      if (config.showOverlays && audit && filteredIssues.length > 0) {
+        highlightAllIssues(filteredIssues())
+      }
+
+      return
+    }
+
+    setSelectedIssueId(issueId)
+    clearHighlights()
+
+    const issue = audit?.issues.find((i) => i.id === issueId)
+    if (!issue || issue.nodes.length === 0) return
+
+    let scrolled = false
+    for (const node of issue.nodes) {
+      const selector = node.selector
+      if (!selector) continue
+
+      try {
+        const el = document.querySelector(selector)
+        if (el) {
+          if (!scrolled) {
+            scrollToElement(selector)
+            scrolled = true
+          }
+
+          highlightElement(selector, issue.impact, {
+            showTooltip: true,
+            ruleId: issue.ruleId,
+          })
+        }
+      } catch (error) {
+        console.warn('[A11y Panel] Invalid selector:', selector, error)
+      }
+    }
+  }
 
   return (
     <div>
@@ -69,9 +123,14 @@ export function A11yIssueList(props: A11yIssueListProps) {
                     <A11yIssueCard
                       issue={issue}
                       impact={impact}
-                      selected={props.selectedIssueId === issue.id}
-                      onSelect={() => props.onIssueClick(issue.id)}
-                      onDisableRule={props.onDisableRule}
+                      selected={selectedIssueId() === issue.id}
+                      onSelect={() => handleIssueClick(issue.id)}
+                      onDisableRule={() =>
+                        setConfig('disabledRules', [
+                          ...config.disabledRules,
+                          issue.ruleId,
+                        ])
+                      }
                     />
                   )}
                 </For>

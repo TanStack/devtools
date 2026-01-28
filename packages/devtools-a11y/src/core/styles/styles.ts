@@ -1,31 +1,14 @@
 import * as goober from 'goober'
 import { useTheme } from '@tanstack/devtools-ui'
-import { createEffect, createMemo, createSignal } from 'solid-js'
+import { createMemo } from 'solid-js'
 
-import type { RuleCategory, RuleSetPreset, SeverityThreshold } from '../types'
+import type { RuleCategory, SeverityThreshold } from '../types/types'
 
 const SEVERITY_COLORS: Record<SeverityThreshold, string> = {
   critical: '#dc2626',
   serious: '#ea580c',
   moderate: '#ca8a04',
   minor: '#2563eb',
-}
-
-export const SEVERITY_LABELS: Record<SeverityThreshold, string> = {
-  critical: 'Critical',
-  serious: 'Serious',
-  moderate: 'Moderate',
-  minor: 'Minor',
-}
-
-export const RULE_SET_LABELS: Record<RuleSetPreset, string> = {
-  wcag2a: 'WCAG 2.0 A',
-  wcag2aa: 'WCAG 2.0 AA',
-  wcag21aa: 'WCAG 2.1 AA',
-  wcag22aa: 'WCAG 2.2 AA',
-  section508: 'Section 508',
-  'best-practice': 'Best Practice',
-  all: 'All Rules',
 }
 
 export const CATEGORY_LABELS: Record<RuleCategory, string> = {

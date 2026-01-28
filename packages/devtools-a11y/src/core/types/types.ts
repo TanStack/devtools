@@ -4,18 +4,6 @@
 export type SeverityThreshold = 'critical' | 'serious' | 'moderate' | 'minor'
 
 /**
- * WCAG conformance levels
- */
-export type WCAGLevel =
-  | 'wcag2a'
-  | 'wcag2aa'
-  | 'wcag2aaa'
-  | 'wcag21a'
-  | 'wcag21aa'
-  | 'wcag21aaa'
-  | 'wcag22aa'
-
-/**
  * Rule set presets
  */
 export type RuleSetPreset =
@@ -45,15 +33,6 @@ export type RuleCategory =
   | 'cat.tables'
   | 'cat.text-alternatives'
   | 'cat.time-and-media'
-
-/**
- * Rule metadata for settings UI
- */
-export interface RuleInfo {
-  id: string
-  description: string
-  tags: Array<string>
-}
 
 /**
  * Represents a single node affected by an accessibility issue
@@ -184,54 +163,6 @@ export interface A11yPluginOptions {
   persistSettings?: boolean
   /** Rules to disable (by rule ID) */
   disabledRules?: Array<string>
-}
-
-/**
- * State of the A11y plugin
- */
-export interface A11yPluginState {
-  /** Whether an audit is currently running */
-  isScanning: boolean
-  /** Latest audit results */
-  results: A11yAuditResult | null
-  /** Previous audit results (for diff detection) */
-  previousResults: A11yAuditResult | null
-  /** Current configuration */
-  config: Required<A11yPluginOptions>
-  /** Currently selected issue ID */
-  selectedIssueId: string | null
-  /** Whether overlays are visible */
-  overlaysVisible: boolean
-  /** Error message if any */
-  error: string | null
-}
-
-/**
- * Plugin ID constant
- */
-export const A11Y_PLUGIN_ID = 'a11y' as const
-
-/**
- * Event payloads for the event client.
- * Keys must follow the pattern `{pluginId}:{eventSuffix}`
- */
-export interface A11yEventMap {
-  /** Emitted when audit results are available */
-  'a11y:results': A11yAuditResult
-  /** Emitted when an audit starts */
-  'a11y:scan-start': { context: string }
-  /** Emitted when an audit completes */
-  'a11y:scan-complete': { duration: number; issueCount: number }
-  /** Emitted when an audit fails */
-  'a11y:scan-error': { error: string }
-  /** Request to highlight an element */
-  'a11y:highlight': { selector: string; impact: SeverityThreshold }
-  /** Request to clear all highlights */
-  'a11y:clear-highlights': Record<string, never>
-  /** Request to highlight all issues */
-  'a11y:highlight-all': { issues: Array<A11yIssue> }
-  /** Configuration changed */
-  'a11y:config-change': Partial<A11yPluginOptions>
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { A11yPluginOptions } from './types'
+import type { A11yPluginOptions } from '../types/types'
 
 const STORAGE_KEY = 'tanstack-devtools-a11y-config'
 
@@ -52,24 +52,6 @@ export function saveConfig(config: Partial<A11yPluginOptions>): void {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
   } catch (error) {
     console.warn('[A11y Config] Failed to save config to localStorage:', error)
-  }
-}
-
-/**
- * Clear saved configuration
- */
-export function clearConfig(): void {
-  if (typeof localStorage === 'undefined') {
-    return
-  }
-
-  try {
-    localStorage.removeItem(STORAGE_KEY)
-  } catch (error) {
-    console.warn(
-      '[A11y Config] Failed to clear config from localStorage:',
-      error,
-    )
   }
 }
 

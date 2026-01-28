@@ -1,5 +1,26 @@
-import { a11yEventClient } from '../event-client'
-import type { A11yIssue, SeverityThreshold } from '../types'
+// types
+import type {
+  A11yIssue,
+  RuleSetPreset,
+  SeverityThreshold,
+} from '../types/types'
+
+export function scrollToElement(selector: string): boolean {
+  try {
+    const element = document.querySelector(selector)
+    if (element) {
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest',
+      })
+      return true
+    }
+  } catch (error) {
+    console.warn('[A11y Panel] Could not scroll to element:', selector, error)
+  }
+  return false
+}
 
 const HIGHLIGHT_CLASS = 'tsd-a11y-highlight'
 const HIGHLIGHT_STYLE_ID = 'tsd-a11y-highlight-styles'
@@ -15,7 +36,7 @@ const TOOLTIP_HEIGHT = 28
 /**
  * Severity levels mapped to numeric values for comparison (higher = more severe)
  */
-const SEVERITY_ORDER: Record<SeverityThreshold, number> = {
+export const SEVERITY_ORDER: Record<SeverityThreshold, number> = {
   critical: 4,
   serious: 3,
   moderate: 2,
@@ -42,6 +63,23 @@ function isInsideDevtools(element: Element): boolean {
     }
   }
   return false
+}
+
+export const SEVERITY_LABELS: Record<SeverityThreshold, string> = {
+  critical: 'Critical',
+  serious: 'Serious',
+  moderate: 'Moderate',
+  minor: 'Minor',
+}
+
+export const RULE_SET_LABELS: Record<RuleSetPreset, string> = {
+  wcag2a: 'WCAG 2.0 A',
+  wcag2aa: 'WCAG 2.0 AA',
+  wcag21aa: 'WCAG 2.1 AA',
+  wcag22aa: 'WCAG 2.2 AA',
+  section508: 'Section 508',
+  'best-practice': 'Best Practice',
+  all: 'All Rules',
 }
 
 /**
@@ -442,56 +480,4 @@ export function clearHighlights(): void {
   tooltips.forEach((el) => el.remove())
   activeTooltips.clear()
   stopScrollListener()
-}
-
-/**
- * Remove styles from the document
- */
-function removeStyles(): void {
-  const style = document.getElementById(HIGHLIGHT_STYLE_ID)
-  if (style) {
-    style.remove()
-  }
-}
-
-/**
- * Initialize the overlay adapter - sets up event listeners
- */
-export function initOverlayAdapter(): () => void {
-  injectStyles()
-
-  const cleanupHighlight = a11yEventClient.on('highlight', (event) => {
-    const { selector, impact } = event.payload
-    clearHighlights()
-    highlightElement(selector, impact)
-  })
-
-  const cleanupClear = a11yEventClient.on('clear-highlights', () => {
-    clearHighlights()
-  })
-
-  const cleanupHighlightAll = a11yEventClient.on('highlight-all', (event) => {
-    highlightAllIssues(event.payload.issues)
-  })
-
-  console.log('[A11y Overlay] Adapter initialized')
-
-  return () => {
-    cleanupHighlight()
-    cleanupClear()
-    cleanupHighlightAll()
-    clearHighlights()
-    removeStyles()
-    console.log('[A11y Overlay] Adapter destroyed')
-  }
-}
-
-/**
- * Overlay adapter object for direct usage
- */
-export const overlayAdapter = {
-  highlight: highlightElement,
-  highlightAll: highlightAllIssues,
-  clear: clearHighlights,
-  init: initOverlayAdapter,
 }

@@ -1,10 +1,16 @@
-export type { A11yPluginOptions } from '../types'
+'use client'
 
-export {
-  A11yDevtoolsPanel,
-  A11yDevtoolsPanelNoOp,
-  a11yDevtoolsPlugin,
-  a11yDevtoolsNoOpPlugin,
-  createA11yDevtoolsReactPanel,
-  createA11yDevtoolsReactPlugin,
-} from './adapters'
+import * as Devtools from './A11yDevtools'
+import * as plugin from './plugin'
+
+export const A11yDevtoolsPanel =
+  process.env.NODE_ENV !== 'development'
+    ? Devtools.A11yDevtoolsPanelNoOp
+    : Devtools.A11yDevtoolsPanel
+
+export const a11yDevtoolsPlugin =
+  process.env.NODE_ENV !== 'development'
+    ? plugin.a11yDevtoolsNoOpPlugin
+    : plugin.a11yDevtoolsPlugin
+
+export type { A11yDevtoolsReactInit } from './A11yDevtools'

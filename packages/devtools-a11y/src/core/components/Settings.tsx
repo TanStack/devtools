@@ -1,35 +1,47 @@
 /** @jsxImportSource solid-js */
 
-import { For, Show, createMemo } from 'solid-js'
+import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Button, Input, Select } from '@tanstack/devtools-ui'
-import { CATEGORIES, CATEGORY_LABELS, useStyles } from './styles'
+import { getAvailableRules } from '../utils/ally-audit.utils'
+import { useAllyContext } from '../contexts/allyContext'
+import { CATEGORIES, CATEGORY_LABELS, useStyles } from '../styles/styles'
+
+// types
 import type {
-  A11yPluginOptions,
   RuleCategory,
-  RuleInfo,
   RuleSetPreset,
   SeverityThreshold,
-} from '../types'
+} from '../types/types'
 
 interface A11ySettingsOverlayProps {
-  config: Required<A11yPluginOptions>
-  availableRules: Array<RuleInfo>
-  filteredRules: Array<RuleInfo>
-  ruleSearchQuery: string
-  selectedCategory: RuleCategory
   onClose: () => void
-  onThresholdChange: (threshold: SeverityThreshold) => void
-  onRuleSetChange: (ruleSet: RuleSetPreset) => void
-  onSelectCategory: (category: RuleCategory) => void
-  onSearchQueryChange: (value: string) => void
-  onToggleRule: (ruleId: string) => void
-  onEnableAllRules: () => void
-  onDisableAllRules: () => void
 }
 
 export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
-  const disabledRulesSet = createMemo(() => new Set(props.config.disabledRules))
+  const { config, setConfig } = useAllyContext()
   const styles = useStyles()
+
+  const disabledRulesSet = createMemo(() => new Set(config.disabledRules))
+  const availableRules = createMemo(() => getAvailableRules())
+
+  const [searchString, setSearchString] = createSignal('')
+  const [searchCategory, setSearchCategory] = createSignal<RuleCategory>('all')
+
+  const filteredRules = createMemo(() => {
+    const cat = searchCategory()
+    const query = searchString().toLowerCase()
+    return availableRules().filter((rule) => {
+      if (cat !== 'all' && !rule.tags.includes(cat)) {
+        return false
+      }
+
+      if (!query) return true
+      return (
+        rule.id.toLowerCase().includes(query) ||
+        rule.description.toLowerCase().includes(query)
+      )
+    })
+  })
 
   return (
     <div class={styles().settingsOverlay}>
@@ -47,7 +59,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
             <Select<SeverityThreshold>
               label="Severity Threshold"
               description="Only show issues at or above this level"
-              value={props.config.threshold}
+              value={config.threshold}
               options={[
                 { value: 'critical', label: 'Critical' },
                 { value: 'serious', label: 'Serious' },
@@ -55,13 +67,13 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'minor', label: 'Minor' },
               ]}
               onChange={(value: string) =>
-                props.onThresholdChange(value as SeverityThreshold)
+                setConfig('threshold', value as SeverityThreshold)
               }
             />
             <Select<RuleSetPreset>
               label="Rule Set"
               description="WCAG conformance level or standard"
-              value={props.config.ruleSet}
+              value={config.ruleSet}
               options={[
                 { value: 'wcag2a', label: 'WCAG 2.0 A' },
                 { value: 'wcag2aa', label: 'WCAG 2.0 AA' },
@@ -72,7 +84,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'all', label: 'All Rules' },
               ]}
               onChange={(value: string) =>
-                props.onRuleSetChange(value as RuleSetPreset)
+                setConfig('ruleSet', value as RuleSetPreset)
               }
             />
           </div>
@@ -81,21 +93,28 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
         <div>
           <div class={styles().rulesHeaderRow}>
             <h4 class={styles().settingsSectionLabel}>
-              Rules ({props.availableRules.length} total,{' '}
-              {props.config.disabledRules.length} disabled)
+              Rules ({availableRules().length} total,{' '}
+              {config.disabledRules.length} disabled)
             </h4>
+
             <div class={styles().rulesHeaderActions}>
               <Button
                 variant="success"
                 outline
-                onClick={props.onEnableAllRules}
+                onClick={() => setConfig('disabledRules', [])}
               >
                 Enable All
               </Button>
+
               <Button
                 variant="danger"
                 outline
-                onClick={props.onDisableAllRules}
+                onClick={() =>
+                  setConfig(
+                    'disabledRules',
+                    availableRules().map((rule) => rule.id),
+                  )
+                }
               >
                 Disable All
               </Button>
@@ -105,25 +124,26 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
           <div class={styles().filtersRow}>
             <Select<RuleCategory>
               label="Category"
-              value={props.selectedCategory}
+              value={searchCategory()}
               options={CATEGORIES.map((cat) => ({
                 value: cat,
                 label: CATEGORY_LABELS[cat],
               }))}
               onChange={(value: string) =>
-                props.onSelectCategory(value as RuleCategory)
+                setSearchCategory(value as RuleCategory)
               }
             />
+
             <Input
               label="Search"
               placeholder="Search rules..."
-              value={props.ruleSearchQuery}
-              onChange={(value: string) => props.onSearchQueryChange(value)}
+              value={searchString()}
+              onChange={(value: string) => setSearchString(value)}
             />
           </div>
 
           <div class={styles().rulesList}>
-            <For each={props.filteredRules}>
+            <For each={filteredRules()}>
               {(rule, idx) => {
                 const isDisabled = () => disabledRulesSet().has(rule.id)
                 const isBestPracticeOnly = () =>
@@ -134,7 +154,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                   )
                 const categoryTag = () =>
                   rule.tags.find((tag) => tag.startsWith('cat.'))
-                const hasBorder = () => idx() < props.filteredRules.length - 1
+                const hasBorder = () => idx() < filteredRules().length - 1
 
                 return (
                   <label
@@ -148,7 +168,15 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                       class={styles().ruleCheckbox}
                       type="checkbox"
                       checked={!isDisabled()}
-                      onChange={() => props.onToggleRule(rule.id)}
+                      onChange={() =>
+                        setConfig('disabledRules', (rules) => {
+                          if (disabledRulesSet().has(rule.id)) {
+                            return rules.filter((id) => id !== rule.id)
+                          } else {
+                            return [...rules, rule.id]
+                          }
+                        })
+                      }
                     />
                     <div class={styles().ruleInfo}>
                       <div class={styles().ruleTop}>

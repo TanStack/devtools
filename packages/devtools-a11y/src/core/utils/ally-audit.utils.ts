@@ -2,7 +2,10 @@ import axe from 'axe-core'
 import {
   getCustomRules as getCustomRulesInternal,
   runCustomRules,
-} from './custom-rules'
+} from './custom-audit.utils.js'
+import { SEVERITY_ORDER } from './ui.utils.js'
+
+// types
 import type { AxeResults, RuleObject, RunOptions } from 'axe-core'
 import type {
   A11yAuditOptions,
@@ -14,7 +17,7 @@ import type {
   GroupedIssues,
   RuleSetPreset,
   SeverityThreshold,
-} from '../types'
+} from '../types/types.js'
 
 /**
  * Severity levels mapped to numeric values for comparison
@@ -393,3 +396,16 @@ export function getAvailableRules(): Array<{
 
   return [...axeRules, ...customRules]
 }
+
+export const IMPACTS = ['critical', 'serious', 'moderate', 'minor'] as const
+
+export const filterIssuesAboveThreshold = (
+  issues: A11yAuditResult['issues'],
+  threshold: SeverityThreshold,
+  disabledRules: Array<string>,
+) =>
+  issues
+    .filter((issue) => !disabledRules.includes(issue.ruleId))
+    .filter(
+      (issue) => SEVERITY_ORDER[issue.impact] >= SEVERITY_ORDER[threshold],
+    )
