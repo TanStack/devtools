@@ -11,8 +11,8 @@ import {
 } from 'lucide-react'
 import { Streamdown } from 'streamdown'
 
-import { useGuitarRecommendationChat } from '@/lib/demo-ai-hook'
-import type { ChatMessages } from '@/lib/demo-ai-hook'
+import { useGuitarRecommendationChat } from '@/feat/demo-ai-hook'
+import type { ChatMessages } from '@/feat/demo-ai-hook'
 import { useAudioRecorder } from '@/hooks/demo-useAudioRecorder'
 import { useTTS } from '@/hooks/demo-useTTS'
 
