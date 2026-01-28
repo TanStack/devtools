@@ -91,7 +91,7 @@ export function Shell() {
       <div class={styles().statusBar}>
         <span>
           <Show when={allyResult.state === 'done'}>
-            {`${SEVERITY_LABELS[config.threshold]}+ |${RULE_SET_LABELS[config.ruleSet]}`}
+            {`${SEVERITY_LABELS[config.threshold]}+ | ${RULE_SET_LABELS[config.ruleSet]}`}
 
             <Show when={config.disabledRules.length > 0}>
               {` | ${config.disabledRules.length} rule(s) disabled`}
