@@ -101,8 +101,8 @@ importers:
         specifier: ^10.28.0
         version: 10.28.0
       zod:
-        specifier: ^4.1.11
-        version: 4.1.13
+        specifier: ^4.3.5
+        version: 4.3.6
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.2
@@ -175,8 +175,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.3(react@19.2.3)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.13
+        specifier: ^4.3.5
+        version: 4.3.6
     devDependencies:
       '@tanstack/devtools-ui':
         specifier: 0.4.4
@@ -242,10 +242,10 @@ importers:
         specifier: latest
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
-        specifier: ^5.66.5
+        specifier: ^5.90.1
         version: 5.90.12(react@19.2.3)
       '@tanstack/react-query-devtools':
-        specifier: ^5.84.2
+        specifier: ^5.90.1
         version: 5.91.1(@tanstack/react-query@5.90.12(react@19.2.3))(react@19.2.3)
       '@tanstack/react-router':
         specifier: ^1.132.0
@@ -321,7 +321,7 @@ importers:
         specifier: ^16.2.0
         version: 16.3.1(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/node':
-        specifier: ^22.10.2
+        specifier: ^22.15.2
         version: 22.15.2
       '@types/react':
         specifier: ^19.2.0
@@ -339,13 +339,13 @@ importers:
         specifier: ^27.0.0
         version: 27.4.0
       typescript:
-        specifier: ^5.7.2
+        specifier: ~5.9.2
         version: 5.9.3
       vite:
         specifier: ^7.1.7
         version: 7.3.0(@types/node@22.15.2)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1)
       vitest:
-        specifier: ^3.0.5
+        specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.15.2)(happy-dom@18.0.1)(jiti@2.6.1)(jsdom@27.4.0)(lightningcss@1.30.2)(sass@1.90.0)(terser@5.43.1)(tsx@4.20.3)(yaml@2.8.1)
       web-vitals:
         specifier: ^5.1.0
@@ -461,8 +461,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.3(react@19.2.3)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.13
+        specifier: ^4.3.5
+        version: 4.3.6
     devDependencies:
       '@tanstack/devtools-ui':
         specifier: 0.4.4
@@ -598,8 +598,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.3(react@19.2.3)
       zod:
-        specifier: ^4.1.11
-        version: 4.1.13
+        specifier: ^4.3.5
+        version: 4.3.6
       zustand:
         specifier: ^5.0.8
         version: 5.0.9(@types/react@19.2.7)(react@19.2.3)(use-sync-external-store@1.6.0(react@19.2.3))
@@ -9805,9 +9805,6 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
-  zod@4.1.13:
-    resolution: {integrity: sha512-AvvthqfqrAhNH9dnfmrfKzX5upOdjUVJYFqNSlkmGf64gRaTzlPwz99IHYnVs28qYAybvAlBV+H7pn0saFY4Ig==}
 
   zod@4.3.6:
     resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
@@ -20026,8 +20023,6 @@ snapshots:
       zod: 4.3.6
 
   zod@3.25.76: {}
-
-  zod@4.1.13: {}
 
   zod@4.3.6: {}
 
