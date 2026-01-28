@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { exportToCsv, exportToJson, generateSummaryReport } from '../src'
-import type { A11yAuditResult } from '../src'
+import {
+  exportToCsv,
+  exportToJson,
+  generateSummaryReport,
+} from '../src/core/utils/export-audit.uitls'
+
+// types
+import type { A11yAuditResult } from '../src/core/types/types'
 
 const createMockResult = (): A11yAuditResult => ({
   issues: [
