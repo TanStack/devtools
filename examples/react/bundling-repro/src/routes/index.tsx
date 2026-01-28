@@ -7,19 +7,8 @@ import {
   Waves,
   Sparkles,
 } from 'lucide-react'
-import { emitRouteNavigation } from '../devtools'
 
-export const Route = createFileRoute('/')({
-  component: App,
-  
-  loader: () => {
-    console.log('Loading Home route')
-    emitRouteNavigation('Home', '/')
-  },
-  "beforeLoad": () => {
-    console.log('Before loading Home route')
-  }
-})
+export const Route = createFileRoute('/')({ component: App })
 
 function App() {
   const features = [

@@ -1,14 +1,20 @@
 import { Link } from '@tanstack/react-router'
 
+import TanChatAIAssistant from './demo-AIAssistant.tsx'
+
 import { useState } from 'react'
 import {
+  ChefHat,
   ChevronDown,
   ChevronRight,
   Home,
+  ImageIcon,
   Menu,
+  MessagesSquare,
   Network,
   SquareFunction,
   StickyNote,
+  Store,
   X,
 } from 'lucide-react'
 
@@ -17,7 +23,7 @@ export default function Header() {
   const [groupedExpanded, setGroupedExpanded] = useState<
     Record<string, boolean>
   >({})
-  console.log("Rendering Header component")
+
   return (
     <>
       <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
@@ -169,8 +175,77 @@ export default function Header() {
             </div>
           )}
 
+          <Link
+            to="/demo/tanstack-query"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <Network size={20} />
+            <span className="font-medium">TanStack Query</span>
+          </Link>
+
+          <Link
+            to="/demo/ai-chat"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <MessagesSquare size={20} />
+            <span className="font-medium">Chat</span>
+          </Link>
+
+          <Link
+            to="/demo/ai-image"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <ImageIcon size={20} />
+            <span className="font-medium">Generate Image</span>
+          </Link>
+
+          <Link
+            to="/demo/ai-structured"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <ChefHat size={20} />
+            <span className="font-medium">Structured Output</span>
+          </Link>
+
+          <Link
+            to="/demo/store"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-800 transition-colors mb-2"
+            activeProps={{
+              className:
+                'flex items-center gap-3 p-3 rounded-lg bg-cyan-600 hover:bg-cyan-700 transition-colors mb-2',
+            }}
+          >
+            <Store size={20} />
+            <span className="font-medium">Store</span>
+          </Link>
+
           {/* Demo Links End */}
         </nav>
+
+        <div className="p-4 border-t border-gray-700 bg-gray-800 flex flex-col gap-2">
+          <TanChatAIAssistant />
+        </div>
       </aside>
     </>
   )
