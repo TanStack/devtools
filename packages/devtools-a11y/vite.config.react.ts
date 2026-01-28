@@ -1,6 +1,7 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/vite-config'
 import packageJson from './package.json'
+import tsconfig from './tsconfig.react.json'
 
 const config = defineConfig({
   plugins: [],
@@ -11,6 +12,10 @@ const config = defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/test-setup.ts'],
     globals: true,
+  },
+
+  esbuild: {
+    tsconfigRaw: JSON.stringify(tsconfig),
   },
 })
 

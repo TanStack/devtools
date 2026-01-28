@@ -18,6 +18,7 @@ const config = defineConfig({
     setupFiles: ['./tests/test-setup.ts'],
     globals: true,
   },
+
   esbuild: {
     tsconfigRaw: JSON.stringify(tsconfig),
   },

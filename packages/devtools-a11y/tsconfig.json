@@ -8,6 +8,7 @@
     "src",
     "eslint.config.js",
     "tests",
+
     "vite.config.ts",
     "vite.config.react.ts",
     "vite.config.solid.ts"
