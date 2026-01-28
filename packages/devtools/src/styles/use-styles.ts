@@ -432,7 +432,6 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginsTabContent: css`
       width: 100%;
       height: 100%;
-      overflow-y: auto;
 
       &:not(:last-child) {
         border-right: 5px solid ${t(colors.purple[200], colors.purple[800])};

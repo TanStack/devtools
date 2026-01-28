@@ -1,5 +1,7 @@
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { createA11yDevtoolsReactPlugin } from '@tanstack/devtools-a11y/react'
+
 import {
   Link,
   Outlet,
@@ -71,9 +73,14 @@ export default function DevtoolsExample() {
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
           {
+            name: 'TanStack Router',
+            render: <TanStackRouterDevtoolsPanel router={router} />,
+          },
+          {
             name: 'Package.json',
             render: () => <PackageJsonPanel />,
           },
+          createA11yDevtoolsReactPlugin({ runOnMount: false })[0](),
           /* {
       name: "The actual app",
       render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
