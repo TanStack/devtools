@@ -22,7 +22,7 @@
     "@tanstack/ai-ollama": "latest",
     "@tanstack/ai-openai": "latest",
     "@tanstack/ai-react": "latest",
-    "@tanstack/react-ai-devtools": "latest",
+    "@tanstack/react-ai-devtools": "https://pkg.pr.new/TanStack/ai/@tanstack/react-ai-devtools@e1e0834",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-query": "^5.66.5",
     "@tanstack/react-query-devtools": "^5.84.2",

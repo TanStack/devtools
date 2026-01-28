@@ -113,6 +113,30 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         if (command !== 'serve') {
           return
         }
+
+        // Exclude solid-js and packages that depend on it from optimizeDeps
+        // These packages use solid-js internally and should not be pre-bundled
+        // because solid-js may not be installed in the consuming project (e.g. React projects)
+        // The packages have proper export conditions that handle SSR environments
+        const solidPackages = [
+          'solid-js',
+          'solid-js/web',
+          'solid-js/store',
+          '@solid-primitives/rootless',
+          '@tanstack/devtools',
+          '@tanstack/devtools-ui',
+          '@tanstack/devtools-utils',
+          '@solid-primitives/utils',
+          '@solid-primitives/keyboard',
+          '@solid-primitives/resize-observer',
+          '@solid-primitives/event-listener',
+        ]
+
+        return {
+          optimizeDeps: {
+            exclude: solidPackages,
+          },
+        }
       },
     },
     {

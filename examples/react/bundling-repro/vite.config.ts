@@ -14,6 +14,7 @@ const config = defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+
   plugins: [
     devtools(),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
