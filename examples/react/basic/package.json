@@ -20,7 +20,7 @@
     "@tanstack/devtools-a11y": "workspace:*",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "zod": "^4.1.11"
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@tanstack/devtools-ui": "0.4.4",
