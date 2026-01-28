@@ -30,8 +30,8 @@ function App() {
           {
             name: 'TanStack Router',
             render: <TanStackRouterDevtoolsPanel router={router} />,
-          }
-          ]}
+          },
+        ]}
       />
     </QueryClientProvider>
   )

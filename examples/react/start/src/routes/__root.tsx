@@ -45,7 +45,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       id: 'route-navigation',
       name: 'Route Navigation',
       render: <RouteNavigationPanel />,
-    }
+    },
   ]
 
   return (
