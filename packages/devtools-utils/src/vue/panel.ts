@@ -1,20 +1,19 @@
 import { defineComponent, h, onMounted, onUnmounted, ref } from 'vue'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 import type { DefineComponent } from 'vue'
 
-export interface DevtoolsPanelProps {
-  theme?: 'dark' | 'light' | 'system'
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
 export function createVuePanel<
   TComponentProps extends DevtoolsPanelProps,
   TCoreDevtoolsClass extends {
-    mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
+    mount: (el: HTMLElement, props?: TanStackDevtoolsPluginProps) => void
     unmount: () => void
   },
 >(CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass) {
   const props = {
-    theme: {
-      type: String as () => DevtoolsPanelProps['theme'],
+    props: {
+      type: Object as () => DevtoolsPanelProps,
     },
     devtoolsProps: {
       type: Object as () => TComponentProps,
@@ -32,7 +31,7 @@ export function createVuePanel<
         devtools.value = instance
 
         if (devToolRef.value) {
-          instance.mount(devToolRef.value, config.theme)
+          instance.mount(devToolRef.value, config.props)
         }
       })
 
