@@ -32,7 +32,8 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "workspace:^"
+    "@tanstack/devtools-event-client": "workspace:^",
+    "@tanstack/pacer": "^0.17.3"
   },
   "files": [
     "dist/",

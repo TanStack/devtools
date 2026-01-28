@@ -13,9 +13,43 @@ import {
   emitOutdatedDeps,
   installPackage,
 } from './package-manager'
+import { generateConsolePipeCode } from './virtual-console'
+import type { ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
 import type { EditorConfig } from './editor'
 import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
+
+export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
+
+/**
+ * Strips browser console styling (%c format specifiers and their CSS arguments)
+ * for clean terminal output.
+ */
+const stripBrowserConsoleStyles = (args: Array<unknown>): Array<unknown> => {
+  if (args.length === 0) return args
+
+  const firstArg = args[0]
+  if (typeof firstArg !== 'string' || !firstArg.includes('%c')) {
+    return args
+  }
+
+  // Count the number of %c in the format string
+  const styleCount = (firstArg.match(/%c/g) || []).length
+
+  // Remove %c from the format string
+  const cleanedFormat = firstArg.replace(/%c/g, '')
+
+  // Remove the CSS style arguments (one for each %c)
+  // The style arguments follow the format string
+  const remainingArgs = args.slice(1 + styleCount)
+
+  // If the cleaned format is empty or just whitespace, skip it
+  if (cleanedFormat.trim() === '') {
+    return remainingArgs
+  }
+
+  return [cleanedFormat, ...remainingArgs]
+}
 
 export type TanStackDevtoolsViteConfig = {
   /**
@@ -70,6 +104,23 @@ export type TanStackDevtoolsViteConfig = {
       components?: Array<string | RegExp>
     }
   }
+  /**
+   * Configuration for console piping between client and server.
+   * When enabled, console logs from the client will appear in the terminal,
+   * and server logs will appear in the browser console.
+   */
+  consolePiping?: {
+    /**
+     * Whether to enable console piping.
+     * @default true
+     */
+    enabled?: boolean
+    /**
+     * Which console methods to pipe.
+     * @default ['log', 'warn', 'error', 'info', 'debug']
+     */
+    levels?: Array<ConsoleLevel>
+  }
 }
 
 export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
@@ -82,6 +133,21 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const serverBusEnabled = args?.eventBusConfig?.enabled ?? true
+  const consolePipingConfig = args?.consolePiping ?? { enabled: true }
+  const consolePipingLevels: Array<ConsoleLevel> =
+    consolePipingConfig.levels ?? ['log', 'warn', 'error', 'info', 'debug']
+
+  // Store original server console methods before any overrides
+  const originalServerConsole: Record<
+    ConsoleLevel,
+    (...args: Array<unknown>) => void
+  > = {
+    log: console.log.bind(console),
+    warn: console.warn.bind(console),
+    error: console.error.bind(console),
+    info: console.info.bind(console),
+    debug: console.debug.bind(console),
+  }
 
   let devtoolsFileId: string | null = null
   let devtoolsPort: number | null = null
@@ -175,16 +241,107 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }
           await editor.open(path, lineNum, columnNum)
         }
-        server.middlewares.use((req, res, next) =>
-          handleDevToolsViteRequest(req, res, next, (parsedData) => {
-            const { data, routine } = parsedData
-            if (routine === 'open-source') {
-              return handleOpenSource({
-                data: { type: data.type, data },
-                openInEditor,
-              })
+
+        // SSE clients for broadcasting server logs to browser (console piping)
+        const sseClients: Array<{
+          res: ServerResponse
+          id: number
+        }> = []
+        let sseClientId = 0
+        const consolePipingEnabled = consolePipingConfig.enabled ?? true
+
+        // Override server console methods to broadcast to SSE clients
+        if (consolePipingEnabled) {
+          for (const level of consolePipingLevels) {
+            const original = originalServerConsole[level]
+            console[level] = (...args: Array<unknown>) => {
+              // Call original console method first
+              original(...args)
+
+              // Broadcast to all SSE clients
+              if (sseClients.length > 0) {
+                const data = JSON.stringify({
+                  entries: [
+                    {
+                      level,
+                      args,
+                      source: 'server',
+                      timestamp: Date.now(),
+                    },
+                  ],
+                })
+                for (const client of sseClients) {
+                  client.res.write(`data: ${data}\n\n`)
+                }
+              }
             }
-            return
+          }
+
+          originalServerConsole.log(
+            chalk.magenta(
+              '[TSD Console Pipe] Server console piping configured',
+            ),
+          )
+        }
+
+        server.middlewares.use((req, res, next) =>
+          handleDevToolsViteRequest(req, res, next, {
+            onOpenSource: (parsedData) => {
+              const { data, routine } = parsedData
+              if (routine === 'open-source') {
+                return handleOpenSource({
+                  data: { type: data.type, data },
+                  openInEditor,
+                })
+              }
+              return
+            },
+            onConsolePipe: consolePipingEnabled
+              ? (entries) => {
+                  for (const entry of entries) {
+                    const prefix = chalk.cyan('[Client]')
+                    const logMethod =
+                      originalServerConsole[entry.level as ConsoleLevel]
+                    // Strip browser console styling (%c and CSS strings) for terminal output
+                    const cleanedArgs = stripBrowserConsoleStyles(entry.args)
+                    logMethod(prefix, ...cleanedArgs)
+                  }
+                }
+              : undefined,
+            onConsolePipeSSE: consolePipingEnabled
+              ? (res, req) => {
+                  originalServerConsole.log(
+                    chalk.magenta('[TSD Console Pipe] SSE connection request'),
+                  )
+
+                  res.setHeader('Content-Type', 'text/event-stream')
+                  res.setHeader('Cache-Control', 'no-cache')
+                  res.setHeader('Connection', 'keep-alive')
+                  res.setHeader('Access-Control-Allow-Origin', '*')
+                  res.flushHeaders()
+
+                  const clientId = ++sseClientId
+                  sseClients.push({ res, id: clientId })
+
+                  originalServerConsole.log(
+                    chalk.magenta(
+                      `[TSD Console Pipe] SSE client ${clientId} connected`,
+                    ),
+                  )
+
+                  req.on('close', () => {
+                    const index = sseClients.findIndex((c) => c.id === clientId)
+                    if (index !== -1) {
+                      sseClients.splice(index, 1)
+                    }
+                    originalServerConsole.log(
+                      chalk.magenta(
+                        `[TSD Console Pipe] SSE client ${clientId} disconnected`,
+                      ),
+                    )
+                  })
+                }
+              : undefined,
           }),
         )
       },
@@ -417,6 +574,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
             packageJson,
           })
         })
+
+        // Console piping is now handled via HTTP endpoints in the custom-server plugin
       },
       async handleHotUpdate({ file }) {
         if (file.endsWith('package.json')) {
@@ -426,6 +585,71 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           })
           emitOutdatedDeps()
         }
+      },
+    },
+    // Inject console piping code into client entry files
+    {
+      name: '@tanstack/devtools:console-pipe-transform',
+      enforce: 'pre',
+      apply(config, { command }) {
+        return (
+          config.mode === 'development' &&
+          command === 'serve' &&
+          (consolePipingConfig.enabled ?? true)
+        )
+      },
+      transform(code, id) {
+        // Inject the console pipe code into client entry files
+        // Look for common entry patterns and inject at the top
+        if (
+          id.includes('node_modules') ||
+          id.includes('?') ||
+          !id.match(/\.(tsx?|jsx?)$/)
+        ) {
+          return
+        }
+
+        // Only inject into files that look like client entry points
+        // or files that import React/framework-specific code (indicating client code)
+        const isClientEntry =
+          id.includes('client') ||
+          id.includes('entry') ||
+          id.includes('main.tsx') ||
+          id.includes('main.jsx') ||
+          id.includes('app.tsx') ||
+          id.includes('app.jsx') ||
+          id.includes('App.tsx') ||
+          id.includes('App.jsx') ||
+          id.includes('root.tsx') ||
+          id.includes('root.jsx')
+
+        // Also check for StartClient or hydrateRoot which indicate client entry
+        const hasClientHydration =
+          code.includes('StartClient') ||
+          code.includes('hydrateRoot') ||
+          code.includes('createRoot')
+
+        if (isClientEntry || hasClientHydration) {
+          // Only inject once - check if already injected
+          if (code.includes('__TSD_CONSOLE_PIPE_INITIALIZED__')) {
+            return
+          }
+
+          originalServerConsole.log(
+            chalk.magenta(
+              `[TSD Console Pipe] Injecting console pipe into: ${id}`,
+            ),
+          )
+
+          const inlineCode = generateConsolePipeCode(consolePipingLevels)
+
+          return {
+            code: `${inlineCode}\n${code}`,
+            map: null,
+          }
+        }
+
+        return undefined
       },
     },
     {

@@ -1,5 +1,14 @@
 import { EventClient } from '@tanstack/devtools-event-client'
 
+export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
+
+export interface ConsoleLogEntry {
+  level: ConsoleLevel
+  args: Array<unknown>
+  source: string
+  timestamp: number
+}
+
 export interface PackageJson {
   name?: string
   version?: string
@@ -86,6 +95,12 @@ interface EventMap {
   'tanstack-devtools-core:trigger-toggled': {
     isOpen: boolean
   }
+  'tanstack-devtools-core:client-console': {
+    entries: Array<ConsoleLogEntry>
+  }
+  'tanstack-devtools-core:server-console': {
+    entries: Array<ConsoleLogEntry>
+  }
 }
 
 export class DevtoolsEventClient extends EventClient<EventMap> {
@@ -97,5 +112,38 @@ export class DevtoolsEventClient extends EventClient<EventMap> {
 }
 
 const devtoolsEventClient = new DevtoolsEventClient()
+
+// Store original console methods to avoid infinite loops
+const originalConsole: Record<ConsoleLevel, (...args: Array<unknown>) => void> =
+  {
+    log: console.log.bind(console),
+    warn: console.warn.bind(console),
+    error: console.error.bind(console),
+    info: console.info.bind(console),
+    debug: console.debug.bind(console),
+  }
+
+// Listen for server console logs and pipe them to the browser console
+// Only set up listener on client side
+if (typeof window !== 'undefined') {
+  devtoolsEventClient.on('server-console', (event) => {
+    for (const entry of event.payload.entries) {
+      const prefix = '%c[Server]%c'
+      const prefixStyle = 'color: #9333ea; font-weight: bold;' // purple
+      const resetStyle = 'color: inherit;'
+      const source = `%c${entry.source}%c`
+      const sourceStyle = 'color: #6b7280;' // gray
+      const logMethod = originalConsole[entry.level]
+      logMethod(
+        prefix + ' ' + source,
+        prefixStyle,
+        resetStyle,
+        sourceStyle,
+        resetStyle,
+        ...entry.args,
+      )
+    }
+  })
+}
 
 export { devtoolsEventClient }
