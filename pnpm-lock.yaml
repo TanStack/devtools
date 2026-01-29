@@ -145,10 +145,10 @@ importers:
   examples/react/a11y-devtools:
     dependencies:
       '@tanstack/devtools-a11y':
-        specifier: workspace:*
+        specifier: ^0.0.1
         version: link:../../../packages/devtools-a11y
       '@tanstack/react-devtools':
-        specifier: workspace:*
+        specifier: ^0.9.3
         version: link:../../../packages/react-devtools
       react:
         specifier: ^19.2.0

@@ -26,38 +26,38 @@
   "exports": {
     "./core": {
       "import": {
-        "types": "./dist/esm/core/index.d.ts",
-        "default": "./dist/esm/core/index.js"
+        "types": "./dist/core/esm/index.d.ts",
+        "default": "./dist/core/esm/index.js"
       }
     },
     "./core/production": {
       "import": {
-        "types": "./dist/esm/core/production.d.ts",
-        "default": "./dist/esm/core/production.js"
+        "types": "./dist/core/esm/production.d.ts",
+        "default": "./dist/core/esm/production.js"
       }
     },
     "./react": {
       "import": {
-        "types": "./dist/esm/react/index.d.ts",
-        "default": "./dist/esm/react/index.js"
+        "types": "./dist/react/esm/index.d.ts",
+        "default": "./dist/react/esm/react/index.js"
       }
     },
     "./react/production": {
       "import": {
-        "types": "./dist/esm/react/production.d.ts",
-        "default": "./dist/esm/react/production.js"
+        "types": "./dist/react/esm/production.d.ts",
+        "default": "./dist/react/esm/react/production.js"
       }
     },
     "./solid": {
       "import": {
-        "types": "./dist/esm/solid/index.d.ts",
-        "default": "./dist/esm/solid/index.js"
+        "types": "./dist/solid/esm/index.d.ts",
+        "default": "./dist/solid/esm/solid/index.js"
       }
     },
     "./solid/production": {
       "import": {
-        "types": "./dist/esm/solid/production.d.ts",
-        "default": "./dist/esm/solid/production.js"
+        "types": "./dist/solid/esm/production.d.ts",
+        "default": "./dist/solid/esm/solid/production.js"
       }
     },
     "./package.json": "./package.json"
@@ -78,7 +78,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build"
+    "build": "vite build && vite build --config vite.config.react.ts && vite build --config vite.config.solid.ts"
   },
   "dependencies": {
     "@tanstack/devtools-ui": "workspace:*",

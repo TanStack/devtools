@@ -27,7 +27,7 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/solid/index.ts'],
+    entry: ['./src/solid/index.ts', './src/solid/production.ts'],
     srcDir: './src/solid',
     tsconfigPath: './tsconfig.solid.json',
     outDir: './dist/solid',
