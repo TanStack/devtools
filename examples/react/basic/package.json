@@ -9,7 +9,6 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-a11y": "workspace:*",
     "@tanstack/devtools-client": "0.0.5",
     "@tanstack/devtools-event-client": "0.4.0",
     "@tanstack/react-devtools": "^0.9.3",

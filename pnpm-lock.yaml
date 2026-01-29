@@ -172,9 +172,6 @@ importers:
 
   examples/react/basic:
     dependencies:
-      '@tanstack/devtools-a11y':
-        specifier: workspace:*
-        version: link:../../../packages/devtools-a11y
       '@tanstack/devtools-client':
         specifier: 0.0.5
         version: link:../../../packages/devtools-client

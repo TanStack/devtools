@@ -1,3 +1,5 @@
+/** @jsxImportSource solid-js */
+
 import { lazy } from 'solid-js'
 import { constructCoreClass } from '@tanstack/devtools-utils/solid'
 

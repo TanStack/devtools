@@ -1,3 +1,5 @@
+/** @jsxImportSource solid-js */
+
 import {
   createContext,
   createEffect,

@@ -1,3 +1,5 @@
+/** @jsxImportSource solid-js */
+
 import { AllyProvider } from '../contexts/allyContext'
 import { Shell } from './Shell'
 
