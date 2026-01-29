@@ -33,6 +33,12 @@
         "default": "./dist/esm/core/index.js"
       }
     },
+    "./core/production": {
+      "import": {
+        "types": "./dist/esm/core/production.d.ts",
+        "default": "./dist/esm/core/production.js"
+      }
+    },
     "./react": {
       "import": {
         "types": "./dist/esm/react/index.d.ts",

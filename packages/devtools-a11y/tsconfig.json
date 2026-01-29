@@ -6,8 +6,8 @@
   "extends": "../../tsconfig.json",
   "include": [
     "src",
-    "eslint.config.js",
     "tests",
+    "eslint.config.js",
 
     "vite.config.ts",
     "vite.config.react.ts",
