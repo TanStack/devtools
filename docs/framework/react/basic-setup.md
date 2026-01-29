@@ -13,18 +13,26 @@ Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/react-de
 npm i @tanstack/react-devtools
 ```
 
-Next in the root of your application import the `TanStackDevtools` from the required framework adapter (in this case @tanstack/react-devtools).
+Next, render the `TanStackDevtools` inside the providers required by the plugins you use (for example, `QueryClientProvider`). If you use TanStack Router devtools, you must pass the router instance to the router panel.
 
 ```tsx
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
-import App from './App'
+import { routeTree } from './routeTree.gen'
+
+const queryClient = new QueryClient()
+const router = createRouter({ routeTree })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
-
-    <TanStackDevtools />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <TanStackDevtools />
+    </QueryClientProvider>
   </StrictMode>,
 )
 ```
@@ -39,37 +47,41 @@ Currently TanStack offers:
 - `FormDevtools` [coming soon](https://github.com/TanStack/form/pull/1692)
 
 ```tsx
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { ReactFormDevtoolsPanel } from '@tanstack/react-form-devtools'
 
+import { routeTree } from './routeTree.gen'
 
-import App from './App'
+const queryClient = new QueryClient()
+const router = createRouter({ routeTree })
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
-
-    <TanStackDevtools
-      plugins={[
-        {
-          name: 'TanStack Query',
-          render: <ReactQueryDevtoolsPanel />,
-        },
-        {
-          name: 'TanStack Router',
-          render: <TanStackRouterDevtoolsPanel />,
-        },
-        {
-          name: 'TanStack Form',
-          render: <ReactFormDevtoolsPanel />,
-        },
-      ]}
-    />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      <TanStackDevtools
+        plugins={[
+          {
+            name: 'TanStack Query',
+            render: <ReactQueryDevtoolsPanel />,
+          },
+          {
+            name: 'TanStack Router',
+            render: <TanStackRouterDevtoolsPanel router={router} />,
+          },
+          {
+            name: 'TanStack Form',
+            render: <ReactFormDevtoolsPanel />,
+          },
+        ]}
+      />
+    </QueryClientProvider>
   </StrictMode>,
 )
 ```
