@@ -25,7 +25,7 @@ export default mergeConfig(
     entry: ['./src/react/index.ts', './src/react/production.ts'],
     srcDir: './src/react',
     outDir: './dist/react',
-    externalDeps: ['solid-js'],
+    externalDeps: ['solid-js', '@tanstack/devtools-a11y/core'],
     tsconfigPath: './tsconfig.react.json',
     cjs: false,
   }),

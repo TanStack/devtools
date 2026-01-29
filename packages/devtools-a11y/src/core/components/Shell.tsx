@@ -37,7 +37,7 @@ export function Shell() {
         <div class={styles().headerTitleRow}>
           <h2 class={styles().headerTitle}>Accessibility Audit</h2>
 
-          <Show when={filteredIssues()}>
+          <Show when={allyResult.state === 'done' && filteredIssues()}>
             <span class={styles().headerSub}>
               {`${allyResult.audit?.issues.length} issue${allyResult.audit?.issues.length !== 1 ? 's' : ''}`}
             </span>

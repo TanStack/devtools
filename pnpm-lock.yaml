@@ -145,7 +145,7 @@ importers:
   examples/react/a11y-devtools:
     dependencies:
       '@tanstack/devtools-a11y':
-        specifier: ^0.0.1
+        specifier: workspace:*
         version: link:../../../packages/devtools-a11y
       '@tanstack/react-devtools':
         specifier: ^0.9.3
