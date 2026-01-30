@@ -36,7 +36,6 @@ describe('config', () => {
   describe('DEFAULT_CONFIG', () => {
     it('should have expected default values', () => {
       expect(DEFAULT_CONFIG.threshold).toBe('serious')
-      expect(DEFAULT_CONFIG.runOnMount).toBe(false)
       expect(DEFAULT_CONFIG.ruleSet).toBe('wcag21aa')
       expect(DEFAULT_CONFIG.showOverlays).toBe(true)
       expect(DEFAULT_CONFIG.persistSettings).toBe(true)

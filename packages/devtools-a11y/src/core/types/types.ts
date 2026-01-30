@@ -144,9 +144,6 @@ export interface A11yPluginOptions {
   /** Minimum severity threshold (default: 'serious') */
   threshold?: SeverityThreshold
 
-  /** Run audit automatically on mount (default: false) */
-  runOnMount?: boolean
-
   /** Rule set preset (default: 'wcag21aa') */
   ruleSet?: RuleSetPreset
 
