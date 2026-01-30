@@ -180,6 +180,28 @@ export default {
 }
 ```
 
+### consolePiping
+
+Configuration for bidirectional console piping between client and server. When enabled, console logs from the client will appear in your terminal, and server logs will appear in the browser console. Defaults to enabled.
+
+```ts
+import { devtools } from '@tanstack/devtools-vite'
+
+export default {
+  plugins: [
+    devtools({
+      consolePiping: {
+        // Whether to enable console piping (defaults to true)
+        enabled: true,
+        // Which console methods to pipe (defaults to all)
+        levels: ['log', 'warn', 'error', 'info', 'debug'],
+      }
+    }),
+    // ... rest of your plugins here
+  ],
+}
+```
+
 ## Features
 
 ### Go to source
