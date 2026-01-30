@@ -1,4 +1,4 @@
-export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
+import type { ConsoleLevel } from './plugin'
 
 export const VIRTUAL_MODULE_ID = 'virtual:tanstack-devtools-console'
 export const RESOLVED_VIRTUAL_MODULE_ID = '\0' + VIRTUAL_MODULE_ID
@@ -70,9 +70,9 @@ export function generateConsolePipeCode(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ entries: entries }),
-    }).catch(function() {
-      // Swallow errors  
-      });
+    }).catch(function( ) {
+     // Swallow errors  
+    });
   }
 
   function addToBatch(entry) {
@@ -186,12 +186,12 @@ export function generateConsolePipeCode(
           }
         }
       } catch (err) {
-         // Swallow errors
+        // Swallow errors  
       }
     };
 
     eventSource.onerror = function() {
-       // Swallow errors
+      // Swallow errors  
     };
 
     // Flush on page unload
