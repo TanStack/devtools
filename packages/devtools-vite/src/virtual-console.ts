@@ -70,11 +70,9 @@ export function generateConsolePipeCode(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ entries: entries }),
-    }).catch(function(err) {
-      if (!isServer) {
-        originalConsole.error('[TSD Console Pipe] Failed to send logs:', err);
-      }
-    });
+    }).catch(function() {
+      // Swallow errors  
+      });
   }
 
   function addToBatch(entry) {
@@ -188,12 +186,12 @@ export function generateConsolePipeCode(
           }
         }
       } catch (err) {
-        originalConsole.error('[TSD Console Pipe] Failed to parse SSE data:', err);
+         // Swallow errors
       }
     };
 
     eventSource.onerror = function() {
-      originalConsole.log('[TSD Console Pipe] SSE connection error, will retry...');
+       // Swallow errors
     };
 
     // Flush on page unload
