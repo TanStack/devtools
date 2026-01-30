@@ -6,6 +6,7 @@ export const Route = createFileRoute('/demo/start/ssr/data-only')({
   ssr: 'data-only',
   component: RouteComponent,
   loader: async () => {
+    console.log('Navigated to Data Only SSR Demo')
     emitRouteNavigation('Data Only SSR', '/demo/start/ssr/data-only')
     return await getPunkSongs()
   },
