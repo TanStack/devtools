@@ -87,7 +87,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
     async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
     unmount() {}
   }
-  
+
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }
 
