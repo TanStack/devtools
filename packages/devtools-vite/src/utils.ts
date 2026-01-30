@@ -9,6 +9,7 @@ export type DevToolsRequestHandler = (data: any) => void
 export type DevToolsViteRequestOptions = {
   onOpenSource?: DevToolsRequestHandler
   onConsolePipe?: (entries: Array<any>) => void
+  onServerConsolePipe?: (entries: Array<any>) => void
   onConsolePipeSSE?: (
     res: ServerResponse<IncomingMessage>,
     req: Connect.IncomingMessage,
@@ -66,7 +67,30 @@ export const handleDevToolsViteRequest = (
     return next()
   }
 
-  // Handle console-pipe POST endpoint
+  // Handle server console-pipe POST endpoint (from app server runtime)
+  if (req.url?.includes('__tsd/console-pipe/server') && req.method === 'POST') {
+    if (options.onServerConsolePipe) {
+      let body = ''
+      req.on('data', (chunk: Buffer) => {
+        body += chunk.toString()
+      })
+      req.on('end', () => {
+        try {
+          const { entries } = JSON.parse(body)
+          options.onServerConsolePipe!(entries)
+          res.statusCode = 200
+          res.end('OK')
+        } catch (err) {
+          res.statusCode = 400
+          res.end('Bad Request')
+        }
+      })
+      return
+    }
+    return next()
+  }
+
+  // Handle console-pipe POST endpoint (from client)
   if (req.url?.includes('__tsd/console-pipe') && req.method === 'POST') {
     if (options.onConsolePipe) {
       let body = ''

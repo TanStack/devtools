@@ -22,33 +22,73 @@ import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
 export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
 
 /**
- * Strips browser console styling (%c format specifiers and their CSS arguments)
- * for clean terminal output.
+ * Extracts and formats the source location from enhanced client console logs.
+ * Instead of stripping the prefix entirely, we extract the file:line:column
+ * from the "Go to Source" URL and use that as a prefix.
+ *
+ * Enhanced logs format (two variants):
+ * 1. ['%cLOG%c %cGo to Source: http://...?source=%2Fsrc%2F...%c \n → ', 'color:...', 'color:...', 'color:...', 'color:...', 'message']
+ * 2. ['\x1b[...]%s\x1b[...]', '%cLOG%c %cGo to Source: ...%c \n → ', 'color:...', 'color:...', 'color:...', 'color:...', 'message']
+ *
+ * Output: ['src/components/Header.tsx:26:13', 'message']
  */
-const stripBrowserConsoleStyles = (args: Array<unknown>): Array<unknown> => {
+const stripEnhancedLogPrefix = (args: Array<unknown>): Array<unknown> => {
   if (args.length === 0) return args
 
-  const firstArg = args[0]
-  if (typeof firstArg !== 'string' || !firstArg.includes('%c')) {
+  // Find the arg that contains the Go to Source URL
+  let sourceArgIndex = -1
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i]
+    if (typeof arg === 'string' && arg.includes('__tsd/open-source?source=')) {
+      sourceArgIndex = i
+      break
+    }
+  }
+
+  // If no source URL found, return args as-is (not an enhanced log)
+  if (sourceArgIndex === -1) {
     return args
   }
 
-  // Count the number of %c in the format string
-  const styleCount = (firstArg.match(/%c/g) || []).length
+  const sourceArg = args[sourceArgIndex] as string
 
-  // Remove %c from the format string
-  const cleanedFormat = firstArg.replace(/%c/g, '')
-
-  // Remove the CSS style arguments (one for each %c)
-  // The style arguments follow the format string
-  const remainingArgs = args.slice(1 + styleCount)
-
-  // If the cleaned format is empty or just whitespace, skip it
-  if (cleanedFormat.trim() === '') {
-    return remainingArgs
+  // Extract the source from the "Go to Source" URL
+  // URL format: http://localhost:3000/__tsd/open-source?source=%2Fsrc%2Ffile.tsx%3A26%3A13%c
+  // Note: The URL ends with %c which is a console format specifier, not URL encoding
+  let sourceLocation = ''
+  const sourceMatch = sourceArg.match(/source=([^&\s]+?)%c/)
+  if (sourceMatch?.[1]) {
+    try {
+      sourceLocation = decodeURIComponent(sourceMatch[1])
+      // Remove leading slash if present
+      if (sourceLocation.startsWith('/')) {
+        sourceLocation = sourceLocation.slice(1)
+      }
+    } catch {
+      // If decoding fails, leave it empty
+    }
   }
 
-  return [cleanedFormat, ...remainingArgs]
+  // Count %c markers in the source arg to know how many style args follow it
+  const styleCount = (sourceArg.match(/%c/g) || []).length
+
+  // The actual user args start after the source arg and all its style args
+  const userArgsStart = sourceArgIndex + 1 + styleCount
+
+  // Build the result: source location prefix + remaining args (the actual user data)
+  const result: Array<unknown> = []
+
+  // Add source location as prefix if we found one
+  if (sourceLocation) {
+    result.push(chalk.gray(sourceLocation))
+  }
+
+  // Add remaining args (the actual user data)
+  for (let i = userArgsStart; i < args.length; i++) {
+    result.push(args[i])
+  }
+
+  return result.length > 0 ? result : args
 }
 
 export type TanStackDevtoolsViteConfig = {
@@ -258,30 +298,51 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
               // Call original console method first
               original(...args)
 
+              // Skip our own TSD Console Pipe logs to avoid noise/recursion
+              if (
+                args.length > 0 &&
+                typeof args[0] === 'string' &&
+                (args[0].includes('[TSD Console Pipe]') ||
+                  args[0].includes('[@tanstack/devtools'))
+              ) {
+                return
+              }
+
               // Broadcast to all SSE clients
               if (sseClients.length > 0) {
-                const data = JSON.stringify({
-                  entries: [
-                    {
-                      level,
-                      args,
-                      source: 'server',
-                      timestamp: Date.now(),
-                    },
-                  ],
-                })
-                for (const client of sseClients) {
-                  client.res.write(`data: ${data}\n\n`)
+                try {
+                  // Serialize args safely - convert non-serializable values to strings
+                  const safeArgs = args.map((arg) => {
+                    try {
+                      // Test if it's serializable
+                      JSON.stringify(arg)
+                      return arg
+                    } catch {
+                      // Convert to string if not serializable
+                      return String(arg)
+                    }
+                  })
+
+                  const data = JSON.stringify({
+                    entries: [
+                      {
+                        level,
+                        args: safeArgs,
+                        source: 'server',
+                        timestamp: Date.now(),
+                      },
+                    ],
+                  })
+
+                  for (const client of sseClients) {
+                    client.res.write(`data: ${data}\n\n`)
+                  }
+                } catch (err) {
+                  original('[TSD Console Pipe] Failed to broadcast:', err)
                 }
               }
             }
           }
-
-          originalServerConsole.log(
-            chalk.magenta(
-              '[TSD Console Pipe] Server console piping configured',
-            ),
-          )
         }
 
         server.middlewares.use((req, res, next) =>
@@ -302,18 +363,14 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                     const prefix = chalk.cyan('[Client]')
                     const logMethod =
                       originalServerConsole[entry.level as ConsoleLevel]
-                    // Strip browser console styling (%c and CSS strings) for terminal output
-                    const cleanedArgs = stripBrowserConsoleStyles(entry.args)
+                    // Extract source location and strip enhanced log prefix
+                    const cleanedArgs = stripEnhancedLogPrefix(entry.args)
                     logMethod(prefix, ...cleanedArgs)
                   }
                 }
               : undefined,
             onConsolePipeSSE: consolePipingEnabled
               ? (res, req) => {
-                  originalServerConsole.log(
-                    chalk.magenta('[TSD Console Pipe] SSE connection request'),
-                  )
-
                   res.setHeader('Content-Type', 'text/event-stream')
                   res.setHeader('Cache-Control', 'no-cache')
                   res.setHeader('Connection', 'keep-alive')
@@ -323,23 +380,37 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                   const clientId = ++sseClientId
                   sseClients.push({ res, id: clientId })
 
-                  originalServerConsole.log(
-                    chalk.magenta(
-                      `[TSD Console Pipe] SSE client ${clientId} connected`,
-                    ),
-                  )
-
                   req.on('close', () => {
                     const index = sseClients.findIndex((c) => c.id === clientId)
                     if (index !== -1) {
                       sseClients.splice(index, 1)
                     }
-                    originalServerConsole.log(
-                      chalk.magenta(
-                        `[TSD Console Pipe] SSE client ${clientId} disconnected`,
-                      ),
-                    )
                   })
+                }
+              : undefined,
+            onServerConsolePipe: consolePipingEnabled
+              ? (entries) => {
+                  // Only broadcast to SSE clients - server runtime already logged to terminal
+                  // Broadcast to SSE clients
+                  try {
+                    const data = JSON.stringify({
+                      entries: entries.map((e) => ({
+                        level: e.level,
+                        args: e.args,
+                        source: 'server',
+                        timestamp: e.timestamp || Date.now(),
+                      })),
+                    })
+
+                    for (const client of sseClients) {
+                      client.res.write(`data: ${data}\n\n`)
+                    }
+                  } catch (err) {
+                    originalServerConsole.log(
+                      '[TSD Console Pipe] Failed to broadcast server logs:',
+                      err,
+                    )
+                  }
                 }
               : undefined,
           }),
@@ -587,7 +658,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         }
       },
     },
-    // Inject console piping code into client entry files
+    // Inject console piping code into entry files (both client and server)
     {
       name: '@tanstack/devtools:console-pipe-transform',
       enforce: 'pre',
@@ -599,49 +670,36 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         )
       },
       transform(code, id) {
-        // Inject the console pipe code into client entry files
-        // Look for common entry patterns and inject at the top
+        // Inject the console pipe code into entry files
         if (
           id.includes('node_modules') ||
+          id.includes('dist') ||
           id.includes('?') ||
           !id.match(/\.(tsx?|jsx?)$/)
         ) {
           return
         }
 
-        // Only inject into files that look like client entry points
-        // or files that import React/framework-specific code (indicating client code)
-        const isClientEntry =
-          id.includes('client') ||
-          id.includes('entry') ||
-          id.includes('main.tsx') ||
-          id.includes('main.jsx') ||
-          id.includes('app.tsx') ||
-          id.includes('app.jsx') ||
-          id.includes('App.tsx') ||
-          id.includes('App.jsx') ||
-          id.includes('root.tsx') ||
-          id.includes('root.jsx')
+        // Only inject once - check if already injected
+        if (code.includes('__tsdConsolePipe')) {
+          return
+        }
 
-        // Also check for StartClient or hydrateRoot which indicate client entry
-        const hasClientHydration =
+        // Check if this is a root entry file (with <html> JSX or client entry points)
+        // In SSR frameworks, this file runs on BOTH server (SSR) and client (hydration)
+        // so our runtime check (typeof window === 'undefined') handles both environments
+        const isRootEntry =
+          /<html[\s>]/i.test(code) ||
           code.includes('StartClient') ||
           code.includes('hydrateRoot') ||
           code.includes('createRoot')
 
-        if (isClientEntry || hasClientHydration) {
-          // Only inject once - check if already injected
-          if (code.includes('__TSD_CONSOLE_PIPE_INITIALIZED__')) {
-            return
-          }
-
-          originalServerConsole.log(
-            chalk.magenta(
-              `[TSD Console Pipe] Injecting console pipe into: ${id}`,
-            ),
+        if (isRootEntry) {
+          const viteServerUrl = `http://localhost:${port}`
+          const inlineCode = generateConsolePipeCode(
+            consolePipingLevels,
+            viteServerUrl,
           )
-
-          const inlineCode = generateConsolePipeCode(consolePipingLevels)
 
           return {
             code: `${inlineCode}\n${code}`,
