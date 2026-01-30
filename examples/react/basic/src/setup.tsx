@@ -1,5 +1,6 @@
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+
 import {
   Link,
   Outlet,
@@ -71,9 +72,14 @@ export default function DevtoolsExample() {
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
           {
+            name: 'TanStack Router',
+            render: <TanStackRouterDevtoolsPanel router={router} />,
+          },
+          {
             name: 'Package.json',
             render: () => <PackageJsonPanel />,
           },
+
           /* {
       name: "The actual app",
       render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
