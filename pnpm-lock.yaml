@@ -591,9 +591,6 @@ importers:
       '@tanstack/devtools-event-client':
         specifier: workspace:^
         version: link:../event-bus-client
-      '@tanstack/pacer':
-        specifier: ^0.17.3
-        version: 0.17.3
 
   packages/devtools-ui:
     dependencies:
@@ -665,9 +662,6 @@ importers:
       '@tanstack/devtools-event-bus':
         specifier: workspace:*
         version: link:../event-bus
-      '@tanstack/pacer':
-        specifier: ^0.17.3
-        version: 0.17.3
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
@@ -3074,10 +3068,6 @@ packages:
     resolution: {integrity: sha512-RL1f5ZlfZMpghrCIdzl6mLOFLTuhqmPNblZgBaeKfdtk5rfbjykurv+VfYydOFXj0vxVIoA2d/zT7xfD7Ph8fw==}
     engines: {node: '>=18'}
 
-  '@tanstack/devtools-event-client@0.4.0':
-    resolution: {integrity: sha512-RPfGuk2bDZgcu9bAJodvO2lnZeHuz4/71HjZ0bGb/SPg8+lyTA+RLSKQvo7fSmPSi8/vcH3aKQ8EM9ywf1olaw==}
-    engines: {node: '>=18'}
-
   '@tanstack/devtools-ui@0.4.4':
     resolution: {integrity: sha512-5xHXFyX3nom0UaNfiOM92o6ziaHjGo3mcSGe2HD5Xs8dWRZNpdZ0Smd0B9ddEhy0oB+gXyMzZgUJb9DmrZV0Mg==}
     engines: {node: '>=18'}
@@ -3119,10 +3109,6 @@ packages:
 
   '@tanstack/pacer@0.15.4':
     resolution: {integrity: sha512-vGY+CWsFZeac3dELgB6UZ4c7OacwsLb8hvL2gLS6hTgy8Fl0Bm/aLokHaeDIP+q9F9HUZTnp360z9uv78eg8pg==}
-    engines: {node: '>=18'}
-
-  '@tanstack/pacer@0.17.3':
-    resolution: {integrity: sha512-AavH9DTSJCbXnExsuq2STK+BPfEnHpoFZ9RF0KzFC6GxGGz/D0dSu8H2gKdPyw4MUFs/2DVUZkRm1Au6DsFXVA==}
     engines: {node: '>=18'}
 
   '@tanstack/query-core@5.90.11':
@@ -10688,8 +10674,6 @@ snapshots:
 
   '@tanstack/devtools-event-client@0.3.5': {}
 
-  '@tanstack/devtools-event-client@0.4.0': {}
-
   '@tanstack/devtools-ui@0.4.4(csstype@3.2.3)(solid-js@1.9.10)':
     dependencies:
       clsx: 2.1.1
@@ -10762,11 +10746,6 @@ snapshots:
     dependencies:
       '@tanstack/devtools-event-client': 0.3.5
       '@tanstack/store': 0.7.7
-
-  '@tanstack/pacer@0.17.3':
-    dependencies:
-      '@tanstack/devtools-event-client': 0.4.0
-      '@tanstack/store': 0.8.0
 
   '@tanstack/query-core@5.90.11': {}
 
