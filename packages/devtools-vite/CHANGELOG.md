@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.5.0
+
+### Minor Changes
+
+- Console piping functionality ([#337](https://github.com/TanStack/devtools/pull/337))
+
 ## 0.4.1
 
 ### Patch Changes
