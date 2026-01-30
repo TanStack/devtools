@@ -5,7 +5,7 @@ const removeEmptySpace = (str: string) => {
   return str.replace(/\s/g, '').trim()
 }
 
-describe('enhance-logs', () => {
+describe('remove-devtools', () => {
   test('it adds enhanced console.logs to console.log()', () => {
     const output = removeEmptySpace(
       enhanceConsoleLog(
