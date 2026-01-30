@@ -9,7 +9,7 @@ function getNames() {
 
 export const Route = createFileRoute('/demo/start/api-request')({
   component: Home,
-  beforeLoad:() => {
+  beforeLoad: () => {
     console.log('Before loading Start API Request Demo route')
   },
   loader: () => {
