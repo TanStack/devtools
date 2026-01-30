@@ -4,9 +4,9 @@ import type { Connect } from 'vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { PackageJson } from '@tanstack/devtools-client'
 
-export type DevToolsRequestHandler = (data: any) => void
+type DevToolsRequestHandler = (data: any) => void
 
-export type DevToolsViteRequestOptions = {
+type DevToolsViteRequestOptions = {
   onOpenSource?: DevToolsRequestHandler
   onConsolePipe?: (entries: Array<any>) => void
   onServerConsolePipe?: (entries: Array<any>) => void

@@ -1,7 +1,7 @@
 import type { ConsoleLevel } from './plugin'
 
-export const VIRTUAL_MODULE_ID = 'virtual:tanstack-devtools-console'
-export const RESOLVED_VIRTUAL_MODULE_ID = '\0' + VIRTUAL_MODULE_ID
+// export const VIRTUAL_MODULE_ID = 'virtual:tanstack-devtools-console'
+// export const RESOLVED_VIRTUAL_MODULE_ID = '\0' + VIRTUAL_MODULE_ID
 
 /**
  * Generates inline code to inject into entry files (both client and server).
