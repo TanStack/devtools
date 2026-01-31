@@ -331,22 +331,11 @@ export class EventClient<
       )
   }
   onAllPluginEvents(cb: (event: AllDevtoolsEvents<TEventMap>) => void) {
-    if (!this.#enabled) {
-      this.debugLog('Event bus client is disabled, not registering event')
-      return () => {}
-    }
-    const handler = (e: Event) => {
-      const event = (e as CustomEvent).detail
+    return this.onAll((event) => {
       if (this.#pluginId && event.pluginId !== this.#pluginId) {
         return
       }
       cb(event)
-    }
-    this.#eventTarget().addEventListener('tanstack-devtools-global', handler)
-    return () =>
-      this.#eventTarget().removeEventListener(
-        'tanstack-devtools-global',
-        handler,
-      )
+    })
   }
 }
