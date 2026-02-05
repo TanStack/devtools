@@ -1,5 +1,5 @@
 {
-  "name": "@tanstack/devtools-a11y-example",
+  "name": "@tanstack/react-devtools-a11y-example",
   "private": true,
   "type": "module",
   "scripts": {

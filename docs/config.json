@@ -194,6 +194,34 @@
           ]
         }
       ]
+    },
+    {
+      "label": "Plugins",
+      "children": [],
+      "frameworks": [
+        {
+          "label": "react",
+          "children": [
+            {
+              "label": "a11y",
+              "to": "framework/react/examples/a11y-devtools"
+            }
+          ]
+        },
+        {
+          "label": "preact",
+          "children": []
+        },
+        {
+          "label": "solid",
+          "children": [
+            {
+              "label": "A11y",
+              "to": "framework/solif/examples/a11y-devtools"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
