@@ -56,7 +56,7 @@ function createA11yPanelStyles(theme: 'light' | 'dark') {
   const fg = t('#1e293b', '#e2e8f0')
   const border = t('#e2e8f0', '#292e3d')
   const muted = t('#64748b', '#94a3b8')
-  const muted2 = t('#94a3b8', '#64748b')
+  const muted2 = t('#727c8b', '#818386')
 
   return {
     colors: { bg, fg, border, muted, muted2, theme },
