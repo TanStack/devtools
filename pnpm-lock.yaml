@@ -645,6 +645,31 @@ importers:
         specifier: ^7.1.7
         version: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  examples/solid/a11y-devtools:
+    dependencies:
+      '@tanstack/devtools-a11y':
+        specifier: workspace:*
+        version: link:../../../packages/devtools-a11y
+      '@tanstack/solid-devtools':
+        specifier: ^0.7.24
+        version: link:../../../packages/solid-devtools
+      solid-js:
+        specifier: ^1.9.9
+        version: 1.9.11
+    devDependencies:
+      '@tanstack/devtools-vite':
+        specifier: 0.5.0
+        version: link:../../../packages/devtools-vite
+      vite:
+        specifier: ^7.1.7
+        version: 7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
+      vite-plugin-inspect:
+        specifier: 11.3.3
+        version: 11.3.3(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+      vite-plugin-solid:
+        specifier: ^2.11.8
+        version: 2.11.10(@testing-library/jest-dom@6.9.1)(solid-js@1.9.11)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
+
   examples/solid/basic:
     dependencies:
       '@tanstack/solid-devtools':
