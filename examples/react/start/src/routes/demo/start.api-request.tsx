@@ -9,7 +9,11 @@ function getNames() {
 
 export const Route = createFileRoute('/demo/start/api-request')({
   component: Home,
+  beforeLoad: () => {
+    console.log('Before loading Start API Request Demo route')
+  },
   loader: () => {
+    console.log('Navigated to Start API Request Demo')
     emitRouteNavigation('API Request', '/demo/start/api-request')
   },
 })

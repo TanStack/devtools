@@ -111,7 +111,7 @@ importers:
         specifier: 0.4.4
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.4.1
+        specifier: 0.5.0
         version: link:../../../packages/devtools-vite
       sonda:
         specifier: 0.9.0
@@ -179,7 +179,7 @@ importers:
         specifier: 0.4.0
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       '@tanstack/react-form':
         specifier: ^1.23.7
@@ -210,7 +210,7 @@ importers:
         specifier: 0.4.4
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.4.1
+        specifier: 0.5.0
         version: link:../../../packages/devtools-vite
       '@tanstack/react-form-devtools':
         specifier: ^0.1.7
@@ -388,7 +388,7 @@ importers:
         specifier: 0.4.0
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       react:
         specifier: ^19.2.0
@@ -413,7 +413,7 @@ importers:
   examples/react/drizzle:
     dependencies:
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.132.0
@@ -432,7 +432,7 @@ importers:
         version: 19.2.4(react@19.2.4)
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.4.1
+        specifier: 0.5.0
         version: link:../../../packages/devtools-vite
       '@types/node':
         specifier: ^22.15.2
@@ -468,7 +468,7 @@ importers:
         specifier: 0.4.0
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -496,7 +496,7 @@ importers:
         specifier: 0.4.4
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.4.1
+        specifier: 0.5.0
         version: link:../../../packages/devtools-vite
       '@types/react':
         specifier: ^19.2.0
@@ -526,7 +526,7 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.132.0
@@ -563,7 +563,7 @@ importers:
         version: 6.0.5(typescript@5.9.3)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.4.1
+        specifier: 0.5.0
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -605,7 +605,7 @@ importers:
         specifier: workspace:^
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -648,7 +648,7 @@ importers:
   examples/solid/basic:
     dependencies:
       '@tanstack/solid-devtools':
-        specifier: ^0.7.23
+        specifier: ^0.7.24
         version: link:../../../packages/solid-devtools
       '@tanstack/solid-query':
         specifier: ^5.90.1
@@ -667,7 +667,7 @@ importers:
         version: 1.9.11
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.4.1
+        specifier: 0.5.0
         version: link:../../../packages/devtools-vite
       vite:
         specifier: ^7.1.7
@@ -685,7 +685,7 @@ importers:
         specifier: ^1.2.0
         version: 1.2.1(@testing-library/jest-dom@6.9.1)(solid-js@1.9.11)(vinxi@0.5.11(@types/node@22.19.7)(db0@0.3.4(drizzle-orm@0.44.7(pg@8.17.2)))(drizzle-orm@0.44.7(pg@8.17.2))(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       '@tanstack/solid-devtools':
-        specifier: ^0.7.23
+        specifier: ^0.7.24
         version: link:../../../packages/solid-devtools
       solid-js:
         specifier: ^1.9.9
@@ -697,10 +697,10 @@ importers:
   examples/vue/basic:
     dependencies:
       '@tanstack/devtools':
-        specifier: ^0.10.4
+        specifier: ^0.10.5
         version: link:../../../packages/devtools
       '@tanstack/vue-devtools':
-        specifier: ^0.2.3
+        specifier: ^0.2.4
         version: link:../../../packages/vue-devtools
       '@tanstack/vue-query':
         specifier: ^5.90.5

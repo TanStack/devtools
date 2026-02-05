@@ -11,6 +11,12 @@ import {
   StickyNote,
   X,
 } from 'lucide-react'
+import { createServerFn } from '@tanstack/react-start'
+
+const logger = createServerFn({ method: 'POST' }).handler(async ({ data }) => {
+  console.log('triggered logger server function')
+  console.log(data)
+})
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -22,7 +28,11 @@ export default function Header() {
     <>
       <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
         <button
-          onClick={() => setIsOpen(true)}
+          onClick={() => {
+            console.log('Opening menu')
+            logger()
+            setIsOpen(true)
+          }}
           className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
           aria-label="Open menu"
         >

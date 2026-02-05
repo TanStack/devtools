@@ -9,6 +9,76 @@ import type { DevtoolsStore } from '../context/devtools-store'
 const mSecondsToCssSeconds = (mSeconds: number) =>
   `${(mSeconds / 1000).toFixed(2)}s`
 
+const fadeIn = goober.keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
+
+const slideInRight = goober.keyframes`
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+`
+
+const slideUp = goober.keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
+
+const statusFadeIn = goober.keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`
+
+const iconPop = goober.keyframes`
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+`
+
+const spin = goober.keyframes`
+  to {
+    transform: rotate(360deg);
+  }
+`
+
+const sparkle = goober.keyframes`
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1) rotate(10deg);
+  }
+`
+
 const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
   const { colors, font, size, border } = tokens
   const { fontFamily, size: fontSize } = font
@@ -634,18 +704,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
         'linear-gradient(135deg, #1a1d23 0%, #13161a 100%)',
       )};
-      animation: fadeIn 0.3s ease;
-
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+      animation: ${fadeIn} 0.3s ease;
     `,
     pluginMarketplaceHeader: css`
       margin-bottom: 2rem;
@@ -791,16 +850,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       z-index: 1000;
       display: flex;
       flex-direction: column;
-      animation: slideInRight 0.3s ease;
-
-      @keyframes slideInRight {
-        from {
-          transform: translateX(100%);
-        }
-        to {
-          transform: translateX(0);
-        }
-      }
+      animation: ${slideInRight} 0.3s ease;
     `,
     pluginMarketplaceSettingsPanelHeader: css`
       display: flex;
@@ -841,18 +891,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.25rem;
-      animation: slideUp 0.4s ease;
-
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+      animation: ${slideUp} 0.4s ease;
     `,
     pluginMarketplaceCard: css`
       background: ${t(colors.white, colors.darkGray[800])};
@@ -1040,33 +1079,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       align-items: center;
       gap: 0.5rem;
       color: ${t(colors.green[600], colors.green[400])};
-      animation: statusFadeIn 0.3s ease;
-
-      @keyframes statusFadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
+      animation: ${statusFadeIn} 0.3s ease;
 
       svg {
         width: 18px;
         height: 18px;
-        animation: iconPop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-      }
-
-      @keyframes iconPop {
-        0% {
-          transform: scale(0);
-        }
-        50% {
-          transform: scale(1.2);
-        }
-        100% {
-          transform: scale(1);
-        }
+        animation: ${iconPop} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
       }
     `,
     pluginMarketplaceCardSpinner: css`
@@ -1075,13 +1093,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border: 2px solid ${t(colors.gray[200], colors.gray[700])};
       border-top-color: ${t(colors.blue[600], colors.blue[400])};
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
+      animation: ${spin} 0.8s linear infinite;
     `,
     pluginMarketplaceCardStatusText: css`
       font-size: 0.875rem;
@@ -1098,7 +1110,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       background: ${t(colors.white, colors.darkGray[800])};
       border: 2px dashed ${t(colors.gray[300], colors.gray[700])};
       border-radius: 0.75rem;
-      animation: fadeIn 0.3s ease;
+      animation: ${fadeIn} 0.3s ease;
     `,
     pluginMarketplaceEmptyText: css`
       font-size: 0.95rem;
@@ -1310,19 +1322,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         &::before {
           content: '✨';
           font-size: 0.875rem;
-          animation: sparkle 2s ease-in-out infinite;
-        }
-      }
-
-      @keyframes sparkle {
-        0%,
-        100% {
-          opacity: 1;
-          transform: scale(1) rotate(0deg);
-        }
-        50% {
-          opacity: 0.6;
-          transform: scale(1.1) rotate(10deg);
+          animation: ${sparkle} 2s ease-in-out infinite;
         }
       }
 
@@ -1335,7 +1335,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         border-left-color: ${t(colors.blue[500], colors.blue[400])};
 
         h3::before {
-          animation: sparkle 0.5s ease-in-out infinite;
+          animation: ${sparkle} 0.5s ease-in-out infinite;
         }
       }
 

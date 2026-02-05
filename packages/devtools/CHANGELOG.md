@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.5
+
+### Patch Changes
+
+- Fix a UI bug ([#337](https://github.com/TanStack/devtools/pull/337))
+
 ## 0.10.4
 
 ### Patch Changes

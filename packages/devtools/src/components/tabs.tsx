@@ -45,6 +45,7 @@ export const Tabs = (props: TabsProps) => {
         <div
           style={{
             'margin-top': 'auto',
+            width: '100%',
           }}
         >
           <button
