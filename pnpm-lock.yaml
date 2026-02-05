@@ -148,7 +148,7 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/devtools-a11y
       '@tanstack/react-devtools':
-        specifier: ^0.9.3
+        specifier: ^0.9.4
         version: link:../../../packages/react-devtools
       react:
         specifier: ^19.2.0
