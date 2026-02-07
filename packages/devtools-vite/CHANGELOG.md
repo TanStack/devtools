@@ -1,5 +1,14 @@
 # @tanstack/devtools-event-client
 
+## 0.5.1
+
+### Patch Changes
+
+- fix issues with https servers and console piping ([#343](https://github.com/TanStack/devtools/pull/343))
+
+- Updated dependencies [[`da41a59`](https://github.com/TanStack/devtools/commit/da41a598a94fbab0b4d4515345059c5ed62ae6fd)]:
+  - @tanstack/devtools-event-bus@0.4.1
+
 ## 0.5.0
 
 ### Minor Changes
