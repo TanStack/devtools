@@ -128,6 +128,7 @@ export const handleDevToolsViteRequest = (
       options.onOpenSource?.(parsedData)
     } catch (e) {}
     res.write('OK')
+    res.end()
   })
 }
 
