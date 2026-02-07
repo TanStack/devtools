@@ -8,7 +8,7 @@
     "start": "vite start"
   },
   "dependencies": {
-    "@tanstack/react-devtools": "^0.9.4",
+    "@tanstack/react-devtools": "^0.9.5",
     "@tanstack/react-router": "^1.132.0",
     "@tanstack/react-router-devtools": "^1.132.0",
     "@tanstack/react-start": "^1.132.0",
@@ -16,7 +16,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "0.5.0",
+    "@tanstack/devtools-vite": "0.5.1",
     "@types/node": "^22.15.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

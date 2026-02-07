@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-bus
 
+## 0.4.1
+
+### Patch Changes
+
+- fix issues with https servers and console piping ([#343](https://github.com/TanStack/devtools/pull/343))
+
 ## 0.4.0
 
 ### Minor Changes
