@@ -117,10 +117,10 @@ describe('handleDevToolsViteRequest', () => {
     expect(cb).toHaveBeenCalledTimes(1)
     expect(cb).toHaveBeenCalledWith({ foo: 1 })
     expect(res.write).toHaveBeenCalledWith('OK')
+    expect(res.end).toHaveBeenCalled()
 
     // these are not used in this branch
     expect(res.setHeader).not.toHaveBeenCalled()
-    expect(res.end).not.toHaveBeenCalled()
     expect(next).not.toHaveBeenCalled()
   })
 
@@ -134,6 +134,7 @@ describe('handleDevToolsViteRequest', () => {
 
     expect(cb).not.toHaveBeenCalled()
     expect(res.write).toHaveBeenCalledWith('OK')
+    expect(res.end).toHaveBeenCalled()
   })
 })
 
