@@ -57,10 +57,10 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       prettier:
-        specifier: ^3.6.2
+        specifier: ^3.8.1
         version: 3.8.1
       prettier-plugin-svelte:
-        specifier: ^3.4.0
+        specifier: ^3.4.1
         version: 3.4.1(prettier@3.8.1)(svelte@5.48.5)
       publint:
         specifier: ^0.3.13
