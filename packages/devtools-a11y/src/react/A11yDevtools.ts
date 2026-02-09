@@ -1,5 +1,5 @@
 import { createReactPanel } from '@tanstack/devtools-utils/react'
-import { A11yDevtoolsCore } from '@tanstack/devtools-a11y/core'
+import { A11yDevtoolsCore } from '../core'
 
 // type
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/react'

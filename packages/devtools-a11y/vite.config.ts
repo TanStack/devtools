@@ -22,10 +22,17 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/core/index.ts', './src/core/production.ts'],
-    srcDir: './src/core',
+    entry: [
+      './src/core/index.ts',
+      './src/core/production.ts',
+      './src/react/index.ts',
+      './src/react/production.ts',
+      './src/solid/index.ts',
+      './src/solid/production.ts',
+    ],
+    srcDir: './src',
     tsconfigPath: './tsconfig.json',
-    outDir: './dist/core',
+    outDir: './dist',
     cjs: false,
   }),
 )
