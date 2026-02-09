@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/devtools-a11y": "workspace:*",
-    "@tanstack/react-devtools": "^0.9.4",
+    "@tanstack/react-devtools": "^0.9.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
