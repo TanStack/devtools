@@ -57,11 +57,11 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       prettier:
-        specifier: ^3.6.2
-        version: 3.7.3
+        specifier: ^3.8.1
+        version: 3.8.1
       prettier-plugin-svelte:
-        specifier: ^3.4.0
-        version: 3.4.0(prettier@3.7.3)(svelte@5.28.2)
+        specifier: ^3.4.1
+        version: 3.4.1(prettier@3.8.1)(svelte@5.28.2)
       publint:
         specifier: ^0.3.13
         version: 0.3.15
@@ -7937,8 +7937,8 @@ packages:
     engines: {node: '>=6'}
     hasBin: true
 
-  prettier-plugin-svelte@3.4.0:
-    resolution: {integrity: sha512-pn1ra/0mPObzqoIQn/vUTR3ZZI6UuZ0sHqMK5x2jMLGrs53h0sXhkVuDcrlssHwIMk7FYrMjHBPoUSyyEEDlBQ==}
+  prettier-plugin-svelte@3.4.1:
+    resolution: {integrity: sha512-xL49LCloMoZRvSwa6IEdN2GV6cq2IqpYGstYtMT+5wmml1/dClEoI0MZR78MiVPpu6BdQFfN0/y73yO6+br5Pg==}
     peerDependencies:
       prettier: ^3.0.0
       svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
@@ -7948,8 +7948,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.7.3:
-    resolution: {integrity: sha512-QgODejq9K3OzoBbuyobZlUhznP5SKwPqp+6Q6xw6o8gnhr4O85L2U915iM2IDcfF2NPXVaM9zlo9tdwipnYwzg==}
+  prettier@3.8.1:
+    resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -12748,7 +12748,7 @@ snapshots:
       '@tanstack/router-core': 1.143.6
       '@tanstack/router-utils': 1.143.11
       '@tanstack/virtual-file-routes': 1.141.0
-      prettier: 3.7.3
+      prettier: 3.8.1
       recast: 0.23.11
       source-map: 0.7.6
       tsx: 4.20.3
@@ -17807,14 +17807,14 @@ snapshots:
 
   premove@4.0.0: {}
 
-  prettier-plugin-svelte@3.4.0(prettier@3.7.3)(svelte@5.28.2):
+  prettier-plugin-svelte@3.4.1(prettier@3.8.1)(svelte@5.28.2):
     dependencies:
-      prettier: 3.7.3
+      prettier: 3.8.1
       svelte: 5.28.2
 
   prettier@2.8.8: {}
 
-  prettier@3.7.3: {}
+  prettier@3.8.1: {}
 
   pretty-bytes@6.1.1: {}
 
