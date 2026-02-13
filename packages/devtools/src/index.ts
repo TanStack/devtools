@@ -3,5 +3,6 @@ export { TanStackDevtoolsCore } from './core'
 export type { TanStackDevtoolsInit, ClientEventBusConfig } from './core'
 export type {
   TanStackDevtoolsPlugin,
+  TanStackDevtoolsPluginProps,
   TanStackDevtoolsConfig,
 } from './context/devtools-context'
