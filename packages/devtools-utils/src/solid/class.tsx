@@ -25,10 +25,12 @@ export function constructCoreClass(Component: () => JSX.Element) {
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
       this.#isMounting = true
       const { lazy } = await import('solid-js')
-      const { render, Portal } = await import('solid-js/web')
+      const { render } = await import('solid-js/web')
+
       if (this.#isMounted) {
         throw new Error('Devtools is already mounted')
       }
+
       const mountTo = el
       const dispose = render(() => {
         this.#Component = Component
@@ -38,22 +40,21 @@ export function constructCoreClass(Component: () => JSX.Element) {
             default: mod.ThemeContextProvider,
           })),
         )
+
         const Devtools = this.#Component
         const ThemeProvider = this.#ThemeProvider
 
         return (
-          <Portal mount={mountTo}>
-            <div style={{ height: '100%' }}>
-              <ThemeProvider theme={theme}>
-                <Devtools />
-              </ThemeProvider>
-            </div>
-          </Portal>
+          <ThemeProvider theme={theme}>
+            <Devtools />
+          </ThemeProvider>
         )
       }, mountTo)
+
       this.#isMounted = true
       this.#isMounting = false
       this.#dispose = dispose
+
       if (this.#mountCb) {
         this.#mountCb()
         this.#mountCb = null
@@ -64,6 +65,7 @@ export function constructCoreClass(Component: () => JSX.Element) {
       if (!this.#isMounted && !this.#isMounting) {
         throw new Error('Devtools is not mounted')
       }
+
       if (this.#isMounting) {
         this.#mountCb = () => {
           this.#dispose?.()
@@ -71,17 +73,21 @@ export function constructCoreClass(Component: () => JSX.Element) {
         }
         return
       }
+
       this.#dispose?.()
       this.#isMounted = false
     }
   }
+
   class NoOpDevtoolsCore extends DevtoolsCore {
     constructor() {
       super()
     }
+
     async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
     unmount() {}
   }
+
   return [DevtoolsCore, NoOpDevtoolsCore] as const
 }
 
