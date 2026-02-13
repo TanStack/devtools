@@ -65,7 +65,7 @@ export class TanStackDevtoolsCore {
     //  tsup-preset-solid statically replaces this variable during build, which eliminates this code from server bundle
     //  can be run outside of vite so we ignore the rule
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (import.meta?.env?.SSR) return
+    if (import.meta.env?.SSR) return
 
     if (this.#isMounted) {
       throw new Error('Devtools is already mounted')
