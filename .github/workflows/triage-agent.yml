@@ -1,0 +1,31 @@
+name: Issue Triage Agent
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Triage issue with Warp Agent
+        uses: warpdotdev/warp-agent-action@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          warp_api_key: ${{ secrets.WARP_API_KEY }}
+          profile: ${{ vars.WARP_AGENT_PROFILE || '' }}
+          prompt: |
+            Triage GitHub issue #${{ github.event.issue.number }} in ${{ github.repository }}.
+
+            ## Instructions
+            1. Read the bug report template at `.github/ISSUE_TEMPLATE/bug-report.yml` to understand required fields
+            2. Use `gh issue view ${{ github.event.issue.number }}` to read the issue
+            3. Evaluate if all required fields have meaningful content (not placeholders)
+            4. If the issue is missing information or has inadequate details:
+               - Use `gh issue comment ${{ github.event.issue.number }}` to post a friendly comment explaining what's missing
+            5. If the issue is complete and actionable, do nothing
