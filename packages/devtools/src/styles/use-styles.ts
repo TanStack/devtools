@@ -423,6 +423,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         background-color: transparent;
         color: ${colors.gray[300]};
       }
+      & > svg {
+        flex-shrink: 0;
+      }
     `,
     tabContent: css`
       transition: all 0.2s ease-in-out;
