@@ -81,8 +81,10 @@ export function A11yIssueList(props: A11yIssueListProps) {
           {(impact) => {
             const count = () =>
               ally.allyResult.audit?.issues.reduce(
-                (count, issue) => (
-                  issue.impact === impact && issue.meetsThreshold ? count + 1 : count),
+                (count, issue) =>
+                  issue.impact === impact && issue.meetsThreshold
+                    ? count + 1
+                    : count,
                 0,
               ) || 0
 
