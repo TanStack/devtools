@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/devtools-event-client": "workspace:^",
-    "@tanstack/react-devtools": "^0.9.5",
+    "@tanstack/react-devtools": "^0.9.6",
     "@tanstack/react-query": "^5.90.1",
     "@tanstack/react-query-devtools": "^5.90.1",
     "@tanstack/react-router": "^1.132.0",

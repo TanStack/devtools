@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.7
+
+### Patch Changes
+
+- prevent sidebar icons from collapsing ([#352](https://github.com/TanStack/devtools/pull/352))
+
 ## 0.10.6
 
 ### Patch Changes
