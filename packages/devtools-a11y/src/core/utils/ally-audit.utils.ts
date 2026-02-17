@@ -268,7 +268,11 @@ export async function runAudit(
         ? document.querySelector(context) || document
         : context
 
-    const customIssues = runCustomRules(contextElement, customRulesConfig, threshold)
+    const customIssues = runCustomRules(
+      contextElement,
+      customRulesConfig,
+      threshold,
+    )
 
     // Merge all issues
     const allIssues = [...axeIssues, ...customIssues]

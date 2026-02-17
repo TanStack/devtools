@@ -66,7 +66,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'moderate', label: 'Moderate' },
                 { value: 'minor', label: 'Minor' },
               ]}
-              onChange={(value: string) =>{
+              onChange={(value: string) => {
                 setConfig('threshold', value as SeverityThreshold)
               }}
             />
