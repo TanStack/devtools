@@ -11,7 +11,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/devtools-event-client": "workspace:*",
-    "@tanstack/react-devtools": "^0.9.5",
+    "@tanstack/react-devtools": "^0.9.6",
     "@tanstack/react-router": "^1.132.0",
     "@tanstack/react-router-devtools": "^1.132.0",
     "@tanstack/react-router-ssr-query": "^1.131.7",
