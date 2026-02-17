@@ -79,14 +79,10 @@ export function A11yIssueList(props: A11yIssueListProps) {
       <div class={styles().summaryGrid}>
         <For each={IMPACTS}>
           {(impact) => {
-            const count = () =>
-              ally.allyResult.audit?.issues.reduce(
-                (count, issue) =>
-                  issue.impact === impact && issue.meetsThreshold
-                    ? count + 1
-                    : count,
-                0,
-              ) || 0
+            // Count issues from the reactive filteredIssues memo so counts update when config.threshold changes
+            const issuesForImpact = () =>
+              ally.filteredIssues().filter((issue) => issue.impact === impact)
+            const count = () => issuesForImpact().length || 0
 
             const active = () => ally.impactKey() === impact
 

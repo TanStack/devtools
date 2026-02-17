@@ -66,9 +66,9 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'moderate', label: 'Moderate' },
                 { value: 'minor', label: 'Minor' },
               ]}
-              onChange={(value: string) =>
+              onChange={(value: string) =>{
                 setConfig('threshold', value as SeverityThreshold)
-              }
+              }}
             />
             <Select<RuleSetPreset>
               label="Rule Set"
@@ -83,9 +83,9 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'best-practice', label: 'Best Practice' },
                 { value: 'all', label: 'All Rules' },
               ]}
-              onChange={(value: string) =>
+              onChange={(value: string) => {
                 setConfig('ruleSet', value as RuleSetPreset)
-              }
+              }}
             />
           </div>
         </div>

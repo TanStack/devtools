@@ -39,7 +39,7 @@ export function Shell() {
 
           <Show when={allyResult.state === 'done' && filteredIssues()}>
             <span class={styles().headerSub}>
-              {`${allyResult.audit?.issues.length} issue${allyResult.audit?.issues.length !== 1 ? 's' : ''}`}
+              {`${filteredIssues().length} issue${filteredIssues().length !== 1 ? 's' : ''}`}
             </span>
           </Show>
         </div>

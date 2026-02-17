@@ -8,6 +8,8 @@
  */
 
 import type { A11yIssue, CustomRulesConfig } from '../types/types'
+import type { SeverityThreshold } from '../types/types'
+import { meetsThreshold } from './ally-audit.utils'
 
 /**
  * Interactive HTML elements that can receive focus and have implicit roles
@@ -332,6 +334,7 @@ function getSelector(element: Element): string {
  */
 function checkClickHandlerOnNonInteractive(
   context: Document | Element = document,
+  threshold: SeverityThreshold = 'serious',
 ): Array<A11yIssue> {
   const issues: Array<A11yIssue> = []
   const timestamp = Date.now()
@@ -385,7 +388,7 @@ function checkClickHandlerOnNonInteractive(
             html: element.outerHTML.slice(0, 200),
           },
         ],
-        meetsThreshold: true,
+        meetsThreshold: meetsThreshold('serious', threshold),
         timestamp,
       })
     } else if (hasFocus && !hasKeyboard) {
@@ -407,7 +410,7 @@ function checkClickHandlerOnNonInteractive(
             html: element.outerHTML.slice(0, 200),
           },
         ],
-        meetsThreshold: true,
+        meetsThreshold: meetsThreshold('moderate', threshold),
         timestamp,
       })
     }
@@ -424,9 +427,12 @@ function checkClickHandlerOnNonInteractive(
  */
 function checkMouseOnlyEvents(
   context: Document | Element = document,
+  threshold: SeverityThreshold = 'serious',
 ): Array<A11yIssue> {
   const issues: Array<A11yIssue> = []
   const timestamp = Date.now()
+  // default threshold will be provided by runCustomRules
+  // We'll accept threshold by adding a parameter in the function signature
 
   // Build selector for elements with mouse events
   const mouseEventSelectors = MOUSE_ONLY_EVENTS.map(
@@ -473,7 +479,7 @@ function checkMouseOnlyEvents(
           html: element.outerHTML.slice(0, 200),
         },
       ],
-      meetsThreshold: true,
+      meetsThreshold: meetsThreshold('serious', threshold),
       timestamp,
     })
   }
@@ -489,6 +495,7 @@ function checkMouseOnlyEvents(
  */
 function checkStaticElementInteraction(
   context: Document | Element = document,
+  threshold: SeverityThreshold = 'serious',
 ): Array<A11yIssue> {
   const issues: Array<A11yIssue> = []
   const timestamp = Date.now()
@@ -533,7 +540,7 @@ function checkStaticElementInteraction(
             html: element.outerHTML.slice(0, 200),
           },
         ],
-        meetsThreshold: true,
+        meetsThreshold: meetsThreshold('serious', threshold),
         timestamp,
       })
     }
@@ -562,7 +569,7 @@ function checkStaticElementInteraction(
             html: element.outerHTML.slice(0, 200),
           },
         ],
-        meetsThreshold: true,
+        meetsThreshold: meetsThreshold('moderate', threshold),
         timestamp,
       })
     }
@@ -577,6 +584,7 @@ function checkStaticElementInteraction(
 export function runCustomRules(
   context: Document | Element = document,
   config: CustomRulesConfig = {},
+  threshold: SeverityThreshold = 'serious',
 ): Array<A11yIssue> {
   const {
     clickHandlerOnNonInteractive = true,
@@ -587,15 +595,15 @@ export function runCustomRules(
   const issues: Array<A11yIssue> = []
 
   if (clickHandlerOnNonInteractive) {
-    issues.push(...checkClickHandlerOnNonInteractive(context))
+    issues.push(...checkClickHandlerOnNonInteractive(context, threshold))
   }
 
   if (mouseOnlyEventHandlers) {
-    issues.push(...checkMouseOnlyEvents(context))
+    issues.push(...checkMouseOnlyEvents(context, threshold))
   }
 
   if (staticElementInteraction) {
-    issues.push(...checkStaticElementInteraction(context))
+    issues.push(...checkStaticElementInteraction(context, threshold))
   }
 
   return issues

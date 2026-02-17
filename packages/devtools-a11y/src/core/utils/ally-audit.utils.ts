@@ -76,7 +76,7 @@ const RULE_SET_CONFIGS: Record<RuleSetPreset, Partial<RunOptions>> = {
 /**
  * Check if an impact level meets or exceeds the threshold
  */
-function meetsThreshold(
+export function meetsThreshold(
   impact: SeverityThreshold | null | undefined,
   threshold: SeverityThreshold,
 ): boolean {
@@ -268,7 +268,7 @@ export async function runAudit(
         ? document.querySelector(context) || document
         : context
 
-    const customIssues = runCustomRules(contextElement, customRulesConfig)
+    const customIssues = runCustomRules(contextElement, customRulesConfig, threshold)
 
     // Merge all issues
     const allIssues = [...axeIssues, ...customIssues]
