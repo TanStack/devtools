@@ -211,7 +211,7 @@ export default function DevTools() {
                 handleDragStart={(e) => handleDragStart(panelRef, e)}
               >
                 <Tabs toggleOpen={toggleOpen} />
-                <TabContent />
+                <TabContent isOpen={isOpen()} />
               </ContentPanel>
             </MainPanel>
           </Show>
