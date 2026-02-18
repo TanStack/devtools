@@ -80,7 +80,7 @@ export const SourceInspector = () => {
     e.stopPropagation()
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const baseUrl = new URL(import.meta?.env?.BASE_URL ?? '/', location.origin)
+    const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
     const url = new URL(
       `__tsd/open-source?source=${encodeURIComponent(
         highlightState.dataSource,
