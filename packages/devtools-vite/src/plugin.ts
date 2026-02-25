@@ -130,8 +130,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         if (
           id.includes('node_modules') ||
           id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build')
+          id.includes('/dist/') ||
+          id.includes('/build/')
         )
           return
 
@@ -554,7 +554,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         // Inject the console pipe code into entry files
         if (
           id.includes('node_modules') ||
-          id.includes('dist') ||
+          id.includes('/dist/') ||
           id.includes('?') ||
           !id.match(/\.(tsx?|jsx?)$/)
         ) {
@@ -600,8 +600,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         if (
           id.includes('node_modules') ||
           id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build') ||
+          id.includes('/dist/') ||
+          id.includes('/build/') ||
           !code.includes('console.')
         )
           return
