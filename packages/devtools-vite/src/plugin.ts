@@ -557,11 +557,9 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           },
           code: {
             exclude: /__tsdConsolePipe/, // avoid transforming files that already contain the console pipe code
-          }
+          },
         },
         handler(code) {
- 
-
           // Check if this is a root entry file (with <html> JSX or client entry points)
           // In SSR frameworks, this file runs on BOTH server (SSR) and client (hydration)
           // so our runtime check (typeof window === 'undefined') handles both environments
