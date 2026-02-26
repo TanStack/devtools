@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.5.2
+
+### Patch Changes
+
+- fix an issue with dist and build matching ([#354](https://github.com/TanStack/devtools/pull/354))
+
 ## 0.5.1
 
 ### Patch Changes
