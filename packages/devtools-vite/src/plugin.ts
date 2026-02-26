@@ -126,16 +126,15 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(config) {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
-      transform(code, id) {
-        if (
-          id.includes('node_modules') ||
-          id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build')
-        )
-          return
-
-        return addSourceToJsx(code, id, args?.injectSource?.ignore)
+      transform: {
+        filter: {
+          id: {
+            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+          },
+        },
+        handler(code, id) {
+          return addSourceToJsx(code, id, args?.injectSource?.ignore)
+        },
       },
     },
     {
@@ -550,43 +549,39 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           (consolePipingConfig.enabled ?? true)
         )
       },
-      transform(code, id) {
-        // Inject the console pipe code into entry files
-        if (
-          id.includes('node_modules') ||
-          id.includes('dist') ||
-          id.includes('?') ||
-          !id.match(/\.(tsx?|jsx?)$/)
-        ) {
-          return
-        }
+      transform: {
+        filter: {
+          id: {
+            include: /\.(tsx?|jsx?)$/,
+            exclude: [/node_modules/, /\/dist\//, /\?/],
+          },
+          code: {
+            exclude: /__tsdConsolePipe/, // avoid transforming files that already contain the console pipe code
+          },
+        },
+        handler(code) {
+          // Check if this is a root entry file (with <html> JSX or client entry points)
+          // In SSR frameworks, this file runs on BOTH server (SSR) and client (hydration)
+          // so our runtime check (typeof window === 'undefined') handles both environments
+          const isRootEntry =
+            /<html[\s>]/i.test(code) ||
+            code.includes('StartClient') ||
+            code.includes('hydrateRoot') ||
+            code.includes('createRoot') ||
+            (code.includes('solid-js/web') && code.includes('render('))
 
-        // Only inject once - check if already injected
-        if (code.includes('__tsdConsolePipe')) {
-          return
-        }
+          if (isRootEntry) {
+            const viteServerUrl = `http://localhost:${port}`
+            const inlineCode = generateConsolePipeCode(
+              consolePipingLevels,
+              viteServerUrl,
+            )
 
-        // Check if this is a root entry file (with <html> JSX or client entry points)
-        // In SSR frameworks, this file runs on BOTH server (SSR) and client (hydration)
-        // so our runtime check (typeof window === 'undefined') handles both environments
-        const isRootEntry =
-          /<html[\s>]/i.test(code) ||
-          code.includes('StartClient') ||
-          code.includes('hydrateRoot') ||
-          code.includes('createRoot') ||
-          (code.includes('solid-js/web') && code.includes('render('))
+            return `${inlineCode}\n${code}`
+          }
 
-        if (isRootEntry) {
-          const viteServerUrl = `http://localhost:${port}`
-          const inlineCode = generateConsolePipeCode(
-            consolePipingLevels,
-            viteServerUrl,
-          )
-
-          return `${inlineCode}\n${code}`
-        }
-
-        return undefined
+          return undefined
+        },
       },
     },
     {
@@ -595,18 +590,18 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(config) {
         return config.mode === 'development' && enhancedLogsConfig.enabled
       },
-      transform(code, id) {
-        // Ignore anything external
-        if (
-          id.includes('node_modules') ||
-          id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build') ||
-          !code.includes('console.')
-        )
-          return
-
-        return enhanceConsoleLog(code, id, port)
+      transform: {
+        filter: {
+          id: {
+            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+          },
+          code: {
+            include: 'console.',
+          },
+        },
+        handler(code, id) {
+          return enhanceConsoleLog(code, id, port)
+        },
       },
     },
     {
