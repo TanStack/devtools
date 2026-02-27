@@ -54,7 +54,7 @@ export type DevtoolsStore = {
     openHotkey: Array<KeyboardKey>
     /**
      * The hotkey to open the source inspector
-     * @default ["Shift", "CtrlOrMeta"]
+     * @default ["Alt", "CtrlOrMeta"]
      */
     inspectHotkey: Array<KeyboardKey>
     /**
@@ -100,7 +100,7 @@ export const initialState: DevtoolsStore = {
     position: 'bottom-right',
     panelLocation: 'bottom',
     openHotkey: ['Control', '~'],
-    inspectHotkey: ['Shift', 'CtrlOrMeta'],
+    inspectHotkey: ['Alt', 'CtrlOrMeta'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     theme:
