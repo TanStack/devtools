@@ -1,0 +1,104 @@
+{
+  "name": "@tanstack/devtools-a11y",
+  "version": "0.1.0",
+  "description": "Accessibility auditing plugin for TanStack Devtools powered by axe-core",
+  "author": "TanStack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TanStack/devtools.git",
+    "directory": "packages/devtools-a11y"
+  },
+  "homepage": "https://tanstack.com/devtools",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "devtools",
+    "accessibility",
+    "a11y",
+    "wcag",
+    "axe-core",
+    "audit"
+  ],
+  "type": "module",
+  "exports": {
+    "./core": {
+      "import": {
+        "types": "./dist/esm/core/index.d.ts",
+        "default": "./dist/esm/core/index.js"
+      }
+    },
+    "./core/production": {
+      "import": {
+        "types": "./dist/esm/core/production.d.ts",
+        "default": "./dist/esm/core/production.js"
+      }
+    },
+    "./react": {
+      "import": {
+        "types": "./dist/esm/react/index.d.ts",
+        "default": "./dist/esm/react/index.js"
+      }
+    },
+    "./react/production": {
+      "import": {
+        "types": "./dist/esm/react/production.d.ts",
+        "default": "./dist/esm/react/production.js"
+      }
+    },
+    "./solid": {
+      "import": {
+        "types": "./dist/esm/solid/index.d.ts",
+        "default": "./dist/esm/solid/index.js"
+      }
+    },
+    "./solid/production": {
+      "import": {
+        "types": "./dist/esm/solid/production.d.ts",
+        "default": "./dist/esm/solid/production.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist/",
+    "src"
+  ],
+  "scripts": {
+    "clean": "premove ./build ./dist",
+    "lint:fix": "eslint ./src --fix",
+    "test:eslint": "eslint ./src",
+    "test:lib": "vitest",
+    "test:lib:dev": "pnpm test:lib --watch",
+    "test:types": "tsc",
+    "test:build": "publint --strict",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tanstack/devtools-ui": "workspace:*",
+    "@tanstack/devtools-utils": "workspace:^",
+    "axe-core": "^4.10.0",
+    "goober": "^2.1.16"
+  },
+  "devDependencies": {
+    "vite-plugin-solid": "^2.11.8"
+  },
+  "peerDependencies": {
+    "@types/react": ">=17.0.0",
+    "preact": ">=10.0.0",
+    "react": ">=17.0.0",
+    "solid-js": ">=1.9.7",
+    "vue": ">=3.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}
