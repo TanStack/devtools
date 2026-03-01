@@ -51,9 +51,9 @@
     "@tanstack/devtools": "workspace:*"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.2",
+    "@preact/preset-vite": "^2.10.3",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "preact": "^10.28.0"
+    "preact": "^10.28.4"
   },
   "peerDependencies": {
     "preact": ">=10.0.0"
