@@ -9,22 +9,22 @@
   },
   "dependencies": {
     "@tanstack/react-devtools": "^0.9.6",
-    "@tanstack/react-router": "^1.132.0",
-    "@tanstack/react-router-devtools": "^1.132.0",
-    "@tanstack/react-start": "^1.132.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "@tanstack/react-router": "^1.163.3",
+    "@tanstack/react-router-devtools": "^1.163.3",
+    "@tanstack/react-start": "^1.164.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
     "@tanstack/devtools-vite": "0.5.2",
     "@types/node": "^22.15.2",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
-    "drizzle-kit": "^0.31.4",
-    "drizzle-orm": "^0.44.5",
-    "pg": "^8.16.3",
-    "typescript": "~5.9.2",
-    "vite": "^7.1.7",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "drizzle-kit": "^0.31.9",
+    "drizzle-orm": "^0.45.1",
+    "pg": "^8.19.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
     "vite-plugin-inspect": "11.3.3"
   }
 }

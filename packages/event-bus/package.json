@@ -73,7 +73,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "ws": "^8.18.3"
+    "ws": "^8.19.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.2",
