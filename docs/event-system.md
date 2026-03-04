@@ -112,6 +112,19 @@ const cleanup = myEventClient.onAllPluginEvents((event) => {
 
 The `EventClient` manages its connection to the event bus automatically:
 
+```mermaid
+stateDiagram-v2
+    [*] --> Queueing: First emit() call
+    Queueing --> Connecting: Dispatches tanstack-connect
+    Connecting --> Retrying: No response
+    Retrying --> Connecting: Every 300ms (up to 5×)
+    Connecting --> Connected: tanstack-connect-success
+    Connected --> Connected: Emit events directly
+    Queueing --> Connected: Flush queued events
+    Retrying --> Failed: 5 retries exhausted
+    Failed --> [*]: Subsequent emits dropped
+```
+
 1. **Queueing** — When you call `emit()` before the client is connected, events are queued in memory.
 2. **Connection** — On the first `emit()`, the client dispatches a `tanstack-connect` event and starts a retry loop.
 3. **Retries** — The client retries every `reconnectEveryMs` (default: 300ms) up to a maximum of 5 attempts.

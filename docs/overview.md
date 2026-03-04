@@ -60,27 +60,23 @@ Thin wrappers that integrate the devtools into your framework of choice. Pick th
 
 The diagram below shows how the layers connect at a high level:
 
-```
-┌─────────────────────────────────────────────────────────┐
-│ Your Application                                         │
-│                                                          │
-│  ┌─────────────────────────────────────────────────┐    │
-│  │ Framework Adapter (react / vue / solid / preact) │    │
-│  └──────────────────────┬──────────────────────────┘    │
-│                         │                                │
-│  ┌──────────────────────▼──────────────────────────┐    │
-│  │ @tanstack/devtools (Core Shell)                  │    │
-│  │  ├── Plugin System & Tab Navigation              │    │
-│  │  ├── Settings & State Persistence                │    │
-│  │  └── Trigger, Panel, Source Inspector            │    │
-│  └──────────────────────┬──────────────────────────┘    │
-│                         │                                │
-│  ┌──────────────────────▼──────────────────────────┐    │
-│  │ Event System                                     │    │
-│  │  ├── EventClient (typed events for plugins)      │    │
-│  │  └── EventBus (WebSocket/SSE transport)          │    │
-│  └──────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph App["Your Application"]
+        adapter["Framework Adapter<br/><i>React / Vue / Solid / Preact</i>"]
+        subgraph shell["@tanstack/devtools — Core Shell"]
+            plugins["Plugin System & Tab Navigation"]
+            settings["Settings & State Persistence"]
+            ui["Trigger, Panel, Source Inspector"]
+        end
+        subgraph events["Event System"]
+            ec["EventClient<br/><i>Typed events for plugins</i>"]
+            eb["EventBus<br/><i>WebSocket / SSE transport</i>"]
+        end
+    end
+
+    adapter --> shell
+    shell --> events
 ```
 
 Your application loads a **Framework Adapter**, which mounts the **Core Shell**. The shell manages the plugin lifecycle, renders tabs, and surfaces settings. Plugins communicate through the **Event System**, which provides typed events locally and can bridge to a server over WebSocket or SSE when needed.

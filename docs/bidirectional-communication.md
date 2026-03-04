@@ -5,6 +5,25 @@ id: bidirectional-communication
 
 Most devtools plugins observe state in one direction: app to devtools. But `EventClient` supports two-way communication. Your devtools panel can also send commands back to the app. This enables features like state editing, action replay, and time-travel debugging.
 
+```mermaid
+graph LR
+    subgraph app["Application"]
+        state["State / Library"]
+    end
+    subgraph ec["EventClient"]
+        direction TB
+        bus["Event Bus"]
+    end
+    subgraph dt["Devtools Panel"]
+        ui["Panel UI"]
+    end
+
+    state -- "emit('state-update')" --> bus
+    bus -- "on('state-update')" --> ui
+    ui -- "emit('reset')" --> bus
+    bus -- "on('reset')" --> state
+```
+
 ## Pattern: App to Devtools (Observation)
 
 The standard one-way pattern. Your app emits events, the devtools panel listens.
@@ -48,6 +67,21 @@ type MyEvents = {
 ## Pattern: Time Travel
 
 The most powerful bidirectional pattern. Combine observation with command-based state restoration.
+
+```mermaid
+sequenceDiagram
+    participant App as Application
+    participant EC as EventClient
+    participant Panel as Time Travel Panel
+
+    App->>EC: emit('snapshot', { state, timestamp })
+    EC->>Panel: on('snapshot') → collect snapshots
+    Note over Panel: User drags slider to past state
+    Panel->>EC: emit('revert', { state })
+    EC->>App: on('revert') → restore state
+    App->>EC: emit('snapshot', { state, timestamp })
+    EC->>Panel: on('snapshot') → update timeline
+```
 
 ### Event Map
 

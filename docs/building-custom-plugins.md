@@ -8,6 +8,25 @@ You can build custom devtools plugins for any state management library, API clie
 1. **An EventClient** — sends and receives data between your application code and the devtools panel.
 2. **A panel component** — displays the data inside the devtools UI.
 
+```mermaid
+graph LR
+    subgraph app["Your Application"]
+        lib["Library / State"]
+    end
+    subgraph ec["EventClient"]
+        emit["emit()"]
+        on["on()"]
+    end
+    subgraph dt["Devtools Panel"]
+        panel["Panel Component"]
+    end
+
+    lib -- "State changes" --> emit
+    emit -- "Events" --> panel
+    panel -- "Commands" --> on
+    on -- "Actions" --> lib
+```
+
 The EventClient is framework-agnostic. It works the same in React, Vue, Solid, Preact, or vanilla JavaScript. The panel component can be written in any framework supported by an adapter.
 
 This guide walks through building a custom plugin from scratch using a "store inspector" as a running example.

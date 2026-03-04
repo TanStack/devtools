@@ -204,6 +204,20 @@ export default {
 
 ## Features
 
+The Vite plugin is composed of several sub-plugins, each handling a specific concern:
+
+```mermaid
+graph TD
+    vite["@tanstack/devtools-vite"]
+    vite --> source["Source Injection<br/><i>Babel → data-tsd-source attrs</i>"]
+    vite --> server["Server Event Bus<br/><i>WebSocket + SSE transport</i>"]
+    vite --> strip["Production Stripping<br/><i>Remove devtools on build</i>"]
+    vite --> pipe["Console Piping<br/><i>Client ↔ Server logs</i>"]
+    vite --> logs["Enhanced Logs<br/><i>Source location in console</i>"]
+    vite --> market["Marketplace<br/><i>Install plugins via UI</i>"]
+    vite --> connect["Connection Injection<br/><i>Port/host placeholders</i>"]
+```
+
 ### Go to Source
 
 The "Go to Source" feature lets you click on any element in your browser and open its source file in your editor at the exact line where it's defined. It works by injecting `data-tsd-source` attributes into your components via a Babel transformation during development. These attributes encode the file path and line number of each element.

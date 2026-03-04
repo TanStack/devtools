@@ -90,14 +90,14 @@ Here is what happens when you provide plugins to the devtools:
 
 6. **Theme changes** - When the user toggles the theme in settings, `render` is called again with the new theme value. Your plugin should update its appearance accordingly.
 
-```
-User opens devtools
-  └─ TanStackDevtoolsCore created with plugins array
-       └─ Solid UI renders sidebar tabs and containers
-            ├─ <h3 id="plugin-title-container-{id}"> created per plugin
-            │     └─ plugin.name (string set or function called)
-            └─ <div id="plugin-container-{id}"> created per active plugin
-                  └─ plugin.render(div, theme) called
+```mermaid
+flowchart TD
+    A["User opens devtools"] --> B["TanStackDevtoolsCore created<br/>with plugins array"]
+    B --> C["Solid UI renders sidebar<br/>tabs and containers"]
+    C --> D["&lt;h3 id='plugin-title-container-{id}'&gt;<br/>created per plugin"]
+    C --> E["&lt;div id='plugin-container-{id}'&gt;<br/>created per active plugin"]
+    D --> F["plugin.name<br/><i>string set or function called</i>"]
+    E --> G["plugin.render(div, theme)<br/><i>called with container + theme</i>"]
 ```
 
 ## Framework Adapter Pattern
@@ -168,6 +168,17 @@ The Vue adapter uses `<Teleport>` to render your Vue component into the containe
 Your Vue component receives the `theme` as a prop along with any other props you pass. It runs within the Vue app's reactivity system with full access to composition API, inject/provide, etc.
 
 ### The Key Insight
+
+```mermaid
+graph LR
+    subgraph fw["Your Framework Runtime"]
+        comp["Your Plugin Component<br/><i>Full reactivity, hooks, signals</i>"]
+    end
+    subgraph core["Devtools Core (Solid.js)"]
+        container["Plugin Container<br/>&lt;div id='plugin-container-{id}'&gt;"]
+    end
+    comp -- "Portal / Teleport" --> container
+```
 
 Regardless of framework, your plugin component runs in its **normal framework context** with full reactivity, hooks, signals, lifecycle methods, and dependency injection. It just renders into a different DOM location via portals or teleports. This means:
 
