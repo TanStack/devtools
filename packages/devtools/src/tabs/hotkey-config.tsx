@@ -25,7 +25,8 @@ const parseHotkeyParts = (
   hotkey: string | null | undefined,
   modifiers: Array<Modifier>,
 ): { activeModifiers: Array<Modifier>; key: string } => {
-  if (typeof hotkey !== 'string' || !hotkey) return { activeModifiers: [], key: '' }
+  if (typeof hotkey !== 'string' || !hotkey)
+    return { activeModifiers: [], key: '' }
   const parts = hotkey.split('+').map((p) => p.trim())
   const modifierStrings: Array<string> = modifiers
   const activeModifiers = parts.filter((p): p is Modifier =>

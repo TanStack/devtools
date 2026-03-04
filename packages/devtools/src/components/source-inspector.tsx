@@ -32,7 +32,8 @@ export const SourceInspector = () => {
   const heldKeys = createHeldKeys()
 
   const isHighlightingKeysHeld = createMemo(() => {
-    const hotkey = settings().inspectHotkey || initialState.settings.inspectHotkey
+    const hotkey =
+      settings().inspectHotkey || initialState.settings.inspectHotkey
     return isHotkeyHeld(heldKeys(), hotkey)
   })
 
