@@ -18,13 +18,13 @@ Start by creating a TypeScript type that maps event names to their payload types
 
 ```ts
 type StoreEvents = {
-  'store-inspector:state-changed': { storeName: string; state: unknown; timestamp: number }
-  'store-inspector:action-dispatched': { storeName: string; action: string; payload: unknown }
-  'store-inspector:reset': void
+  'state-changed': { storeName: string; state: unknown; timestamp: number }
+  'action-dispatched': { storeName: string; action: string; payload: unknown }
+  'reset': void
 }
 ```
 
-Every key in the event map follows the `{pluginId}:{suffix}` naming convention. The `pluginId` portion (`store-inspector` in this example) **must** match the `pluginId` you pass to the `EventClient` constructor in the next step. The suffix (`state-changed`, `action-dispatched`, `reset`) is whatever name makes sense for your event.
+Each key in the event map is just the event name (the suffix). Do **not** include the `pluginId` in the key — the `EventClient` prepends the `pluginId` automatically when emitting and listening. For example, if `pluginId` is `'store-inspector'` and the key is `'state-changed'`, the fully qualified event dispatched on the bus will be `'store-inspector:state-changed'`.
 
 The value of each key is the payload type. Use `void` for events that carry no data.
 

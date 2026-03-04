@@ -225,4 +225,4 @@ export default {
 }
 ```
 
-For the full list of Vite plugin options, see the [Vite Plugin](./vite-plugin.md) documentation.
+For the full list of Vite plugin options, see the [Vite Plugin](./vite-plugin) documentation.

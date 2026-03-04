@@ -54,7 +54,7 @@ TanStack Devtools is compatible with Vue 3+
 npm install -D @tanstack/devtools
 ```
 
-Install the the core `@tanstack/devtools` package to use with any framework or without a framework. Each framework package up above will also re-export everything from this core package.
+Install the core `@tanstack/devtools` package to use with any framework or without a framework. Each framework package up above will also re-export everything from this core package.
 
 
 ## Production Builds
@@ -67,4 +67,4 @@ npm install -D @tanstack/devtools-vite
 ```
  
 
-Read more about using the devtools in production in our [Production docs](./production.md).
+Read more about using the devtools in production in our [Production docs](./production).

@@ -150,7 +150,7 @@ Put together the `EventClient` configuration looks like:
 import { EventClient } from '@tanstack/devtools-event-client'
 
 type EventMap = {
-  'custom-devtools:custom-state': { state: string }
+  'custom-state': { state: string }
 }
 
 class customEventClient extends EventClient<EventMap> {

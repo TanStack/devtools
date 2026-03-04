@@ -47,15 +47,15 @@ import { EventClient } from '@tanstack/devtools-event-client'
 
 
 type EventMap = {
-  // The key of the event map is a combination of {pluginId}:{eventSuffix}
+  // The key is the event suffix only — the pluginId is prepended automatically by EventClient
   // The value is the expected type of the event payload
-  'custom-devtools:counter-state': { count: number, history: number[] }
+  'counter-state': { count: number, history: number[] }
 }
 
 class CustomEventClient extends EventClient<EventMap> {
   constructor() {
     super({
-      // The pluginId must match that of the event map key
+      // The pluginId is prepended to event map keys when emitting/listening
       pluginId: 'custom-devtools',
     })
   }
@@ -144,7 +144,7 @@ onUnmounted(() => {
 
 ## Application Integration
 
-This step follows what's shown in [basic-setup](../basic-setup.md) for a more documented guide go check it out.
+This step follows what's shown in [basic-setup](../basic-setup) for a more documented guide go check it out.
 
 App.vue
 ```vue

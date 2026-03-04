@@ -13,8 +13,8 @@ Create a typed `EventClient` by extending the base class with your event map:
 import { EventClient } from '@tanstack/devtools-event-client'
 
 type MyEvents = {
-  'my-plugin:state-update': { count: number }
-  'my-plugin:action': { type: string }
+  'state-update': { count: number }
+  'action': { type: string }
 }
 
 class MyEventClient extends EventClient<MyEvents> {
@@ -37,12 +37,12 @@ The constructor accepts the following options:
 
 ## Event Maps and Type Safety
 
-The generic `EventMap` type maps event names to payload types. Keys follow the `{pluginId}:{eventSuffix}` convention:
+The generic `EventMap` type maps event names to payload types. Keys are event suffixes only — the `pluginId` is prepended automatically by `EventClient` when emitting and listening:
 
 ```ts
 type MyEvents = {
-  'my-plugin:state-update': { count: number }
-  'my-plugin:action': { type: string }
+  'state-update': { count: number }
+  'action': { type: string }
 }
 ```
 
@@ -53,7 +53,7 @@ TypeScript enforces correct event names and payload shapes at compile time. You 
 Call `eventClient.emit(eventSuffix, payload)` to dispatch an event. You pass only the **suffix** (the part after the colon). The `pluginId` is prepended automatically:
 
 ```ts
-// If pluginId is 'my-plugin' and event map has 'my-plugin:state-update'
+// If pluginId is 'my-plugin' and event map has 'state-update'
 myEventClient.emit('state-update', { count: 42 })
 // Dispatches event named 'my-plugin:state-update'
 ```
@@ -120,7 +120,7 @@ The `EventClient` manages its connection to the event bus automatically:
 
 ### The `enabled` Option
 
-When `enabled` is set to `false` in the constructor, the `EventClient` does not connect to the bus at all. Events are only dispatched internally via `EventTarget`, which is useful for components on the same page that do not need server communication. All `on`, `onAll`, and `onAllPluginEvents` calls return no-op cleanup functions when the client is disabled.
+When `enabled` is set to `false`, the EventClient is effectively inert — `emit()` is a no-op and `on()` returns a no-op cleanup function. This is useful for conditionally disabling devtools instrumentation (e.g., in production).
 
 ## Server Event Bus
 

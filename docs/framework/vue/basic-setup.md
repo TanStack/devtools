@@ -57,6 +57,6 @@ const plugins: TanStackDevtoolsVuePlugin[] = [
 
 > Note: The Vue adapter uses `component` instead of `render` in plugin definitions. In Vue, components are passed as component references rather than JSX elements, and any additional props can be provided via the `props` field.
 
-Finally, add any additional configuration you desire to the `TanStackDevtools` component. More information can be found under the [TanStack Devtools Configuration](../../configuration.md) section.
+Finally, add any additional configuration you desire to the `TanStackDevtools` component. More information can be found under the [TanStack Devtools Configuration](../../configuration) section.
 
 A complete working example can be found in our [basic example](https://tanstack.com/devtools/latest/docs/framework/vue/examples/basic).

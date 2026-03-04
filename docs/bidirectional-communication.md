@@ -38,10 +38,10 @@ You need to define both directions in your event map:
 ```ts
 type MyEvents = {
   // App → Devtools
-  'my-plugin:state-update': { count: number }
+  'state-update': { count: number }
   // Devtools → App
-  'my-plugin:reset': void
-  'my-plugin:set-state': { count: number }
+  'reset': void
+  'set-state': { count: number }
 }
 ```
 
@@ -53,8 +53,8 @@ The most powerful bidirectional pattern. Combine observation with command-based 
 
 ```ts
 type TimeTravelEvents = {
-  'time-travel:snapshot': { state: unknown; timestamp: number; label: string }
-  'time-travel:revert': { state: unknown }
+  'snapshot': { state: unknown; timestamp: number; label: string }
+  'revert': { state: unknown }
 }
 ```
 
