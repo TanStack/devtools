@@ -21,7 +21,7 @@ interface DevtoolsPanelProps {
 }
 ```
 
-> The Vue variant additionally accepts `'system'` as a theme value.
+> The Vue and Svelte variants additionally accept `'system'` as a theme value.
 
 Import it from the framework-specific subpath:
 
@@ -37,6 +37,9 @@ import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/preact'
 
 // Vue
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/vue'
+
+// Svelte
+import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/svelte'
 ```
 
 ## React
@@ -251,6 +254,49 @@ const [MyPanel, NoOpPanel] = createVuePanel(MyDevtoolsCore)
 ```
 
 The panel component accepts `theme` and `devtoolsProps` as props. It mounts the core instance into a `div` element on `onMounted` and calls `unmount()` on `onUnmounted`.
+
+## Svelte
+
+### createSveltePlugin
+
+The Svelte factory takes a `name` string and a Svelte component as separate arguments, similar to the Vue API.
+
+**Signature:**
+
+```ts
+function createSveltePlugin(
+  name: string,
+  component: Component<any>,
+): readonly [Plugin, NoOpPlugin]
+```
+
+**Usage:**
+
+```ts
+import { createSveltePlugin } from '@tanstack/devtools-utils/svelte'
+import MyStorePanel from './MyStorePanel.svelte'
+
+const [MyPlugin, NoOpPlugin] = createSveltePlugin('My Store', MyStorePanel)
+```
+
+The returned functions:
+
+- **`Plugin(props?)`** -- returns `{ name, component, props }` where `component` is your Svelte component.
+- **`NoOpPlugin(props?)`** -- returns `{ name, component: NoOpComponent, props }` where the component renders nothing visible.
+
+Both accept an optional `props` object that gets forwarded to the component on mount.
+
+### createSveltePanel
+
+For class-based devtools cores, Svelte provides `createSveltePanel`. It creates a wrapper that handles mounting and unmounting the core class:
+
+```ts
+import { createSveltePanel } from '@tanstack/devtools-utils/svelte'
+
+const [MyPanel, NoOpPanel] = createSveltePanel(MyDevtoolsCore)
+```
+
+The panel accepts `theme` and `devtoolsProps` props. It creates a `div` element, mounts the core instance into it, and calls `unmount()` on cleanup.
 
 ## When to Use Factories vs Manual Plugin Objects
 
