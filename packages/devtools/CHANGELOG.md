@@ -1,5 +1,12 @@
 # @tanstack/devtools
 
+## 0.10.9
+
+### Patch Changes
+
+- Updated dependencies [[`cf23787`](https://github.com/TanStack/devtools/commit/cf23787b9669e8999c5b2916a24c4d86231034b3)]:
+  - @tanstack/devtools-client@0.0.6
+
 ## 0.10.8
 
 ### Patch Changes
