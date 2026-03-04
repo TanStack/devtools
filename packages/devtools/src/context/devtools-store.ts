@@ -48,7 +48,7 @@ export type DevtoolsStore = {
      * The hotkey to open the source inspector.
      * Uses TanStack Hotkeys string format (e.g. "Mod+Shift").
      * "Mod" maps to Command on macOS and Control on Windows/Linux.
-     * @default "Mod+Shift"
+     * @default "Mod+Alt+Shift"
      */
     inspectHotkey: string
     /**
@@ -93,8 +93,8 @@ export const initialState: DevtoolsStore = {
     hideUntilHover: false,
     position: 'bottom-right',
     panelLocation: 'bottom',
-    openHotkey: 'Control+`' as Hotkey,
-    inspectHotkey: 'Mod+Shift',
+    openHotkey: 'Control+`' ,
+    inspectHotkey: 'Mod+Alt+Shift',
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     theme:

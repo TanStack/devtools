@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.8
+
+### Patch Changes
+
+- Changed default `inspectHotkey` from `["Shift", "CtrlOrMeta"]` to `["Shift", "Alt", "CtrlOrMeta"]` to avoid conflicts with browser shortcuts (Ctrl/Cmd + Shift + Click opens links in new tabs). ([#357](https://github.com/TanStack/devtools/pull/357))
+
 ## 0.10.7
 
 ### Patch Changes
