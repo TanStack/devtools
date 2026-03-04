@@ -19,13 +19,13 @@ import {
 import { useDevtoolsSettings } from '../context/use-devtools-context'
 import { useStyles } from '../styles/use-styles'
 import { HotkeyConfig } from './hotkey-config'
-import type { KeyboardKey } from '../context/devtools-store'
+import type { Modifier } from '@tanstack/solid-hotkeys'
 
 export const SettingsTab = () => {
   const { setSettings, settings } = useDevtoolsSettings()
   const styles = useStyles()
 
-  const modifiers: Array<KeyboardKey> = ['CtrlOrMeta', 'Alt', 'Shift']
+  const modifiers: Array<Modifier> = ['Mod', 'Alt', 'Shift']
 
   return (
     <MainPanel withPadding>

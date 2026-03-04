@@ -1,11 +1,12 @@
 import { createEffect, createMemo, createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { createElementSize } from '@solid-primitives/resize-observer'
-import { useKeyDownList } from '@solid-primitives/keyboard'
+import { createHeldKeys } from '@tanstack/solid-hotkeys'
 import { createEventListener } from '@solid-primitives/event-listener'
 
 import { useDevtoolsSettings } from '../context/use-devtools-context'
-import { isHotkeyCombinationPressed } from '../utils/hotkey'
+import { initialState } from '../context/devtools-store'
+import { isHotkeyHeld } from '../utils/hotkey'
 
 export const SourceInspector = () => {
   const { settings } = useDevtoolsSettings()
@@ -28,10 +29,11 @@ export const SourceInspector = () => {
     setMousePosition({ x: e.clientX, y: e.clientY })
   })
 
-  const downList = useKeyDownList()
+  const heldKeys = createHeldKeys()
 
   const isHighlightingKeysHeld = createMemo(() => {
-    return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
+    const hotkey = settings().inspectHotkey || initialState.settings.inspectHotkey
+    return isHotkeyHeld(heldKeys(), hotkey)
   })
 
   createEffect(() => {

@@ -1,72 +1,69 @@
 import { Show } from 'solid-js'
 import { Button, Input } from '@tanstack/devtools-ui'
 
-import { uppercaseFirstLetter } from '../utils/sanitize'
 import { useStyles } from '../styles/use-styles'
-import type { KeyboardKey } from '../context/devtools-store'
+import type { Key, Modifier } from '@tanstack/solid-hotkeys'
 
-interface HotkeyConfigProps {
+interface HotkeyConfigProps<T extends string = string> {
   title: string
   description: string
-  hotkey: Array<KeyboardKey>
-  modifiers: Array<KeyboardKey>
-  onHotkeyChange: (hotkey: Array<KeyboardKey>) => void
+  hotkey: T | null | undefined
+  modifiers: Array<Modifier>
+  onHotkeyChange: (hotkey: T) => void
 }
 
-const MODIFIER_DISPLAY_NAMES: Record<KeyboardKey, string> = {
+const MODIFIER_DISPLAY_NAMES: Partial<Record<Modifier, string>> = {
   Shift: 'Shift',
   Alt: 'Alt',
-  Meta: 'Meta',
+  Mod: 'Ctrl Or Cmd',
   Control: 'Control',
-  CtrlOrMeta: 'Ctrl Or Meta',
+  Command: 'Command',
 }
 
-export const HotkeyConfig = (props: HotkeyConfigProps) => {
+/** Splits a hotkey string like "Mod+Shift+A" into its parts */
+const parseHotkeyParts = (
+  hotkey: string | null | undefined,
+  modifiers: Array<Modifier>,
+): { activeModifiers: Array<Modifier>; key: string } => {
+  if (typeof hotkey !== 'string' || !hotkey) return { activeModifiers: [], key: '' }
+  const parts = hotkey.split('+').map((p) => p.trim())
+  const modifierStrings: Array<string> = modifiers
+  const activeModifiers = parts.filter((p): p is Modifier =>
+    modifierStrings.includes(p),
+  )
+  const keyParts = parts.filter((p) => !modifierStrings.includes(p))
+  return { activeModifiers, key: keyParts.join('+') }
+}
+
+/** Joins modifiers and key back into a hotkey string */
+const buildHotkeyString = (
+  modifiers: Array<Modifier>,
+  key: Key | string,
+): string => {
+  const parts: Array<string> = [...modifiers]
+  if (key) parts.push(key)
+  return parts.join('+')
+}
+
+export const HotkeyConfig = <T extends string>(props: HotkeyConfigProps<T>) => {
   const styles = useStyles()
 
-  const toggleModifier = (modifier: KeyboardKey) => {
-    if (props.hotkey.includes(modifier)) {
-      props.onHotkeyChange(props.hotkey.filter((key) => key !== modifier))
-    } else {
-      const existingModifiers = props.hotkey.filter((key) =>
-        props.modifiers.includes(key as any),
-      )
-      const otherKeys = props.hotkey.filter(
-        (key) => !props.modifiers.includes(key as any),
-      )
-      props.onHotkeyChange([...existingModifiers, modifier, ...otherKeys])
-    }
-  }
+  const parsed = () => parseHotkeyParts(props.hotkey, props.modifiers)
 
-  const getNonModifierValue = () => {
-    return props.hotkey
-      .filter((key) => !props.modifiers.includes(key as any))
-      .join('+')
+  const toggleModifier = (modifier: Modifier) => {
+    const { activeModifiers, key } = parsed()
+    let newModifiers: Array<Modifier>
+    if (activeModifiers.includes(modifier)) {
+      newModifiers = activeModifiers.filter((m) => m !== modifier)
+    } else {
+      newModifiers = [...activeModifiers, modifier]
+    }
+    props.onHotkeyChange(buildHotkeyString(newModifiers, key) as T)
   }
 
   const handleKeyInput = (input: string) => {
-    const makeModifierArray = (key: string) => {
-      if (key.length === 1) return [uppercaseFirstLetter(key)]
-      const modifiersArray: Array<string> = []
-      for (const character of key) {
-        const newLetter = uppercaseFirstLetter(character)
-        if (!modifiersArray.includes(newLetter)) modifiersArray.push(newLetter)
-      }
-      return modifiersArray
-    }
-
-    const hotkeyModifiers = props.hotkey.filter((key) =>
-      props.modifiers.includes(key as any),
-    )
-    const newKeys = input
-      .split('+')
-      .flatMap((key) => makeModifierArray(key))
-      .filter(Boolean)
-    props.onHotkeyChange([...hotkeyModifiers, ...newKeys])
-  }
-
-  const getDisplayHotkey = () => {
-    return props.hotkey.join(' + ')
+    const { activeModifiers } = parsed()
+    props.onHotkeyChange(buildHotkeyString(activeModifiers, input) as T)
   }
 
   return (
@@ -78,7 +75,7 @@ export const HotkeyConfig = (props: HotkeyConfigProps) => {
             <Button
               variant="success"
               onclick={() => toggleModifier(modifier)}
-              outline={!props.hotkey.includes(modifier)}
+              outline={!parsed().activeModifiers.includes(modifier)}
             >
               {MODIFIER_DISPLAY_NAMES[modifier] || modifier}
             </Button>
@@ -88,10 +85,10 @@ export const HotkeyConfig = (props: HotkeyConfigProps) => {
       <Input
         description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
         placeholder="a"
-        value={getNonModifierValue()}
+        value={parsed().key}
         onChange={handleKeyInput}
       />
-      Final shortcut is: {getDisplayHotkey()}
+      Final shortcut is: {props.hotkey}
     </div>
   )
 }

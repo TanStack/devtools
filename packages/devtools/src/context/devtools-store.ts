@@ -1,16 +1,6 @@
+import type { Hotkey } from '@tanstack/solid-hotkeys'
 import type { TabName } from '../tabs'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
-
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta'
-type KeyboardKey = ModifierKey | (string & {})
-export type { ModifierKey, KeyboardKey }
-export const keyboardModifiers: Array<ModifierKey> = [
-  'Alt',
-  'Control',
-  'Meta',
-  'Shift',
-  'CtrlOrMeta',
-]
 
 type TriggerPosition =
   | 'top-left'
@@ -48,15 +38,19 @@ export type DevtoolsStore = {
      */
     panelLocation: 'top' | 'bottom'
     /**
-     * The hotkey to open the dev tools
-     * @default ["Control", "~"]
+     * The hotkey to open the dev tools.
+     * Uses TanStack Hotkeys string format (e.g. "Mod+S", "Control+`").
+     * "Mod" maps to Command on macOS and Control on Windows/Linux.
+     * @default "Control+`"
      */
-    openHotkey: Array<KeyboardKey>
+    openHotkey: Hotkey
     /**
-     * The hotkey to open the source inspector
-     * @default ["Shift", "CtrlOrMeta"]
+     * The hotkey to open the source inspector.
+     * Uses TanStack Hotkeys string format (e.g. "Mod+Shift").
+     * "Mod" maps to Command on macOS and Control on Windows/Linux.
+     * @default "Mod+Shift"
      */
-    inspectHotkey: Array<KeyboardKey>
+    inspectHotkey: string
     /**
      * Whether to require the URL flag to open the dev tools
      * @default false
@@ -99,8 +93,8 @@ export const initialState: DevtoolsStore = {
     hideUntilHover: false,
     position: 'bottom-right',
     panelLocation: 'bottom',
-    openHotkey: ['Control', '~'],
-    inspectHotkey: ['Shift', 'CtrlOrMeta'],
+    openHotkey: 'Control+`' as Hotkey,
+    inspectHotkey: 'Mod+Shift',
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     theme:

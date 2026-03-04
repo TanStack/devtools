@@ -41,22 +41,18 @@ The `config` object is mainly focused around user interaction with the devtools 
 { panelLocation: 'top' | 'bottom' }
 ```
 
-- `openHotkey` - The hotkey set to open the devtools
+- `openHotkey` - The hotkey to open the devtools. Uses the [`Hotkey`](https://tanstack.com/hotkeys) type from `@tanstack/hotkeys` (e.g. `"Control+\``"`, `"Mod+D"`). `Mod` maps to Command on macOS and Control on Windows/Linux.
 
 ```ts
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta';
-type KeyboardKey = ModifierKey | (string & {});
+import type { Hotkey } from '@tanstack/hotkeys'
 
-{ openHotkey: Array<KeyboardKey> }
+{ openHotkey: Hotkey }
 ```
 
-- `inspectHotkey` - The hotkey set to open the source inspector
+- `inspectHotkey` - The hotkey to open the source inspector. Uses [TanStack Hotkeys](https://tanstack.com/hotkeys) string format (e.g. `"Mod+Shift"`). `Mod` maps to Command on macOS and Control on Windows/Linux.
 
 ```ts
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta';
-type KeyboardKey = ModifierKey | (string & {});
-
-{ inspectHotkey: Array<KeyboardKey> }
+{ inspectHotkey: string }
 ```
 
 - `requireUrlFlag` - Requires a flag present in the url to enable devtools

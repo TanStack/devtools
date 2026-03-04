@@ -699,9 +699,6 @@ importers:
       '@solid-primitives/event-listener':
         specifier: ^2.4.3
         version: 2.4.3(solid-js@1.9.10)
-      '@solid-primitives/keyboard':
-        specifier: ^1.3.3
-        version: 1.3.3(solid-js@1.9.10)
       '@solid-primitives/resize-observer':
         specifier: ^2.1.3
         version: 2.1.3(solid-js@1.9.10)
@@ -714,6 +711,9 @@ importers:
       '@tanstack/devtools-ui':
         specifier: workspace:*
         version: link:../devtools-ui
+      '@tanstack/solid-hotkeys':
+        specifier: ^0.3.0
+        version: 0.3.0(solid-js@1.9.10)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -3661,6 +3661,10 @@ packages:
     resolution: {integrity: sha512-LS54XNyxyTs5m/pl1lkwlg7uZM3lvsv2FIIV1rsJgnfwVCnI+n4ZGZ2CcjNT13BPu/3hPP+iHmliBSscJxW5FQ==}
     engines: {node: '>=12'}
 
+  '@tanstack/hotkeys@0.3.0':
+    resolution: {integrity: sha512-y2uawGLj/GrMNDffaaC0YS7tZPwchDbWAKnU/XObjtyQ4oRGVLyg/2PPbT/hWNQ2PbbrolB098NvlYM0OR3XSw==}
+    engines: {node: '>=18'}
+
   '@tanstack/match-sorter-utils@8.19.4':
     resolution: {integrity: sha512-Wo1iKt2b9OT7d+YGhvEPD3DXvPv2etTusIMhMUoG7fbhmxcXCtIjJDEygy91Y2JFlwGyjqiBPRozme7UD8hoqg==}
     engines: {node: '>=12'}
@@ -3851,6 +3855,12 @@ packages:
     resolution: {integrity: sha512-a05fzK+jBGacsSAc1vE8an7lpBh4H0PyIEcivtEyHLomgSeElAJxm9E2It/0nYRZ5Lh23m0okbhzJNaYWZpAOg==}
     engines: {node: '>=12'}
 
+  '@tanstack/solid-hotkeys@0.3.0':
+    resolution: {integrity: sha512-9Mtk/zaAOj/XqOtY5WlpjKNYMOubzhMioXA+fm4PKQZe+QlZod9SuqdisMQebvlpgspUHkj5wPDhIp9AcmsV4g==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      solid-js: '>=1.7.0'
+
   '@tanstack/solid-query-devtools@5.91.1':
     resolution: {integrity: sha512-4OnXd5AwwcdlzFqRstToz0QChmpz9CqA2csnQAdlrA9Vrf0Gjl+S7tPE65xx0s8y8ZwUgCNyB1GTFXS1Wsznyg==}
     peerDependencies:
@@ -3884,6 +3894,11 @@ packages:
     peerDependencies:
       solid-js: ^1.6.0
 
+  '@tanstack/solid-store@0.9.1':
+    resolution: {integrity: sha512-gx7ToM+Yrkui36NIj0HjAufzv1Dg8usjtVFy5H3Ll52Xjuz+eliIJL+ihAr4LRuWh3nDPBR+nCLW0ShFrbE5yw==}
+    peerDependencies:
+      solid-js: ^1.6.0
+
   '@tanstack/start-client-core@1.143.9':
     resolution: {integrity: sha512-Cvj/LIz6WMLg3XF35w0axz7zuBVgeZFhEHFXfHlsylBbYcBFA3GHQZ5KNuxgHNgwP2jYwF6hM6pRkw+1mA3/uA==}
     engines: {node: '>=22.12.0'}
@@ -3911,6 +3926,9 @@ packages:
 
   '@tanstack/store@0.8.0':
     resolution: {integrity: sha512-Om+BO0YfMZe//X2z0uLF2j+75nQga6TpTJgLJQBiq85aOyZNIhkCgleNcud2KQg4k4v9Y9l+Uhru3qWMPGTOzQ==}
+
+  '@tanstack/store@0.9.1':
+    resolution: {integrity: sha512-+qcNkOy0N1qSGsP7omVCW0SDrXtaDcycPqBDE726yryiA5eTDFpjBReaYjghVJwNf1pcPMyzIwTGlYjCSQR0Fg==}
 
   '@tanstack/typedoc-config@0.2.1':
     resolution: {integrity: sha512-3miLBNiyWX54bQKBNnh7Fj6otWX8ZDiU6/ffOsNnikwBdKjFkA7ddrBtC5/JQkLCE6CBIqcJvtNIwI+DZu4y1Q==}
@@ -12515,6 +12533,10 @@ snapshots:
 
   '@tanstack/history@1.141.0': {}
 
+  '@tanstack/hotkeys@0.3.0':
+    dependencies:
+      '@tanstack/store': 0.9.1
+
   '@tanstack/match-sorter-utils@8.19.4':
     dependencies:
       remove-accents: 0.5.0
@@ -12848,6 +12870,12 @@ snapshots:
       - supports-color
       - vite
 
+  '@tanstack/solid-hotkeys@0.3.0(solid-js@1.9.10)':
+    dependencies:
+      '@tanstack/hotkeys': 0.3.0
+      '@tanstack/solid-store': 0.9.1(solid-js@1.9.10)
+      solid-js: 1.9.10
+
   '@tanstack/solid-query-devtools@5.91.1(@tanstack/solid-query@5.90.14(solid-js@1.9.10))(solid-js@1.9.10)':
     dependencies:
       '@tanstack/query-devtools': 5.91.1
@@ -12897,6 +12925,11 @@ snapshots:
   '@tanstack/solid-store@0.8.0(solid-js@1.9.10)':
     dependencies:
       '@tanstack/store': 0.8.0
+      solid-js: 1.9.10
+
+  '@tanstack/solid-store@0.9.1(solid-js@1.9.10)':
+    dependencies:
+      '@tanstack/store': 0.9.1
       solid-js: 1.9.10
 
   '@tanstack/start-client-core@1.143.9':
@@ -12991,6 +13024,8 @@ snapshots:
   '@tanstack/store@0.7.7': {}
 
   '@tanstack/store@0.8.0': {}
+
+  '@tanstack/store@0.9.1': {}
 
   '@tanstack/typedoc-config@0.2.1(typescript@5.9.3)':
     dependencies:
