@@ -3,12 +3,5 @@
   "compilerOptions": {
     "experimentalDecorators": true
   },
-  "include": ["src", "eslint.config.js", "vite.config.ts", "tests"],
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true,
-    "compilationMode": "partial"
-  }
+  "include": ["src", "eslint.config.js", "vite.config.ts", "tests"]
 }

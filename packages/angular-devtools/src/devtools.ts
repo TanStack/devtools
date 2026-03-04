@@ -33,7 +33,7 @@ export class TanStackDevtoolsComponent {
   private injector = inject(EnvironmentInjector)
   private destroyRef = inject(DestroyRef)
 
-  private componentRefs: ComponentRef<any>[] = []
+  private componentRefs: Array<ComponentRef<any>> = []
   private devtools: TanStackDevtoolsCore | null = null
 
   constructor() {
