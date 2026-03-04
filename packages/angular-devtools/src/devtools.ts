@@ -6,6 +6,7 @@ import {
   EnvironmentInjector,
   afterNextRender,
   createComponent,
+  effect,
   inject,
   input,
 } from '@angular/core'
@@ -52,6 +53,20 @@ export class TanStackDevtoolsComponent {
       })
 
       this.devtools.mount(hostEl)
+    })
+
+    effect(() => {
+      const plugins = this.plugins()
+      const config = this.config()
+      const eventBusConfig = this.eventBusConfig()
+
+      if (this.devtools) {
+        this.devtools.setConfig({
+          config,
+          eventBusConfig,
+          plugins: plugins?.map((p) => this.convertPlugin(p)) ?? [],
+        })
+      }
     })
 
     this.destroyRef.onDestroy(() => {

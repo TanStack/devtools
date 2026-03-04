@@ -42,9 +42,3 @@ export interface TanStackDevtoolsAngularInit {
    */
   eventBusConfig?: ClientEventBusConfig
 }
-
-export type RenderArray = Array<{
-  id: string
-  component: Type<any>
-  inputs: Record<string, unknown>
-}>
