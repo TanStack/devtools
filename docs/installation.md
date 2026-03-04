@@ -16,6 +16,15 @@ npm install -D @tanstack/devtools-vite
 
 TanStack Devtools is compatible with React v16.8+
 
+## Preact
+
+```sh
+npm install -D @tanstack/preact-devtools
+npm install -D @tanstack/devtools-vite
+```
+
+TanStack Devtools is compatible with Preact v10+
+
 ## Solid
 
 ```sh
@@ -24,6 +33,20 @@ npm install -D @tanstack/devtools-vite
 ```
 
 TanStack Devtools is compatible with Solid v1.9.5+
+
+## Vue
+
+```sh
+npm install -D @tanstack/vue-devtools
+```
+
+The Vite plugin (`@tanstack/devtools-vite`) is optional for Vue — it enables additional features like source inspection and console piping but isn't required for basic usage.
+
+```sh
+npm install -D @tanstack/devtools-vite
+```
+
+TanStack Devtools is compatible with Vue 3+
 
 ## Vanilla JS
 
