@@ -1,17 +1,26 @@
 import {
   ApplicationRef,
+  ChangeDetectionStrategy,
   Component,
+  ComponentRef,
   DestroyRef,
   ElementRef,
   EnvironmentInjector,
+  Type,
   afterNextRender,
   createComponent,
   effect,
   inject,
   input,
+  reflectComponentType,
+  signal,
+  viewChild,
 } from '@angular/core'
 import { PLUGIN_CONTAINER_ID, TanStackDevtoolsCore } from '@tanstack/devtools'
-import type { ComponentRef, Type } from '@angular/core'
+import {
+  FlexRenderComponent,
+  isFlexRenderFunction,
+} from './view/component-render'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
   TanStackDevtoolsAngularInit,
@@ -22,34 +31,39 @@ import type {
   selector: 'tanstack-devtools',
   standalone: true,
   template: '<div #devtoolsHost></div>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TanStackDevtoolsComponent {
-  plugins = input<TanStackDevtoolsAngularInit['plugins']>()
-  config = input<TanStackDevtoolsAngularInit['config']>()
-  eventBusConfig = input<TanStackDevtoolsAngularInit['eventBusConfig']>()
+  readonly devtoolsHost =
+    viewChild.required<ElementRef<HTMLDivElement>>('devtoolsHost')
 
-  private hostRef = inject(ElementRef)
-  private appRef = inject(ApplicationRef)
-  private injector = inject(EnvironmentInjector)
-  private destroyRef = inject(DestroyRef)
+  readonly plugins = input<TanStackDevtoolsAngularInit['plugins']>([])
+  readonly config = input<TanStackDevtoolsAngularInit['config']>()
+  readonly eventBusConfig =
+    input<TanStackDevtoolsAngularInit['eventBusConfig']>()
+
+  readonly appRef = inject(ApplicationRef)
+  readonly injector = inject(EnvironmentInjector)
+  readonly destroyRef = inject(DestroyRef)
 
   private componentRefs: Array<ComponentRef<any>> = []
-  private devtools: TanStackDevtoolsCore | null = null
+  private devtools = signal<TanStackDevtoolsCore | null>(null)
 
   constructor() {
     afterNextRender(() => {
-      const hostEl = this.hostRef.nativeElement.querySelector('div')
-      if (!hostEl) return
+      const hostEl = this.devtoolsHost().nativeElement
 
       const pluginsMap = this.getPluginsMap()
 
-      this.devtools = new TanStackDevtoolsCore({
+      const devtoolsCore = new TanStackDevtoolsCore({
         config: this.config(),
         eventBusConfig: this.eventBusConfig(),
         plugins: pluginsMap,
       })
 
-      this.devtools.mount(hostEl)
+      this.devtools.set(devtoolsCore)
+
+      devtoolsCore.mount(hostEl)
     })
 
     effect(() => {
@@ -57,8 +71,9 @@ export class TanStackDevtoolsComponent {
       const config = this.config()
       const eventBusConfig = this.eventBusConfig()
 
-      if (this.devtools) {
-        this.devtools.setConfig({
+      const devtools = this.devtools()
+      if (devtools) {
+        devtools.setConfig({
           config,
           eventBusConfig,
           plugins: plugins?.map((p) => this.convertPlugin(p)) ?? [],
@@ -68,9 +83,10 @@ export class TanStackDevtoolsComponent {
 
     this.destroyRef.onDestroy(() => {
       this.destroyAllComponents()
-      if (this.devtools) {
-        this.devtools.unmount()
-        this.devtools = null
+      const devtools = this.devtools()
+      if (devtools) {
+        devtools.unmount()
+        this.devtools.set(null)
       }
     })
   }
@@ -98,10 +114,17 @@ export class TanStackDevtoolsComponent {
               })
             },
       render: (e, theme) => {
-        this.renderComponent(plugin.component, e, {
-          theme,
-          ...(plugin.inputs ?? {}),
-        })
+        if (isFlexRenderFunction(plugin.render)) {
+          this.renderComponentFunction(plugin.render, e, {
+            theme,
+            ...(plugin.inputs ?? {}),
+          })
+        } else {
+          this.renderComponent(plugin.render, e, {
+            theme,
+            ...(plugin.inputs ?? {}),
+          })
+        }
       },
       destroy: (pluginId) => {
         this.destroyComponentsInContainer(`${PLUGIN_CONTAINER_ID}-${pluginId}`)
@@ -109,22 +132,59 @@ export class TanStackDevtoolsComponent {
     }
   }
 
+  private renderComponentFunction(
+    instance: () => FlexRenderComponent | null,
+    container: HTMLElement,
+    inputs: (() => Record<string, unknown>) | Record<string, unknown>,
+  ) {
+    const flexRenderComponent = instance()
+    if (flexRenderComponent === null) {
+      return
+    }
+    const componentRef = createComponent(flexRenderComponent.component, {
+      environmentInjector: this.injector,
+      hostElement: container,
+      elementInjector: flexRenderComponent.injector,
+    })
+    this.attachComponentRef(componentRef, inputs)
+  }
+
   private renderComponent(
     component: Type<any>,
     container: HTMLElement,
-    inputs: Record<string, unknown>,
+    inputs: (() => Record<string, unknown>) | Record<string, unknown>,
   ) {
     const componentRef = createComponent(component, {
       environmentInjector: this.injector,
       hostElement: container,
     })
+    this.attachComponentRef(componentRef, inputs)
+  }
 
-    for (const [key, value] of Object.entries(inputs)) {
-      componentRef.setInput(key, value)
+  private attachComponentRef(
+    componentRef: ComponentRef<any>,
+    inputs: (() => Record<string, unknown>) | Record<string, unknown>,
+  ) {
+    const mirror = reflectComponentType(componentRef.componentType)
+    if (!mirror) {
+      throw new Error(
+        `[@tanstack-devtools/angular] The provided type is not a component`,
+      )
     }
 
+    effect(
+      () => {
+        const latestInputs = typeof inputs === 'function' ? inputs() : inputs
+        for (const input of mirror.inputs) {
+          if (input.propName in latestInputs) {
+            componentRef.setInput(input.propName, latestInputs[input.propName])
+          }
+        }
+      },
+      { injector: componentRef.injector },
+    )
+
     this.appRef.attachView(componentRef.hostView)
-    componentRef.changeDetectorRef.detectChanges()
     this.componentRefs.push(componentRef)
   }
 

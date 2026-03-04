@@ -1,7 +1,16 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "experimentalDecorators": true
+    "useDefineForClassFields": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true
   },
-  "include": ["src", "eslint.config.js", "vite.config.ts", "tests"]
+  "include": ["src", "tests", "eslint.config.js", "vite.config.ts"]
 }

@@ -19,16 +19,20 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm/index.d.ts",
-  "module": "dist/esm/index.js",
+  "module": "dist/fesm2022/tanstack-angular-devtools.mjs",
+  "types": "dist/types/tanstack-angular-devtools.d.ts",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      }
+      "types": "./dist/types/tanstack-angular-devtools.d.ts",
+      "default": "./dist/fesm2022/tanstack-angular-devtools.mjs"
     },
-    "./package.json": "./package.json"
+    "./utils": {
+      "types": "./dist/types/tanstack-angular-devtools-utils.d.ts",
+      "default": "./dist/fesm2022/tanstack-angular-devtools-utils.mjs"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    }
   },
   "sideEffects": false,
   "engines": {
@@ -45,17 +49,20 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build"
+    "build2": "vite build",
+    "build": "ng-packagr -p ng-package.json -c tsconfig.build.json && rm -rf ./dist/package.json"
   },
   "dependencies": {
     "@tanstack/devtools": "workspace:*"
   },
   "devDependencies": {
-    "@angular/compiler": "^20.0.0",
-    "@angular/core": "^20.0.0"
+    "@analogjs/vite-plugin-angular": "^2.3.1",
+    "@angular/core": "^21.0.0",
+    "ng-packagr": "^21.2.0",
+    "tslib": "^2.8.1"
   },
   "peerDependencies": {
-    "@angular/core": ">=19.0.0",
-    "@angular/platform-browser": ">=19.0.0"
+    "@angular/core": ">=20.0.0",
+    "@angular/platform-browser": ">=20.0.0"
   }
 }

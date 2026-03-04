@@ -1,3 +1,4 @@
+import type { FlexRenderComponent } from './view/component-render'
 import type { Type } from '@angular/core'
 import type {
   ClientEventBusConfig,
@@ -6,9 +7,9 @@ import type {
 
 export type TanStackDevtoolsAngularPlugin = {
   id?: string
-  component: Type<any>
+  render: Type<any> | (() => FlexRenderComponent | null)
   name: string | Type<any>
-  inputs?: Record<string, any>
+  inputs?: Record<string, any> | (() => Record<string, any>)
   defaultOpen?: boolean
 }
 
