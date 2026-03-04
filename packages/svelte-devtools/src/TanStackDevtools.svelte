@@ -2,11 +2,7 @@
   import { TanStackDevtoolsSvelteAdapter } from './devtools.svelte.js'
   import type { TanStackDevtoolsSvelteInit } from './types'
 
-  let {
-    plugins,
-    config,
-    eventBusConfig,
-  }: TanStackDevtoolsSvelteInit = $props()
+  let { plugins, config, eventBusConfig }: TanStackDevtoolsSvelteInit = $props()
 
   let hostEl: HTMLDivElement
 

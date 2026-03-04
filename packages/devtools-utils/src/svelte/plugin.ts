@@ -1,9 +1,6 @@
 import type { Component } from 'svelte'
 
-export function createSveltePlugin(
-  name: string,
-  component: Component<any>,
-) {
+export function createSveltePlugin(name: string, component: Component<any>) {
   function Plugin(props?: Record<string, any>) {
     return {
       name,

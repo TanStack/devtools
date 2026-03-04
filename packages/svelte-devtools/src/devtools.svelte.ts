@@ -75,9 +75,7 @@ export class TanStackDevtoolsSvelteAdapter {
         })
       },
       destroy: (pluginId) => {
-        this.destroyComponentsInContainer(
-          `${PLUGIN_CONTAINER_ID}-${pluginId}`,
-        )
+        this.destroyComponentsInContainer(`${PLUGIN_CONTAINER_ID}-${pluginId}`)
       },
     }
   }
