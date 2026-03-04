@@ -9,14 +9,11 @@ export interface RouteNavigationEvent {
 }
 
 type RouteNavigationEventMap = {
-  'route-navigation:navigate': RouteNavigationEvent
-  'route-navigation:clear': undefined
+  'navigate': RouteNavigationEvent
+  'clear': undefined
 }
 
-class RouteNavigationEventClient extends EventClient<
-  RouteNavigationEventMap,
-  'route-navigation'
-> {
+class RouteNavigationEventClient extends EventClient<RouteNavigationEventMap> {
   constructor() {
     super({
       pluginId: 'route-navigation',

@@ -8,19 +8,15 @@ declare global {
 }
 
 type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
-  [Key in keyof TEventMap]: TanStackDevtoolsEvent<Key & string, TEventMap[Key]>
-}[keyof TEventMap]
+  [Key in keyof TEventMap & string]: TanStackDevtoolsEvent<
+    Key,
+    TEventMap[Key]
+  >
+}[keyof TEventMap & string]
 
-export class EventClient<
-  TEventMap extends Record<string, any>,
-  TPluginId extends string = TEventMap extends Record<infer P, any>
-    ? P extends `${infer Id}:${string}`
-      ? Id
-      : never
-    : never,
-> {
+export class EventClient<TEventMap extends Record<string, any>> {
   #enabled = true
-  #pluginId: TPluginId
+  #pluginId: string
   #eventTarget: () => EventTarget
   #debug: boolean
   #queuedEvents: Array<TanStackDevtoolsEvent<string, any>>
@@ -80,7 +76,7 @@ export class EventClient<
     enabled = true,
     reconnectEveryMs = 300,
   }: {
-    pluginId: TPluginId
+    pluginId: string
     debug?: boolean
     reconnectEveryMs?: number
     enabled?: boolean
@@ -194,16 +190,9 @@ export class EventClient<
     this.dispatchCustomEvent('tanstack-dispatch-event', event)
   }
 
-  createEventPayload<
-    TSuffix extends Extract<
-      keyof TEventMap,
-      `${TPluginId & string}:${string}`
-    > extends `${TPluginId & string}:${infer S}`
-      ? S
-      : never,
-  >(
-    eventSuffix: TSuffix,
-    payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
+  createEventPayload<TEvent extends keyof TEventMap & string>(
+    eventSuffix: TEvent,
+    payload: TEventMap[TEvent],
   ) {
     return {
       type: `${this.#pluginId}:${eventSuffix}`,
@@ -211,16 +200,9 @@ export class EventClient<
       pluginId: this.#pluginId,
     }
   }
-  emit<
-    TSuffix extends Extract<
-      keyof TEventMap,
-      `${TPluginId & string}:${string}`
-    > extends `${TPluginId & string}:${infer S}`
-      ? S
-      : never,
-  >(
-    eventSuffix: TSuffix,
-    payload: TEventMap[`${TPluginId & string}:${TSuffix}`],
+  emit<TEvent extends keyof TEventMap & string>(
+    eventSuffix: TEvent,
+    payload: TEventMap[TEvent],
   ) {
     if (!this.#enabled) {
       this.debugLog(
@@ -262,20 +244,10 @@ export class EventClient<
     return this.emitEventToBus(this.createEventPayload(eventSuffix, payload))
   }
 
-  on<
-    TSuffix extends Extract<
-      keyof TEventMap,
-      `${TPluginId & string}:${string}`
-    > extends `${TPluginId & string}:${infer S}`
-      ? S
-      : never,
-  >(
-    eventSuffix: TSuffix,
+  on<TEvent extends keyof TEventMap & string>(
+    eventSuffix: TEvent,
     cb: (
-      event: TanStackDevtoolsEvent<
-        `${TPluginId & string}:${TSuffix}`,
-        TEventMap[`${TPluginId & string}:${TSuffix}`]
-      >,
+      event: TanStackDevtoolsEvent<TEvent, TEventMap[TEvent]>,
     ) => void,
     options?: {
       withEventTarget?: boolean
