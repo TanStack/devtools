@@ -52,11 +52,7 @@
   },
   "devDependencies": {
     "@angular/compiler": "^20.0.0",
-    "@angular/compiler-cli": "^20.0.0",
-    "@angular/core": "^20.0.0",
-    "@angular/platform-browser": "^20.0.0",
-    "@angular/platform-browser-dynamic": "^20.0.0",
-    "zone.js": "^0.15.0"
+    "@angular/core": "^20.0.0"
   },
   "peerDependencies": {
     "@angular/core": ">=19.0.0",

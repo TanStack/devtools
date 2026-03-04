@@ -5,8 +5,8 @@ import {
   afterNextRender,
   inject,
   input,
-  type Type,
 } from '@angular/core'
+import type { Type } from '@angular/core'
 
 export interface DevtoolsPanelProps {
   theme?: 'dark' | 'light' | 'system'

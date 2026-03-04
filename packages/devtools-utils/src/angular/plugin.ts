@@ -1,4 +1,5 @@
-import { Component, type Type } from '@angular/core'
+import { Component } from '@angular/core'
+import type { Type } from '@angular/core'
 
 @Component({
   selector: 'noop-component',

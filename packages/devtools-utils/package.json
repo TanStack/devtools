@@ -69,14 +69,17 @@
     "@tanstack/devtools-ui": "workspace:^"
   },
   "peerDependencies": {
+    "@angular/core": ">=19.0.0",
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
     "solid-js": ">=1.9.7",
-    "vue": ">=3.2.0",
-    "@angular/core": ">=19.0.0"
+    "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
+    "@angular/core": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     },
@@ -90,9 +93,6 @@
       "optional": true
     },
     "vue": {
-      "optional": true
-    },
-    "@angular/core": {
       "optional": true
     }
   },
@@ -111,10 +111,6 @@
     "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.angular.ts && tsup "
   },
   "devDependencies": {
-    "@angular/compiler": "^20.0.0",
-    "@angular/compiler-cli": "^20.0.0",
-    "@angular/core": "^20.0.0",
-    "@angular/platform-browser": "^20.0.0",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.8"
