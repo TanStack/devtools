@@ -4,7 +4,7 @@
   "ignoreWorkspaces": ["examples/**"],
   "workspaces": {
     "packages/devtools-utils": {
-      "ignoreDependencies": ["react", "solid-js", "@types/react"],
+      "ignoreDependencies": ["react", "solid-js", "svelte", "@types/react"],
       "entry": ["**/vite.config.solid.ts", "**/src/solid/**", "**/vite.config.svelte.ts", "**/src/svelte/**"],
       "project": ["**/vite.config.solid.ts", "**/src/solid/**", "**/vite.config.svelte.ts", "**/src/svelte/**"]
     },

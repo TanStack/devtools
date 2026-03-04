@@ -52,9 +52,8 @@
     "@tanstack/devtools": "workspace:*"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^5.0.0",
-    "svelte": "^5.0.0",
-    "svelte-check": "^4.0.0"
+    "@sveltejs/vite-plugin-svelte": "^6.0.0",
+    "svelte": "^5.0.0"
   },
   "peerDependencies": {
     "svelte": ">=5.0.0"
