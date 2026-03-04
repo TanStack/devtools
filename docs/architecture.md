@@ -5,24 +5,68 @@ id: architecture
 
 TanStack Devtools is a modular system of packages organized into three layers: **Framework Adapters**, **Core Shell**, and **Event Transport**. This architecture lets you use pre-built devtools panels or build your own custom ones, regardless of which frontend framework you use.
 
+```mermaid
+block-beta
+    columns 1
+    block:framework["Framework Layer"]
+        columns 4
+        React Vue Solid Preact
+    end
+    block:core["Core Layer"]
+        columns 3
+        Shell["Devtools Shell"] UI["UI Components"] Client["Event Client"]
+    end
+    block:transport["Transport Layer"]
+        columns 3
+        ClientBus["Client Event Bus"] ServerBus["Server Event Bus"] Vite["Vite Plugin"]
+    end
+
+    framework --> core
+    core --> transport
+```
+
 ## Package Dependency Graph
 
-```
-Framework Adapters (react-devtools, vue-devtools, solid-devtools, preact-devtools)
-    └── @tanstack/devtools (core shell, built in Solid.js)
-         ├── @tanstack/devtools-client (core devtools events)
-         │    └── @tanstack/devtools-event-client (generic EventClient)
-         ├── @tanstack/devtools-ui (shared UI components)
-         └── @tanstack/devtools-event-bus/client (ClientEventBus)
+```mermaid
+graph TD
+    subgraph Framework["Framework Adapters"]
+        react["@tanstack/react-devtools"]
+        vue["@tanstack/vue-devtools"]
+        solid["@tanstack/solid-devtools"]
+        preact["@tanstack/preact-devtools"]
+    end
 
-Build Tools:
-    @tanstack/devtools-vite
-         ├── @tanstack/devtools-client
-         └── @tanstack/devtools-event-bus/server (ServerEventBus)
+    subgraph Core["Core Layer"]
+        shell["@tanstack/devtools<br/><i>Core shell (Solid.js)</i>"]
+        client["@tanstack/devtools-client<br/><i>Core devtools events</i>"]
+        eventClient["@tanstack/devtools-event-client<br/><i>Generic EventClient</i>"]
+        ui["@tanstack/devtools-ui<br/><i>Shared UI components</i>"]
+        clientBus["@tanstack/devtools-event-bus/client<br/><i>ClientEventBus</i>"]
+    end
 
-Utilities:
-    @tanstack/devtools-utils
-         └── @tanstack/devtools-ui
+    subgraph Build["Build Layer"]
+        vite["@tanstack/devtools-vite"]
+        serverBus["@tanstack/devtools-event-bus/server<br/><i>ServerEventBus</i>"]
+    end
+
+    subgraph Utilities
+        utils["@tanstack/devtools-utils"]
+    end
+
+    react --> shell
+    vue --> shell
+    solid --> shell
+    preact --> shell
+
+    shell --> client
+    shell --> ui
+    shell --> clientBus
+    client --> eventClient
+
+    vite --> client
+    vite --> serverBus
+
+    utils --> ui
 ```
 
 Each framework adapter depends only on `@tanstack/devtools`. The core shell pulls in everything it needs, so end users install just two packages: their framework adapter and the Vite plugin.
@@ -77,17 +121,18 @@ When you call `client.on('state-update', callback)`, the EventClient registers a
 
 ### Event Flow Summary
 
-```
-EventClient.emit()
-    → CustomEvent('tanstack-dispatch-event') on window
-    → ClientEventBus picks it up
-         ├── Re-dispatches as CustomEvent('my-plugin:state-update') on window
-         │    → EventClient.on() callbacks fire
-         ├── BroadcastChannel → other tabs receive the event
-         └── WebSocket → ServerEventBus
-              → broadcasts to all connected clients
-              → events arrive in other browser clients
-              → EventClient.on() callbacks fire there too
+```mermaid
+flowchart LR
+    emit["EventClient.emit()"] --> dispatch["CustomEvent<br/><b>tanstack-dispatch-event</b><br/>on window"]
+    dispatch --> bus["ClientEventBus"]
+    bus --> local["Re-dispatch as<br/><b>my-plugin:state-update</b><br/>on window"]
+    local --> onLocal["EventClient.on()<br/>callbacks fire"]
+    bus --> bc["BroadcastChannel"]
+    bc --> otherTabs["Other tabs<br/>receive event"]
+    bus --> ws["WebSocket"]
+    ws --> server["ServerEventBus"]
+    server --> broadcast["Broadcast to all<br/>connected clients"]
+    broadcast --> remote["EventClient.on()<br/>callbacks fire<br/>in other clients"]
 ```
 
 ## Core Layer
