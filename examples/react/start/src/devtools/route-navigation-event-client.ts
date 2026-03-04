@@ -9,8 +9,8 @@ export interface RouteNavigationEvent {
 }
 
 type RouteNavigationEventMap = {
-  'navigate': RouteNavigationEvent
-  'clear': undefined
+  navigate: RouteNavigationEvent
+  clear: undefined
 }
 
 class RouteNavigationEventClient extends EventClient<RouteNavigationEventMap> {

@@ -53,7 +53,7 @@ export interface PluginInjection {
 }
 
 interface EventMap {
-  'ready': {
+  ready: {
     packageJson: PackageJson | null
     outdatedDeps: OutdatedDeps | null
   }
@@ -63,7 +63,7 @@ interface EventMap {
   'package-json-read': {
     packageJson: PackageJson | null
   }
-  'mounted': void
+  mounted: void
   'install-devtools': PluginInjection
   'devtools-installed': {
     packageName: string

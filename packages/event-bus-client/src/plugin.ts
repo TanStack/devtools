@@ -8,10 +8,7 @@ declare global {
 }
 
 type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
-  [Key in keyof TEventMap & string]: TanStackDevtoolsEvent<
-    Key,
-    TEventMap[Key]
-  >
+  [Key in keyof TEventMap & string]: TanStackDevtoolsEvent<Key, TEventMap[Key]>
 }[keyof TEventMap & string]
 
 export class EventClient<TEventMap extends Record<string, any>> {
@@ -246,9 +243,7 @@ export class EventClient<TEventMap extends Record<string, any>> {
 
   on<TEvent extends keyof TEventMap & string>(
     eventSuffix: TEvent,
-    cb: (
-      event: TanStackDevtoolsEvent<TEvent, TEventMap[TEvent]>,
-    ) => void,
+    cb: (event: TanStackDevtoolsEvent<TEvent, TEventMap[TEvent]>) => void,
     options?: {
       withEventTarget?: boolean
     },

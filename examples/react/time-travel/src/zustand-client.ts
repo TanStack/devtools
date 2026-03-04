@@ -2,8 +2,8 @@ import { EventClient } from '@tanstack/devtools-event-client'
 import { createStore } from 'zustand'
 
 interface ZustandEventMap {
-  'stateChange': any
-  'revertSnapshot': any
+  stateChange: any
+  revertSnapshot: any
 }
 export const eventClient = new EventClient<ZustandEventMap>({
   pluginId: 'zustand',

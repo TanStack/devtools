@@ -1,15 +1,15 @@
 import { EventClient } from '@tanstack/devtools-event-client'
 
 interface EventMap {
-  'test': {
+  test: {
     title: string
     description: string
   }
-  'init': {
+  init: {
     title: string
     description: string
   }
-  'query': {
+  query: {
     title: string
     description: string
   }
