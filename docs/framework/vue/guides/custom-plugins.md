@@ -104,7 +104,7 @@ export function createCounter() {
 }
 ```
 
-> [!IMPORTANT] 
+> [!IMPORTANT]
 > `EventClient` is framework agnostic so this process will be the same regardless of framework or even in vanilla JavaScript.
 
 ## Consuming The Event Client
@@ -113,52 +113,54 @@ Now we need to create our devtools panel, for a simple approach write the devtoo
 
 > Because TanStack is framework agnostic we have taken a more complicated approach that will be explained in coming docs (if framework agnosticism is not a concern to you, you can ignore this).
 
-DevtoolsPanel.ts
-```tsx
-import { DevtoolsEventClient } from './eventClient.ts'
+DevtoolPanel.vue
+```vue
+<script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+import { DevtoolsEventClient } from './eventClient'
 
-export function DevtoolPanel() {
-  const [state, setState] = useState()
+const state = ref<{ count: number; history: number[] }>()
 
-  useEffect(() => {
-    // subscribe to the emitted event
-    const cleanup = DevtoolsEventClient.on("counter-state", e => setState(e.payload))
-    return cleanup
-  }, [])
+let cleanup: (() => void) | undefined
 
-  return (
-    <div>
-      <div>{state.count}</div>
-      <div>{JSON.stringify(state.history)}</div>
-    </div>
-  )
-}
+onMounted(() => {
+  cleanup = DevtoolsEventClient.on('counter-state', (e) => {
+    state.value = e.payload
+  })
+})
+
+onUnmounted(() => {
+  cleanup?.()
+})
+</script>
+
+<template>
+  <div>
+    <div>{{ state?.count }}</div>
+    <div>{{ JSON.stringify(state?.history) }}</div>
+  </div>
+</template>
 ```
 
 ## Application Integration
 
-This step follows what's shown in [basic-setup](../basic-setup) for a more documented guide go check it out. As well as the complete [custom-devtools example](https://tanstack.com/devtools/latest/docs/framework/react/examples/custom-devtools) in our examples section.
+This step follows what's shown in [basic-setup](../basic-setup) for a more documented guide go check it out.
 
-Main.tsx
-```tsx
-import { DevtoolPanel } from './DevtoolPanel'
+App.vue
+```vue
+<script setup lang="ts">
+import { TanStackDevtools } from '@tanstack/vue-devtools'
+import DevtoolPanel from './DevtoolPanel.vue'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
+const plugins = [
+  { name: 'Custom devtools', component: DevtoolPanel },
+]
+</script>
 
-    <TanStackDevtools
-      plugins={[
-        {
-          // Name it what you like, this is how it will appear in the Menu
-          name: 'Custom devtools',
-          render: <DevtoolPanel />,
-        },
-      ]}
-    />
-  </StrictMode>,
-)
-
+<template>
+  <App />
+  <TanStackDevtools :plugins="plugins" />
+</template>
 ```
 
 ## Debugging
@@ -166,17 +168,18 @@ createRoot(document.getElementById('root')!).render(
 Both the `TanStackDevtools` component and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
 
 TanStackDevtool's debugging mode can be activated like so:
-```tsx
-<TanStackDevtools
-  eventBusConfig={{ debug: true }}
-  plugins={[
-    {
-      // call it what you like, this is how it will appear in the Menu
-      name: 'Custom devtools',
-      render: <DevtoolPanel />,
-    },
-  ]}
-/>
+```vue
+<template>
+  <TanStackDevtools
+    :event-bus-config="{ debug: true }"
+    :plugins="[
+      {
+        name: 'Custom devtools',
+        component: DevtoolPanel,
+      },
+    ]"
+  />
+</template>
 ```
 
 Where as the EventClient's debug mode can be activated by:
@@ -195,7 +198,7 @@ Activating the debug mode will log to the console the current events that emitte
 
 Heres an example of both:
 ```
-🌴 [tanstack-devtools:client-bus] Initializing client event bus
+[tanstack-devtools:client-bus] Initializing client event bus
 
-🌴 [tanstack-devtools:custom-devtools-plugin] Registered event to bus custom-devtools:counter-state
+[tanstack-devtools:custom-devtools-plugin] Registered event to bus custom-devtools:counter-state
 ```
