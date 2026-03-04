@@ -86,6 +86,7 @@
     "@tanstack/react-devtools": "workspace:*",
     "@tanstack/preact-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
-    "@tanstack/devtools-vite": "workspace:*"
+    "@tanstack/devtools-vite": "workspace:*",
+    "@tanstack/svelte-devtools": "workspace:*"
   }
 }
