@@ -801,6 +801,9 @@ importers:
       solid-js:
         specifier: '>=1.9.7'
         version: 1.9.11
+      svelte:
+        specifier: '>=5.0.0'
+        version: 5.53.7
       vue:
         specifier: '>=3.2.0'
         version: 3.5.29(typescript@5.9.3)

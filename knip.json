@@ -5,8 +5,8 @@
   "workspaces": {
     "packages/devtools-utils": {
       "ignoreDependencies": ["react", "solid-js", "@types/react"],
-      "entry": ["**/vite.config.solid.ts", "**/src/solid/**"],
-      "project": ["**/vite.config.solid.ts", "**/src/solid/**"]
+      "entry": ["**/vite.config.solid.ts", "**/src/solid/**", "**/vite.config.svelte.ts", "**/src/svelte/**"],
+      "project": ["**/vite.config.solid.ts", "**/src/solid/**", "**/vite.config.svelte.ts", "**/src/svelte/**"]
     },
     "packages/devtools-ui": {
       "entry": ["**/tests/**/*.ts"]

@@ -53,6 +53,12 @@
         "default": "./dist/vue/esm/index.js"
       }
     },
+    "./svelte": {
+      "import": {
+        "types": "./dist/svelte/esm/index.d.ts",
+        "default": "./dist/svelte/esm/index.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -67,6 +73,7 @@
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
     "solid-js": ">=1.9.7",
+    "svelte": ">=5.0.0",
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
@@ -80,6 +87,9 @@
       "optional": true
     },
     "solid-js": {
+      "optional": true
+    },
+    "svelte": {
       "optional": true
     },
     "vue": {
@@ -98,7 +108,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && tsup "
+    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.svelte.ts && tsup "
   },
   "devDependencies": {
     "tsup": "^8.5.0",
