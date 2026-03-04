@@ -204,13 +204,33 @@ export default {
 
 ## Features
 
-### Go to source
+### Go to Source
 
-Allows you to open the source location on anything in your browser by clicking on it.
+The "Go to Source" feature lets you click on any element in your browser and open its source file in your editor at the exact line where it's defined. It works by injecting `data-tsd-source` attributes into your components via a Babel transformation during development. These attributes encode the file path and line number of each element.
 
-To trigger this behavior you need the Devtools Vite plugin installed and configured and
-the Panel available on the page. Simply click on any element while holding down the Shift and Ctrl (or Meta) keys.
+To use it, activate the source inspector by holding the inspect hotkey (default: Shift+Alt+Ctrl/Meta). An overlay will highlight elements under your cursor and display their source location. Clicking on a highlighted element opens the corresponding file in your editor at the exact line, powered by `launch-editor` under the hood.
 
-### Advanced console logs
+For a complete guide on configuration and usage, see the [Source Inspector](./source-inspector) docs.
 
-Allows you to go directly to the console log location directly from the browser/terminal
+### Console Piping
+
+When enabled (default), `console.log()` and other console methods in the browser are piped to your terminal, and server-side console output appears in the browser console. This is particularly useful when debugging SSR or API routes — you see all logs in one place without switching between terminal and browser. Configure which log levels are piped via `consolePiping.levels`.
+
+### Enhanced Logs
+
+Console logs are enhanced with clickable source locations. In the browser console, each log shows the file and line number where it originated. Click to open the source file in your editor. Enable/disable via the `enhancedLogs` config option.
+
+### Production Build Stripping
+
+By default (`removeDevtoolsOnBuild: true`), the Vite plugin replaces all devtools imports with empty modules in production builds. This includes:
+- `@tanstack/react-devtools`
+- `@tanstack/vue-devtools`
+- `@tanstack/solid-devtools`
+- `@tanstack/preact-devtools`
+- `@tanstack/devtools`
+
+This ensures zero devtools code reaches production. Set `removeDevtoolsOnBuild: false` to keep devtools in production (see [Production](./production) docs).
+
+### Plugin Marketplace
+
+The Vite plugin enables the in-devtools plugin marketplace. When you browse available plugins in the devtools Settings tab and click "Install", the Vite plugin handles the npm/pnpm/yarn installation and automatically injects the plugin import into your devtools setup file. This only works during development with the Vite dev server running.
