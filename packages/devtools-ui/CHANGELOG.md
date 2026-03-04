@@ -1,5 +1,15 @@
 # @tanstack/devtools-ui
 
+## 0.5.0
+
+### Minor Changes
+
+- Updates devtools-ui JsonTree to display dates, as well as provide configuration for custom date format. ([#258](https://github.com/TanStack/devtools/pull/258))
+
+### Patch Changes
+
+- Fixes the deep-keys utils for the collapsePath prop, now handles any and unknown types. ([#327](https://github.com/TanStack/devtools/pull/327))
+
 ## 0.4.4
 
 ### Patch Changes

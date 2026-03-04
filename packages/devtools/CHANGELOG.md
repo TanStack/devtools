@@ -1,5 +1,12 @@
 # @tanstack/devtools
 
+## 0.10.10
+
+### Patch Changes
+
+- Updated dependencies [[`b3e375f`](https://github.com/TanStack/devtools/commit/b3e375f1b09f69f36bd7b8e6f10197af1aa7fd2a), [`a629bc3`](https://github.com/TanStack/devtools/commit/a629bc3927ddb035a5c5f1104a975e1d8ddeaaf9)]:
+  - @tanstack/devtools-ui@0.5.0
+
 ## 0.10.9
 
 ### Patch Changes
