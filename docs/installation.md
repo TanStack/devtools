@@ -48,6 +48,20 @@ npm install -D @tanstack/devtools-vite
 
 TanStack Devtools is compatible with Vue 3+
 
+## Angular
+
+```sh
+npm install -D @tanstack/angular-devtools
+```
+
+The Vite plugin (`@tanstack/devtools-vite`) is optional for Angular — it enables additional features like source inspection and console piping but isn't required for basic usage.
+
+```sh
+npm install -D @tanstack/devtools-vite
+```
+
+TanStack Devtools is compatible with Angular 19+
+
 ## Vanilla JS
 
 ```sh
