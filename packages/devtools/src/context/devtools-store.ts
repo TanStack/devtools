@@ -93,7 +93,7 @@ export const initialState: DevtoolsStore = {
     hideUntilHover: false,
     position: 'bottom-right',
     panelLocation: 'bottom',
-    openHotkey: 'Control+`' ,
+    openHotkey: 'Control+`',
     inspectHotkey: 'Mod+Alt+Shift',
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
