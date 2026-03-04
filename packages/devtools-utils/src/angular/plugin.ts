@@ -7,10 +7,7 @@ import { Component, type Type } from '@angular/core'
 })
 class NoOpComponent {}
 
-export function createAngularPlugin(
-  name: string,
-  component: Type<any>,
-) {
+export function createAngularPlugin(name: string, component: Type<any>) {
   function Plugin(inputs?: Record<string, any>) {
     return {
       name,

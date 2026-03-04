@@ -18,7 +18,9 @@ export function createAngularPanel<
     mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
     unmount: () => void
   },
->(CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass): [Type<any>, Type<any>] {
+>(
+  CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass,
+): [Type<any>, Type<any>] {
   @Component({
     selector: 'devtools-panel',
     standalone: true,
@@ -37,9 +39,7 @@ export function createAngularPanel<
         const el = this.hostRef.nativeElement.querySelector('div')
         if (!el) return
 
-        const instance = new CoreClass(
-          this.devtoolsProps() as TComponentProps,
-        )
+        const instance = new CoreClass(this.devtoolsProps() as TComponentProps)
         this.devtools = instance
         instance.mount(el, this.theme())
       })

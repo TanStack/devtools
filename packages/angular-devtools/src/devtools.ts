@@ -10,10 +10,7 @@ import {
   inject,
   input,
 } from '@angular/core'
-import {
-  PLUGIN_CONTAINER_ID,
-  TanStackDevtoolsCore,
-} from '@tanstack/devtools'
+import { PLUGIN_CONTAINER_ID, TanStackDevtoolsCore } from '@tanstack/devtools'
 import type { ComponentRef, Type } from '@angular/core'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
@@ -85,7 +82,9 @@ export class TanStackDevtoolsComponent {
     return plugins.map((plugin) => this.convertPlugin(plugin))
   }
 
-  private convertPlugin(plugin: TanStackDevtoolsAngularPlugin): TanStackDevtoolsPlugin {
+  private convertPlugin(
+    plugin: TanStackDevtoolsAngularPlugin,
+  ): TanStackDevtoolsPlugin {
     return {
       id: plugin.id,
       defaultOpen: plugin.defaultOpen,
@@ -105,9 +104,7 @@ export class TanStackDevtoolsComponent {
         })
       },
       destroy: (pluginId) => {
-        this.destroyComponentsInContainer(
-          `${PLUGIN_CONTAINER_ID}-${pluginId}`,
-        )
+        this.destroyComponentsInContainer(`${PLUGIN_CONTAINER_ID}-${pluginId}`)
       },
     }
   }
