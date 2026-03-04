@@ -18,7 +18,12 @@ export default mergeConfig(
   tanstackViteConfig({
     entry: ['./src/index.ts'],
     srcDir: './src',
-    externalDeps: ['@angular/core', '@angular/platform-browser', 'rxjs', 'zone.js'],
+    externalDeps: [
+      '@angular/core',
+      '@angular/platform-browser',
+      'rxjs',
+      'zone.js',
+    ],
     cjs: false,
   }),
 )
