@@ -1,10 +1,9 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/vite-config'
-import angular from '@analogjs/vite-plugin-angular'
 import packageJson from './package.json'
 
 const config = defineConfig({
-  plugins: [angular() as any],
+  plugins: [],
   test: {
     name: packageJson.name,
     dir: './tests',
