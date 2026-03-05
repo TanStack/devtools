@@ -1,5 +1,33 @@
 # @tanstack/react-devtools
 
+## 0.9.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.10.10
+
+## 0.9.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.10.9
+
+## 0.9.7
+
+### Patch Changes
+
+- Updated dependencies [[`d05a9af`](https://github.com/TanStack/devtools/commit/d05a9afb590503b464c584fd7f8314c50eb88339)]:
+  - @tanstack/devtools@0.10.8
+
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies [[`cdb6c77`](https://github.com/TanStack/devtools/commit/cdb6c77b4d2156d2f6dbfce493f1a3f010109c13)]:
+  - @tanstack/devtools@0.10.7
+
 ## 0.9.5
 
 ### Patch Changes

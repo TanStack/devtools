@@ -20,7 +20,9 @@
       "entry": ["**/vite.config.solid.ts", "**/src/solid/**"],
       "project": ["**/vite.config.solid.ts", "**/src/solid/**"]
     },
-
+    "packages/devtools-ui": {
+      "entry": ["**/tests/**/*.ts"]
+    },
     "packages/solid-devtools": {
       "ignore": ["**/core.tsx"]
     }

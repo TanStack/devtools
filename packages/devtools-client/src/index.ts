@@ -53,37 +53,37 @@ export interface PluginInjection {
 }
 
 interface EventMap {
-  'tanstack-devtools-core:ready': {
+  ready: {
     packageJson: PackageJson | null
     outdatedDeps: OutdatedDeps | null
   }
-  'tanstack-devtools-core:outdated-deps-read': {
+  'outdated-deps-read': {
     outdatedDeps: OutdatedDeps | null
   }
-  'tanstack-devtools-core:package-json-read': {
+  'package-json-read': {
     packageJson: PackageJson | null
   }
-  'tanstack-devtools-core:mounted': void
-  'tanstack-devtools-core:install-devtools': PluginInjection
-  'tanstack-devtools-core:devtools-installed': {
+  mounted: void
+  'install-devtools': PluginInjection
+  'devtools-installed': {
     packageName: string
     success: boolean
     error?: string
   }
-  'tanstack-devtools-core:add-plugin-to-devtools': PluginInjection
-  'tanstack-devtools-core:plugin-added': {
+  'add-plugin-to-devtools': PluginInjection
+  'plugin-added': {
     packageName: string
     success: boolean
     error?: string
   }
-  'tanstack-devtools-core:bump-package-version': PluginInjection & {
+  'bump-package-version': PluginInjection & {
     devtoolsPackage: string
     minVersion?: string
   }
-  'tanstack-devtools-core:package-json-updated': {
+  'package-json-updated': {
     packageJson: PackageJson | null
   }
-  'tanstack-devtools-core:trigger-toggled': {
+  'trigger-toggled': {
     isOpen: boolean
   }
 }

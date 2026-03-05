@@ -58,4 +58,4 @@ vite.config.ts.timestamp-*
 .angular
 .nitro
 .sonda
- 
+*settings.local.json
