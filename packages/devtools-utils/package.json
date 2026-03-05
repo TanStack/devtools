@@ -32,6 +32,10 @@
       }
     },
     "./solid": {
+      "workerd": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
       "browser": {
         "development": {
           "types": "./dist/solid/esm/index.d.ts",
