@@ -28,7 +28,8 @@ export const TANSTACK_DEVTOOLS_PANEL_CORE_CLASS = new InjectionToken<{
   template: ` <div #panelHost style="height: 100%"></div>`,
 })
 export class DevtoolsPanel<TComponentProps extends DevtoolsPanelProps> {
-  readonly panelHost = viewChild.required<ElementRef<HTMLDivElement>>('panelHost')
+  readonly panelHost =
+    viewChild.required<ElementRef<HTMLDivElement>>('panelHost')
   readonly instance = inject(TANSTACK_DEVTOOLS_PANEL_CORE_CLASS)
   readonly #destroyRef = inject(DestroyRef)
   theme = input<DevtoolsPanelProps['theme']>()

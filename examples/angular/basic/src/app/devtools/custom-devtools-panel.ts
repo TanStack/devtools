@@ -6,9 +6,9 @@ import {
   inject,
   input,
   signal,
-} from '@angular/core';
-import { DevtoolsEventClient } from './eventClient';
-import { JsonPipe } from '@angular/common';
+} from '@angular/core'
+import { DevtoolsEventClient } from './eventClient'
+import { JsonPipe } from '@angular/common'
 
 @Component({
   selector: `custom-devtool-panel`,
@@ -22,19 +22,19 @@ import { JsonPipe } from '@angular/common';
   imports: [JsonPipe],
 })
 export class CustomDevtoolPanel {
-  #destroyRef = inject(DestroyRef);
+  #destroyRef = inject(DestroyRef)
 
   // Automatically added
-  readonly theme = input<string>();
+  readonly theme = input<string>()
 
-  state = signal<{ count: number; history: Array<number> } | undefined>(undefined);
+  state = signal<{ count: number; history: Array<number> } | undefined>(undefined)
 
   constructor() {
     afterNextRender(() => {
       const unsubscribe = DevtoolsEventClient.on('counter-state', (e) => {
-        this.state.set(e.payload);
-      });
-      this.#destroyRef.onDestroy(() => unsubscribe());
-    });
+        this.state.set(e.payload)
+      })
+      this.#destroyRef.onDestroy(() => unsubscribe())
+    })
   }
 }

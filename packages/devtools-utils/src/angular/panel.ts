@@ -2,12 +2,11 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-
   afterNextRender,
   inject,
-  input
+  input,
 } from '@angular/core'
-import type {Type} from '@angular/core';
+import type { Type } from '@angular/core'
 
 export interface DevtoolsPanelProps {
   theme?: 'dark' | 'light' | 'system'

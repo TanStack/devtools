@@ -4,11 +4,11 @@ import {
   reflectComponentType,
   signal,
   Type,
-} from '@angular/core';
-import { createCounter } from './counter';
-import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools';
-import { CustomDevtoolPanel } from './devtools/custom-devtools-panel';
-import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools';
+} from '@angular/core'
+import { createCounter } from './counter'
+import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools'
+import { CustomDevtoolPanel } from './devtools/custom-devtools-panel'
+import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools'
 
 @Component({
   selector: 'app-root',
@@ -33,10 +33,10 @@ export class App {
       name: 'Custom devtools',
       render: CustomDevtoolPanel,
     },
-  ]);
+  ])
 
-  readonly counter = createCounter();
+  readonly counter = createCounter()
 
-  readonly increment = () => this.counter.increment();
-  readonly decrement = () => this.counter.decrement();
+  readonly increment = () => this.counter.increment()
+  readonly decrement = () => this.counter.decrement()
 }
