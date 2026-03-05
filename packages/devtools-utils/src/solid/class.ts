@@ -28,9 +28,8 @@ export function constructCoreClass(
       this.#abortMount = false
 
       try {
-        const { __mountComponent } = await import(
-          '@tanstack/devtools-utils/solid'
-        )
+        const { __mountComponent } =
+          await import('@tanstack/devtools-utils/solid')
         if (this.#abortMount) {
           this.#isMounting = false
           return
