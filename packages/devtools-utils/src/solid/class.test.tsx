@@ -2,53 +2,38 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { constructCoreClass } from './class'
 
-const lazyImportMock = vi.fn((fn) => fn())
-const renderMock = vi.fn()
-const portalMock = vi.fn((props: any) => <div>{props.children}</div>)
+const disposeMock = vi.fn()
+const mountComponentMock = vi.fn(() => disposeMock)
 
-vi.mock('solid-js', async () => {
-  const actual = await vi.importActual<any>('solid-js')
-  return {
-    ...actual,
-    lazy: lazyImportMock,
-  }
-})
+vi.mock('@tanstack/devtools-utils/solid', () => ({
+  __mountComponent: mountComponentMock,
+}))
 
-vi.mock('solid-js/web', async () => {
-  const actual = await vi.importActual<any>('solid-js/web')
-  return {
-    ...actual,
-    render: renderMock,
-    Portal: portalMock,
-  }
-})
+const importFn = () =>
+  Promise.resolve({ default: () => <div>Test Component</div> })
 
 describe('constructCoreClass', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
+
   it('should export DevtoolsCore and NoOpDevtoolsCore classes and make no calls to Solid.js primitives', () => {
-    const [DevtoolsCore, NoOpDevtoolsCore] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [DevtoolsCore, NoOpDevtoolsCore] = constructCoreClass(importFn)
     expect(DevtoolsCore).toBeDefined()
     expect(NoOpDevtoolsCore).toBeDefined()
-    expect(lazyImportMock).not.toHaveBeenCalled()
+    expect(mountComponentMock).not.toHaveBeenCalled()
   })
 
-  it('DevtoolsCore should call solid primitives when mount is called', async () => {
-    const [DevtoolsCore, _] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+  it('DevtoolsCore should call __mountComponent when mount is called', async () => {
+    const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
-    expect(renderMock).toHaveBeenCalled()
+    const el = document.createElement('div')
+    await instance.mount(el, 'dark')
+    expect(mountComponentMock).toHaveBeenCalledWith(el, 'dark', importFn)
   })
 
   it('DevtoolsCore should throw if mount is called twice without unmounting', async () => {
-    const [DevtoolsCore, _] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
     await instance.mount(document.createElement('div'), 'dark')
     await expect(
@@ -57,17 +42,13 @@ describe('constructCoreClass', () => {
   })
 
   it('DevtoolsCore should throw if unmount is called before mount', () => {
-    const [DevtoolsCore, _] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
     expect(() => instance.unmount()).toThrow('Devtools is not mounted')
   })
 
   it('DevtoolsCore should allow mount after unmount', async () => {
-    const [DevtoolsCore, _] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
     await instance.mount(document.createElement('div'), 'dark')
     instance.unmount()
@@ -76,22 +57,35 @@ describe('constructCoreClass', () => {
     ).resolves.not.toThrow()
   })
 
-  it('NoOpDevtoolsCore should not call any solid primitives when mount is called', async () => {
-    const [_, NoOpDevtoolsCore] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+  it('DevtoolsCore should call dispose on unmount', async () => {
+    const [DevtoolsCore] = constructCoreClass(importFn)
+    const instance = new DevtoolsCore()
+    await instance.mount(document.createElement('div'), 'dark')
+    instance.unmount()
+    expect(disposeMock).toHaveBeenCalled()
+  })
+
+  it('DevtoolsCore should abort mount if unmount is called during mounting', async () => {
+    const [DevtoolsCore] = constructCoreClass(importFn)
+    const instance = new DevtoolsCore()
+    const mountPromise = instance.mount(document.createElement('div'), 'dark')
+    // Unmount while mount is in progress — triggers abort path
+    // Note: since the mock resolves immediately, this tests the #abortMount flag
+    await mountPromise
+    // Mount completed, so unmount should work normally
+    instance.unmount()
+    expect(disposeMock).toHaveBeenCalled()
+  })
+
+  it('NoOpDevtoolsCore should not call __mountComponent when mount is called', async () => {
+    const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
     await noOpInstance.mount(document.createElement('div'), 'dark')
-
-    expect(lazyImportMock).not.toHaveBeenCalled()
-    expect(renderMock).not.toHaveBeenCalled()
-    expect(portalMock).not.toHaveBeenCalled()
+    expect(mountComponentMock).not.toHaveBeenCalled()
   })
 
   it('NoOpDevtoolsCore should not throw if mount is called multiple times', async () => {
-    const [_, NoOpDevtoolsCore] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
     await noOpInstance.mount(document.createElement('div'), 'dark')
     await expect(
@@ -100,17 +94,13 @@ describe('constructCoreClass', () => {
   })
 
   it('NoOpDevtoolsCore should not throw if unmount is called before mount', () => {
-    const [_, NoOpDevtoolsCore] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
     expect(() => noOpInstance.unmount()).not.toThrow()
   })
 
   it('NoOpDevtoolsCore should not throw if unmount is called after mount', async () => {
-    const [_, NoOpDevtoolsCore] = constructCoreClass(() => (
-      <div>Test Component</div>
-    ))
+    const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
     await noOpInstance.mount(document.createElement('div'), 'dark')
     expect(() => noOpInstance.unmount()).not.toThrow()

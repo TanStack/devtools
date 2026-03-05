@@ -47,6 +47,12 @@
       "types": "./dist/solid/esm/index.d.ts",
       "import": "./dist/solid/esm/index.js"
     },
+    "./solid/class": {
+      "import": {
+        "types": "./dist/solid-class/esm/class.d.ts",
+        "default": "./dist/solid-class/esm/class.js"
+      }
+    },
     "./vue": {
       "import": {
         "types": "./dist/vue/esm/index.d.ts",
@@ -98,7 +104,7 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && tsup "
+    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.solid-class.ts && tsup"
   },
   "devDependencies": {
     "tsup": "^8.5.0",
