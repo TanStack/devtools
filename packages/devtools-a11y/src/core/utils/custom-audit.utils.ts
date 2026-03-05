@@ -7,9 +7,13 @@
  * - Static elements with interactive handlers
  */
 
-import type { A11yIssue, CustomRulesConfig } from '../types/types'
-import type { SeverityThreshold } from '../types/types'
 import { meetsThreshold } from './ally-audit.utils'
+
+import type {
+  A11yIssue,
+  CustomRulesConfig,
+  SeverityThreshold,
+} from '../types/types'
 
 /**
  * Interactive HTML elements that can receive focus and have implicit roles
