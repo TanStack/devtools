@@ -1,11 +1,5 @@
 import type { JSX } from 'solid-js'
 
-type MountComponentFn = (
-  el: HTMLElement,
-  theme: 'light' | 'dark',
-  importFn: () => Promise<{ default: () => JSX.Element }>,
-) => () => void
-
 /**
  * Constructs the core class for the Devtools.
  * This utility is used to construct a lazy loaded Solid component for the Devtools.
@@ -34,12 +28,9 @@ export function constructCoreClass(
       this.#abortMount = false
 
       try {
-        // Dynamic import loads solid-js only at runtime, never in static graph.
-        // Type assertion needed because this file is built separately from the barrel
-        // and can't resolve the barrel's types at build time (self-referencing package).
-        const mod = await import('@tanstack/devtools-utils/solid')
-        const __mountComponent = (mod as Record<string, unknown>)
-          .__mountComponent as MountComponentFn
+        const { __mountComponent } = await import(
+          '@tanstack/devtools-utils/solid'
+        )
         if (this.#abortMount) {
           this.#isMounting = false
           return
