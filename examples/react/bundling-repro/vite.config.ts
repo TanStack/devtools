@@ -25,7 +25,7 @@ const config = defineConfig({
     tanstackStart(),
     viteReact({
       babel: {
-        plugins: ['babel-plugin-react-compiler'],
+        
       },
     }),
   ],
