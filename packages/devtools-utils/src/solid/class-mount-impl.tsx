@@ -1,7 +1,7 @@
 /** @jsxImportSource solid-js - we use Solid.js as JSX here */
 
 import { lazy } from 'solid-js'
-import { render, Portal } from 'solid-js/web'
+import { Portal, render } from 'solid-js/web'
 import type { JSX } from 'solid-js'
 
 export function __mountComponent(
