@@ -28,8 +28,10 @@ export function constructCoreClass(
       this.#abortMount = false
 
       try {
-        const { __mountComponent } =
-          await import('@tanstack/devtools-utils/solid')
+        // Variable import path prevents consumer bundlers (esbuild) from
+        // statically analyzing and pre-bundling solid-js during SSR
+        const barrel = '@tanstack/devtools-utils' + '/solid'
+        const { __mountComponent } = await import(barrel)
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- can be set by unmount() during await
         if (this.#abortMount) {
           this.#isMounting = false
