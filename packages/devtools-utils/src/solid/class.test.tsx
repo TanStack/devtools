@@ -5,7 +5,7 @@ import { constructCoreClass } from './class'
 const disposeMock = vi.fn()
 const mountComponentMock = vi.fn(() => disposeMock)
 
-vi.mock('@tanstack/devtools-utils/solid', () => ({
+vi.mock('./class-mount-impl', () => ({
   __mountComponent: mountComponentMock,
 }))
 

@@ -1,9 +1,10 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/vite-config'
+import solid from 'vite-plugin-solid'
 import packageJson from './package.json'
 
 const config = defineConfig({
-  plugins: [],
+  plugins: [solid()],
   test: {
     name: packageJson.name,
     dir: './',
@@ -17,10 +18,9 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/solid/class.ts'],
+    entry: ['./src/solid/class.ts', './src/solid/class-mount-impl.tsx'],
     srcDir: './src/solid',
     outDir: './dist/solid-class',
     cjs: false,
-    externalDeps: [/^@tanstack\/devtools-utils/],
   }),
 )

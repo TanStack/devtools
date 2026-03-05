@@ -28,9 +28,7 @@ export function constructCoreClass(
       this.#abortMount = false
 
       try {
-        const { __mountComponent } = await import(
-          '@tanstack/devtools-utils/solid'
-        )
+        const { __mountComponent } = await import('./class-mount-impl')
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- can be set by unmount() during await
         if (this.#abortMount) {
           this.#isMounting = false
