@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.10.11
+
+### Patch Changes
+
+- Fix issues with bundling solid ([#367](https://github.com/TanStack/devtools/pull/367))
+
 ## 0.10.10
 
 ### Patch Changes

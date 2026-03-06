@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.3.2
+
+### Patch Changes
+
+- Fix issues with bundling solid ([#367](https://github.com/TanStack/devtools/pull/367))
+
 ## 0.3.1
 
 ### Patch Changes
