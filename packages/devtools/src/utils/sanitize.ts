@@ -6,4 +6,3 @@ export const tryParseJson = <T>(json: string | null): T | undefined => {
     return undefined
   }
 }
- 
