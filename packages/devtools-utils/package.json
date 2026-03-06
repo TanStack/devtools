@@ -88,9 +88,6 @@
     "react": {
       "optional": true
     },
-    "solid-js": {
-      "optional": true
-    },
     "vue": {
       "optional": true
     }
@@ -110,6 +107,7 @@
     "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.solid-class.ts && tsup"
   },
   "devDependencies": {
+    "solid-js": "^1.9.9",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.8"

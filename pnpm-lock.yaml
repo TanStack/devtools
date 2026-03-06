@@ -802,6 +802,9 @@ importers:
         specifier: '>=3.2.0'
         version: 3.5.29(typescript@5.9.3)
     devDependencies:
+      solid-js:
+        specifier: ^1.9.9
+        version: 1.9.11
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(@microsoft/api-extractor@7.47.7(@types/node@22.19.13))(jiti@2.6.1)(postcss@8.5.8)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
