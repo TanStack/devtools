@@ -3,7 +3,7 @@ title: Quick Start
 id: quick-start
 ---
 
-TanStack Devtools is a framework-agnostic devtool for managing and debugging devtools plugins across React, Preact, Solid, and Vue. Pick your framework below to get started.
+TanStack Devtools is a framework-agnostic devtool for managing and debugging devtools plugins across React, Preact, Solid, Vue, and Svelte. Pick your framework below to get started.
 
 ## React
 
@@ -202,6 +202,46 @@ const plugins: TanStackDevtoolsVuePlugin[] = [
   <App />
   <TanStackDevtools :plugins="plugins" />
 </template>
+```
+
+## Svelte
+
+Install the devtools:
+
+```bash
+npm install @tanstack/svelte-devtools
+```
+
+Add the `TanStackDevtools` component to the root of your application:
+
+```svelte
+<script lang="ts">
+  import { TanStackDevtools } from '@tanstack/svelte-devtools'
+</script>
+
+<main>
+  <!-- Your app content -->
+</main>
+<TanStackDevtools />
+```
+
+To add plugins, define them as an array and pass them via the `plugins` prop. Svelte uses `component` instead of `render` in plugin definitions:
+
+```svelte
+<script lang="ts">
+  import { TanStackDevtools } from '@tanstack/svelte-devtools'
+  import type { TanStackDevtoolsSveltePlugin } from '@tanstack/svelte-devtools'
+  import { SvelteQueryDevtoolsPanel } from '@tanstack/svelte-query-devtools'
+
+  const plugins: TanStackDevtoolsSveltePlugin[] = [
+    { name: 'Svelte Query', component: SvelteQueryDevtoolsPanel },
+  ]
+</script>
+
+<main>
+  <!-- Your app content -->
+</main>
+<TanStackDevtools {plugins} />
 ```
 
 ## Vite Plugin

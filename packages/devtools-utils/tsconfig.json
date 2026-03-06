@@ -11,6 +11,7 @@
     "vite.config.ts",
     "vite.config.preact.ts",
     "vite.config.vue.ts",
+    "vite.config.svelte.ts",
     "tests",
     "vite.config.solid.ts"
   ]

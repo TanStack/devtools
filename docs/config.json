@@ -45,6 +45,13 @@
             { "label": "Basic Setup", "to": "framework/vue/basic-setup" },
             { "label": "Vue Adapter", "to": "framework/vue/adapter" }
           ]
+        },
+        {
+          "label": "svelte",
+          "children": [
+            { "label": "Basic Setup", "to": "framework/svelte/basic-setup" },
+            { "label": "Svelte Adapter", "to": "framework/svelte/adapter" }
+          ]
         }
       ]
     },
@@ -89,6 +96,12 @@
           "children": [
             { "label": "Custom Plugins", "to": "framework/vue/guides/custom-plugins" }
           ]
+        },
+        {
+          "label": "svelte",
+          "children": [
+            { "label": "Custom Plugins", "to": "framework/svelte/guides/custom-plugins" }
+          ]
         }
       ]
     },
@@ -120,6 +133,12 @@
           "label": "vue",
           "children": [
             { "label": "Vue Reference", "to": "framework/vue/reference/index" }
+          ]
+        },
+        {
+          "label": "svelte",
+          "children": [
+            { "label": "Svelte Reference", "to": "framework/svelte/reference/index" }
           ]
         }
       ]
