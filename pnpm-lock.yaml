@@ -798,9 +798,6 @@ importers:
       react:
         specifier: '>=17.0.0'
         version: 19.2.4
-      solid-js:
-        specifier: '>=1.9.7'
-        version: 1.9.11
       vue:
         specifier: '>=3.2.0'
         version: 3.5.29(typescript@5.9.3)
