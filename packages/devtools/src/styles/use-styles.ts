@@ -231,6 +231,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 0 10px 8px 10px;
       font-size: 0.875rem;
     `,
+    serpPreviewBlock: css`
+      margin-bottom: 1.5rem;
+    `,
+    serpPreviewLabel: css`
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
     serpSnippet: css`
       border: 1px solid ${t(colors.gray[200], colors.gray[800])};
       border-radius: 8px;

@@ -152,40 +152,43 @@ export function SerpPreviewSection() {
         See how your title tag and meta description may look in Google search
         results. Data is read from the current page.
       </SectionDescription>
-      <div class={styles().serpSnippet}>
-        <div class={styles().serpSnippetTopRow}>
-          {data.favicon ? (
-            <img
-              src={data.favicon}
-              alt=""
-              class={styles().serpSnippetFavicon}
-            />
-          ) : (
-            <div class={styles().serpSnippetDefaultFavicon} />
-          )}
-          <div class={styles().serpSnippetSiteColumn}>
-            <span class={styles().serpSnippetSiteName}>
-              {data.siteName || data.url}
-            </span>
-            <span class={styles().serpSnippetSiteUrl}>{data.url}</span>
+      <div class={styles().serpPreviewBlock}>
+        <div class={styles().serpPreviewLabel}>Desktop preview</div>
+        <div class={styles().serpSnippet}>
+          <div class={styles().serpSnippetTopRow}>
+            {data.favicon ? (
+              <img
+                src={data.favicon}
+                alt=""
+                class={styles().serpSnippetFavicon}
+              />
+            ) : (
+              <div class={styles().serpSnippetDefaultFavicon} />
+            )}
+            <div class={styles().serpSnippetSiteColumn}>
+              <span class={styles().serpSnippetSiteName}>
+                {data.siteName || data.url}
+              </span>
+              <span class={styles().serpSnippetSiteUrl}>{data.url}</span>
+            </div>
           </div>
+          <div class={styles().serpSnippetTitle}>
+            {displayTitle() || data.title || 'No title'}
+          </div>
+          <div
+            ref={setTitleMeasureEl}
+            class={`${styles().serpSnippetTitle} ${styles().serpMeasureHidden}`}
+            aria-hidden="true"
+          />
+          <div class={styles().serpSnippetDesc}>
+            {displayDescription() || data.description || 'No meta description.'}
+          </div>
+          <div
+            ref={setDescMeasureEl}
+            class={`${styles().serpSnippetDesc} ${styles().serpMeasureHidden}`}
+            aria-hidden="true"
+          />
         </div>
-        <div class={styles().serpSnippetTitle}>
-          {displayTitle() || data.title || 'No title'}
-        </div>
-        <div
-          ref={setTitleMeasureEl}
-          class={`${styles().serpSnippetTitle} ${styles().serpMeasureHidden}`}
-          aria-hidden="true"
-        />
-        <div class={styles().serpSnippetDesc}>
-          {displayDescription() || data.description || 'No meta description.'}
-        </div>
-        <div
-          ref={setDescMeasureEl}
-          class={`${styles().serpSnippetDesc} ${styles().serpMeasureHidden}`}
-          aria-hidden="true"
-        />
       </div>
       {reports().length > 0 ? (
         <div class={styles().seoMissingTagsSection}>
