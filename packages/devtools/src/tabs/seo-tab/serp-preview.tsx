@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from 'solid-js'
+import { createEffect, createMemo, createSignal, For } from 'solid-js'
 import { useStyles } from '../../styles/use-styles'
 import { useHeadChanges } from '../../hooks/use-head-changes'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
@@ -37,8 +37,7 @@ function getSerpFromHead(): SerpData {
   const descriptionMeta = metaTags.find(
     (m) => m.getAttribute('name')?.toLowerCase() === 'description',
   )
-  const description =
-    descriptionMeta?.getAttribute('content')?.trim() || ''
+  const description = descriptionMeta?.getAttribute('content')?.trim() || ''
 
   const siteNameMeta = metaTags.find(
     (m) => m.getAttribute('property') === 'og:site_name',
@@ -50,9 +49,8 @@ function getSerpFromHead(): SerpData {
       : '')
 
   const linkTags = Array.from(document.head.querySelectorAll('link'))
-  const iconLink = linkTags.find(
-    (l) =>
-      l.getAttribute('rel')?.toLowerCase().split(/\s+/).includes('icon'),
+  const iconLink = linkTags.find((l) =>
+    l.getAttribute('rel')?.toLowerCase().split(/\s+/).includes('icon'),
   )
   let favicon: string | null = iconLink?.getAttribute('href') || null
   if (favicon && typeof window !== 'undefined') {
@@ -64,6 +62,32 @@ function getSerpFromHead(): SerpData {
   }
 
   return { title, description, siteName, favicon, url }
+}
+
+type SerpOverflow = {
+  titleOverflow: boolean
+  descriptionOverflow: boolean
+}
+
+function getSerpReports(data: SerpData, overflow: SerpOverflow): string[] {
+  const issues: string[] = []
+  if (!data.title?.trim()) {
+    issues.push('No title tag set on the page.')
+  }
+  if (!data.description?.trim()) {
+    issues.push('No meta description set on the page.')
+  }
+  if (overflow.titleOverflow) {
+    issues.push(
+      'The title is wider than 600px and it may not be displayed in full length.',
+    )
+  }
+  if (overflow.descriptionOverflow) {
+    issues.push(
+      'The meta description may get trimmed at ~960 pixels on desktop and at ~680px on mobile. Keep it below ~158 characters.',
+    )
+  }
+  return issues
 }
 
 export function SerpPreviewSection() {
@@ -110,6 +134,13 @@ export function SerpPreviewSection() {
     setDescriptionOverflow(truncatedDesc !== descText)
   })
 
+  const reports = createMemo(() =>
+    getSerpReports(serp(), {
+      titleOverflow: titleOverflow(),
+      descriptionOverflow: descriptionOverflow(),
+    }),
+  )
+
   const data = serp()
 
   return (
@@ -151,22 +182,16 @@ export function SerpPreviewSection() {
           aria-hidden="true"
         />
       </div>
-      {(titleOverflow() || descriptionOverflow()) && (
-        <div class={styles().serpReportSection}>
-          {titleOverflow() && (
-            <div class={styles().serpReportItem}>
-              The title is wider than 600px and it may not be displayed in full
-              length.
-            </div>
-          )}
-          {descriptionOverflow() && (
-            <div class={styles().serpReportItem}>
-              The meta description may get trimmed at ~960 pixels on desktop
-              and at ~680px on mobile. Keep it below ~158 characters.
-            </div>
-          )}
+      {reports().length > 0 ? (
+        <div class={styles().seoMissingTagsSection}>
+          <strong>SERP preview issues:</strong>
+          <ul class={styles().serpErrorList}>
+            <For each={reports()}>
+              {(issue) => <li class={styles().serpReportItem}>{issue}</li>}
+            </For>
+          </ul>
         </div>
-      )}
+      ) : null}
     </Section>
   )
 }

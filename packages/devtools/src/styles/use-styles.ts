@@ -296,9 +296,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.875rem;
       color: ${t(colors.gray[700], colors.gray[300])};
     `,
+    serpErrorList: css`
+      margin: 4px 0 0 0;
+      padding-left: 1.25rem;
+      list-style-type: disc;
+    `,
     serpReportItem: css`
-      margin-top: 0.5rem;
-      color: ${t(colors.yellow[700], colors.yellow[400])};
+      margin-top: 0.25rem;
+      color: ${t(colors.red[700], colors.red[400])};
+      font-size: 0.875rem;
     `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
