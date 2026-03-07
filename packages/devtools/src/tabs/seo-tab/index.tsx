@@ -1,10 +1,10 @@
 import { MainPanel } from '@tanstack/devtools-ui'
-import { SocialPreviewSection } from './social-preview'
+import { SocialPreviewsSection } from './social-preview'
 
 export const SeoTab = () => {
   return (
     <MainPanel withPadding>
-      <SocialPreviewSection />
+      <SocialPreviewsSection />
     </MainPanel>
   )
 }

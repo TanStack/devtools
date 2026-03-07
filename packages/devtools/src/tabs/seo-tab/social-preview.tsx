@@ -146,7 +146,7 @@ function SocialPreview(props: {
   )
 }
 
-export function SocialPreviewSection() {
+export function SocialPreviewsSection() {
   const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
   const styles = useStyles()
 
