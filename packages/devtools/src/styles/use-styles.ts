@@ -335,9 +335,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       position: absolute;
       left: -9999px;
       top: 0;
-      white-space: nowrap;
       visibility: hidden;
       pointer-events: none;
+      box-sizing: border-box;
     `,
     serpMeasureHiddenMobile: css`
       position: absolute;

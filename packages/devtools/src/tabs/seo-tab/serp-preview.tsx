@@ -3,9 +3,12 @@ import { For, createMemo, createSignal } from 'solid-js'
 import { useHeadChanges } from '../../hooks/use-head-changes'
 import { useStyles } from '../../styles/use-styles'
 
-const TITLE_MAX_WIDTH_PX = 600
-const DESCRIPTION_MAX_WIDTH_PX = 960
-const DESCRIPTION_MOBILE_MAX_LINES = 3
+/** Google typically truncates titles at ~60 characters. */
+const TITLE_MAX_CHARS = 60
+/** Meta description is often trimmed at ~158 characters on desktop. */
+const DESCRIPTION_MAX_CHARS = 158
+/** Approximate characters that fit in 3 lines at mobile width (~340px, ~14px font). */
+const DESCRIPTION_MOBILE_MAX_CHARS = 120
 const ELLIPSIS = '...'
 
 type SerpData = {
@@ -78,18 +81,10 @@ const SERP_PREVIEWS: Array<SerpPreview> = [
   },
 ]
 
-function truncateToWidth(
-  el: HTMLDivElement,
-  text: string,
-  maxPx: number,
-): string {
-  el.textContent = text
-  if (el.offsetWidth <= maxPx) return text
-  for (let i = text.length - 1; i >= 0; i--) {
-    el.textContent = text.slice(0, i) + ELLIPSIS
-    if (el.offsetWidth <= maxPx) return text.slice(0, i) + ELLIPSIS
-  }
-  return ELLIPSIS
+function truncateToChars(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text
+  if (maxChars <= ELLIPSIS.length) return ELLIPSIS
+  return text.slice(0, maxChars - ELLIPSIS.length) + ELLIPSIS
 }
 
 function getSerpFromHead(): SerpData {
@@ -142,9 +137,6 @@ function SerpSnippetPreview(props: {
   isMobile: boolean
   label: string
   issues: Array<string>
-  setTitleMeasureEl: (el: HTMLDivElement) => void
-  setDescMeasureEl: (el: HTMLDivElement) => void
-  setDescMeasureMobileEl: (el: HTMLDivElement) => void
 }) {
   const styles = useStyles()
 
@@ -177,37 +169,18 @@ function SerpSnippetPreview(props: {
           {props.displayTitle || props.data.title || 'No title'}
         </div>
         {!props.isMobile && (
-          <>
-            <div
-              ref={props.setTitleMeasureEl}
-              class={`${styles().serpSnippetTitle} ${styles().serpMeasureHidden}`}
-              aria-hidden="true"
-            />
-            <div class={styles().serpSnippetDesc}>
-              {props.displayDescription ||
-                props.data.description ||
-                'No meta description.'}
-            </div>
-            <div
-              ref={props.setDescMeasureEl}
-              class={`${styles().serpSnippetDesc} ${styles().serpMeasureHidden}`}
-              aria-hidden="true"
-            />
-          </>
+          <div class={styles().serpSnippetDesc}>
+            {props.displayDescription ||
+              props.data.description ||
+              'No meta description.'}
+          </div>
         )}
         {props.isMobile && (
-          <>
-            <div class={styles().serpSnippetDescMobile}>
-              {props.displayDescription ||
-                props.data.description ||
-                'No meta description.'}
-            </div>
-            <div
-              ref={props.setDescMeasureMobileEl}
-              class={`${styles().serpSnippetDesc} ${styles().serpMeasureHiddenMobile}`}
-              aria-hidden="true"
-            />
-          </>
+          <div class={styles().serpSnippetDescMobile}>
+            {props.displayDescription ||
+              props.data.description ||
+              'No meta description.'}
+          </div>
         )}
       </div>
       {props.issues.length > 0 ? (
@@ -226,64 +199,27 @@ function SerpSnippetPreview(props: {
 
 export function SerpPreviewSection() {
   const [serp, setSerp] = createSignal<SerpData>(getSerpFromHead())
-  const [titleMeasureEl, setTitleMeasureEl] = createSignal<
-    HTMLDivElement | undefined
-  >(undefined)
-  const [descMeasureEl, setDescMeasureEl] = createSignal<
-    HTMLDivElement | undefined
-  >(undefined)
-  const [descMeasureMobileEl, setDescMeasureMobileEl] = createSignal<
-    HTMLDivElement | undefined
-  >(undefined)
 
   useHeadChanges(() => {
     setSerp(getSerpFromHead())
   })
 
   const serpPreviewState = createMemo(() => {
-    const titleEl = titleMeasureEl()
-    const descEl = descMeasureEl()
-    const descMobileEl = descMeasureMobileEl()
     const data = serp()
     const titleText = data.title || 'No title'
     const descText = data.description || 'No meta description.'
 
-    if (!titleEl || !descEl) {
-      return {
-        displayTitle: titleText,
-        displayDescription: descText,
-        overflow: {
-          titleOverflow: false,
-          descriptionOverflow: false,
-          descriptionOverflowMobile: false,
-        },
-      }
-    }
-
-    const displayTitle = truncateToWidth(titleEl, titleText, TITLE_MAX_WIDTH_PX)
-    const displayDescription = truncateToWidth(
-      descEl,
-      descText,
-      DESCRIPTION_MAX_WIDTH_PX,
-    )
-
-    let descriptionOverflowMobile = false
-
-    if (descMobileEl && descText) {
-      descMobileEl.textContent = descText
-      const lineHeight =
-        parseFloat(getComputedStyle(descMobileEl).lineHeight) || 20
-      const lines = Math.ceil(descMobileEl.scrollHeight / lineHeight)
-      descriptionOverflowMobile = lines > DESCRIPTION_MOBILE_MAX_LINES
-    }
+    const displayTitle = truncateToChars(titleText, TITLE_MAX_CHARS)
+    const displayDescription = truncateToChars(descText, DESCRIPTION_MAX_CHARS)
 
     return {
       displayTitle,
       displayDescription,
       overflow: {
-        titleOverflow: displayTitle !== titleText,
-        descriptionOverflow: displayDescription !== descText,
-        descriptionOverflowMobile,
+        titleOverflow: titleText.length > TITLE_MAX_CHARS,
+        descriptionOverflow: descText.length > DESCRIPTION_MAX_CHARS,
+        descriptionOverflowMobile:
+          descText.length > DESCRIPTION_MOBILE_MAX_CHARS,
       },
     }
   })
@@ -311,9 +247,6 @@ export function SerpPreviewSection() {
               isMobile={preview.isMobile}
               label={preview.label}
               issues={issues()}
-              setTitleMeasureEl={setTitleMeasureEl}
-              setDescMeasureEl={setDescMeasureEl}
-              setDescMeasureMobileEl={setDescMeasureMobileEl}
             />
           )
         }}
