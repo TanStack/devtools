@@ -1,12 +1,82 @@
-import { createEffect, createMemo, createSignal, For } from 'solid-js'
-import { useStyles } from '../../styles/use-styles'
-import { useHeadChanges } from '../../hooks/use-head-changes'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
+import { For, createMemo, createSignal } from 'solid-js'
+import { useHeadChanges } from '../../hooks/use-head-changes'
+import { useStyles } from '../../styles/use-styles'
 
 const TITLE_MAX_WIDTH_PX = 600
 const DESCRIPTION_MAX_WIDTH_PX = 960
 const DESCRIPTION_MOBILE_MAX_LINES = 3
 const ELLIPSIS = '...'
+
+type SerpData = {
+  title: string
+  description: string
+  siteName: string
+  favicon: string | null
+  url: string
+}
+
+type SerpOverflow = {
+  titleOverflow: boolean
+  descriptionOverflow: boolean
+  descriptionOverflowMobile: boolean
+}
+
+type SerpCheck = {
+  message: string
+  hasIssue: (data: SerpData, overflow: SerpOverflow) => boolean
+}
+
+type SerpPreview = {
+  label: string
+  isMobile: boolean
+  extraChecks: Array<SerpCheck>
+}
+
+const COMMON_CHECKS: Array<SerpCheck> = [
+  {
+    message: 'No favicon or icon set on the page.',
+    hasIssue: (data) => !data.favicon,
+  },
+  {
+    message: 'No title tag set on the page.',
+    hasIssue: (data) => !data.title.trim(),
+  },
+  {
+    message: 'No meta description set on the page.',
+    hasIssue: (data) => !data.description.trim(),
+  },
+  {
+    message:
+      'The title is wider than 600px and it may not be displayed in full length.',
+    hasIssue: (_, overflow) => overflow.titleOverflow,
+  },
+]
+
+const SERP_PREVIEWS: Array<SerpPreview> = [
+  {
+    label: 'Desktop preview',
+    isMobile: false,
+    extraChecks: [
+      {
+        message:
+          'The meta description may get trimmed at ~960 pixels on desktop and at ~680px on mobile. Keep it below ~158 characters.',
+        hasIssue: (_, overflow) => overflow.descriptionOverflow,
+      },
+    ],
+  },
+  {
+    label: 'Mobile preview',
+    isMobile: true,
+    extraChecks: [
+      {
+        message:
+          'Description exceeds the 3-line limit for mobile view. Please shorten your text to fit within 3 lines.',
+        hasIssue: (_, overflow) => overflow.descriptionOverflowMobile,
+      },
+    ],
+  },
+]
 
 function truncateToWidth(
   el: HTMLDivElement,
@@ -20,14 +90,6 @@ function truncateToWidth(
     if (el.offsetWidth <= maxPx) return text.slice(0, i) + ELLIPSIS
   }
   return ELLIPSIS
-}
-
-type SerpData = {
-  title: string
-  description: string
-  siteName: string
-  favicon: string | null
-  url: string
 }
 
 function getSerpFromHead(): SerpData {
@@ -65,71 +127,105 @@ function getSerpFromHead(): SerpData {
   return { title, description, siteName, favicon, url }
 }
 
-function getSerpReportsDesktop(
+function getSerpIssues(
   data: SerpData,
-  overflow: { titleOverflow: boolean; descriptionOverflow: boolean },
-): string[] {
-  const issues: string[] = []
-  if (!data.title?.trim()) {
-    issues.push('No title tag set on the page.')
-  }
-  if (!data.description?.trim()) {
-    issues.push('No meta description set on the page.')
-  }
-  if (!data.favicon) {
-    issues.push('No favicon or icon set on the page.')
-  }
-  if (overflow.titleOverflow) {
-    issues.push(
-      'The title is wider than 600px and it may not be displayed in full length.',
-    )
-  }
-  if (overflow.descriptionOverflow) {
-    issues.push(
-      'The meta description may get trimmed at ~960 pixels on desktop and at ~680px on mobile. Keep it below ~158 characters.',
-    )
-  }
-  return issues
+  overflow: SerpOverflow,
+  checks: Array<SerpCheck>,
+): Array<string> {
+  return checks.filter((c) => c.hasIssue(data, overflow)).map((c) => c.message)
 }
 
-function getSerpReportsMobile(
-  data: SerpData,
-  overflow: {
-    titleOverflow: boolean
-    descriptionOverflowMobile: boolean
-  },
-): string[] {
-  const issues: string[] = []
-  if (!data.title?.trim()) {
-    issues.push('No title tag set on the page.')
-  }
-  if (!data.description?.trim()) {
-    issues.push('No meta description set on the page.')
-  }
-  if (!data.favicon) {
-    issues.push('No favicon or icon set on the page.')
-  }
-  if (overflow.titleOverflow) {
-    issues.push(
-      'The title is wider than 600px and it may not be displayed in full length.',
-    )
-  }
-  if (overflow.descriptionOverflowMobile) {
-    issues.push(
-      'Description exceeds the 3-line limit for mobile view. Please shorten your text to fit within 3 lines.',
-    )
-  }
-  return issues
+function SerpSnippetPreview(props: {
+  data: SerpData
+  displayTitle: string
+  displayDescription: string
+  isMobile: boolean
+  label: string
+  issues: Array<string>
+  setTitleMeasureEl: (el: HTMLDivElement) => void
+  setDescMeasureEl: (el: HTMLDivElement) => void
+  setDescMeasureMobileEl: (el: HTMLDivElement) => void
+}) {
+  const styles = useStyles()
+
+  return (
+    <div class={styles().serpPreviewBlock}>
+      <div class={styles().serpPreviewLabel}>{props.label}</div>
+      <div
+        class={
+          props.isMobile ? styles().serpSnippetMobile : styles().serpSnippet
+        }
+      >
+        <div class={styles().serpSnippetTopRow}>
+          {props.data.favicon ? (
+            <img
+              src={props.data.favicon}
+              alt="favicon icon"
+              class={styles().serpSnippetFavicon}
+            />
+          ) : (
+            <div class={styles().serpSnippetDefaultFavicon} />
+          )}
+          <div class={styles().serpSnippetSiteColumn}>
+            <span class={styles().serpSnippetSiteName}>
+              {props.data.siteName || props.data.url}
+            </span>
+            <span class={styles().serpSnippetSiteUrl}>{props.data.url}</span>
+          </div>
+        </div>
+        <div class={styles().serpSnippetTitle}>
+          {props.displayTitle || props.data.title || 'No title'}
+        </div>
+        {!props.isMobile && (
+          <>
+            <div
+              ref={props.setTitleMeasureEl}
+              class={`${styles().serpSnippetTitle} ${styles().serpMeasureHidden}`}
+              aria-hidden="true"
+            />
+            <div class={styles().serpSnippetDesc}>
+              {props.displayDescription ||
+                props.data.description ||
+                'No meta description.'}
+            </div>
+            <div
+              ref={props.setDescMeasureEl}
+              class={`${styles().serpSnippetDesc} ${styles().serpMeasureHidden}`}
+              aria-hidden="true"
+            />
+          </>
+        )}
+        {props.isMobile && (
+          <>
+            <div class={styles().serpSnippetDescMobile}>
+              {props.displayDescription ||
+                props.data.description ||
+                'No meta description.'}
+            </div>
+            <div
+              ref={props.setDescMeasureMobileEl}
+              class={`${styles().serpSnippetDesc} ${styles().serpMeasureHiddenMobile}`}
+              aria-hidden="true"
+            />
+          </>
+        )}
+      </div>
+      {props.issues.length > 0 ? (
+        <div class={styles().seoMissingTagsSection}>
+          <strong>Issues for {props.label}:</strong>
+          <ul class={styles().serpErrorList}>
+            <For each={props.issues}>
+              {(issue) => <li class={styles().serpReportItem}>{issue}</li>}
+            </For>
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  )
 }
 
 export function SerpPreviewSection() {
   const [serp, setSerp] = createSignal<SerpData>(getSerpFromHead())
-  const [titleOverflow, setTitleOverflow] = createSignal(false)
-  const [descriptionOverflow, setDescriptionOverflow] = createSignal(false)
-  const [descriptionOverflowMobile, setDescriptionOverflowMobile] =
-    createSignal(false)
-  const [displayTitle, setDisplayTitle] = createSignal('')
-  const [displayDescription, setDisplayDescription] = createSignal('')
   const [titleMeasureEl, setTitleMeasureEl] = createSignal<
     HTMLDivElement | undefined
   >(undefined)
@@ -139,65 +235,58 @@ export function SerpPreviewSection() {
   const [descMeasureMobileEl, setDescMeasureMobileEl] = createSignal<
     HTMLDivElement | undefined
   >(undefined)
-  const styles = useStyles()
 
   useHeadChanges(() => {
     setSerp(getSerpFromHead())
   })
 
-  createEffect(() => {
+  const serpPreviewState = createMemo(() => {
     const titleEl = titleMeasureEl()
     const descEl = descMeasureEl()
     const descMobileEl = descMeasureMobileEl()
     const data = serp()
-    if (!titleEl || !descEl) return
-
     const titleText = data.title || 'No title'
     const descText = data.description || 'No meta description.'
 
-    const truncatedTitle = truncateToWidth(
-      titleEl,
-      titleText,
-      TITLE_MAX_WIDTH_PX,
-    )
-    setDisplayTitle(truncatedTitle)
-    setTitleOverflow(truncatedTitle !== titleText)
+    if (!titleEl || !descEl) {
+      return {
+        displayTitle: titleText,
+        displayDescription: descText,
+        overflow: {
+          titleOverflow: false,
+          descriptionOverflow: false,
+          descriptionOverflowMobile: false,
+        },
+      }
+    }
 
-    const truncatedDesc = truncateToWidth(
+    const displayTitle = truncateToWidth(titleEl, titleText, TITLE_MAX_WIDTH_PX)
+    const displayDescription = truncateToWidth(
       descEl,
       descText,
       DESCRIPTION_MAX_WIDTH_PX,
     )
-    setDisplayDescription(truncatedDesc)
-    setDescriptionOverflow(truncatedDesc !== descText)
+
+    let descriptionOverflowMobile = false
 
     if (descMobileEl && descText) {
       descMobileEl.textContent = descText
-      const lineHeight = parseFloat(
-        getComputedStyle(descMobileEl).lineHeight,
-      ) || 20
+      const lineHeight =
+        parseFloat(getComputedStyle(descMobileEl).lineHeight) || 20
       const lines = Math.ceil(descMobileEl.scrollHeight / lineHeight)
-      setDescriptionOverflowMobile(lines > DESCRIPTION_MOBILE_MAX_LINES)
-    } else {
-      setDescriptionOverflowMobile(false)
+      descriptionOverflowMobile = lines > DESCRIPTION_MOBILE_MAX_LINES
+    }
+
+    return {
+      displayTitle,
+      displayDescription,
+      overflow: {
+        titleOverflow: displayTitle !== titleText,
+        descriptionOverflow: displayDescription !== descText,
+        descriptionOverflowMobile,
+      },
     }
   })
-
-  const reportsDesktop = createMemo(() =>
-    getSerpReportsDesktop(serp(), {
-      titleOverflow: titleOverflow(),
-      descriptionOverflow: descriptionOverflow(),
-    }),
-  )
-
-  const reportsMobile = createMemo(() =>
-    getSerpReportsMobile(serp(), {
-      titleOverflow: titleOverflow(),
-      descriptionOverflowMobile: descriptionOverflowMobile(),
-    }),
-  )
-
-  const data = serp()
 
   return (
     <Section>
@@ -205,101 +294,30 @@ export function SerpPreviewSection() {
         See how your title tag and meta description may look in Google search
         results. Data is read from the current page.
       </SectionDescription>
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Desktop preview</div>
-        <div class={styles().serpSnippet}>
-          <div class={styles().serpSnippetTopRow}>
-            {data.favicon ? (
-              <img
-                src={data.favicon}
-                alt=""
-                class={styles().serpSnippetFavicon}
-              />
-            ) : (
-              <div class={styles().serpSnippetDefaultFavicon} />
-            )}
-            <div class={styles().serpSnippetSiteColumn}>
-              <span class={styles().serpSnippetSiteName}>
-                {data.siteName || data.url}
-              </span>
-              <span class={styles().serpSnippetSiteUrl}>{data.url}</span>
-            </div>
-          </div>
-          <div class={styles().serpSnippetTitle}>
-            {displayTitle() || data.title || 'No title'}
-          </div>
-          <div
-            ref={setTitleMeasureEl}
-            class={`${styles().serpSnippetTitle} ${styles().serpMeasureHidden}`}
-            aria-hidden="true"
-          />
-          <div class={styles().serpSnippetDesc}>
-            {displayDescription() || data.description || 'No meta description.'}
-          </div>
-          <div
-            ref={setDescMeasureEl}
-            class={`${styles().serpSnippetDesc} ${styles().serpMeasureHidden}`}
-            aria-hidden="true"
-          />
-        </div>
-        {reportsDesktop().length > 0 ? (
-          <div class={styles().seoMissingTagsSection}>
-            <strong>Missing issues for Desktop preview:</strong>
-            <ul class={styles().serpErrorList}>
-              <For each={reportsDesktop()}>
-                {(issue) => (
-                  <li class={styles().serpReportItem}>{issue}</li>
-                )}
-              </For>
-            </ul>
-          </div>
-        ) : null}
-      </div>
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Mobile preview</div>
-        <div class={styles().serpSnippetMobile}>
-          <div class={styles().serpSnippetTopRow}>
-            {data.favicon ? (
-              <img
-                src={data.favicon}
-                alt=""
-                class={styles().serpSnippetFavicon}
-              />
-            ) : (
-              <div class={styles().serpSnippetDefaultFavicon} />
-            )}
-            <div class={styles().serpSnippetSiteColumn}>
-              <span class={styles().serpSnippetSiteName}>
-                {data.siteName || data.url}
-              </span>
-              <span class={styles().serpSnippetSiteUrl}>{data.url}</span>
-            </div>
-          </div>
-          <div class={styles().serpSnippetTitle}>
-            {displayTitle() || data.title || 'No title'}
-          </div>
-          <div class={styles().serpSnippetDescMobile}>
-            {displayDescription() || data.description || 'No meta description.'}
-          </div>
-          <div
-            ref={setDescMeasureMobileEl}
-            class={`${styles().serpSnippetDesc} ${styles().serpMeasureHiddenMobile}`}
-            aria-hidden="true"
-          />
-        </div>
-        {reportsMobile().length > 0 ? (
-          <div class={styles().seoMissingTagsSection}>
-            <strong>Missing issues for Mobile preview:</strong>
-            <ul class={styles().serpErrorList}>
-              <For each={reportsMobile()}>
-                {(issue) => (
-                  <li class={styles().serpReportItem}>{issue}</li>
-                )}
-              </For>
-            </ul>
-          </div>
-        ) : null}
-      </div>
+      <For each={SERP_PREVIEWS}>
+        {(preview) => {
+          const issues = createMemo(() =>
+            getSerpIssues(serp(), serpPreviewState().overflow, [
+              ...COMMON_CHECKS,
+              ...preview.extraChecks,
+            ]),
+          )
+
+          return (
+            <SerpSnippetPreview
+              data={serp()}
+              displayTitle={serpPreviewState().displayTitle}
+              displayDescription={serpPreviewState().displayDescription}
+              isMobile={preview.isMobile}
+              label={preview.label}
+              issues={issues()}
+              setTitleMeasureEl={setTitleMeasureEl}
+              setDescMeasureEl={setDescMeasureEl}
+              setDescMeasureMobileEl={setDescMeasureMobileEl}
+            />
+          )
+        }}
+      </For>
     </Section>
   )
 }
