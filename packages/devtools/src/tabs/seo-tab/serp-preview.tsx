@@ -77,6 +77,9 @@ function getSerpReports(data: SerpData, overflow: SerpOverflow): string[] {
   if (!data.description?.trim()) {
     issues.push('No meta description set on the page.')
   }
+  if (!data.favicon) {
+    issues.push('No favicon or icon set on the page.')
+  }
   if (overflow.titleOverflow) {
     issues.push(
       'The title is wider than 600px and it may not be displayed in full length.',
@@ -157,7 +160,9 @@ export function SerpPreviewSection() {
               alt=""
               class={styles().serpSnippetFavicon}
             />
-          ) : null}
+          ) : (
+            <div class={styles().serpSnippetDefaultFavicon} />
+          )}
           <div class={styles().serpSnippetSiteColumn}>
             <span class={styles().serpSnippetSiteName}>
               {data.siteName || data.url}

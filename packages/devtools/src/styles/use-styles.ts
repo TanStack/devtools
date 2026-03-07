@@ -251,6 +251,22 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border-radius: 50%;
       flex-shrink: 0;
       object-fit: contain;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `,
+    serpSnippetDefaultFavicon: css`
+      width: 28px;
+      height: 28px;
+      background-color: ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: contain;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     `,
     serpSnippetSiteColumn: css`
       display: flex;
