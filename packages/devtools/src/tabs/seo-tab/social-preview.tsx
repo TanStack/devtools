@@ -1,27 +1,13 @@
-import { For, createSignal } from 'solid-js'
+import { createSignal, For } from 'solid-js'
+import { useStyles } from '../../styles/use-styles'
+import { useHeadChanges } from '../../hooks/use-head-changes'
 import {
-  MainPanel,
   Section,
   SectionDescription,
   SectionIcon,
   SectionTitle,
 } from '@tanstack/devtools-ui'
 import { SocialBubble } from '@tanstack/devtools-ui/icons'
-import { useStyles } from '../styles/use-styles'
-import { useHeadChanges } from '../hooks/use-head-changes'
-
-type SocialMeta = {
-  title?: string
-  description?: string
-  image?: string
-  url?: string
-}
-
-type SocialReport = {
-  network: string
-  found: Partial<SocialMeta>
-  missing: Array<string>
-}
 
 const SOCIALS = [
   {
@@ -96,6 +82,20 @@ const SOCIALS = [
   },
   // Add more networks as needed
 ]
+
+type SocialMeta = {
+  title?: string
+  description?: string
+  image?: string
+  url?: string
+}
+
+type SocialReport = {
+  network: string
+  found: Partial<SocialMeta>
+  missing: Array<string>
+}
+
 function SocialPreview(props: {
   meta: SocialMeta
   color: string
@@ -145,7 +145,8 @@ function SocialPreview(props: {
     </div>
   )
 }
-export const SeoTab = () => {
+
+export function SocialPreviewSection() {
   const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
   const styles = useStyles()
 
@@ -182,51 +183,49 @@ export const SeoTab = () => {
   })
 
   return (
-    <MainPanel withPadding>
-      <Section>
-        <SectionTitle>
-          <SectionIcon>
-            <SocialBubble />
-          </SectionIcon>
-          Social previews
-        </SectionTitle>
-        <SectionDescription>
-          See how your current page will look when shared on popular social
-          networks. The tool checks for essential meta tags and highlights any
-          that are missing.
-        </SectionDescription>
-        <div class={styles().seoPreviewSection}>
-          <For each={reports()}>
-            {(report, i) => {
-              const social = SOCIALS[i()]
-              return (
-                <div>
-                  <SocialPreview
-                    meta={report.found}
-                    color={social!.color}
-                    network={social!.network}
-                  />
-                  {report.missing.length > 0 ? (
-                    <>
-                      <div class={styles().seoMissingTagsSection}>
-                        <strong>Missing tags for {social?.network}:</strong>
+    <Section>
+      <SectionTitle>
+        <SectionIcon>
+          <SocialBubble />
+        </SectionIcon>
+        Social previews
+      </SectionTitle>
+      <SectionDescription>
+        See how your current page will look when shared on popular social
+        networks. The tool checks for essential meta tags and highlights any
+        that are missing.
+      </SectionDescription>
+      <div class={styles().seoPreviewSection}>
+        <For each={reports()}>
+          {(report, i) => {
+            const social = SOCIALS[i()]
+            return (
+              <div>
+                <SocialPreview
+                  meta={report.found}
+                  color={social!.color}
+                  network={social!.network}
+                />
+                {report.missing.length > 0 ? (
+                  <>
+                    <div class={styles().seoMissingTagsSection}>
+                      <strong>Missing tags for {social?.network}:</strong>
 
-                        <ul class={styles().seoMissingTagsList}>
-                          <For each={report.missing}>
-                            {(tag) => (
-                              <li class={styles().seoMissingTag}>{tag}</li>
-                            )}
-                          </For>
-                        </ul>
-                      </div>
-                    </>
-                  ) : null}
-                </div>
-              )
-            }}
-          </For>
-        </div>
-      </Section>
-    </MainPanel>
+                      <ul class={styles().seoMissingTagsList}>
+                        <For each={report.missing}>
+                          {(tag) => (
+                            <li class={styles().seoMissingTag}>{tag}</li>
+                          )}
+                        </For>
+                      </ul>
+                    </div>
+                  </>
+                ) : null}
+              </div>
+            )
+          }}
+        </For>
+      </div>
+    </Section>
   )
 }
