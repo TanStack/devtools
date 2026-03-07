@@ -283,6 +283,23 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin: 0;
       line-height: 1.5;
     `,
+    serpMeasureHidden: css`
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      white-space: nowrap;
+      visibility: hidden;
+      pointer-events: none;
+    `,
+    serpReportSection: css`
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
+    serpReportItem: css`
+      margin-top: 0.5rem;
+      color: ${t(colors.yellow[700], colors.yellow[400])};
+    `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
       isDetached: boolean,
