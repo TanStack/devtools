@@ -7,7 +7,8 @@ import { SerpPreviewSection } from './serp-preview'
 type SeoSubView = 'social-previews' | 'serp-preview'
 
 export const SeoTab = () => {
-  const [activeView, setActiveView] = createSignal<SeoSubView>('social-previews')
+  const [activeView, setActiveView] =
+    createSignal<SeoSubView>('social-previews')
   const styles = useStyles()
 
   return (
@@ -28,11 +29,12 @@ export const SeoTab = () => {
           SERP Preview
         </button>
       </nav>
+
       <Show when={activeView() === 'social-previews'}>
-        <SocialPreviewsSection noTitle />
+        <SocialPreviewsSection />
       </Show>
       <Show when={activeView() === 'serp-preview'}>
-        <SerpPreviewSection noTitle />
+        <SerpPreviewSection />
       </Show>
     </MainPanel>
   )

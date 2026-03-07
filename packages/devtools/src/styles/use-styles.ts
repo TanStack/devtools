@@ -231,6 +231,42 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 0 10px 8px 10px;
       font-size: 0.875rem;
     `,
+    serpSnippet: css`
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      background: ${t(colors.white, colors.darkGray[900])};
+      max-width: 600px;
+      font-family: ${fontFamily.sans};
+    `,
+    serpSnippetUrlRow: css`
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+      font-size: 0.875rem;
+      color: ${t(colors.gray[600], colors.gray[400])};
+    `,
+    serpSnippetFavicon: css`
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      object-fit: contain;
+    `,
+    serpSnippetTitle: css`
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: ${t('#1a0dab', '#8ab4f8')};
+      margin: 0 0 4px 0;
+      line-height: 1.3;
+    `,
+    serpSnippetDesc: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      margin: 0;
+      line-height: 1.5;
+    `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
       isDetached: boolean,

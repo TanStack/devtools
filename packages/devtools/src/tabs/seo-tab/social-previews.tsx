@@ -1,13 +1,7 @@
 import { createSignal, For } from 'solid-js'
 import { useStyles } from '../../styles/use-styles'
 import { useHeadChanges } from '../../hooks/use-head-changes'
-import {
-  Section,
-  SectionDescription,
-  SectionIcon,
-  SectionTitle,
-} from '@tanstack/devtools-ui'
-import { SocialBubble } from '@tanstack/devtools-ui/icons'
+import { Section, SectionDescription } from '@tanstack/devtools-ui'
 
 const SOCIALS = [
   {
@@ -146,7 +140,7 @@ function SocialPreview(props: {
   )
 }
 
-export function SocialPreviewsSection(props: { noTitle?: boolean } = {}) {
+export function SocialPreviewsSection() {
   const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
   const styles = useStyles()
 
@@ -184,14 +178,6 @@ export function SocialPreviewsSection(props: { noTitle?: boolean } = {}) {
 
   return (
     <Section>
-      {!props.noTitle && (
-        <SectionTitle>
-          <SectionIcon>
-            <SocialBubble />
-          </SectionIcon>
-          Social previews
-        </SectionTitle>
-      )}
       <SectionDescription>
         See how your current page will look when shared on popular social
         networks. The tool checks for essential meta tags and highlights any
