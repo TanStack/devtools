@@ -239,20 +239,36 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       max-width: 600px;
       font-family: ${fontFamily.sans};
     `,
-    serpSnippetUrlRow: css`
+    serpSnippetTopRow: css`
       display: flex;
       align-items: center;
-      gap: 6px;
-      margin-bottom: 4px;
-      font-size: 0.875rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      gap: 12px;
+      margin-bottom: 8px;
     `,
     serpSnippetFavicon: css`
-      width: 16px;
-      height: 16px;
-      border-radius: 2px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
       flex-shrink: 0;
       object-fit: contain;
+    `,
+    serpSnippetSiteColumn: css`
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 0;
+    `,
+    serpSnippetSiteName: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.4;
+      margin: 0;
+    `,
+    serpSnippetSiteUrl: css`
+      font-size: 0.75rem;
+      color: ${t(colors.gray[500], colors.gray[500])};
+      line-height: 1.4;
+      margin: 0;
     `,
     serpSnippetTitle: css`
       font-size: 1.25rem;

@@ -65,7 +65,7 @@ export function SerpPreviewSection() {
         results. Data is read from the current page.
       </SectionDescription>
       <div class={styles().serpSnippet}>
-        <div class={styles().serpSnippetUrlRow}>
+        <div class={styles().serpSnippetTopRow}>
           {data.favicon ? (
             <img
               src={data.favicon}
@@ -73,7 +73,12 @@ export function SerpPreviewSection() {
               class={styles().serpSnippetFavicon}
             />
           ) : null}
-          <span>{data.siteName || data.url}</span>
+          <div class={styles().serpSnippetSiteColumn}>
+            <span class={styles().serpSnippetSiteName}>
+              {data.siteName || data.url}
+            </span>
+            <span class={styles().serpSnippetSiteUrl}>{data.url}</span>
+          </div>
         </div>
         <div class={styles().serpSnippetTitle}>
           {data.title || 'No title'}
