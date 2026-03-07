@@ -5,6 +5,7 @@ import { Section, SectionDescription } from '@tanstack/devtools-ui'
 
 const TITLE_MAX_WIDTH_PX = 600
 const DESCRIPTION_MAX_WIDTH_PX = 960
+const DESCRIPTION_MOBILE_MAX_LINES = 3
 const ELLIPSIS = '...'
 
 function truncateToWidth(
@@ -64,12 +65,10 @@ function getSerpFromHead(): SerpData {
   return { title, description, siteName, favicon, url }
 }
 
-type SerpOverflow = {
-  titleOverflow: boolean
-  descriptionOverflow: boolean
-}
-
-function getSerpReports(data: SerpData, overflow: SerpOverflow): string[] {
+function getSerpReportsDesktop(
+  data: SerpData,
+  overflow: { titleOverflow: boolean; descriptionOverflow: boolean },
+): string[] {
   const issues: string[] = []
   if (!data.title?.trim()) {
     issues.push('No title tag set on the page.')
@@ -93,16 +92,51 @@ function getSerpReports(data: SerpData, overflow: SerpOverflow): string[] {
   return issues
 }
 
+function getSerpReportsMobile(
+  data: SerpData,
+  overflow: {
+    titleOverflow: boolean
+    descriptionOverflowMobile: boolean
+  },
+): string[] {
+  const issues: string[] = []
+  if (!data.title?.trim()) {
+    issues.push('No title tag set on the page.')
+  }
+  if (!data.description?.trim()) {
+    issues.push('No meta description set on the page.')
+  }
+  if (!data.favicon) {
+    issues.push('No favicon or icon set on the page.')
+  }
+  if (overflow.titleOverflow) {
+    issues.push(
+      'The title is wider than 600px and it may not be displayed in full length.',
+    )
+  }
+  if (overflow.descriptionOverflowMobile) {
+    issues.push(
+      'Description exceeds the 3-line limit for mobile view. Please shorten your text to fit within 3 lines.',
+    )
+  }
+  return issues
+}
+
 export function SerpPreviewSection() {
   const [serp, setSerp] = createSignal<SerpData>(getSerpFromHead())
   const [titleOverflow, setTitleOverflow] = createSignal(false)
   const [descriptionOverflow, setDescriptionOverflow] = createSignal(false)
+  const [descriptionOverflowMobile, setDescriptionOverflowMobile] =
+    createSignal(false)
   const [displayTitle, setDisplayTitle] = createSignal('')
   const [displayDescription, setDisplayDescription] = createSignal('')
   const [titleMeasureEl, setTitleMeasureEl] = createSignal<
     HTMLDivElement | undefined
   >(undefined)
   const [descMeasureEl, setDescMeasureEl] = createSignal<
+    HTMLDivElement | undefined
+  >(undefined)
+  const [descMeasureMobileEl, setDescMeasureMobileEl] = createSignal<
     HTMLDivElement | undefined
   >(undefined)
   const styles = useStyles()
@@ -114,6 +148,7 @@ export function SerpPreviewSection() {
   createEffect(() => {
     const titleEl = titleMeasureEl()
     const descEl = descMeasureEl()
+    const descMobileEl = descMeasureMobileEl()
     const data = serp()
     if (!titleEl || !descEl) return
 
@@ -135,12 +170,30 @@ export function SerpPreviewSection() {
     )
     setDisplayDescription(truncatedDesc)
     setDescriptionOverflow(truncatedDesc !== descText)
+
+    if (descMobileEl && descText) {
+      descMobileEl.textContent = descText
+      const lineHeight = parseFloat(
+        getComputedStyle(descMobileEl).lineHeight,
+      ) || 20
+      const lines = Math.ceil(descMobileEl.scrollHeight / lineHeight)
+      setDescriptionOverflowMobile(lines > DESCRIPTION_MOBILE_MAX_LINES)
+    } else {
+      setDescriptionOverflowMobile(false)
+    }
   })
 
-  const reports = createMemo(() =>
-    getSerpReports(serp(), {
+  const reportsDesktop = createMemo(() =>
+    getSerpReportsDesktop(serp(), {
       titleOverflow: titleOverflow(),
       descriptionOverflow: descriptionOverflow(),
+    }),
+  )
+
+  const reportsMobile = createMemo(() =>
+    getSerpReportsMobile(serp(), {
+      titleOverflow: titleOverflow(),
+      descriptionOverflowMobile: descriptionOverflowMobile(),
     }),
   )
 
@@ -189,17 +242,64 @@ export function SerpPreviewSection() {
             aria-hidden="true"
           />
         </div>
+        {reportsDesktop().length > 0 ? (
+          <div class={styles().seoMissingTagsSection}>
+            <strong>Missing issues for Desktop preview:</strong>
+            <ul class={styles().serpErrorList}>
+              <For each={reportsDesktop()}>
+                {(issue) => (
+                  <li class={styles().serpReportItem}>{issue}</li>
+                )}
+              </For>
+            </ul>
+          </div>
+        ) : null}
       </div>
-      {reports().length > 0 ? (
-        <div class={styles().seoMissingTagsSection}>
-          <strong>SERP preview issues:</strong>
-          <ul class={styles().serpErrorList}>
-            <For each={reports()}>
-              {(issue) => <li class={styles().serpReportItem}>{issue}</li>}
-            </For>
-          </ul>
+      <div class={styles().serpPreviewBlock}>
+        <div class={styles().serpPreviewLabel}>Mobile preview</div>
+        <div class={styles().serpSnippetMobile}>
+          <div class={styles().serpSnippetTopRow}>
+            {data.favicon ? (
+              <img
+                src={data.favicon}
+                alt=""
+                class={styles().serpSnippetFavicon}
+              />
+            ) : (
+              <div class={styles().serpSnippetDefaultFavicon} />
+            )}
+            <div class={styles().serpSnippetSiteColumn}>
+              <span class={styles().serpSnippetSiteName}>
+                {data.siteName || data.url}
+              </span>
+              <span class={styles().serpSnippetSiteUrl}>{data.url}</span>
+            </div>
+          </div>
+          <div class={styles().serpSnippetTitle}>
+            {displayTitle() || data.title || 'No title'}
+          </div>
+          <div class={styles().serpSnippetDescMobile}>
+            {displayDescription() || data.description || 'No meta description.'}
+          </div>
+          <div
+            ref={setDescMeasureMobileEl}
+            class={`${styles().serpSnippetDesc} ${styles().serpMeasureHiddenMobile}`}
+            aria-hidden="true"
+          />
         </div>
-      ) : null}
+        {reportsMobile().length > 0 ? (
+          <div class={styles().seoMissingTagsSection}>
+            <strong>Missing issues for Mobile preview:</strong>
+            <ul class={styles().serpErrorList}>
+              <For each={reportsMobile()}>
+                {(issue) => (
+                  <li class={styles().serpReportItem}>{issue}</li>
+                )}
+              </For>
+            </ul>
+          </div>
+        ) : null}
+      </div>
     </Section>
   )
 }

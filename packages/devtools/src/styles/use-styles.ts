@@ -233,6 +233,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     serpPreviewBlock: css`
       margin-bottom: 1.5rem;
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 10px;
+      padding: 1rem;
     `,
     serpPreviewLabel: css`
       font-size: 0.875rem;
@@ -241,12 +244,32 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       color: ${t(colors.gray[700], colors.gray[300])};
     `,
     serpSnippet: css`
-      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      border: 1px solid ${t(colors.gray[100], colors.gray[800])};
       border-radius: 8px;
       padding: 1rem 1.25rem;
       background: ${t(colors.white, colors.darkGray[900])};
       max-width: 600px;
       font-family: ${fontFamily.sans};
+      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+    `,
+    serpSnippetMobile: css`
+      border: 1px solid ${t(colors.gray[100], colors.gray[800])};
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      background: ${t(colors.white, colors.darkGray[900])};
+      max-width: 380px;
+      font-family: ${fontFamily.sans};
+      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+    `,
+    serpSnippetDescMobile: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      margin: 0;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
     `,
     serpSnippetTopRow: css`
       display: flex;
@@ -315,6 +338,16 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       white-space: nowrap;
       visibility: hidden;
       pointer-events: none;
+    `,
+    serpMeasureHiddenMobile: css`
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      width: 340px;
+      visibility: hidden;
+      pointer-events: none;
+      font-size: 0.875rem;
+      line-height: 1.5;
     `,
     serpReportSection: css`
       margin-top: 1rem;
