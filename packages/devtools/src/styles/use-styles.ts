@@ -119,6 +119,32 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin-bottom: 2rem;
       border-radius: 0.75rem;
     `,
+    seoSubNav: css`
+      display: flex;
+      flex-direction: row;
+      gap: 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+    `,
+    seoSubNavLabel: css`
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      font-family: inherit;
+      &:hover {
+        color: ${t(colors.gray[800], colors.gray[200])};
+      }
+    `,
+    seoSubNavLabelActive: css`
+      color: ${t(colors.gray[900], colors.gray[100])};
+      border-bottom-color: ${t(colors.gray[900], colors.gray[100])};
+    `,
     seoPreviewSection: css`
       display: flex;
       flex-direction: row;

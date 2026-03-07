@@ -146,7 +146,7 @@ function SocialPreview(props: {
   )
 }
 
-export function SocialPreviewsSection() {
+export function SocialPreviewsSection(props: { noTitle?: boolean } = {}) {
   const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
   const styles = useStyles()
 
@@ -184,12 +184,14 @@ export function SocialPreviewsSection() {
 
   return (
     <Section>
-      <SectionTitle>
-        <SectionIcon>
-          <SocialBubble />
-        </SectionIcon>
-        Social previews
-      </SectionTitle>
+      {!props.noTitle && (
+        <SectionTitle>
+          <SectionIcon>
+            <SocialBubble />
+          </SectionIcon>
+          Social previews
+        </SectionTitle>
+      )}
       <SectionDescription>
         See how your current page will look when shared on popular social
         networks. The tool checks for essential meta tags and highlights any
