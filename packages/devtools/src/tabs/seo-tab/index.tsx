@@ -1,5 +1,5 @@
 import { MainPanel } from '@tanstack/devtools-ui'
-import { SocialPreviewsSection } from './social-preview'
+import { SocialPreviewsSection } from './social-previews'
 
 export const SeoTab = () => {
   return (
