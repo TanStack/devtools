@@ -10,11 +10,11 @@ import {
   customDevtoolPlugin,
   noOpCustomDevtoolPlugin,
 } from './devtools/custom-devtools-panel';
-import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools'
+import { TanStackDevtools } from '@tanstack/angular-devtools'
 
 @Component({
   selector: 'app-root',
-  imports: [TanStackDevtoolsComponent],
+  imports: [TanStackDevtools],
   template: `
     <div>
       <h1>Custom plugins</h1>

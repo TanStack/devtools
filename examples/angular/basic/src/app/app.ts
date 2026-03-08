@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { createCounter } from './counter';
 import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools';
-import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools';
+import { TanStackDevtools } from '@tanstack/angular-devtools';
 
 @Component({
   selector: 'app-root',
-  imports: [TanStackDevtoolsComponent],
+  imports: [TanStackDevtools],
   template: `
     <div>
       <h1>Custom plugins</h1>
