@@ -1,27 +1,41 @@
-import { Component } from '@angular/core'
 import type { Type } from '@angular/core'
 
-@Component({
-  selector: 'noop-component',
-  standalone: true,
-  template: '',
-})
-class NoOpComponent {}
+export type TanStackDevtoolsAngularPluginRenderFn<
+  TInputs extends Record<string, unknown>,
+> =
+  | ((inputs: () => TInputs, hostElement: HTMLElement) => () => void)
+  | Type<unknown>
+  | null
 
-export function createAngularPlugin(name: string, component: Type<any>) {
-  function Plugin(inputs?: Record<string, any>) {
+export type TanStackDevtoolsAngularPluginRender<
+  T extends Record<string, unknown>,
+> =
+  | Type<any>
+  | (() =>
+      | TanStackDevtoolsAngularPluginRenderFn<T>
+      | Promise<TanStackDevtoolsAngularPluginRenderFn<T>>)
+
+export function createAngularPlugin<T extends Record<string, unknown>>({
+  render,
+  ...config
+}: {
+  name: string
+  id?: string
+  defaultOpen?: boolean
+  render: TanStackDevtoolsAngularPluginRender<T>
+}) {
+  function Plugin(inputs?: T | (() => T)) {
     return {
-      name,
-      component,
+      ...config,
+      render,
       inputs,
     }
   }
 
-  function NoOpPlugin(inputs?: Record<string, any>) {
+  function NoOpPlugin() {
     return {
-      name,
-      component: NoOpComponent,
-      inputs,
+      ...config,
+      render: null,
     }
   }
 

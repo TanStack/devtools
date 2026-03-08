@@ -1,65 +1,69 @@
-import {
-  Component,
-  DestroyRef,
-  ElementRef,
-  afterNextRender,
-  inject,
-  input,
-} from '@angular/core'
-import type { Type } from '@angular/core'
+import { afterNextRender } from '@angular/core'
 
-export interface DevtoolsPanelProps {
+export type DevtoolsPanelProps = {
   theme?: 'dark' | 'light' | 'system'
+}
+
+interface BaseCorePanelClass {
+  mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
+  unmount: () => void
+}
+
+type CoreClassConstructor<
+  TComponentProps extends DevtoolsPanelProps,
+  TCoreDevtoolsClass extends BaseCorePanelClass,
+> = new (props: TComponentProps) => TCoreDevtoolsClass
+
+function isPanelClassConstructor<
+  TComponentProps extends DevtoolsPanelProps,
+  TCoreDevtoolsClass extends BaseCorePanelClass,
+>(o: any): o is CoreClassConstructor<TComponentProps, TCoreDevtoolsClass> {
+  return !!o.prototype
 }
 
 export function createAngularPanel<
   TComponentProps extends DevtoolsPanelProps,
-  TCoreDevtoolsClass extends {
-    mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
-    unmount: () => void
-  },
+  TCoreDevtoolsClass extends BaseCorePanelClass,
 >(
-  CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass,
-): [Type<any>, Type<any>] {
-  @Component({
-    selector: 'devtools-panel',
-    standalone: true,
-    template: '<div #panelHost style="height: 100%"></div>',
-  })
-  class Panel {
-    theme = input<DevtoolsPanelProps['theme']>()
-    devtoolsProps = input<TComponentProps>()
+  CoreClass:
+    | CoreClassConstructor<TComponentProps, TCoreDevtoolsClass>
+    | (() => Promise<
+        CoreClassConstructor<TComponentProps, TCoreDevtoolsClass>
+      >),
+) {
+  return [
+    () =>
+      (inputs: () => TComponentProps, host: HTMLElement): (() => void) => {
+        const panel = document.createElement('div')
+        panel.style.height = '100%'
+        let unmount: null | (() => void) = null
 
-    private hostRef = inject(ElementRef)
-    private destroyRef = inject(DestroyRef)
-    private devtools: TCoreDevtoolsClass | null = null
+        function mount(instance: TCoreDevtoolsClass) {
+          instance.mount(panel, inputs().theme)
+          unmount = () => instance.unmount()
+        }
 
-    constructor() {
-      afterNextRender(() => {
-        const el = this.hostRef.nativeElement.querySelector('div')
-        if (!el) return
+        afterNextRender(() => {
+          host.appendChild(panel)
 
-        const instance = new CoreClass(this.devtoolsProps() as TComponentProps)
-        this.devtools = instance
-        instance.mount(el, this.theme())
-      })
+          const isConstructor = isPanelClassConstructor<
+            TComponentProps,
+            TCoreDevtoolsClass
+          >(CoreClass)
 
-      this.destroyRef.onDestroy(() => {
-        this.devtools?.unmount()
-        this.devtools = null
-      })
-    }
-  }
+          if (isConstructor) {
+            mount(new CoreClass(inputs()))
+          } else {
+            CoreClass()
+              .then((ResolvedCoreClass) => new ResolvedCoreClass(inputs()))
+              .then(mount)
+          }
+        })
 
-  @Component({
-    selector: 'devtools-noop-panel',
-    standalone: true,
-    template: '',
-  })
-  class NoOpPanel {
-    theme = input<DevtoolsPanelProps['theme']>()
-    devtoolsProps = input<TComponentProps>()
-  }
-
-  return [Panel, NoOpPanel]
+        return () => {
+          unmount?.()
+        }
+      },
+    () => null,
+  ] as const
 }

@@ -21,7 +21,7 @@ import { JsonPipe } from '@angular/common'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [JsonPipe],
 })
-export class CustomDevtoolPanel {
+export default class CustomDevtoolPanel {
   #destroyRef = inject(DestroyRef)
 
   // Automatically added

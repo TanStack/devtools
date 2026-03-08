@@ -19,6 +19,7 @@
     "@angular/router": "^21.2.0",
     "@tanstack/angular-devtools": "workspace:*",
     "@tanstack/devtools": "workspace:^",
+    "@tanstack/devtools-utils": "workspace:*",
     "@tanstack/devtools-event-client": "workspace:*",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

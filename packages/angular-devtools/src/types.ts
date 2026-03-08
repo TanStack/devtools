@@ -1,15 +1,43 @@
-import type { FlexRenderComponent } from './view/component-render'
 import type { Type } from '@angular/core'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
 } from '@tanstack/devtools'
 
+export type TanStackDevtoolsAngularPluginInputs =
+  | Record<string, any>
+  | (() => Record<string, any>)
+
+interface DefaultExport<T> {
+  /**
+   * Default exports are bound under the name `"default"`, per the ES Module spec:
+   * https://tc39.es/ecma262/#table-export-forms-mapping-to-exportentry-records
+   */
+  default: T
+}
+
+export type TanStackDevtoolsAngularFunctionalComponent<
+  TInputs extends NonNullable<unknown> = Record<string, unknown>,
+> = (inputs: () => TInputs, hostElement: HTMLElement) => () => void
+
+export type TanStackDevtoolsAngularPluginRenderFn =
+  | TanStackDevtoolsAngularFunctionalComponent<Record<string, unknown>>
+  | DefaultExport<Type<unknown> | null>
+  | Type<unknown>
+  | null
+
+export type TanStackDevtoolsAngularPluginRender =
+  | null
+  | Type<any>
+  | (() =>
+      | TanStackDevtoolsAngularPluginRenderFn
+      | Promise<TanStackDevtoolsAngularPluginRenderFn>)
+
 export type TanStackDevtoolsAngularPlugin = {
   id?: string
-  render: Type<any> | (() => FlexRenderComponent | null)
+  render: TanStackDevtoolsAngularPluginRender
   name: string | Type<any>
-  inputs?: Record<string, any> | (() => Record<string, any>)
+  inputs?: TanStackDevtoolsAngularPluginInputs
   defaultOpen?: boolean
 }
 

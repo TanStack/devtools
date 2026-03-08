@@ -26,10 +26,6 @@
       "types": "./dist/types/tanstack-angular-devtools.d.ts",
       "default": "./dist/fesm2022/tanstack-angular-devtools.mjs"
     },
-    "./utils": {
-      "types": "./dist/types/tanstack-angular-devtools-utils.d.ts",
-      "default": "./dist/fesm2022/tanstack-angular-devtools-utils.mjs"
-    },
     "./package.json": {
       "default": "./package.json"
     }
