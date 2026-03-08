@@ -1,5 +1,3 @@
-import { afterNextRender } from '@angular/core'
-
 export type DevtoolsPanelProps = {
   theme?: 'dark' | 'light' | 'system'
 }
@@ -34,7 +32,7 @@ export function createAngularPanel<
   return [
     () =>
       (inputs: () => TComponentProps, host: HTMLElement): (() => void) => {
-        const panel = document.createElement('div')
+        const panel = host.ownerDocument.createElement('div')
         panel.style.height = '100%'
         let unmount: null | (() => void) = null
 
@@ -43,22 +41,20 @@ export function createAngularPanel<
           unmount = () => instance.unmount()
         }
 
-        afterNextRender(() => {
-          host.appendChild(panel)
+        host.appendChild(panel)
 
-          const isConstructor = isPanelClassConstructor<
-            TComponentProps,
-            TCoreDevtoolsClass
-          >(CoreClass)
+        const isConstructor = isPanelClassConstructor<
+          TComponentProps,
+          TCoreDevtoolsClass
+        >(CoreClass)
 
-          if (isConstructor) {
-            mount(new CoreClass(inputs()))
-          } else {
-            CoreClass()
-              .then((ResolvedCoreClass) => new ResolvedCoreClass(inputs()))
-              .then(mount)
-          }
-        })
+        if (isConstructor) {
+          mount(new CoreClass(inputs()))
+        } else {
+          CoreClass()
+            .then((ResolvedCoreClass) => new ResolvedCoreClass(inputs()))
+            .then(mount)
+        }
 
         return () => {
           unmount?.()
