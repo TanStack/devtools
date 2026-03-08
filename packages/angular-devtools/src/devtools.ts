@@ -1,3 +1,4 @@
+import { PLUGIN_CONTAINER_ID, TanStackDevtoolsCore } from '@tanstack/devtools'
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
@@ -20,7 +21,6 @@ import {
   signal,
   untracked,
 } from '@angular/core'
-import { PLUGIN_CONTAINER_ID, TanStackDevtoolsCore } from '@tanstack/devtools'
 import type { Signal } from '@angular/core'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
@@ -43,7 +43,7 @@ class TanStackPluginView {}
   template: '<ng-content/>',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TanStackDevtoolsComponent {
+export class TanStackDevtools {
   readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef)
 
   readonly plugins = input<TanStackDevtoolsAngularInit['plugins']>([])

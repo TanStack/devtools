@@ -1,5 +1,5 @@
 {
-  "name": "basic",
+  "name": "@tanstack/devtools-example-angular-basic",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",

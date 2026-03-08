@@ -10,7 +10,18 @@
     "noFallthroughCasesInSwitch": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "paths": {
+      "@tanstack/angular-devtools/provider": ["./provider/index.ts"],
+      "@tanstack/angular-devtools": ["./src/index.ts"]
+    }
   },
-  "include": ["src", "tests", "eslint.config.js", "vite.config.ts"]
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true,
+    "compilationMode": "partial"
+  },
+  "include": ["src", "provider", "tests", "eslint.config.js", "vite.config.ts"]
 }
