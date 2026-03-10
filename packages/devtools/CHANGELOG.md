@@ -1,5 +1,37 @@
 # @tanstack/devtools
 
+## 0.10.11
+
+### Patch Changes
+
+- Fix issues with bundling solid ([#367](https://github.com/TanStack/devtools/pull/367))
+
+## 0.10.10
+
+### Patch Changes
+
+- Updated dependencies [[`b3e375f`](https://github.com/TanStack/devtools/commit/b3e375f1b09f69f36bd7b8e6f10197af1aa7fd2a), [`a629bc3`](https://github.com/TanStack/devtools/commit/a629bc3927ddb035a5c5f1104a975e1d8ddeaaf9)]:
+  - @tanstack/devtools-ui@0.5.0
+
+## 0.10.9
+
+### Patch Changes
+
+- Updated dependencies [[`cf23787`](https://github.com/TanStack/devtools/commit/cf23787b9669e8999c5b2916a24c4d86231034b3)]:
+  - @tanstack/devtools-client@0.0.6
+
+## 0.10.8
+
+### Patch Changes
+
+- Changed default `inspectHotkey` from `["Shift", "CtrlOrMeta"]` to `["Shift", "Alt", "CtrlOrMeta"]` to avoid conflicts with browser shortcuts (Ctrl/Cmd + Shift + Click opens links in new tabs). ([#357](https://github.com/TanStack/devtools/pull/357))
+
+## 0.10.7
+
+### Patch Changes
+
+- prevent sidebar icons from collapsing ([#352](https://github.com/TanStack/devtools/pull/352))
+
 ## 0.10.6
 
 ### Patch Changes

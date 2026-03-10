@@ -1,5 +1,14 @@
 # @tanstack/devtools-client
 
+## 0.0.6
+
+### Patch Changes
+
+- Simplify EventClient types to accept unprefixed event maps ([#361](https://github.com/TanStack/devtools/pull/361))
+
+- Updated dependencies [[`cf23787`](https://github.com/TanStack/devtools/commit/cf23787b9669e8999c5b2916a24c4d86231034b3)]:
+  - @tanstack/devtools-event-client@0.4.1
+
 ## 0.0.5
 
 ### Patch Changes
