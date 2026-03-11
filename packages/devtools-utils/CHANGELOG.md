@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.3.3
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
 ## 0.3.2
 
 ### Patch Changes

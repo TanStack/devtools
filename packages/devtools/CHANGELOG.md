@@ -1,5 +1,17 @@
 # @tanstack/devtools
 
+## 0.10.13
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
+## 0.10.12
+
+### Patch Changes
+
+- Fix Rspack compatibility by avoiding direct `import.meta` access patterns and add a regression test to prevent reintroduction. ([#349](https://github.com/TanStack/devtools/pull/349))
+
 ## 0.10.11
 
 ### Patch Changes

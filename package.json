@@ -60,6 +60,7 @@
     "@size-limit/preset-small-lib": "^11.2.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@tanstack/eslint-config": "0.3.2",
+    "@tanstack/intent": "^0.0.14",
     "@tanstack/typedoc-config": "0.2.1",
     "@tanstack/vite-config": "0.2.1",
     "@testing-library/jest-dom": "^6.8.0",
@@ -87,5 +88,13 @@
     "@tanstack/preact-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
     "@tanstack/devtools-vite": "workspace:*"
+  },
+  "files": [
+    "skills",
+    "bin",
+    "!skills/_artifacts"
+  ],
+  "bin": {
+    "intent": "./bin/intent.js"
   }
 }

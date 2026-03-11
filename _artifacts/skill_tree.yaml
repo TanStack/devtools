@@ -1,0 +1,205 @@
+# _artifacts/skill_tree.yaml
+library:
+  name: '@tanstack/devtools'
+  version: '0.10.12'
+  repository: 'https://github.com/TanStack/devtools'
+  description: >
+    Framework-agnostic toolkit for building custom devtools panels via a plugin
+    system with typed event communication. Supports React, Vue, Solid, Preact.
+generated_from:
+  domain_map: '_artifacts/domain_map.yaml'
+  skill_spec: '_artifacts/skill_spec.md'
+generated_at: '2026-03-11'
+
+skills:
+  # ── Core package: @tanstack/devtools ──
+
+  - name: 'Devtools app setup'
+    slug: 'devtools-app-setup'
+    type: 'core'
+    domain: 'setup'
+    path: 'packages/devtools/skills/devtools-app-setup/SKILL.md'
+    package: 'packages/devtools'
+    description: >
+      Install TanStack Devtools, pick framework adapter (React/Vue/Solid/Preact),
+      register plugins via plugins prop, configure shell (position, hotkeys,
+      theme, hideUntilHover, requireUrlFlag, eventBusConfig). TanStackDevtools
+      component, defaultOpen, localStorage persistence.
+    sources:
+      - 'TanStack/devtools:docs/quick-start.md'
+      - 'TanStack/devtools:docs/installation.md'
+      - 'TanStack/devtools:docs/configuration.md'
+      - 'TanStack/devtools:docs/overview.md'
+
+  - name: 'Devtools plugin panel development'
+    slug: 'devtools-plugin-panel'
+    type: 'core'
+    domain: 'plugin-development'
+    path: 'packages/devtools/skills/devtools-plugin-panel/SKILL.md'
+    package: 'packages/devtools'
+    description: >
+      Build devtools panel components that display emitted event data. Listen
+      via EventClient.on(), handle theme (light/dark), use devtools-ui
+      components (JSONTree, buttons, sections). Plugin registration (name,
+      render, id, defaultOpen), lifecycle (mount, activate, destroy), max 3
+      active plugins. Two paths: Solid.js core with devtools-ui or
+      framework-specific panels directly.
+    requires:
+      - 'devtools-event-client'
+    sources:
+      - 'TanStack/devtools:docs/building-custom-plugins.md'
+      - 'TanStack/devtools:docs/plugin-lifecycle.md'
+      - 'TanStack/devtools:docs/plugin-configuration.md'
+      - 'TanStack/devtools:packages/devtools/src/context/devtools-context.tsx'
+
+  - name: 'Devtools production setup'
+    slug: 'devtools-production'
+    type: 'lifecycle'
+    domain: 'build-production'
+    path: 'packages/devtools/skills/devtools-production/SKILL.md'
+    package: 'packages/devtools'
+    description: >
+      Handle devtools in production vs development. removeDevtoolsOnBuild,
+      /production sub-export, devDependency vs regular dependency, conditional
+      imports, NoOp plugin variants for tree-shaking, non-Vite production
+      exclusion patterns.
+    requires:
+      - 'devtools-app-setup'
+    sources:
+      - 'TanStack/devtools:docs/production.md'
+      - 'TanStack/devtools:packages/devtools-vite/src/remove-devtools.ts'
+
+  - name: 'Devtools marketplace publishing'
+    slug: 'devtools-marketplace'
+    type: 'lifecycle'
+    domain: 'plugin-development'
+    path: 'packages/devtools/skills/devtools-marketplace/SKILL.md'
+    package: 'packages/devtools'
+    description: >
+      Publish plugin to npm and submit to TanStack Devtools Marketplace.
+      PluginMetadata registry format, plugin-registry.ts, pluginImport
+      (importName, type), requires (packageName, minVersion), framework
+      tagging, multi-framework submissions, featured plugins.
+    requires:
+      - 'devtools-plugin-panel'
+    sources:
+      - 'TanStack/devtools:docs/third-party-plugins.md'
+      - 'TanStack/devtools:packages/devtools/src/tabs/plugin-registry.ts'
+
+  # ── Event client package: @tanstack/devtools-event-client ──
+
+  - name: 'Devtools event client'
+    slug: 'devtools-event-client'
+    type: 'core'
+    domain: 'event-communication'
+    path: 'packages/event-bus-client/skills/devtools-event-client/SKILL.md'
+    package: 'packages/event-bus-client'
+    description: >
+      Create typed EventClient for a library. Define event maps with typed
+      payloads, pluginId auto-prepend namespacing, emit()/on()/onAll()/
+      onAllPluginEvents() API. Connection lifecycle (5 retries, 300ms),
+      event queuing, enabled/disabled state, SSR fallbacks, singleton
+      pattern. Unique pluginId requirement to avoid event collisions.
+    sources:
+      - 'TanStack/devtools:docs/event-system.md'
+      - 'TanStack/devtools:docs/building-custom-plugins.md'
+      - 'TanStack/devtools:packages/event-bus-client/src/plugin.ts'
+
+  - name: 'Devtools strategic instrumentation'
+    slug: 'devtools-instrumentation'
+    type: 'core'
+    domain: 'instrumentation'
+    path: 'packages/event-bus-client/skills/devtools-instrumentation/SKILL.md'
+    package: 'packages/event-bus-client'
+    description: >
+      Analyze library codebase for critical architecture and debugging points,
+      add strategic event emissions. Identify middleware boundaries, state
+      transitions, lifecycle hooks. Consolidate events (1 not 15), debounce
+      high-frequency updates, DRY shared payload fields, guard emit() for
+      production. Transparent server/client event bridging.
+    requires:
+      - 'devtools-event-client'
+    sources:
+      - 'TanStack/devtools:docs/building-custom-plugins.md'
+      - 'TanStack/devtools:docs/bidirectional-communication.md'
+
+  - name: 'Devtools bidirectional communication'
+    slug: 'devtools-bidirectional'
+    type: 'core'
+    domain: 'event-communication'
+    path: 'packages/event-bus-client/skills/devtools-bidirectional/SKILL.md'
+    package: 'packages/event-bus-client'
+    description: >
+      Two-way event patterns between devtools panel and application.
+      App-to-devtools observation, devtools-to-app commands, time-travel
+      debugging with snapshots and revert. structuredClone for snapshot
+      safety, distinct event suffixes for observation vs commands,
+      serializable payloads only.
+    requires:
+      - 'devtools-event-client'
+    sources:
+      - 'TanStack/devtools:docs/bidirectional-communication.md'
+      - 'TanStack/devtools:packages/event-bus-client/src/plugin.ts'
+
+  # ── Vite plugin package: @tanstack/devtools-vite ──
+
+  - name: 'Devtools Vite plugin'
+    slug: 'devtools-vite-plugin'
+    type: 'core'
+    domain: 'build-production'
+    path: 'packages/devtools-vite/skills/devtools-vite-plugin/SKILL.md'
+    package: 'packages/devtools-vite'
+    description: >
+      Configure @tanstack/devtools-vite for source inspection (data-tsd-source,
+      inspectHotkey, ignore patterns), console piping (client-to-server,
+      server-to-client, levels), enhanced logging, server event bus (port,
+      host, HTTPS), production stripping (removeDevtoolsOnBuild), editor
+      integration (launch-editor, custom editor.open). Must be FIRST plugin
+      in Vite config. Vite ^6 || ^7 only.
+    sources:
+      - 'TanStack/devtools:docs/vite-plugin.md'
+      - 'TanStack/devtools:docs/source-inspector.md'
+      - 'TanStack/devtools:packages/devtools-vite/src/plugin.ts'
+    subsystems:
+      - 'Source injection'
+      - 'Console piping'
+      - 'Enhanced logging'
+      - 'Production stripping'
+      - 'Server event bus'
+      - 'Editor integration'
+    references:
+      - 'references/vite-options.md'
+
+  # ── Utils package: @tanstack/devtools-utils ──
+
+  - name: 'Devtools framework adapters'
+    slug: 'devtools-framework-adapters'
+    type: 'framework'
+    domain: 'framework-adaptation'
+    path: 'packages/devtools-utils/skills/devtools-framework-adapters/SKILL.md'
+    package: 'packages/devtools-utils'
+    description: >
+      Use devtools-utils factory functions to create per-framework plugin
+      adapters. createReactPlugin/createSolidPlugin/createVuePlugin/
+      createPreactPlugin, createReactPanel/createSolidPanel/createVuePanel/
+      createPreactPanel. [Plugin, NoOpPlugin] tuple for tree-shaking.
+      DevtoolsPanelProps (theme). Vue uses (name, component) not options
+      object. Solid render must be function. Class-based panel factories.
+    requires:
+      - 'devtools-plugin-panel'
+    sources:
+      - 'TanStack/devtools:docs/devtools-utils.md'
+      - 'TanStack/devtools:packages/devtools-utils/src/react/plugin.tsx'
+      - 'TanStack/devtools:packages/devtools-utils/src/vue/plugin.ts'
+      - 'TanStack/devtools:packages/devtools-utils/src/solid/plugin.tsx'
+      - 'TanStack/devtools:packages/devtools-utils/src/preact/plugin.tsx'
+    subsystems:
+      - 'React'
+      - 'Vue'
+      - 'Solid'
+      - 'Preact'
+    references:
+      - 'references/react.md'
+      - 'references/vue.md'
+      - 'references/solid.md'
+      - 'references/preact.md'

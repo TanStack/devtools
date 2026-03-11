@@ -44,6 +44,14 @@ A debugging toolkit that provides a unified interface for inspecting, monitoring
 
 ### <a href="https://tanstack.com/devtools">Read the docs →</b></a>
 
+## AI Agent Support
+
+If you use an AI coding agent (Claude Code, Cursor, Copilot, etc.), install the TanStack Devtools skills for better code generation:
+
+```sh
+npx @tanstack/intent@latest install
+```
+
 ## Get Involved
 
 - We welcome issues and pull requests!
