@@ -52,7 +52,6 @@ Add plugins via the `plugins` prop. Each plugin needs `name` (string) and `rende
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-
 ;<TanStackDevtools
   plugins={[
     {
@@ -204,7 +203,6 @@ Each plugin entry can include a `defaultOpen` flag to control whether that plugi
 ```tsx
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { FormDevtools } from '@tanstack/react-form'
-
 ;<TanStackDevtools
   config={{ hideUntilHover: true }}
   eventBusConfig={{ debug: true }}

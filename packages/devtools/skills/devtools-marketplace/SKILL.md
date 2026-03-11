@@ -164,7 +164,6 @@ The injected code looks like:
 
 ```tsx
 import { AcmeStateDevtoolsPanel } from '@acme/react-state-devtools'
-
 ;<TanStackDevtools
   plugins={[
     { name: 'Acme State Inspector', render: <AcmeStateDevtoolsPanel /> },
