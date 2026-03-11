@@ -46,7 +46,8 @@
   },
   "files": [
     "dist/",
-    "src"
+    "src",
+    "skills"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
