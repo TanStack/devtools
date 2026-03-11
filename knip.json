@@ -13,6 +13,12 @@
     },
     "packages/solid-devtools": {
       "ignore": ["**/core.tsx"]
+    },
+    "packages/angular-devtools": {
+      "entry": [
+        "provider/**/*.ts",
+        "src/**/*.ts"
+      ]
     }
   }
 }

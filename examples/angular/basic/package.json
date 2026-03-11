@@ -18,8 +18,7 @@
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
     "@tanstack/angular-devtools": "^0.0.1",
-    "@tanstack/devtools": "workspace:^",
-    "@tanstack/devtools-event-client": "workspace:*",
+    "@tanstack/devtools-event-client": "0.4.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -27,9 +26,7 @@
     "@angular/build": "^21.2.0",
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
-    "jsdom": "^28.0.0",
     "prettier": "^3.8.1",
-    "typescript": "~5.9.2",
-    "vitest": "^4.0.8"
+    "typescript": "~5.9.2"
   }
 }

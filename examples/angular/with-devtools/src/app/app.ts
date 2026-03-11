@@ -1,11 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { createCounter } from './counter'
-import { TanStackDevtools } from '@tanstack/angular-devtools'
-import { injectDevtoolsPlugins } from '@tanstack/angular-devtools/provider'
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { createCounter } from './counter';
+import { injectDevtoolsPlugins } from '@tanstack/angular-devtools/provider';
 
 @Component({
   selector: 'app-root',
-  imports: [TanStackDevtools],
   template: `
     <div>
       <h1>Custom plugins</h1>
@@ -21,11 +19,11 @@ import { injectDevtoolsPlugins } from '@tanstack/angular-devtools/provider'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  readonly counter = createCounter()
-  readonly devtoolsPlugins = injectDevtoolsPlugins()
+  readonly counter = createCounter();
+  readonly devtoolsPlugins = injectDevtoolsPlugins();
 
-  readonly increment = () => this.counter.increment()
-  readonly decrement = () => this.counter.decrement()
+  readonly increment = () => this.counter.increment();
+  readonly decrement = () => this.counter.decrement();
 
   readonly addPlugin = () => {
     this.devtoolsPlugins.update((n) => [
@@ -34,6 +32,6 @@ export class App {
         name: `Custom devtools ${n.length + 1}`,
         render: () => import('./devtools/custom-devtools-panel'),
       },
-    ])
-  }
+    ]);
+  };
 }
