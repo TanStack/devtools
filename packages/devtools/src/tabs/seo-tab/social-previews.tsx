@@ -1,7 +1,7 @@
-import { createSignal, For } from 'solid-js'
+import { For, createSignal } from 'solid-js'
+import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { useHeadChanges } from '../../hooks/use-head-changes'
-import { Section, SectionDescription } from '@tanstack/devtools-ui'
 
 const SOCIALS = [
   {
