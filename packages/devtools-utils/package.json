@@ -76,7 +76,7 @@
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
-    "solid-js": ">=1.9.7",
+    "solid-js": "^1.9.7",
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
@@ -111,6 +111,7 @@
     "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.solid-class.ts && tsup"
   },
   "devDependencies": {
+    "solid-js": "^1.9.9",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.8"
