@@ -2,8 +2,8 @@
 name: devtools-event-client
 description: Create typed EventClient for a library. Define event maps with typed payloads, pluginId auto-prepend namespacing, emit()/on()/onAll()/onAllPluginEvents() API. Connection lifecycle (5 retries, 300ms), event queuing, enabled/disabled state, SSR fallbacks, singleton pattern. Unique pluginId requirement to avoid event collisions.
 type: core
-library: "@tanstack/devtools-event-client"
-library_version: "0.10.12"
+library: '@tanstack/devtools-event-client'
+library_version: '0.10.12'
 sources:
   - packages/event-bus-client/src/plugin.ts
   - docs/event-system.md
@@ -30,12 +30,12 @@ import { EventClient } from '@tanstack/devtools-event-client'
 
 ### Constructor Options
 
-| Option             | Type      | Required | Default | Description                                      |
-| ------------------ | --------- | -------- | ------- | ------------------------------------------------ |
-| `pluginId`         | `string`  | Yes      | --      | Identifies this plugin in the event system. Must be unique across all plugins. |
+| Option             | Type      | Required | Default | Description                                                                           |
+| ------------------ | --------- | -------- | ------- | ------------------------------------------------------------------------------------- |
+| `pluginId`         | `string`  | Yes      | --      | Identifies this plugin in the event system. Must be unique across all plugins.        |
 | `debug`            | `boolean` | No       | `false` | Enable verbose console logging prefixed with `[tanstack-devtools:{pluginId}-plugin]`. |
-| `enabled`          | `boolean` | No       | `true`  | When `false`, `emit()` is a no-op and `on()` returns a no-op cleanup function. |
-| `reconnectEveryMs` | `number`  | No       | `300`   | Interval in ms between connection retry attempts (max 5 retries). |
+| `enabled`          | `boolean` | No       | `true`  | When `false`, `emit()` is a no-op and `on()` returns a no-op cleanup function.        |
+| `reconnectEveryMs` | `number`  | No       | `300`   | Interval in ms between connection retry attempts (max 5 retries).                     |
 
 ## Core Patterns
 
@@ -49,7 +49,7 @@ import { EventClient } from '@tanstack/devtools-event-client'
 type StoreEvents = {
   'state-changed': { storeName: string; state: unknown; timestamp: number }
   'action-dispatched': { storeName: string; action: string; payload: unknown }
-  'reset': void
+  reset: void
 }
 
 class StoreInspectorClient extends EventClient<StoreEvents> {
@@ -110,9 +110,13 @@ cleanup()
 **`on(suffix, callback, { withEventTarget: true })`** -- also register on an internal EventTarget so events emitted and listened to on the same client instance are delivered immediately without going through the global bus:
 
 ```ts
-const cleanup = storeInspector.on('state-changed', (event) => {
-  console.log(event.payload.state)
-}, { withEventTarget: true })
+const cleanup = storeInspector.on(
+  'state-changed',
+  (event) => {
+    console.log(event.payload.state)
+  },
+  { withEventTarget: true },
+)
 ```
 
 **`onAll(callback)`** -- listen to all events from all plugins:
@@ -238,8 +242,8 @@ Wrong:
 storeInspector.emit('state-changed', {
   storeName: 'main',
   state,
-  callback: () => {},      // Function -- not serializable
-  element: document.body,   // DOM node -- not serializable
+  callback: () => {}, // Function -- not serializable
+  element: document.body, // DOM node -- not serializable
 })
 ```
 

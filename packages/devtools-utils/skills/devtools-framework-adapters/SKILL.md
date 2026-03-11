@@ -8,15 +8,15 @@ description: >
   Vue uses (name, component) not options object. Solid render must be function.
 type: framework
 library: tanstack-devtools
-library_version: "0.10.12"
+library_version: '0.10.12'
 requires:
   - tanstack-devtools/plugin-panel
 sources:
-  - "TanStack/devtools:docs/devtools-utils.md"
-  - "TanStack/devtools:packages/devtools-utils/src/react/plugin.tsx"
-  - "TanStack/devtools:packages/devtools-utils/src/vue/plugin.ts"
-  - "TanStack/devtools:packages/devtools-utils/src/solid/plugin.tsx"
-  - "TanStack/devtools:packages/devtools-utils/src/preact/plugin.tsx"
+  - 'TanStack/devtools:docs/devtools-utils.md'
+  - 'TanStack/devtools:packages/devtools-utils/src/react/plugin.tsx'
+  - 'TanStack/devtools:packages/devtools-utils/src/vue/plugin.ts'
+  - 'TanStack/devtools:packages/devtools-utils/src/solid/plugin.tsx'
+  - 'TanStack/devtools:packages/devtools-utils/src/preact/plugin.tsx'
 ---
 
 Use `@tanstack/devtools-utils` factory functions to create per-framework devtools plugin adapters. Each framework has a subpath export (`/react`, `/vue`, `/solid`, `/preact`) with two factories:
@@ -43,12 +43,14 @@ All four frameworks follow the same two-factory pattern:
 ### Plugin Factory
 
 Every `createXPlugin` returns `readonly [Plugin, NoOpPlugin]`:
+
 - **Plugin** -- returns a plugin object with metadata and a `render` function that renders your component.
 - **NoOpPlugin** -- returns a plugin object with the same metadata but renders an empty fragment.
 
 ### Panel Factory
 
 Every `createXPanel` returns `readonly [Panel, NoOpPanel]`:
+
 - **Panel** -- a framework component that creates a `<div style="height:100%">`, instantiates the core class, calls `core.mount(el, theme)` on mount, and `core.unmount()` on cleanup.
 - **NoOpPanel** -- renders an empty fragment.
 
@@ -67,6 +69,7 @@ interface DevtoolsPanelProps {
 ```
 
 Import from the framework subpath:
+
 ```ts
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/react'
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/vue'
@@ -91,17 +94,25 @@ const [MyPlugin, NoOpPlugin] = createReactPlugin({
 })
 
 // Tree-shaking: use NoOp in production
-const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
+const ActivePlugin =
+  process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
 ```
 
 ### With Class-Based Panel
 
 ```tsx
-import { createReactPanel, createReactPlugin } from '@tanstack/devtools-utils/react'
+import {
+  createReactPanel,
+  createReactPlugin,
+} from '@tanstack/devtools-utils/react'
 
 class MyDevtoolsCore {
-  mount(el: HTMLElement, theme: 'light' | 'dark') { /* render into el */ }
-  unmount() { /* cleanup */ }
+  mount(el: HTMLElement, theme: 'light' | 'dark') {
+    /* render into el */
+  }
+  unmount() {
+    /* cleanup */
+  }
 }
 
 const [MyPanel, NoOpPanel] = createReactPanel(MyDevtoolsCore)
@@ -165,6 +176,7 @@ const [MyPlugin, NoOpPlugin] = createVuePlugin('My Plugin', MyPanel)
 ```
 
 Vue plugins also work differently at call time -- you pass props:
+
 ```ts
 // WRONG -- calling Plugin() with no args (React pattern)
 const plugin = MyPlugin()
@@ -181,7 +193,7 @@ When using Solid components, `Component` must be a function reference, not raw J
 // WRONG -- evaluates immediately, breaks Solid reactivity
 createSolidPlugin({
   name: 'My Store',
-  Component: <MyPanel />,  // This is JSX.Element, not a component function
+  Component: <MyPanel />, // This is JSX.Element, not a component function
 })
 
 // CORRECT -- pass the component function itself
@@ -210,7 +222,8 @@ const [MyPlugin, NoOpPlugin] = createReactPlugin({
   name: 'Store',
   Component: MyPanel,
 })
-const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
+const ActivePlugin =
+  process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
 ```
 
 ### MEDIUM: Not Passing Theme Prop to Panel Component
@@ -223,15 +236,14 @@ const Component = () => <div>My Panel</div>
 
 // CORRECT -- use theme for styling
 const Component = ({ theme }: DevtoolsPanelProps) => (
-  <div className={theme === 'dark' ? 'dark-mode' : 'light-mode'}>
-    My Panel
-  </div>
+  <div className={theme === 'dark' ? 'dark-mode' : 'light-mode'}>My Panel</div>
 )
 ```
 
 ## Design Tension
 
 The core architecture is framework-agnostic, but each framework has different idioms:
+
 - React/Preact use an options object with `Component` as a JSX function component.
 - Vue uses positional arguments with a `DefineComponent` and passes props through.
 - Solid uses the same options API as React but with Solid's JSX and reactivity model.

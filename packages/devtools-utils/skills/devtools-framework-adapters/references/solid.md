@@ -3,7 +3,10 @@
 ## Import
 
 ```ts
-import { createSolidPlugin, createSolidPanel } from '@tanstack/devtools-utils/solid'
+import {
+  createSolidPlugin,
+  createSolidPanel,
+} from '@tanstack/devtools-utils/solid'
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/solid'
 
 // For class-based lazy loading (separate subpath)
@@ -35,12 +38,12 @@ function createSolidPlugin(options: {
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | `string` | Yes | Display name shown in the devtools tab |
-| `id` | `string` | No | Unique identifier for the plugin |
-| `defaultOpen` | `boolean` | No | Whether the plugin panel starts open |
-| `Component` | `(props: DevtoolsPanelProps) => JSX.Element` | Yes | Solid component function |
+| Parameter     | Type                                         | Required | Description                            |
+| ------------- | -------------------------------------------- | -------- | -------------------------------------- |
+| `name`        | `string`                                     | Yes      | Display name shown in the devtools tab |
+| `id`          | `string`                                     | No       | Unique identifier for the plugin       |
+| `defaultOpen` | `boolean`                                    | No       | Whether the plugin panel starts open   |
+| `Component`   | `(props: DevtoolsPanelProps) => JSX.Element` | Yes      | Solid component function               |
 
 ### Return Value
 
@@ -186,12 +189,15 @@ export function createSolidPanel<
 ### Usage
 
 ```tsx
-import { createSolidPanel, createSolidPlugin } from '@tanstack/devtools-utils/solid'
+import {
+  createSolidPanel,
+  createSolidPlugin,
+} from '@tanstack/devtools-utils/solid'
 import { constructCoreClass } from '@tanstack/devtools-utils/solid/class'
 
 // Step 1: Build a core class with lazy loading
 const [MyDevtoolsCore, NoOpCore] = constructCoreClass(
-  () => import('./MyDevtoolsUI')
+  () => import('./MyDevtoolsUI'),
 )
 
 // Step 2: Create panel from core class
@@ -227,7 +233,7 @@ function constructCoreClass(
 import { constructCoreClass } from '@tanstack/devtools-utils/solid/class'
 
 const [DevtoolsCore, NoOpDevtoolsCore] = constructCoreClass(
-  () => import('./MyDevtoolsPanel')
+  () => import('./MyDevtoolsPanel'),
 )
 
 // Use DevtoolsCore with createSolidPanel

@@ -33,10 +33,10 @@ function createVuePlugin<TComponentProps extends Record<string, any>>(
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | `string` | Yes | Display name shown in the devtools tab |
-| `component` | `DefineComponent<TComponentProps>` | Yes | Vue component to render in the panel |
+| Parameter   | Type                               | Required | Description                            |
+| ----------- | ---------------------------------- | -------- | -------------------------------------- |
+| `name`      | `string`                           | Yes      | Display name shown in the devtools tab |
+| `component` | `DefineComponent<TComponentProps>` | Yes      | Vue component to render in the panel   |
 
 Note: There is **no** `id` or `defaultOpen` parameter. Vue plugins are simpler.
 
@@ -136,14 +136,16 @@ function createVuePanel<
     mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
     unmount: () => void
   },
->(CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass): readonly [Panel, NoOpPanel]
+>(
+  CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass,
+): readonly [Panel, NoOpPanel]
 ```
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `CoreClass` | `new (props: TComponentProps) => { mount(el, theme?): void; unmount(): void }` | Yes | Class constructor. **Note:** Vue's constructor takes `props`, unlike React's no-arg constructor. |
+| Parameter   | Type                                                                           | Required | Description                                                                                      |
+| ----------- | ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `CoreClass` | `new (props: TComponentProps) => { mount(el, theme?): void; unmount(): void }` | Yes      | Class constructor. **Note:** Vue's constructor takes `props`, unlike React's no-arg constructor. |
 
 ### Return Value
 
@@ -153,6 +155,7 @@ A tuple of two Vue `DefineComponent`s:
 - **`NoOpPanel`** -- Renders `null`.
 
 Both components have the type:
+
 ```ts
 DefineComponent<{
   theme?: 'dark' | 'light' | 'system'
@@ -205,8 +208,14 @@ export function createVuePanel<
   })
 
   return [Panel, NoOpPanel] as unknown as [
-    DefineComponent<{ theme?: DevtoolsPanelProps['theme']; devtoolsProps: TComponentProps }>,
-    DefineComponent<{ theme?: DevtoolsPanelProps['theme']; devtoolsProps: TComponentProps }>,
+    DefineComponent<{
+      theme?: DevtoolsPanelProps['theme']
+      devtoolsProps: TComponentProps
+    }>,
+    DefineComponent<{
+      theme?: DevtoolsPanelProps['theme']
+      devtoolsProps: TComponentProps
+    }>,
   ]
 }
 ```
@@ -237,7 +246,12 @@ const [MyPlugin, NoOpPlugin] = createVuePlugin('My Store', MyPanel)
 
 ```vue
 <template>
-  <MyPanel theme="dark" :devtools-props="{ /* ... */ }" />
+  <MyPanel
+    theme="dark"
+    :devtools-props="{
+      /* ... */
+    }"
+  />
 </template>
 ```
 

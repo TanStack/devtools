@@ -6,8 +6,8 @@ description: >
   hideUntilHover, requireUrlFlag, eventBusConfig). TanStackDevtools component,
   defaultOpen, localStorage persistence.
 type: core
-library: "@tanstack/devtools"
-library_version: "0.10.12"
+library: '@tanstack/devtools'
+library_version: '0.10.12'
 sources:
   - docs/quick-start.md
   - docs/installation.md
@@ -53,7 +53,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 
-<TanStackDevtools
+;<TanStackDevtools
   plugins={[
     {
       name: 'TanStack Query',
@@ -106,19 +106,22 @@ import { TanStackDevtools } from '@tanstack/solid-devtools'
 import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import App from './App'
 
-render(() => (
-  <>
-    <App />
-    <TanStackDevtools
-      plugins={[
-        {
-          name: 'TanStack Query',
-          render: <SolidQueryDevtoolsPanel />,
-        },
-      ]}
-    />
-  </>
-), document.getElementById('root')!)
+render(
+  () => (
+    <>
+      <App />
+      <TanStackDevtools
+        plugins={[
+          {
+            name: 'TanStack Query',
+            render: <SolidQueryDevtoolsPanel />,
+          },
+        ]}
+      />
+    </>
+  ),
+  document.getElementById('root')!,
+)
 ```
 
 ### Preact
@@ -155,6 +158,7 @@ render(
 Pass a `config` prop to `TanStackDevtools` to set initial shell behavior. These values are persisted to `localStorage` after first load and can be changed through the settings panel at runtime.
 
 Storage keys used internally:
+
 - `tanstack_devtools_settings` -- persisted settings
 - `tanstack_devtools_state` -- persisted UI state (active tab, panel height, active plugins, persistOpen)
 
@@ -163,16 +167,16 @@ All config properties are optional. Defaults shown below:
 ```tsx
 <TanStackDevtools
   config={{
-    defaultOpen: false,           // open panel on mount
-    hideUntilHover: false,        // hide trigger until mouse hover
-    position: 'bottom-right',    // trigger position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right'
-    panelLocation: 'bottom',     // panel position: 'top' | 'bottom'
+    defaultOpen: false, // open panel on mount
+    hideUntilHover: false, // hide trigger until mouse hover
+    position: 'bottom-right', // trigger position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right'
+    panelLocation: 'bottom', // panel position: 'top' | 'bottom'
     openHotkey: ['Control', '~'],
     inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
-    requireUrlFlag: false,        // require URL param to show devtools
+    requireUrlFlag: false, // require URL param to show devtools
     urlFlag: 'tanstack-devtools', // the URL param name when requireUrlFlag is true
-    theme: 'dark',                // 'light' | 'dark' (defaults to system preference)
-    triggerHidden: false,         // completely hide trigger (hotkey still works)
+    theme: 'dark', // 'light' | 'dark' (defaults to system preference)
+    triggerHidden: false, // completely hide trigger (hotkey still works)
   }}
 />
 ```
@@ -184,9 +188,9 @@ The `eventBusConfig` prop configures the client-side event bus that plugins use 
 ```tsx
 <TanStackDevtools
   eventBusConfig={{
-    debug: false,              // enable debug logging for the event bus
+    debug: false, // enable debug logging for the event bus
     connectToServerBus: false, // connect to the Vite plugin server event bus
-    port: 3000,               // port for server event bus connection
+    port: 3000, // port for server event bus connection
   }}
 />
 ```
@@ -201,7 +205,7 @@ Each plugin entry can include a `defaultOpen` flag to control whether that plugi
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { FormDevtools } from '@tanstack/react-form'
 
-<TanStackDevtools
+;<TanStackDevtools
   config={{ hideUntilHover: true }}
   eventBusConfig={{ debug: true }}
   plugins={[
@@ -222,7 +226,7 @@ Use `requireUrlFlag` to hide devtools unless a specific URL parameter is present
 <TanStackDevtools
   config={{
     requireUrlFlag: true,
-    urlFlag: 'tanstack-devtools',  // visit ?tanstack-devtools to enable
+    urlFlag: 'tanstack-devtools', // visit ?tanstack-devtools to enable
   }}
 />
 ```
@@ -238,9 +242,7 @@ Wrong:
 ```vue
 <!-- This silently fails - render is ignored in Vue adapter -->
 <script setup lang="ts">
-const plugins = [
-  { name: 'My Plugin', render: MyComponent },
-]
+const plugins = [{ name: 'My Plugin', render: MyComponent }]
 </script>
 ```
 

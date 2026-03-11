@@ -3,7 +3,10 @@
 ## Import
 
 ```ts
-import { createReactPlugin, createReactPanel } from '@tanstack/devtools-utils/react'
+import {
+  createReactPlugin,
+  createReactPanel,
+} from '@tanstack/devtools-utils/react'
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/react'
 ```
 
@@ -32,12 +35,12 @@ function createReactPlugin(options: {
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | `string` | Yes | Display name shown in the devtools tab |
-| `id` | `string` | No | Unique identifier for the plugin |
-| `defaultOpen` | `boolean` | No | Whether the plugin panel starts open |
-| `Component` | `(props: DevtoolsPanelProps) => JSX.Element` | Yes | React component to render in the panel |
+| Parameter     | Type                                         | Required | Description                            |
+| ------------- | -------------------------------------------- | -------- | -------------------------------------- |
+| `name`        | `string`                                     | Yes      | Display name shown in the devtools tab |
+| `id`          | `string`                                     | No       | Unique identifier for the plugin       |
+| `defaultOpen` | `boolean`                                    | No       | Whether the plugin panel starts open   |
+| `Component`   | `(props: DevtoolsPanelProps) => JSX.Element` | Yes      | React component to render in the panel |
 
 ### Return Value
 
@@ -117,7 +120,8 @@ const [MyPlugin, NoOpPlugin] = createReactPlugin({
   Component: MyStorePanel,
 })
 
-const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
+const ActivePlugin =
+  process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
 ```
 
 ## createReactPanel
@@ -138,9 +142,9 @@ function createReactPanel<
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `CoreClass` | `new () => { mount(el, theme): void; unmount(): void }` | Yes | Class constructor for the devtools core |
+| Parameter   | Type                                                    | Required | Description                             |
+| ----------- | ------------------------------------------------------- | -------- | --------------------------------------- |
+| `CoreClass` | `new () => { mount(el, theme): void; unmount(): void }` | Yes      | Class constructor for the devtools core |
 
 ### Return Value
 
@@ -196,7 +200,10 @@ export function createReactPanel<
 #### Composing Panel + Plugin
 
 ```tsx
-import { createReactPanel, createReactPlugin } from '@tanstack/devtools-utils/react'
+import {
+  createReactPanel,
+  createReactPlugin,
+} from '@tanstack/devtools-utils/react'
 
 class MyDevtoolsCore {
   mount(el: HTMLElement, theme: 'light' | 'dark') {
@@ -221,7 +228,8 @@ const [MyPlugin, NoOpPlugin] = createReactPlugin({
 })
 
 // Step 3: Use conditionally for production
-const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
+const ActivePlugin =
+  process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
 ```
 
 ## React-Specific Gotchas

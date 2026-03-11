@@ -6,8 +6,8 @@ description: >
   requires (packageName, minVersion), framework tagging, multi-framework submissions,
   featured plugins.
 type: lifecycle
-library: "@tanstack/devtools"
-library_version: "0.10.12"
+library: '@tanstack/devtools'
+library_version: '0.10.12'
 requires:
   - devtools-plugin-panel
 sources:
@@ -131,6 +131,7 @@ A function-based plugin exports a factory function that returns a plugin object.
 ```
 
 When a user clicks "Install" in the marketplace, the Vite plugin:
+
 1. Runs the package manager to install `@acme/react-analytics-devtools`
 2. Finds the file containing `<TanStackDevtools />`
 3. Adds `import { AnalyticsDevtoolsPlugin } from '@acme/react-analytics-devtools'`
@@ -164,7 +165,7 @@ The injected code looks like:
 ```tsx
 import { AcmeStateDevtoolsPanel } from '@acme/react-state-devtools'
 
-<TanStackDevtools
+;<TanStackDevtools
   plugins={[
     { name: 'Acme State Inspector', render: <AcmeStateDevtoolsPanel /> },
   ]}
@@ -257,13 +258,13 @@ If `pluginImport` is missing, step 3-5 are skipped entirely. The package gets in
 
 The marketplace determines the user's current framework by scanning their `package.json` dependencies for known framework packages:
 
-| Framework | Detected packages |
-|-----------|------------------|
-| react | `react`, `react-dom` |
-| solid | `solid-js` |
-| vue | `vue`, `@vue/core` |
-| svelte | `svelte` |
-| angular | `@angular/core` |
+| Framework | Detected packages    |
+| --------- | -------------------- |
+| react     | `react`, `react-dom` |
+| solid     | `solid-js`           |
+| vue       | `vue`, `@vue/core`   |
+| svelte    | `svelte`             |
+| angular   | `@angular/core`      |
 
 Plugins with `framework: 'other'` are shown regardless of the detected framework.
 
@@ -325,6 +326,7 @@ Correct -- pluginImport provided:
 ```
 
 The `importName` must be the exact named export from your package. The `type` must match how the export is consumed:
+
 - `'function'` if your export is a factory like `export function AnalyticsDevtoolsPlugin() { return { name: '...', ... } }`
 - `'jsx'` if your export is a component like `export function AnalyticsDevtoolsPanel() { return <div>...</div> }`
 

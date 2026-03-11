@@ -2,8 +2,8 @@
 name: devtools-bidirectional
 description: Two-way event patterns between devtools panel and application. App-to-devtools observation, devtools-to-app commands, time-travel debugging with snapshots and revert. structuredClone for snapshot safety, distinct event suffixes for observation vs commands, serializable payloads only.
 type: core
-library: "@tanstack/devtools-event-client"
-library_version: "0.10.12"
+library: '@tanstack/devtools-event-client'
+library_version: '0.10.12'
 requires: devtools-event-client
 sources:
   - packages/event-bus-client/src/plugin.ts
@@ -93,7 +93,7 @@ type CounterEvents = {
   // Observation: app -> panel
   'state-update': { count: number; updatedAt: number }
   // Commands: panel -> app
-  'reset': void
+  reset: void
   'set-count': { count: number }
 }
 ```
@@ -146,9 +146,9 @@ Combine observation (snapshots) with commands (revert) to build a time-travel sl
 ```ts
 type TimeTravelEvents = {
   // Observation: app -> panel
-  'snapshot': { state: unknown; timestamp: number; label: string }
+  snapshot: { state: unknown; timestamp: number; label: string }
   // Command: panel -> app
-  'revert': { state: unknown }
+  revert: { state: unknown }
 }
 
 class TimeTravelClient extends EventClient<TimeTravelEvents> {
@@ -260,12 +260,13 @@ type StoreInspectorEvents = {
   // Commands: panel -> app (describe what to do)
   'set-state': { storeName: string; state: unknown }
   'dispatch-action': { storeName: string; action: string; payload: unknown }
-  'reset': void
-  'revert': { state: unknown }
+  reset: void
+  revert: { state: unknown }
 }
 ```
 
 Naming convention:
+
 - **Observation events** describe what happened: `state-update`, `action-dispatched`, `error-caught`, `snapshot`
 - **Command events** describe what to do: `set-state`, `dispatch-action`, `reset`, `revert`
 
@@ -279,7 +280,7 @@ import { EventClient } from '@tanstack/devtools-event-client'
 type StoreInspectorEvents = {
   'state-update': { storeName: string; state: unknown; timestamp: number }
   'set-state': { storeName: string; state: unknown }
-  'reset': void
+  reset: void
 }
 
 class StoreInspectorClient extends EventClient<StoreInspectorEvents> {
@@ -417,8 +418,8 @@ Wrong:
 storeInspector.emit('set-state', {
   storeName: 'main',
   state: {
-    items: new Map([['a', 1]]),      // Map -- lost on serialization
-    onClick: () => alert('hi'),       // Function -- lost on serialization
+    items: new Map([['a', 1]]), // Map -- lost on serialization
+    onClick: () => alert('hi'), // Function -- lost on serialization
     ref: document.getElementById('x'), // DOM node -- lost on serialization
   },
 })
@@ -446,9 +447,9 @@ Wrong:
 
 ```ts
 type MyEvents = {
-  'state': unknown        // Is this observation or command?
-  'update': unknown       // Who emits this?
-  'count': number         // Unclear direction
+  state: unknown // Is this observation or command?
+  update: unknown // Who emits this?
+  count: number // Unclear direction
 }
 ```
 
@@ -456,10 +457,10 @@ Correct:
 
 ```ts
 type MyEvents = {
-  'state-update': unknown      // Observation: describes what happened
-  'set-state': unknown         // Command: describes what to do
-  'count-changed': number      // Observation: past tense / descriptive
-  'reset': void                // Command: imperative
+  'state-update': unknown // Observation: describes what happened
+  'set-state': unknown // Command: describes what to do
+  'count-changed': number // Observation: past tense / descriptive
+  reset: void // Command: imperative
 }
 ```
 

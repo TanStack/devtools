@@ -2,8 +2,8 @@
 name: devtools-instrumentation
 description: Analyze library codebase for critical architecture and debugging points, add strategic event emissions. Identify middleware boundaries, state transitions, lifecycle hooks. Consolidate events (1 not 15), debounce high-frequency updates, DRY shared payload fields, guard emit() for production. Transparent server/client event bridging.
 type: core
-library: "@tanstack/devtools-event-client"
-library_version: "0.10.12"
+library: '@tanstack/devtools-event-client'
+library_version: '0.10.12'
 requires: devtools-event-client
 sources:
   - packages/event-bus-client/src/plugin.ts
@@ -72,7 +72,10 @@ export const routerDevtools = new RouterDevtoolsClient()
 ```
 
 ```ts
-async function runMiddlewarePipeline(req: Request, middlewares: Middleware[]): Promise<Response> {
+async function runMiddlewarePipeline(
+  req: Request,
+  middlewares: Middleware[],
+): Promise<Response> {
   const requestId = crypto.randomUUID()
   const pipelineStart = performance.now()
   const chain: Array<{ name: string; durationMs: number }> = []
@@ -127,7 +130,10 @@ type QueryEvents = {
 
 class QueryDevtoolsClient extends EventClient<QueryEvents> {
   constructor() {
-    super({ pluginId: 'my-query-lib', enabled: process.env.NODE_ENV !== 'production' })
+    super({
+      pluginId: 'my-query-lib',
+      enabled: process.env.NODE_ENV !== 'production',
+    })
   }
 }
 
@@ -138,11 +144,20 @@ export const queryDevtools = new QueryDevtoolsClient()
 class Query {
   #state: QueryState = 'idle'
 
-  private transition(to: QueryState, extra?: Partial<QueryEvents['query-lifecycle']>) {
+  private transition(
+    to: QueryState,
+    extra?: Partial<QueryEvents['query-lifecycle']>,
+  ) {
     const from = this.#state
     if (from === to) return // No transition, no event
     this.#state = to
-    queryDevtools.emit('query-lifecycle', { queryKey: this.key, from, to, timestamp: Date.now(), ...extra })
+    queryDevtools.emit('query-lifecycle', {
+      queryKey: this.key,
+      from,
+      to,
+      timestamp: Date.now(),
+      ...extra,
+    })
   }
 
   async fetch() {
@@ -150,9 +165,15 @@ class Query {
     const start = performance.now()
     try {
       const data = await this.fetcher()
-      this.transition('success', { data: structuredClone(data), fetchDuration: performance.now() - start })
+      this.transition('success', {
+        data: structuredClone(data),
+        fetchDuration: performance.now() - start,
+      })
     } catch (e) {
-      this.transition('error', { error: e instanceof Error ? e.message : String(e), fetchDuration: performance.now() - start })
+      this.transition('error', {
+        error: e instanceof Error ? e.message : String(e),
+        fetchDuration: performance.now() - start,
+      })
     }
   }
 }
@@ -165,14 +186,27 @@ When multiple events share fields, build a shared base and spread it.
 ```ts
 class Store {
   private basePayload() {
-    return { storeName: this.#name, version: this.#version, sessionId: this.#sessionId, timestamp: Date.now() }
+    return {
+      storeName: this.#name,
+      version: this.#version,
+      sessionId: this.#sessionId,
+      timestamp: Date.now(),
+    }
   }
 
-  dispatch(action: string, updater: (s: Record<string, unknown>) => Record<string, unknown>) {
+  dispatch(
+    action: string,
+    updater: (s: Record<string, unknown>) => Record<string, unknown>,
+  ) {
     const prevState = structuredClone(this.#state)
     this.#state = updater(this.#state)
     this.#version++
-    storeDevtools.emit('store-updated', { ...this.basePayload(), action, prevState, nextState: structuredClone(this.#state) })
+    storeDevtools.emit('store-updated', {
+      ...this.basePayload(),
+      action,
+      prevState,
+      nextState: structuredClone(this.#state),
+    })
   }
 
   reset(initial: Record<string, unknown>) {
@@ -193,10 +227,19 @@ function createDebouncedEmitter<TEvents extends Record<string, any>>(
   delayMs: number,
 ) {
   const timers = new Map<string, ReturnType<typeof setTimeout>>()
-  return function debouncedEmit<K extends keyof TEvents & string>(event: K, payload: TEvents[K]) {
+  return function debouncedEmit<K extends keyof TEvents & string>(
+    event: K,
+    payload: TEvents[K],
+  ) {
     const existing = timers.get(event)
     if (existing) clearTimeout(existing)
-    timers.set(event, setTimeout(() => { client.emit(event, payload); timers.delete(event) }, delayMs))
+    timers.set(
+      event,
+      setTimeout(() => {
+        client.emit(event, payload)
+        timers.delete(event)
+      }, delayMs),
+    )
   }
 }
 
@@ -215,7 +258,10 @@ For leading+trailing (throttle), use the same pattern with a `lastEmit` timestam
 ```ts
 class MyLibDevtools extends EventClient<MyEvents> {
   constructor() {
-    super({ pluginId: 'my-lib', enabled: process.env.NODE_ENV !== 'production' })
+    super({
+      pluginId: 'my-lib',
+      enabled: process.env.NODE_ENV !== 'production',
+    })
   }
 }
 ```
@@ -224,7 +270,10 @@ For expensive payload construction (e.g., `structuredClone` of large state), gua
 
 ```ts
 if (process.env.NODE_ENV !== 'production') {
-  myDevtools.emit('state-snapshot', { state: structuredClone(largeState), timestamp: Date.now() })
+  myDevtools.emit('state-snapshot', {
+    state: structuredClone(largeState),
+    timestamp: Date.now(),
+  })
 }
 ```
 
@@ -278,8 +327,14 @@ Correct -- 1 event with all data:
 
 ```ts
 routerDevtools.emit('request-processed', {
-  id, method, path, duration: 50,
-  middlewareChain: [{ name: 'auth', durationMs: 5 }, { name: 'cors', durationMs: 1 }],
+  id,
+  method,
+  path,
+  duration: 50,
+  middlewareChain: [
+    { name: 'auth', durationMs: 5 },
+    { name: 'cors', durationMs: 1 },
+  ],
   status: 200,
 })
 ```
@@ -325,7 +380,12 @@ Correct -- instrumented at the handler boundary:
 function handleRequest(req: Request) {
   const params = parseQueryString(req.url)
   const result = processRequest(params)
-  devtools.emit('request-processed', { path: req.url, params: Object.fromEntries(params), result: result.summary, duration: performance.now() - start })
+  devtools.emit('request-processed', {
+    path: req.url,
+    params: Object.fromEntries(params),
+    result: result.summary,
+    duration: performance.now() - start,
+  })
 }
 ```
 
@@ -336,8 +396,20 @@ Source: maintainer interview
 Wrong:
 
 ```ts
-devtools.emit('action-a', { storeName: this.name, version: this.version, sessionId: this.sessionId, timestamp: Date.now(), data })
-devtools.emit('action-b', { storeName: this.name, version: this.version, sessionId: this.sessionId, timestamp: Date.now(), other })
+devtools.emit('action-a', {
+  storeName: this.name,
+  version: this.version,
+  sessionId: this.sessionId,
+  timestamp: Date.now(),
+  data,
+})
+devtools.emit('action-b', {
+  storeName: this.name,
+  version: this.version,
+  sessionId: this.sessionId,
+  timestamp: Date.now(),
+  other,
+})
 ```
 
 Correct:

@@ -8,14 +8,14 @@ description: >
   with devtools-ui for multi-framework support, or framework-specific panels.
 type: core
 library: tanstack-devtools
-library_version: "0.10.12"
+library_version: '0.10.12'
 requires:
   - devtools-event-client
 sources:
-  - "TanStack/devtools:docs/building-custom-plugins.md"
-  - "TanStack/devtools:docs/plugin-lifecycle.md"
-  - "TanStack/devtools:docs/plugin-configuration.md"
-  - "TanStack/devtools:packages/devtools/src/context/devtools-context.tsx"
+  - 'TanStack/devtools:docs/building-custom-plugins.md'
+  - 'TanStack/devtools:docs/plugin-lifecycle.md'
+  - 'TanStack/devtools:docs/plugin-configuration.md'
+  - 'TanStack/devtools:packages/devtools/src/context/devtools-context.tsx'
 ---
 
 ## TanStackDevtoolsPlugin Interface
@@ -64,7 +64,7 @@ import { EventClient } from '@tanstack/devtools-event-client'
 type StoreEvents = {
   'state-changed': { storeName: string; state: unknown; timestamp: number }
   'action-dispatched': { storeName: string; action: string; payload: unknown }
-  'reset': void
+  reset: void
 }
 
 class StoreInspectorClient extends EventClient<StoreEvents> {
@@ -84,21 +84,33 @@ Event names are suffixes only. The `pluginId` is prepended automatically: `'stor
 /** @jsxImportSource solid-js */
 import { createSignal, onCleanup, For } from 'solid-js'
 import {
-  MainPanel, Header, HeaderLogo, Section, SectionTitle,
-  JsonTree, Button, Tag, useTheme,
+  MainPanel,
+  Header,
+  HeaderLogo,
+  Section,
+  SectionTitle,
+  JsonTree,
+  Button,
+  Tag,
+  useTheme,
 } from '@tanstack/devtools-ui'
 import { storeInspector } from './event-client'
 
 export default function StoreInspectorPanel() {
   const { theme } = useTheme()
   const [state, setState] = createSignal<Record<string, unknown>>({})
-  const [actions, setActions] = createSignal<Array<{ action: string; payload: unknown }>>([])
+  const [actions, setActions] = createSignal<
+    Array<{ action: string; payload: unknown }>
+  >([])
 
   const cleanupState = storeInspector.on('state-changed', (e) => {
     setState((prev) => ({ ...prev, [e.payload.storeName]: e.payload.state }))
   })
   const cleanupActions = storeInspector.on('action-dispatched', (e) => {
-    setActions((prev) => [...prev, { action: e.payload.action, payload: e.payload.payload }])
+    setActions((prev) => [
+      ...prev,
+      { action: e.payload.action, payload: e.payload.payload },
+    ])
   })
 
   onCleanup(() => {
@@ -130,7 +142,9 @@ export default function StoreInspectorPanel() {
             </div>
           )}
         </For>
-        <Button variant="danger" onClick={() => setActions([])}>Clear Log</Button>
+        <Button variant="danger" onClick={() => setActions([])}>
+          Clear Log
+        </Button>
       </Section>
     </MainPanel>
   )
@@ -162,12 +176,13 @@ export const [StoreInspectorPanel, NoOpStoreInspectorPanel] =
 import { createReactPlugin } from '@tanstack/devtools-utils/react'
 import { StoreInspectorPanel } from './react'
 
-export const [StoreInspectorPlugin, NoOpStoreInspectorPlugin] = createReactPlugin({
-  name: 'Store Inspector',
-  id: 'store-inspector',
-  defaultOpen: true,
-  Component: StoreInspectorPanel,
-})
+export const [StoreInspectorPlugin, NoOpStoreInspectorPlugin] =
+  createReactPlugin({
+    name: 'Store Inspector',
+    id: 'store-inspector',
+    defaultOpen: true,
+    Component: StoreInspectorPanel,
+  })
 ```
 
 ### Step 4: Register
@@ -222,7 +237,9 @@ function MyPluginPanel({ theme }: { theme?: 'light' | 'dark' }) {
       <h3>My Plugin</h3>
       <ul>
         {items.map((item) => (
-          <li key={item.id}>{item.id}: {item.value}</li>
+          <li key={item.id}>
+            {item.id}: {item.value}
+          </li>
         ))}
       </ul>
     </div>
@@ -292,10 +309,16 @@ Wrong:
 
 ```ts
 function ComponentA() {
-  useEffect(() => { const c = client.on('state', cb1); return c }, [])
+  useEffect(() => {
+    const c = client.on('state', cb1)
+    return c
+  }, [])
 }
 function ComponentB() {
-  useEffect(() => { const c = client.on('state', cb2); return c }, [])
+  useEffect(() => {
+    const c = client.on('state', cb2)
+    return c
+  }, [])
 }
 ```
 

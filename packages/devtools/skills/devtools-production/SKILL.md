@@ -5,8 +5,8 @@ description: >
   devDependency vs regular dependency, conditional imports, NoOp plugin
   variants for tree-shaking, non-Vite production exclusion patterns.
 type: lifecycle
-library: "@tanstack/devtools"
-library_version: "0.10.12"
+library: '@tanstack/devtools'
+library_version: '0.10.12'
 requires: devtools-app-setup
 sources:
   - docs/production.md
@@ -52,7 +52,13 @@ function App() {
   return (
     <>
       <YourApp />
-      <TanStackDevtools plugins={[/* ... */]} />
+      <TanStackDevtools
+        plugins={
+          [
+            /* ... */
+          ]
+        }
+      />
     </>
   )
 }
@@ -76,6 +82,7 @@ The `@tanstack/devtools` core package uses Node.js conditional exports to serve 
 ```
 
 Key points:
+
 - `browser` + `development` condition resolves to `dev.js` (dev-only extras).
 - `browser` without `development` resolves to `index.js` (production build).
 - `node` and `workerd` resolve to `server.js` (server-safe, no DOM).
@@ -102,7 +109,7 @@ import react from '@vitejs/plugin-react'
 
 export default {
   plugins: [
-    devtools(),  // removeDevtoolsOnBuild defaults to true
+    devtools(), // removeDevtoolsOnBuild defaults to true
     react(),
   ],
 }
@@ -117,7 +124,13 @@ function App() {
   return (
     <>
       <YourApp />
-      <TanStackDevtools plugins={[/* ... */]} />
+      <TanStackDevtools
+        plugins={
+          [
+            /* ... */
+          ]
+        }
+      />
     </>
   )
 }
@@ -162,7 +175,13 @@ function App() {
   return (
     <>
       <YourApp />
-      <TanStackDevtools plugins={[/* ... */]} />
+      <TanStackDevtools
+        plugins={
+          [
+            /* ... */
+          ]
+        }
+      />
     </>
   )
 }
@@ -176,9 +195,13 @@ You can combine this with `requireUrlFlag` from the shell config to hide the dev
 <TanStackDevtools
   config={{
     requireUrlFlag: true,
-    urlFlag: 'debug',  // visit ?debug to show devtools
+    urlFlag: 'debug', // visit ?debug to show devtools
   }}
-  plugins={[/* ... */]}
+  plugins={
+    [
+      /* ... */
+    ]
+  }
 />
 ```
 
@@ -197,9 +220,11 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 export default function Devtools() {
   return (
     <TanStackDevtools
-      plugins={[
-        // your plugins
-      ]}
+      plugins={
+        [
+          // your plugins
+        ]
+      }
     />
   )
 }
@@ -234,7 +259,15 @@ let DevtoolsComponent: React.ComponentType = () => null
 
 if (__DEV__) {
   const { TanStackDevtools } = await import('@tanstack/react-devtools')
-  DevtoolsComponent = () => <TanStackDevtools plugins={[/* ... */]} />
+  DevtoolsComponent = () => (
+    <TanStackDevtools
+      plugins={
+        [
+          /* ... */
+        ]
+      }
+    />
+  )
 }
 
 function App() {
@@ -274,23 +307,19 @@ const ActivePlugin =
   process.env.NODE_ENV === 'development' ? QueryPlugin : QueryNoOpPlugin
 
 function App() {
-  return (
-    <TanStackDevtools
-      plugins={[ActivePlugin()]}
-    />
-  )
+  return <TanStackDevtools plugins={[ActivePlugin()]} />
 }
 ```
 
 The NoOp pattern exists for every framework adapter:
 
-| Framework | Factory | Source |
-|-----------|---------|--------|
-| React | `createReactPlugin` | `packages/devtools-utils/src/react/plugin.tsx` |
-| React (panel) | `createReactPanel` | `packages/devtools-utils/src/react/panel.tsx` |
-| Preact | `createPreactPlugin` | `packages/devtools-utils/src/preact/plugin.tsx` |
-| Solid | `createSolidPlugin` | `packages/devtools-utils/src/solid/plugin.tsx` |
-| Vue | `createVuePlugin` | `packages/devtools-utils/src/vue/plugin.ts` |
+| Framework     | Factory              | Source                                          |
+| ------------- | -------------------- | ----------------------------------------------- |
+| React         | `createReactPlugin`  | `packages/devtools-utils/src/react/plugin.tsx`  |
+| React (panel) | `createReactPanel`   | `packages/devtools-utils/src/react/panel.tsx`   |
+| Preact        | `createPreactPlugin` | `packages/devtools-utils/src/preact/plugin.tsx` |
+| Solid         | `createSolidPlugin`  | `packages/devtools-utils/src/solid/plugin.tsx`  |
+| Vue           | `createVuePlugin`    | `packages/devtools-utils/src/vue/plugin.ts`     |
 
 All return `readonly [Plugin, NoOpPlugin]`. The `NoOpPlugin` always has the same metadata (`name`, `id`, `defaultOpen`) but its render function produces an empty fragment, so the bundler can tree-shake the real panel component and all its dependencies.
 
@@ -308,7 +337,7 @@ The Vite plugin's `removeDevtoolsOnBuild` defaults to `true`. If you want devtoo
 // vite.config.ts
 export default {
   plugins: [
-    devtools(),  // removeDevtoolsOnBuild defaults to true -- code is stripped
+    devtools(), // removeDevtoolsOnBuild defaults to true -- code is stripped
     react(),
   ],
 }
@@ -324,10 +353,7 @@ npm install -D @tanstack/react-devtools
 ```ts
 // vite.config.ts
 export default {
-  plugins: [
-    devtools({ removeDevtoolsOnBuild: false }),
-    react(),
-  ],
+  plugins: [devtools({ removeDevtoolsOnBuild: false }), react()],
 }
 ```
 
@@ -351,7 +377,13 @@ function App() {
   return (
     <>
       <YourApp />
-      <TanStackDevtools plugins={[/* ... */]} />
+      <TanStackDevtools
+        plugins={
+          [
+            /* ... */
+          ]
+        }
+      />
     </>
   )
 }

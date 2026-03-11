@@ -9,11 +9,11 @@ description: >
   Vite ^6 || ^7 only.
 type: core
 library: tanstack-devtools
-library_version: "0.10.12"
+library_version: '0.10.12'
 sources:
-  - "TanStack/devtools:docs/vite-plugin.md"
-  - "TanStack/devtools:docs/source-inspector.md"
-  - "TanStack/devtools:packages/devtools-vite/src/plugin.ts"
+  - 'TanStack/devtools:docs/vite-plugin.md'
+  - 'TanStack/devtools:docs/source-inspector.md'
+  - 'TanStack/devtools:packages/devtools-vite/src/plugin.ts'
 ---
 
 Configure @tanstack/devtools-vite -- the Vite plugin that enhances TanStack Devtools with source inspection, console piping, enhanced logging, a server event bus, production stripping, editor integration, and a plugin marketplace. The plugin returns an array of sub-plugins, all using `enforce: 'pre'`, so it must be the FIRST plugin in the Vite config.
@@ -33,11 +33,13 @@ export default {
 ```
 
 Install as a dev dependency:
+
 ```sh
 pnpm add -D @tanstack/devtools-vite
 ```
 
 There is also a `defineDevtoolsConfig` helper for type-safe config objects:
+
 ```ts
 import { devtools, defineDevtoolsConfig } from '@tanstack/devtools-vite'
 
@@ -53,6 +55,7 @@ export default {
 ## Exports
 
 From `packages/devtools-vite/src/index.ts`:
+
 - `devtools` -- main plugin factory, returns `Array<Plugin>`
 - `defineDevtoolsConfig` -- identity function for type-safe config
 - `TanStackDevtoolsViteConfig` -- config type (re-exported)
@@ -62,17 +65,17 @@ From `packages/devtools-vite/src/index.ts`:
 
 `devtools()` returns an array of Vite plugins. Each has `enforce: 'pre'` and only activates when its conditions are met (dev mode, serve command, etc.).
 
-| Sub-plugin name | What it does | When active |
-|---|---|---|
-| `@tanstack/devtools:inject-source` | Babel transform adding `data-tsd-source` attrs to JSX | dev mode + `injectSource.enabled` |
-| `@tanstack/devtools:config` | Reserved for future config modifications | serve command only |
-| `@tanstack/devtools:custom-server` | Starts ServerEventBus, registers middleware for open-source/console-pipe endpoints | dev mode |
-| `@tanstack/devtools:remove-devtools-on-build` | Strips devtools imports/JSX from production bundles | build command or production mode + `removeDevtoolsOnBuild` |
-| `@tanstack/devtools:event-client-setup` | Marketplace: listens for install/add-plugin events via devtoolsEventClient | dev mode + serve + not CI |
-| `@tanstack/devtools:console-pipe-transform` | Injects runtime console-pipe code into entry files | dev mode + serve + `consolePiping.enabled` |
-| `@tanstack/devtools:better-console-logs` | Babel transform prepending source location to `console.log`/`console.error` | dev mode + `enhancedLogs.enabled` |
-| `@tanstack/devtools:inject-plugin` | Detects which file imports TanStackDevtools (for marketplace injection) | dev mode + serve |
-| `@tanstack/devtools:connection-injection` | Replaces `__TANSTACK_DEVTOOLS_PORT__`, `__TANSTACK_DEVTOOLS_HOST__`, `__TANSTACK_DEVTOOLS_PROTOCOL__` placeholders | dev mode + serve |
+| Sub-plugin name                               | What it does                                                                                                       | When active                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `@tanstack/devtools:inject-source`            | Babel transform adding `data-tsd-source` attrs to JSX                                                              | dev mode + `injectSource.enabled`                          |
+| `@tanstack/devtools:config`                   | Reserved for future config modifications                                                                           | serve command only                                         |
+| `@tanstack/devtools:custom-server`            | Starts ServerEventBus, registers middleware for open-source/console-pipe endpoints                                 | dev mode                                                   |
+| `@tanstack/devtools:remove-devtools-on-build` | Strips devtools imports/JSX from production bundles                                                                | build command or production mode + `removeDevtoolsOnBuild` |
+| `@tanstack/devtools:event-client-setup`       | Marketplace: listens for install/add-plugin events via devtoolsEventClient                                         | dev mode + serve + not CI                                  |
+| `@tanstack/devtools:console-pipe-transform`   | Injects runtime console-pipe code into entry files                                                                 | dev mode + serve + `consolePiping.enabled`                 |
+| `@tanstack/devtools:better-console-logs`      | Babel transform prepending source location to `console.log`/`console.error`                                        | dev mode + `enhancedLogs.enabled`                          |
+| `@tanstack/devtools:inject-plugin`            | Detects which file imports TanStackDevtools (for marketplace injection)                                            | dev mode + serve                                           |
+| `@tanstack/devtools:connection-injection`     | Replaces `__TANSTACK_DEVTOOLS_PORT__`, `__TANSTACK_DEVTOOLS_HOST__`, `__TANSTACK_DEVTOOLS_PROTOCOL__` placeholders | dev mode + serve                                           |
 
 ## Subsystem Details
 
@@ -81,6 +84,7 @@ From `packages/devtools-vite/src/index.ts`:
 Adds `data-tsd-source="<relative-path>:<line>:<column>"` attributes to every JSX opening element via Babel. This powers the "Go to Source" feature -- hold the inspect hotkey (default: Shift+Alt+Ctrl/Meta), hover over elements, click to open in editor.
 
 **Key behaviors:**
+
 - Skips `<Fragment>` and `<React.Fragment>`
 - Skips elements where the component's props parameter is spread (`{...props}`) -- this is because injecting the attribute would be overwritten by the spread
 - Skips files matching `injectSource.ignore.files` patterns
@@ -107,12 +111,14 @@ devtools({
 Bidirectional console piping between client and server. Injects runtime code (IIFE) into entry files that:
 
 **Client side:**
+
 1. Wraps `console[level]` to batch and POST entries to `/__tsd/console-pipe`
 2. Opens an EventSource on `/__tsd/console-pipe/sse` to receive server logs
 3. Server logs appear in browser console with a purple `[Server]` prefix
 4. Client logs appear in terminal with a cyan `[Client]` prefix
 
 **Server side (SSR/Nitro):**
+
 1. Wraps `console[level]` to batch and POST entries to `<viteServerUrl>/__tsd/console-pipe/server`
 2. These are then broadcast to all SSE clients
 
@@ -148,6 +154,7 @@ devtools({
 ### Production Stripping
 
 Removes all devtools code from production builds. The transform:
+
 1. Finds files importing from these packages: `@tanstack/react-devtools`, `@tanstack/preact-devtools`, `@tanstack/solid-devtools`, `@tanstack/vue-devtools`, `@tanstack/devtools`
 2. Removes the import declarations
 3. Removes the JSX elements that use the imported components
@@ -168,6 +175,7 @@ devtools({
 A WebSocket + SSE server for devtools-to-client communication. Managed by `@tanstack/devtools-event-bus/server`.
 
 **Key behaviors:**
+
 - Default port: 4206
 - On EADDRINUSE: falls back to OS-assigned port (port 0)
 - When Vite uses HTTPS: piggybacks on Vite's httpServer instead of creating a standalone one (shares TLS certificate)
@@ -179,9 +187,9 @@ A WebSocket + SSE server for devtools-to-client communication. Managed by `@tans
 ```ts
 devtools({
   eventBusConfig: {
-    port: 4206,    // default
+    port: 4206, // default
     enabled: true, // default; set false for storybook/vitest
-    debug: false,  // default; logs internal bus activity
+    debug: false, // default; logs internal bus activity
   },
 })
 ```
@@ -212,6 +220,7 @@ devtools({
 ### Plugin Marketplace
 
 When the dev server is running, listens for events via `devtoolsEventClient`:
+
 - `install-devtools` -- runs package manager install, then auto-injects plugin into devtools setup file
 - `add-plugin-to-devtools` -- injects plugin import and JSX/function call into the file containing `<TanStackDevtools>`
 - `bump-package-version` -- updates a package to a minimum version
@@ -238,10 +247,7 @@ export default {
 
 // CORRECT
 export default {
-  plugins: [
-    devtools(),
-    react(),
-  ],
+  plugins: [devtools(), react()],
 }
 ```
 
@@ -280,12 +286,12 @@ devtools({ eventBusConfig: { port: 4207 } })
 
 These are registered on the Vite dev server (not the event bus server):
 
-| Endpoint | Method | Purpose |
-|---|---|---|
-| `/__tsd/open-source?source=<path:line:col>` | GET | Opens file in editor, returns HTML that closes the window |
-| `/__tsd/console-pipe` | POST | Receives client console entries (batched JSON) |
-| `/__tsd/console-pipe/server` | POST | Receives server-side console entries |
-| `/__tsd/console-pipe/sse` | GET | SSE stream for broadcasting server logs to browser |
+| Endpoint                                    | Method | Purpose                                                   |
+| ------------------------------------------- | ------ | --------------------------------------------------------- |
+| `/__tsd/open-source?source=<path:line:col>` | GET    | Opens file in editor, returns HTML that closes the window |
+| `/__tsd/console-pipe`                       | POST   | Receives client console entries (batched JSON)            |
+| `/__tsd/console-pipe/server`                | POST   | Receives server-side console entries                      |
+| `/__tsd/console-pipe/sse`                   | GET    | SSE stream for broadcasting server logs to browser        |
 
 ## Cross-References
 

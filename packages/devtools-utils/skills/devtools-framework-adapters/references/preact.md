@@ -3,7 +3,10 @@
 ## Import
 
 ```ts
-import { createPreactPlugin, createPreactPanel } from '@tanstack/devtools-utils/preact'
+import {
+  createPreactPlugin,
+  createPreactPanel,
+} from '@tanstack/devtools-utils/preact'
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/preact'
 ```
 
@@ -32,12 +35,12 @@ function createPreactPlugin(options: {
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `name` | `string` | Yes | Display name shown in the devtools tab |
-| `id` | `string` | No | Unique identifier for the plugin |
-| `defaultOpen` | `boolean` | No | Whether the plugin panel starts open |
-| `Component` | `(props: DevtoolsPanelProps) => JSX.Element` | Yes | Preact component to render in the panel |
+| Parameter     | Type                                         | Required | Description                             |
+| ------------- | -------------------------------------------- | -------- | --------------------------------------- |
+| `name`        | `string`                                     | Yes      | Display name shown in the devtools tab  |
+| `id`          | `string`                                     | No       | Unique identifier for the plugin        |
+| `defaultOpen` | `boolean`                                    | No       | Whether the plugin panel starts open    |
+| `Component`   | `(props: DevtoolsPanelProps) => JSX.Element` | Yes      | Preact component to render in the panel |
 
 ### Return Value
 
@@ -121,7 +124,8 @@ const [MyPlugin, NoOpPlugin] = createPreactPlugin({
   Component: MyStorePanel,
 })
 
-const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
+const ActivePlugin =
+  process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
 ```
 
 ## createPreactPanel
@@ -142,9 +146,9 @@ function createPreactPanel<
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `CoreClass` | `new () => { mount(el, theme): void; unmount(): void }` | Yes | Class constructor for the devtools core |
+| Parameter   | Type                                                    | Required | Description                             |
+| ----------- | ------------------------------------------------------- | -------- | --------------------------------------- |
+| `CoreClass` | `new () => { mount(el, theme): void; unmount(): void }` | Yes      | Class constructor for the devtools core |
 
 ### Return Value
 
@@ -199,7 +203,10 @@ export function createPreactPanel<
 ### Usage
 
 ```tsx
-import { createPreactPanel, createPreactPlugin } from '@tanstack/devtools-utils/preact'
+import {
+  createPreactPanel,
+  createPreactPlugin,
+} from '@tanstack/devtools-utils/preact'
 
 class MyDevtoolsCore {
   mount(el: HTMLElement, theme: 'light' | 'dark') {
@@ -224,7 +231,8 @@ const [MyPlugin, NoOpPlugin] = createPreactPlugin({
 })
 
 // Step 3: Conditional for production
-const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
+const ActivePlugin =
+  process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlugin
 ```
 
 ## Preact-Specific Notes
@@ -241,14 +249,14 @@ const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlu
 
 ## Comparison with React
 
-| Aspect | React | Preact |
-|--------|-------|--------|
-| Import path | `@tanstack/devtools-utils/react` | `@tanstack/devtools-utils/preact` |
-| JSX types | `react` JSX | `preact` JSX |
-| Hooks import | `react` | `preact/hooks` |
-| API shape | Identical | Identical |
-| `createXPlugin` signature | Same | Same |
-| `createXPanel` signature | Same | Same |
-| `DevtoolsPanelProps` | Same | Same |
+| Aspect                    | React                            | Preact                            |
+| ------------------------- | -------------------------------- | --------------------------------- |
+| Import path               | `@tanstack/devtools-utils/react` | `@tanstack/devtools-utils/preact` |
+| JSX types                 | `react` JSX                      | `preact` JSX                      |
+| Hooks import              | `react`                          | `preact/hooks`                    |
+| API shape                 | Identical                        | Identical                         |
+| `createXPlugin` signature | Same                             | Same                              |
+| `createXPanel` signature  | Same                             | Same                              |
+| `DevtoolsPanelProps`      | Same                             | Same                              |
 
 If you have working React adapter code, converting to Preact is a matter of changing the import paths.
