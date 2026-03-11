@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools",
-  "version": "0.10.9",
+  "version": "0.10.14",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -40,13 +40,18 @@
     "types": "./dist/index.d.ts",
     "import": "./dist/index.js"
   },
+  "bin": {
+    "intent": "./bin/intent.js"
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
   "files": [
     "dist/",
-    "src"
+    "src",
+    "skills",
+    "bin"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
