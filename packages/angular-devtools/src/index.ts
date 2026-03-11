@@ -1,4 +1,4 @@
-export * from './devtools';
+export * from './devtools'
 
 export type {
   TanStackDevtoolsAngularPlugin,
@@ -6,5 +6,5 @@ export type {
   TanStackDevtoolsAngularPluginRender,
   TanStackDevtoolsAngularPluginRenderFn,
   TanStackDevtoolsAngularFunctionalComponent,
-  TanStackDevtoolsAngularPluginInputs
+  TanStackDevtoolsAngularPluginInputs,
 } from './types'

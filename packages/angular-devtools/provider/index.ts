@@ -1,2 +1,2 @@
 export * from '@tanstack/devtools'
-export * from './with-devtools';
+export * from './with-devtools'

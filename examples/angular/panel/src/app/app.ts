@@ -1,15 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  signal,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
 import { createCounter } from './counter'
 import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools'
 import {
   CustomDevtoolPanel,
   customDevtoolPlugin,
   noOpCustomDevtoolPlugin,
-} from './devtools/custom-devtools-panel';
+} from './devtools/custom-devtools-panel'
 import { TanStackDevtools } from '@tanstack/angular-devtools'
 
 @Component({
@@ -40,10 +36,10 @@ export class App {
     customDevtoolPlugin(),
     // No-op plugin -> will not be rendered
     noOpCustomDevtoolPlugin(),
-  ]);
+  ])
 
-  readonly counter = createCounter();
+  readonly counter = createCounter()
 
-  readonly increment = () => this.counter.increment();
-  readonly decrement = () => this.counter.decrement();
+  readonly increment = () => this.counter.increment()
+  readonly decrement = () => this.counter.decrement()
 }

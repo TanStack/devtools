@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { createCounter } from './counter';
-import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools';
-import { TanStackDevtools } from '@tanstack/angular-devtools';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
+import { createCounter } from './counter'
+import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools'
+import { TanStackDevtools } from '@tanstack/angular-devtools'
 
 @Component({
   selector: 'app-root',
@@ -28,10 +28,10 @@ export class App {
       name: 'Custom devtools',
       render: () => import('./devtools/custom-devtools-panel'),
     },
-  ]);
+  ])
 
-  readonly counter = createCounter();
+  readonly counter = createCounter()
 
-  readonly increment = () => this.counter.increment();
-  readonly decrement = () => this.counter.decrement();
+  readonly increment = () => this.counter.increment()
+  readonly decrement = () => this.counter.decrement()
 }

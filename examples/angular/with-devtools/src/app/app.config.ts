@@ -1,5 +1,5 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { withDevtools } from '@tanstack/angular-devtools/provider';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core'
+import { withDevtools } from '@tanstack/angular-devtools/provider'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,11 +12,11 @@ export const appConfig: ApplicationConfig = {
         },
       ],
       eventBusConfig: {
-        debug: true
+        debug: true,
       },
       // config: {
       //   defaultOpen: true,
       // },
     })),
   ],
-};
+}
