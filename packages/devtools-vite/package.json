@@ -29,13 +29,18 @@
     },
     "./package.json": "./package.json"
   },
+  "bin": {
+    "intent": "./bin/intent.js"
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
   "files": [
     "dist/",
-    "src"
+    "src",
+    "skills",
+    "bin"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
