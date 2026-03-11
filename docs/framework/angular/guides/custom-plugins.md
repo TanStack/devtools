@@ -126,7 +126,7 @@ import { DevtoolsEventClient } from './eventClient'
     </div>
   `,
 })
-export class DevtoolPanelComponent implements OnInit, OnDestroy {
+export class DevtoolPanel implements OnInit, OnDestroy {
   state = signal<{ count: number; history: number[] } | undefined>(undefined)
   private cleanup?: () => void
 
@@ -153,14 +153,14 @@ This step follows what's shown in [basic-setup](../basic-setup) for a more docum
 app.component.ts
 ```typescript
 import { Component } from '@angular/core'
-import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools'
+import { TanStackDevtools } from '@tanstack/angular-devtools'
 import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools'
 import { DevtoolPanelComponent } from './devtool-panel.component'
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TanStackDevtoolsComponent],
+  imports: [TanStackDevtools],
   template: `
     <app-content />
     <tanstack-devtools [plugins]="plugins" />
@@ -168,14 +168,14 @@ import { DevtoolPanelComponent } from './devtool-panel.component'
 })
 export class AppComponent {
   plugins: Array<TanStackDevtoolsAngularPlugin> = [
-    { name: 'Custom devtools', component: DevtoolPanelComponent },
+    { name: 'Custom devtools', component: DevtoolPanel },
   ]
 }
 ```
 
 ## Debugging
 
-Both the `TanStackDevtoolsComponent` and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
+Both the `TanStackDevtools` and the TanStack `EventClient` come with built in debug mode which will log to the console the emitted event as well as the EventClient status.
 
 TanStackDevtools debugging mode can be activated like so:
 ```typescript
@@ -188,9 +188,9 @@ TanStackDevtools debugging mode can be activated like so:
   `,
   imports: [TanStackDevtoolsComponent],
 })
-export class AppComponent {
+export class App {
   plugins: Array<TanStackDevtoolsAngularPlugin> = [
-    { name: 'Custom devtools', component: DevtoolPanelComponent },
+    { name: 'Custom devtools', component: DevtoolPanel },
   ]
 }
 ```

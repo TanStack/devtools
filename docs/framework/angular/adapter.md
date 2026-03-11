@@ -13,7 +13,7 @@ npm install @tanstack/angular-devtools
 
 ## Component Inputs
 
-The `TanStackDevtoolsComponent` (selector: `tanstack-devtools`) accepts the following signal-based inputs, defined by the `TanStackDevtoolsAngularInit` interface:
+The `TanStackDevtools` (selector: `tanstack-devtools`) accepts the following signal-based inputs, defined by the `TanStackDevtoolsAngularInit` interface:
 
 | Input | Type | Description |
 | --- | --- | --- |
@@ -28,19 +28,19 @@ Each plugin in the `plugins` array must conform to the `TanStackDevtoolsAngularP
 ```ts
 type TanStackDevtoolsAngularPlugin = {
   id?: string
-  component: Type<any>
+  render: TanStackDevtoolsAngularPluginRender
   name: string | Type<any>
   inputs?: Record<string, any>
   defaultOpen?: boolean
 }
 ```
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `id` | `string` (optional) | Unique identifier for the plugin. |
-| `component` | `Type<any>` | The Angular component class to render as the plugin panel content. |
-| `name` | `string \| Type<any>` | Display name for the tab title. Can be a plain string or an Angular component class for custom rendering. |
-| `inputs` | `Record<string, any>` (optional) | Additional inputs passed to the plugin component via `setInput()`. |
+| Field         | Type | Description |
+|---------------| --- | --- |
+| `id`          | `string` (optional) | Unique identifier for the plugin. |
+| `render`      | `Type<any>` | The Angular component class to render as the plugin panel content. |
+| `name`        | `string \| Type<any>` | Display name for the tab title. Can be a plain string or an Angular component class for custom rendering. |
+| `inputs`      | `Record<string, any>` (optional) | Additional inputs passed to the plugin component via `setInput()`. |
 | `defaultOpen` | `boolean` (optional) | Whether this plugin tab should be open by default. |
 
 ## Key Differences from Other Frameworks
@@ -49,22 +49,22 @@ The Angular adapter uses `component` (an Angular component class reference) inst
 
 ```typescript
 import { Component } from '@angular/core'
-import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools'
+import { TanStackDevtools } from '@tanstack/angular-devtools'
 import { AngularQueryDevtoolsPanel } from '@tanstack/angular-query-devtools'
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [TanStackDevtoolsComponent],
+  imports: [TanStackDevtools],
   template: `
     <tanstack-devtools [plugins]="plugins" />
   `,
 })
-export class AppComponent {
+export class App {
   plugins = [
     {
       name: 'Angular Query',
-      component: AngularQueryDevtoolsPanel,
+      render: AngularQueryDevtoolsPanel,
       inputs: { style: 'height: 100%' },
     },
   ]
@@ -75,7 +75,7 @@ export class AppComponent {
 
 The `@tanstack/angular-devtools` package exports:
 
-- **`TanStackDevtoolsComponent`** -- The main Angular standalone component that renders the devtools panel.
+- **`TanStackDevtools`** -- The main Angular standalone component that renders the devtools panel.
 - **`TanStackDevtoolsAngularPlugin`** (type) -- The type for plugin definitions.
 - **`TanStackDevtoolsAngularInit`** (type) -- The inputs interface for the `TanStackDevtoolsComponent`.
 
