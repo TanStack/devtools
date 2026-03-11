@@ -1,109 +1,110 @@
-import { describe, expect, it } from 'vitest'
-import {
-  getHotkeyPermutations,
-  isHotkeyCombinationPressed,
-  normalizeHotkey,
-} from './hotkey'
-import type { KeyboardKey } from '../context/devtools-store'
+import { describe, expect, it, vi } from 'vitest'
+import { isHotkeyHeld, resolveHotkeyKeys } from './hotkey'
+
+// Mock the library's resolveModifier and MODIFIER_ALIASES
+vi.mock('@tanstack/solid-hotkeys', () => ({
+  MODIFIER_ALIASES: {
+    Control: 'Control',
+    Ctrl: 'Control',
+    control: 'Control',
+    ctrl: 'Control',
+    Shift: 'Shift',
+    shift: 'Shift',
+    Alt: 'Alt',
+    Option: 'Alt',
+    alt: 'Alt',
+    option: 'Alt',
+    Command: 'Meta',
+    Cmd: 'Meta',
+    Meta: 'Meta',
+    command: 'Meta',
+    cmd: 'Meta',
+    meta: 'Meta',
+    CommandOrControl: 'Mod',
+    Mod: 'Mod',
+    commandorcontrol: 'Mod',
+    mod: 'Mod',
+  },
+  resolveModifier: (modifier: string) => {
+    if (modifier === 'Mod') return 'Control' // simulating windows platform
+    return modifier
+  },
+}))
 
 describe('hotkey utilities', () => {
-  describe('normalizeHotkey', () => {
-    it('should return unchanged array when CtrlOrMeta is not present', () => {
-      const hotkey: Array<KeyboardKey> = ['Shift', 'A']
-      const result = normalizeHotkey(hotkey)
-      expect(result).toEqual([['Shift', 'A']])
+  describe('resolveHotkeyKeys', () => {
+    it('should split a hotkey string into key parts', () => {
+      expect(resolveHotkeyKeys('Shift+A')).toEqual(['Shift', 'A'])
     })
 
-    it('should expand CtrlOrMeta to Control and Meta variants', () => {
-      const hotkey: Array<KeyboardKey> = ['Shift', 'CtrlOrMeta']
-      const result = normalizeHotkey(hotkey)
-      expect(result).toHaveLength(2)
-      expect(result).toContainEqual(['Shift', 'Control'])
-      expect(result).toContainEqual(['Shift', 'Meta'])
-    })
-  })
-
-  describe('getHotkeyPermutations', () => {
-    it('should generate permutations for modifiers in any order', () => {
-      const hotkey: Array<KeyboardKey> = ['Shift', 'Control', 'A']
-      const result = getHotkeyPermutations(hotkey)
-      expect(result).toContainEqual(['Shift', 'Control', 'A'])
-      expect(result).toContainEqual(['Control', 'Shift', 'A'])
+    it('should resolve Mod to Control on windows', () => {
+      expect(resolveHotkeyKeys('Mod+Shift')).toEqual(['Control', 'Shift'])
     })
 
-    it('should handle CtrlOrMeta expansion with multiple permutations', () => {
-      const hotkey: Array<KeyboardKey> = ['Shift', 'CtrlOrMeta']
-      const result = getHotkeyPermutations(hotkey)
-      expect(result).toContainEqual(['Shift', 'Control'])
-      expect(result).toContainEqual(['Control', 'Shift'])
-      expect(result).toContainEqual(['Shift', 'Meta'])
-      expect(result).toContainEqual(['Meta', 'Shift'])
+    it('should resolve Ctrl alias to Control', () => {
+      expect(resolveHotkeyKeys('Ctrl+A')).toEqual(['Control', 'A'])
     })
 
-    it('should handle single key hotkey with no modifiers', () => {
-      const hotkey: Array<KeyboardKey> = ['A']
-      const result = getHotkeyPermutations(hotkey)
-      expect(result).toEqual([['A']])
+    it('should handle single key', () => {
+      expect(resolveHotkeyKeys('Escape')).toEqual(['Escape'])
     })
 
-    it('should not have duplicate permutations', () => {
-      const hotkey: Array<KeyboardKey> = ['Shift', 'Alt', 'A']
-      const result = getHotkeyPermutations(hotkey)
-      const stringified = result.map((combo) => JSON.stringify(combo))
-      const unique = new Set(stringified)
-      expect(unique.size).toBe(stringified.length)
+    it('should handle multiple modifiers with a key', () => {
+      expect(resolveHotkeyKeys('Control+Shift+A')).toEqual([
+        'Control',
+        'Shift',
+        'A',
+      ])
+    })
+
+    it('should return empty array for undefined or null', () => {
+      expect(resolveHotkeyKeys(undefined)).toEqual([])
+      expect(resolveHotkeyKeys(null)).toEqual([])
+    })
+
+    it('should return empty array for empty string', () => {
+      expect(resolveHotkeyKeys('')).toEqual([])
     })
   })
 
-  describe('isHotkeyCombinationPressed', () => {
+  describe('isHotkeyHeld', () => {
     it('should match exact key combination', () => {
-      expect(isHotkeyCombinationPressed(['Shift', 'A'], ['Shift', 'A'])).toBe(
-        true,
-      )
+      expect(isHotkeyHeld(['Shift', 'A'], 'Shift+A')).toBe(true)
     })
 
     it('should be case-insensitive', () => {
-      expect(isHotkeyCombinationPressed(['shift', 'a'], ['Shift', 'A'])).toBe(
+      expect(isHotkeyHeld(['shift', 'a'], 'Shift+A')).toBe(true)
+    })
+
+    it('should match regardless of order', () => {
+      expect(isHotkeyHeld(['A', 'Control', 'Shift'], 'Shift+Control+A')).toBe(
         true,
       )
     })
 
-    it('should match regardless of modifier order', () => {
-      expect(
-        isHotkeyCombinationPressed(
-          ['A', 'Control', 'Shift'],
-          ['Shift', 'Control', 'A'],
-        ),
-      ).toBe(true)
-    })
-
-    it('should handle CtrlOrMeta with Control', () => {
-      expect(
-        isHotkeyCombinationPressed(
-          ['Shift', 'Control'],
-          ['Shift', 'CtrlOrMeta'],
-        ),
-      ).toBe(true)
-    })
-
-    it('should handle CtrlOrMeta with Meta', () => {
-      expect(
-        isHotkeyCombinationPressed(['Shift', 'Meta'], ['Shift', 'CtrlOrMeta']),
-      ).toBe(true)
+    it('should resolve Mod to Control on windows', () => {
+      expect(isHotkeyHeld(['Shift', 'Control'], 'Mod+Shift')).toBe(true)
     })
 
     it('should reject incomplete key combinations', () => {
-      expect(isHotkeyCombinationPressed(['Shift'], ['Shift', 'A'])).toBe(false)
+      expect(isHotkeyHeld(['Shift'], 'Shift+A')).toBe(false)
     })
 
     it('should reject extra keys', () => {
-      expect(
-        isHotkeyCombinationPressed(['Shift', 'A', 'B'], ['Shift', 'A']),
-      ).toBe(false)
+      expect(isHotkeyHeld(['Shift', 'A', 'B'], 'Shift+A')).toBe(false)
     })
 
-    it('should handle single key hotkey', () => {
-      expect(isHotkeyCombinationPressed(['A'], ['A'])).toBe(true)
+    it('should handle single key', () => {
+      expect(isHotkeyHeld(['A'], 'A')).toBe(true)
+    })
+
+    it('should return false for undefined or null hotkey', () => {
+      expect(isHotkeyHeld(['Shift'], undefined)).toBe(false)
+      expect(isHotkeyHeld(['Shift'], null)).toBe(false)
+    })
+
+    it('should return false for empty string hotkey', () => {
+      expect(isHotkeyHeld(['Shift'], '')).toBe(false)
     })
   })
 })

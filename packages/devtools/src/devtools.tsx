@@ -1,5 +1,5 @@
 import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
-import { createShortcut } from '@solid-primitives/keyboard'
+import { createHotkey } from '@tanstack/solid-hotkeys'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
@@ -12,7 +12,6 @@ import {
 } from './context/use-devtools-context'
 import { useDisableTabbing } from './hooks/use-disable-tabbing'
 import { TANSTACK_DEVTOOLS } from './utils/storage'
-import { getHotkeyPermutations } from './utils/hotkey'
 import { Trigger } from './components/trigger'
 import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
@@ -164,30 +163,24 @@ export default function DevTools() {
       el?.style.setProperty('--tsrd-font-size', fontSize)
     }
   })
-  createEffect(() => {
-    const isEditableTarget = (element: Element | null) => {
-      if (!element || !(element instanceof HTMLElement)) return false
-      if (element.isContentEditable) return true
-      const tagName = element.tagName
-      if (
-        tagName === 'INPUT' ||
-        tagName === 'TEXTAREA' ||
-        tagName === 'SELECT'
-      ) {
-        return true
-      }
-      return element.getAttribute('role') === 'textbox'
+  const isEditableTarget = (element: Element | null) => {
+    if (!element || !(element instanceof HTMLElement)) return false
+    if (element.isContentEditable) return true
+    const tagName = element.tagName
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT') {
+      return true
     }
+    return element.getAttribute('role') === 'textbox'
+  }
 
-    const permutations = getHotkeyPermutations(settings().openHotkey)
-
-    for (const permutation of permutations) {
-      createShortcut(permutation, () => {
-        if (isEditableTarget(document.activeElement)) return
-        toggleOpen()
-      })
-    }
-  })
+  createHotkey(
+    () => settings().openHotkey,
+    () => {
+      if (isEditableTarget(document.activeElement)) return
+      toggleOpen()
+    },
+    { preventDefault: false, stopPropagation: false },
+  )
 
   const { theme } = useTheme()
 

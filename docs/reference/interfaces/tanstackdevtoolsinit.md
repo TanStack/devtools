@@ -18,7 +18,8 @@ optional config: Partial<{
   customTrigger: (el, props) => void;
   defaultOpen: boolean;
   hideUntilHover: boolean;
-  openHotkey: KeyboardKey[];
+  openHotkey: Hotkey;
+  inspectHotkey: string;
   panelLocation: "top" | "bottom";
   position: TriggerPosition;
   requireUrlFlag: boolean;

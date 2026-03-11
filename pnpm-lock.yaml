@@ -727,9 +727,6 @@ importers:
       '@solid-primitives/event-listener':
         specifier: ^2.4.3
         version: 2.4.5(solid-js@1.9.11)
-      '@solid-primitives/keyboard':
-        specifier: ^1.3.3
-        version: 1.3.5(solid-js@1.9.11)
       '@solid-primitives/resize-observer':
         specifier: ^2.1.3
         version: 2.1.5(solid-js@1.9.11)
@@ -742,6 +739,9 @@ importers:
       '@tanstack/devtools-ui':
         specifier: workspace:*
         version: link:../devtools-ui
+      '@tanstack/solid-hotkeys':
+        specifier: ^0.3.0
+        version: 0.3.3(solid-js@1.9.11)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -3384,6 +3384,10 @@ packages:
     resolution: {integrity: sha512-Kp/WSt411ZWYvgXy6uiv5RmhHrz9cAml05AQPrtdAp7eUqvIDbMGPnML25OKbzR3RJ1q4wgENxDTvlGPa9+Mww==}
     engines: {node: '>=20.19'}
 
+  '@tanstack/hotkeys@0.3.3':
+    resolution: {integrity: sha512-ISGAnEYwzpY9tX4txu0vxsGQjtqn6kHLyhSkER3Q1L1Zb30Q5KgA5tHk9En3ax33fWatcrSRIqGsUlYeEBsoxg==}
+    engines: {node: '>=18'}
+
   '@tanstack/intent@0.0.14':
     resolution: {integrity: sha512-83cjen+tYll6z0MIN0JC9GuMljUkfYfHFDOLhmROz4XMmbD/0ZjvKNOsFgpO7eq957XHB/qyK+hCO+3OS/D6HQ==}
     hasBin: true
@@ -3547,6 +3551,12 @@ packages:
   '@tanstack/server-functions-plugin@1.121.21':
     resolution: {integrity: sha512-a05fzK+jBGacsSAc1vE8an7lpBh4H0PyIEcivtEyHLomgSeElAJxm9E2It/0nYRZ5Lh23m0okbhzJNaYWZpAOg==}
     engines: {node: '>=12'}
+
+  '@tanstack/solid-hotkeys@0.3.3':
+    resolution: {integrity: sha512-JV2uSmuiBMr9E2H86H3AQEGBU4DHblJtM8hTig2dSx2nMKi3IxOppANhR7q+PL1c9ds7BlsQ6PSZT9TuwNpUJg==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      solid-js: '>=1.7.0'
 
   '@tanstack/solid-query-devtools@5.91.3':
     resolution: {integrity: sha512-xzVwIIxQPbiublZP3RkGp8KVjt8zenv5y1YTSRarP32mLUHJgfdofvjsDvMEhhL/lomz90qa0jCIGsSxoSTyYQ==}
@@ -11236,6 +11246,10 @@ snapshots:
 
   '@tanstack/history@1.161.4': {}
 
+  '@tanstack/hotkeys@0.3.3':
+    dependencies:
+      '@tanstack/store': 0.9.1
+
   '@tanstack/intent@0.0.14':
     dependencies:
       yaml: 2.8.2
@@ -11496,6 +11510,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
       - vite
+
+  '@tanstack/solid-hotkeys@0.3.3(solid-js@1.9.11)':
+    dependencies:
+      '@tanstack/hotkeys': 0.3.3
+      '@tanstack/solid-store': 0.9.1(solid-js@1.9.11)
+      solid-js: 1.9.11
 
   '@tanstack/solid-query-devtools@5.91.3(@tanstack/solid-query@5.90.23(solid-js@1.9.11))(solid-js@1.9.11)':
     dependencies:
