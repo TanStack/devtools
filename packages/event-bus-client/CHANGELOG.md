@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.4.3
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
 ## 0.4.2
 
 ### Patch Changes
