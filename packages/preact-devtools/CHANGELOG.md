@@ -1,5 +1,12 @@
 # @tanstack/preact-devtools
 
+## 0.9.17
+
+### Patch Changes
+
+- Updated dependencies [[`644bcb3`](https://github.com/TanStack/devtools/commit/644bcb3ec5faa374f37882282eb01a37611ed0e2)]:
+  - @tanstack/devtools@0.10.13
+
 ## 0.9.16
 
 ### Patch Changes
