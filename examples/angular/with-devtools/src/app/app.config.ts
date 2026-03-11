@@ -1,10 +1,10 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core'
-import { withDevtools } from '@tanstack/angular-devtools/provider'
+import { provideTanStackDevtools } from '@tanstack/angular-devtools/provider'
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    withDevtools(() => ({
+    provideTanStackDevtools(() => ({
       plugins: [
         {
           name: 'Custom devtools',

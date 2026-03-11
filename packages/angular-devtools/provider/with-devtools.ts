@@ -57,7 +57,7 @@ export type WithDevtoolsOptions = {
   deps?: Array<any>
 }
 
-export function withDevtools(
+export function provideTanStackDevtools(
   withDevtoolsFn: WithDevtoolsOptionsFn,
   options: WithDevtoolsOptions = {},
 ): EnvironmentProviders {
