@@ -19,7 +19,9 @@ declare const __TANSTACK_DEVTOOLS_PROTOCOL__: 'http' | 'https' | undefined
 
 function getDevtoolsPort(): number | undefined {
   try {
-    return typeof __TANSTACK_DEVTOOLS_PORT__ !== 'undefined' ? __TANSTACK_DEVTOOLS_PORT__ : undefined
+    return typeof __TANSTACK_DEVTOOLS_PORT__ !== 'undefined'
+      ? __TANSTACK_DEVTOOLS_PORT__
+      : undefined
   } catch {
     return undefined
   }
@@ -27,7 +29,9 @@ function getDevtoolsPort(): number | undefined {
 
 function getDevtoolsHost(): string | undefined {
   try {
-    return typeof __TANSTACK_DEVTOOLS_HOST__ !== 'undefined' ? __TANSTACK_DEVTOOLS_HOST__ : undefined
+    return typeof __TANSTACK_DEVTOOLS_HOST__ !== 'undefined'
+      ? __TANSTACK_DEVTOOLS_HOST__
+      : undefined
   } catch {
     return undefined
   }
@@ -35,7 +39,9 @@ function getDevtoolsHost(): string | undefined {
 
 function getDevtoolsProtocol(): 'http' | 'https' | undefined {
   try {
-    return typeof __TANSTACK_DEVTOOLS_PROTOCOL__ !== 'undefined' ? __TANSTACK_DEVTOOLS_PROTOCOL__ : undefined
+    return typeof __TANSTACK_DEVTOOLS_PROTOCOL__ !== 'undefined'
+      ? __TANSTACK_DEVTOOLS_PROTOCOL__
+      : undefined
   } catch {
     return undefined
   }
@@ -202,7 +208,10 @@ export class EventClient<TEventMap extends Record<string, any>> {
         this.#networkPort = port
         this.#networkHost = host
         this.#networkProtocol = protocol
-        this.debugLog('Network transport activated — devtools server detected at port', port)
+        this.debugLog(
+          'Network transport activated — devtools server detected at port',
+          port,
+        )
       }
     }
 
@@ -309,7 +318,9 @@ export class EventClient<TEventMap extends Record<string, any>> {
           const target = this.#eventTarget()
           try {
             target.dispatchEvent(new CustomEvent(event.type, { detail: event }))
-            target.dispatchEvent(new CustomEvent('tanstack-devtools-global', { detail: event }))
+            target.dispatchEvent(
+              new CustomEvent('tanstack-devtools-global', { detail: event }),
+            )
           } catch {
             // EventTarget may not support CustomEvent in all environments
           }
@@ -349,18 +360,26 @@ export class EventClient<TEventMap extends Record<string, any>> {
 
     this.#wsReconnectAttempts++
     if (this.#wsReconnectAttempts >= this.#wsMaxReconnectAttempts) {
-      this.debugLog('WebSocket permanently unavailable, falling back to HTTP-only')
+      this.debugLog(
+        'WebSocket permanently unavailable, falling back to HTTP-only',
+      )
       this.#wsGaveUp = true
       // Flush any queued events via HTTP POST
       const queued = [...this.#queuedEvents]
       this.#queuedEvents = []
       for (const event of queued) {
-        this.sendViaHttp({ ...event, eventId: generateEventId(), source: 'server-bridge' })
+        this.sendViaHttp({
+          ...event,
+          eventId: generateEventId(),
+          source: 'server-bridge',
+        })
       }
       return
     }
 
-    this.debugLog(`Scheduling reconnect in ${this.#wsReconnectDelay}ms (attempt ${this.#wsReconnectAttempts}/${this.#wsMaxReconnectAttempts})`)
+    this.debugLog(
+      `Scheduling reconnect in ${this.#wsReconnectDelay}ms (attempt ${this.#wsReconnectAttempts}/${this.#wsMaxReconnectAttempts})`,
+    )
     this.#wsReconnectTimer = setTimeout(() => {
       this.#wsReconnectTimer = null
       this.connectWebSocket()
@@ -560,7 +579,11 @@ export class EventClient<TEventMap extends Record<string, any>> {
   }
 
   /** @internal — only for testing and createNetworkTransportClient */
-  ___enableNetworkTransport(port: number, host: string, protocol: 'http' | 'https') {
+  ___enableNetworkTransport(
+    port: number,
+    host: string,
+    protocol: 'http' | 'https',
+  ) {
     this.#useNetworkTransport = true
     this.#networkTransportDetected = true
     this.#networkPort = port
@@ -591,7 +614,9 @@ export class EventClient<TEventMap extends Record<string, any>> {
  * Used for testing and for environments where compile-time placeholder
  * replacement is not available.
  */
-export function createNetworkTransportClient<TEventMap extends Record<string, any>>({
+export function createNetworkTransportClient<
+  TEventMap extends Record<string, any>,
+>({
   pluginId,
   port,
   host = 'localhost',

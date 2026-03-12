@@ -272,9 +272,7 @@ describe('ServerEventBus', () => {
       const port = await bus.start()
 
       // Connect a "browser" client (no ?bridge=server)
-      const browserWs = new WebSocket(
-        `ws://localhost:${port}/__devtools/ws`,
-      )
+      const browserWs = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
       await new Promise<void>((resolve) => browserWs.on('open', resolve))
 
       // Connect a "server bridge" client
@@ -285,9 +283,7 @@ describe('ServerEventBus', () => {
 
       // Listen for messages on the browser client
       const received = new Promise<any>((resolve) => {
-        browserWs.on('message', (data) =>
-          resolve(JSON.parse(data.toString())),
-        )
+        browserWs.on('message', (data) => resolve(JSON.parse(data.toString())))
       })
 
       // Send event from bridge
@@ -344,14 +340,10 @@ describe('ServerEventBus', () => {
       bus = new ServerEventBus({ port: 0 })
       const port = await bus.start()
 
-      const browserWs1 = new WebSocket(
-        `ws://localhost:${port}/__devtools/ws`,
-      )
+      const browserWs1 = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
       await new Promise<void>((resolve) => browserWs1.on('open', resolve))
 
-      const browserWs2 = new WebSocket(
-        `ws://localhost:${port}/__devtools/ws`,
-      )
+      const browserWs2 = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
       await new Promise<void>((resolve) => browserWs2.on('open', resolve))
 
       let received = false
@@ -396,19 +388,23 @@ describe('ServerEventBus', () => {
       const browserWs = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
       await new Promise<void>((resolve) => browserWs.on('open', resolve))
 
-      const bridgeWs = new WebSocket(`ws://localhost:${port}/__devtools/ws?bridge=server`)
+      const bridgeWs = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws?bridge=server`,
+      )
       await new Promise<void>((resolve) => bridgeWs.on('open', resolve))
 
       const received = new Promise<any>((resolve) => {
         browserWs.on('message', (data) => resolve(JSON.parse(data.toString())))
       })
 
-      bridgeWs.send(JSON.stringify({
-        type: 'test:event',
-        payload: { from: 'external-bridge' },
-        pluginId: 'test',
-        source: 'server-bridge',
-      }))
+      bridgeWs.send(
+        JSON.stringify({
+          type: 'test:event',
+          payload: { from: 'external-bridge' },
+          pluginId: 'test',
+          source: 'server-bridge',
+        }),
+      )
 
       const event = await received
       expect(event.type).toBe('test:event')
@@ -434,18 +430,23 @@ describe('ServerEventBus', () => {
 
       // POST with source: 'server-bridge'
       await new Promise<void>((resolve) => {
-        const req = http.request({
-          hostname: 'localhost',
-          port,
-          path: '/__devtools/send',
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        }, () => resolve())
-        req.write(JSON.stringify({
-          type: 'test:event',
-          payload: { from: 'bridge' },
-          source: 'server-bridge',
-        }))
+        const req = http.request(
+          {
+            hostname: 'localhost',
+            port,
+            path: '/__devtools/send',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          },
+          () => resolve(),
+        )
+        req.write(
+          JSON.stringify({
+            type: 'test:event',
+            payload: { from: 'bridge' },
+            source: 'server-bridge',
+          }),
+        )
         req.end()
       })
 
@@ -483,18 +484,23 @@ describe('ServerEventBus', () => {
       })
 
       await new Promise<void>((resolve) => {
-        const req = http.request({
-          hostname: 'localhost',
-          port,
-          path: '/__devtools/send',
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-        }, () => resolve())
-        req.write(JSON.stringify({
-          type: 'test:event',
-          payload: { from: 'bridge' },
-          source: 'server-bridge',
-        }))
+        const req = http.request(
+          {
+            hostname: 'localhost',
+            port,
+            path: '/__devtools/send',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          },
+          () => resolve(),
+        )
+        req.write(
+          JSON.stringify({
+            type: 'test:event',
+            payload: { from: 'bridge' },
+            source: 'server-bridge',
+          }),
+        )
         req.end()
       })
 

@@ -299,7 +299,10 @@ export class ServerEventBus {
           socket: Duplex,
           head: Buffer,
         ) => {
-          if (req.url === '/__devtools/ws' || req.url?.startsWith('/__devtools/ws?')) {
+          if (
+            req.url === '/__devtools/ws' ||
+            req.url?.startsWith('/__devtools/ws?')
+          ) {
             wss.handleUpgrade(req, socket, head, (ws) => {
               this.debugLog(
                 'WebSocket connection established (external server)',
@@ -331,7 +334,10 @@ export class ServerEventBus {
 
       // Handle connection upgrade for WebSocket
       server.on('upgrade', (req, socket, head) => {
-        if (req.url === '/__devtools/ws' || req.url?.startsWith('/__devtools/ws?')) {
+        if (
+          req.url === '/__devtools/ws' ||
+          req.url?.startsWith('/__devtools/ws?')
+        ) {
           wss.handleUpgrade(req, socket, head, (ws) => {
             this.debugLog('WebSocket connection established')
             wss.emit('connection', ws, req)

@@ -46,7 +46,9 @@ describe('EventClient network transport emit', () => {
 
     const event = await Promise.race([
       received,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 3000),
+      ),
     ])
 
     expect(event.type).toBe('test-network:event')
@@ -90,7 +92,9 @@ describe('EventClient network transport emit', () => {
 
     const event = await Promise.race([
       received,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000)),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout')), 3000),
+      ),
     ])
 
     expect(event.type).toBe('test-receive:incoming')

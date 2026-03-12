@@ -55,7 +55,9 @@ describe('End-to-end: ServerEventBus + EventClient network transport', () => {
     // Wait for connection + delivery
     const fromClient = await Promise.race([
       serverReceived,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout: client→server')), 3000)),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout: client→server')), 3000),
+      ),
     ])
 
     expect(fromClient.payload).toEqual({ direction: 'client-to-server' })
@@ -75,7 +77,9 @@ describe('End-to-end: ServerEventBus + EventClient network transport', () => {
 
     const fromServer = await Promise.race([
       clientReceived,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout: server→client')), 3000)),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('timeout: server→client')), 3000),
+      ),
     ])
 
     expect(fromServer.payload).toEqual({ direction: 'server-to-client' })
