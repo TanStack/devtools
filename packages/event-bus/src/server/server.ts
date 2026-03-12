@@ -11,6 +11,8 @@ export interface TanStackDevtoolsEvent<
   type: TEventName
   payload: TPayload
   pluginId?: string // Optional pluginId to filter events by plugin
+  eventId?: string
+  source?: 'server-bridge'
 }
 // Used so no new server starts up when HMR happens
 declare global {

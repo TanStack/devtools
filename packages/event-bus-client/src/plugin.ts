@@ -2,6 +2,8 @@ interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   type: TEventName
   payload: TPayload
   pluginId?: string // Optional pluginId to filter events by plugin
+  eventId?: string
+  source?: 'server-bridge'
 }
 declare global {
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
