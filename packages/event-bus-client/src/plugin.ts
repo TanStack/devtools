@@ -329,6 +329,11 @@ export class EventClient<TEventMap extends Record<string, any>> {
       ws.addEventListener('error', () => {
         this.debugLog('WebSocket connection error')
         this.#wsConnecting = false
+        // In non-browser runtimes, 'close' may not follow 'error'.
+        // Guard: only schedule reconnect if close handler hasn't already.
+        if (!this.#wsReconnectTimer && !this.#ws) {
+          this.scheduleReconnect()
+        }
       })
     } catch {
       this.debugLog('Failed to create WebSocket connection')
@@ -575,6 +580,9 @@ export class EventClient<TEventMap extends Record<string, any>> {
     }
     this.#connected = false
     this.#useNetworkTransport = false
+    this.#wsGaveUp = false
+    this.#wsReconnectAttempts = 0
+    this.#wsReconnectDelay = 100
   }
 }
 
