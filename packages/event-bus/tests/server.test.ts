@@ -1,5 +1,6 @@
 import http from 'node:http'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import WebSocket from 'ws'
 import { ServerEventBus } from '../src/server/server'
 
 // Clear globalThis between tests to avoid cross-test contamination
@@ -246,6 +247,175 @@ describe('ServerEventBus', () => {
         'Clearing all connections',
       )
       logSpy.mockRestore()
+    })
+  })
+
+  describe('server bridge connections', () => {
+    it('should accept WebSocket connections with ?bridge=server query param', async () => {
+      bus = new ServerEventBus({ port: 0 })
+      const port = await bus.start()
+
+      const ws = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws?bridge=server`,
+      )
+      await new Promise<void>((resolve, reject) => {
+        ws.on('open', () => resolve())
+        ws.on('error', (err) => reject(err))
+      })
+
+      expect(ws.readyState).toBe(WebSocket.OPEN)
+      ws.close()
+    })
+
+    it('should broadcast server bridge messages to other WebSocket clients', async () => {
+      bus = new ServerEventBus({ port: 0 })
+      const port = await bus.start()
+
+      // Connect a "browser" client (no ?bridge=server)
+      const browserWs = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws`,
+      )
+      await new Promise<void>((resolve) => browserWs.on('open', resolve))
+
+      // Connect a "server bridge" client
+      const bridgeWs = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws?bridge=server`,
+      )
+      await new Promise<void>((resolve) => bridgeWs.on('open', resolve))
+
+      // Listen for messages on the browser client
+      const received = new Promise<any>((resolve) => {
+        browserWs.on('message', (data) =>
+          resolve(JSON.parse(data.toString())),
+        )
+      })
+
+      // Send event from bridge
+      bridgeWs.send(
+        JSON.stringify({
+          type: 'test:event',
+          payload: { foo: 'bar' },
+          pluginId: 'test',
+          source: 'server-bridge',
+        }),
+      )
+
+      const event = await received
+      expect(event.type).toBe('test:event')
+      expect(event.payload).toEqual({ foo: 'bar' })
+
+      browserWs.close()
+      bridgeWs.close()
+    })
+
+    it('should dispatch server bridge messages on in-process EventTarget', async () => {
+      bus = new ServerEventBus({ port: 0 })
+      const port = await bus.start()
+
+      const eventTarget = globalThis.__TANSTACK_EVENT_TARGET__!
+      const received = new Promise<any>((resolve) => {
+        eventTarget.addEventListener('test:event', (e) => {
+          resolve((e as CustomEvent).detail)
+        })
+      })
+
+      const bridgeWs = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws?bridge=server`,
+      )
+      await new Promise<void>((resolve) => bridgeWs.on('open', resolve))
+
+      bridgeWs.send(
+        JSON.stringify({
+          type: 'test:event',
+          payload: { data: 123 },
+          pluginId: 'test',
+          source: 'server-bridge',
+        }),
+      )
+
+      const event = await received
+      expect(event.type).toBe('test:event')
+      expect(event.payload).toEqual({ data: 123 })
+
+      bridgeWs.close()
+    })
+
+    it('should NOT broadcast regular browser client messages to other WebSocket clients', async () => {
+      bus = new ServerEventBus({ port: 0 })
+      const port = await bus.start()
+
+      const browserWs1 = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws`,
+      )
+      await new Promise<void>((resolve) => browserWs1.on('open', resolve))
+
+      const browserWs2 = new WebSocket(
+        `ws://localhost:${port}/__devtools/ws`,
+      )
+      await new Promise<void>((resolve) => browserWs2.on('open', resolve))
+
+      let received = false
+      browserWs2.on('message', () => {
+        received = true
+      })
+
+      browserWs1.send(
+        JSON.stringify({
+          type: 'test:event',
+          payload: {},
+        }),
+      )
+
+      await new Promise((resolve) => setTimeout(resolve, 100))
+
+      expect(received).toBe(false)
+
+      browserWs1.close()
+      browserWs2.close()
+    })
+  })
+
+  describe('server bridge connections (external server)', () => {
+    let externalServer: http.Server
+
+    beforeEach(async () => {
+      externalServer = http.createServer()
+      await new Promise<void>((resolve) => {
+        externalServer.listen(0, () => resolve())
+      })
+    })
+
+    afterEach(() => {
+      externalServer.close()
+    })
+
+    it('should route bridge messages on external server mode', async () => {
+      bus = new ServerEventBus({ httpServer: externalServer })
+      const port = await bus.start()
+
+      const browserWs = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
+      await new Promise<void>((resolve) => browserWs.on('open', resolve))
+
+      const bridgeWs = new WebSocket(`ws://localhost:${port}/__devtools/ws?bridge=server`)
+      await new Promise<void>((resolve) => bridgeWs.on('open', resolve))
+
+      const received = new Promise<any>((resolve) => {
+        browserWs.on('message', (data) => resolve(JSON.parse(data.toString())))
+      })
+
+      bridgeWs.send(JSON.stringify({
+        type: 'test:event',
+        payload: { from: 'external-bridge' },
+        pluginId: 'test',
+        source: 'server-bridge',
+      }))
+
+      const event = await received
+      expect(event.type).toBe('test:event')
+      expect(event.payload).toEqual({ from: 'external-bridge' })
+
+      browserWs.close()
+      bridgeWs.close()
     })
   })
 })
