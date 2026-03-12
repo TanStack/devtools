@@ -160,7 +160,11 @@ export class ServerEventBus {
           try {
             const msg = parseWithBigInt(body)
             this.debugLog('Received event from client', msg)
-            this.emitToServer(msg)
+            if (msg.source === 'server-bridge') {
+              this.emit(msg)
+            } else {
+              this.emitToServer(msg)
+            }
           } catch {}
         })
         res.writeHead(200).end()
@@ -277,7 +281,11 @@ export class ServerEventBus {
                   'Received event from client (external server)',
                   msg,
                 )
-                this.emitToServer(msg)
+                if (msg.source === 'server-bridge') {
+                  this.emit(msg)
+                } else {
+                  this.emitToServer(msg)
+                }
               } catch {}
             })
             res.writeHead(200).end()

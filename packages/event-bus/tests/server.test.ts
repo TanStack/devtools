@@ -418,4 +418,90 @@ describe('ServerEventBus', () => {
       bridgeWs.close()
     })
   })
+
+  describe('POST handler source-based routing', () => {
+    it('should broadcast POST messages with source=server-bridge to WebSocket clients', async () => {
+      bus = new ServerEventBus({ port: 0 })
+      const port = await bus.start()
+
+      // Connect a browser WebSocket client
+      const browserWs = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
+      await new Promise<void>((resolve) => browserWs.on('open', resolve))
+
+      const received = new Promise<any>((resolve) => {
+        browserWs.on('message', (data) => resolve(JSON.parse(data.toString())))
+      })
+
+      // POST with source: 'server-bridge'
+      await new Promise<void>((resolve) => {
+        const req = http.request({
+          hostname: 'localhost',
+          port,
+          path: '/__devtools/send',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }, () => resolve())
+        req.write(JSON.stringify({
+          type: 'test:event',
+          payload: { from: 'bridge' },
+          source: 'server-bridge',
+        }))
+        req.end()
+      })
+
+      const event = await received
+      expect(event.type).toBe('test:event')
+      expect(event.payload).toEqual({ from: 'bridge' })
+
+      browserWs.close()
+    })
+  })
+
+  describe('POST handler source-based routing (external server)', () => {
+    let externalServer: http.Server
+
+    beforeEach(async () => {
+      externalServer = http.createServer()
+      await new Promise<void>((resolve) => {
+        externalServer.listen(0, () => resolve())
+      })
+    })
+
+    afterEach(() => {
+      externalServer.close()
+    })
+
+    it('should broadcast POST with source=server-bridge on external server', async () => {
+      bus = new ServerEventBus({ httpServer: externalServer })
+      const port = await bus.start()
+
+      const browserWs = new WebSocket(`ws://localhost:${port}/__devtools/ws`)
+      await new Promise<void>((resolve) => browserWs.on('open', resolve))
+
+      const received = new Promise<any>((resolve) => {
+        browserWs.on('message', (data) => resolve(JSON.parse(data.toString())))
+      })
+
+      await new Promise<void>((resolve) => {
+        const req = http.request({
+          hostname: 'localhost',
+          port,
+          path: '/__devtools/send',
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+        }, () => resolve())
+        req.write(JSON.stringify({
+          type: 'test:event',
+          payload: { from: 'bridge' },
+          source: 'server-bridge',
+        }))
+        req.end()
+      })
+
+      const event = await received
+      expect(event.type).toBe('test:event')
+
+      browserWs.close()
+    })
+  })
 })
