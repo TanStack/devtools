@@ -1,19 +1,19 @@
 import { createContext, createEffect, createSignal, useContext } from 'solid-js'
 import type { Accessor, JSX } from 'solid-js'
 
-export type Theme = 'light' | 'dark'
+export type ThemeType = 'light' | 'dark'
 
 type ThemeContextValue = {
-  theme: Accessor<Theme>
-  setTheme: (theme: Theme) => void
+  theme: Accessor<ThemeType>
+  setTheme: (theme: ThemeType) => void
 }
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 export const ThemeContextProvider = (props: {
   children: JSX.Element
-  theme: Theme
+  theme: ThemeType
 }) => {
-  const [theme, setTheme] = createSignal<Theme>(props.theme)
+  const [theme, setTheme] = createSignal<ThemeType>(props.theme)
   createEffect(() => {
     setTheme(props.theme)
   })
