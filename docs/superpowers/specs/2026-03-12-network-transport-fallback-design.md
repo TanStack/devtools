@@ -55,7 +55,7 @@ These are already replaced by the Vite plugin's `connection-injection` transform
 
 **Differentiation:** Server bridges connect to `/__devtools/ws?bridge=server`. This requires two changes to the existing upgrade handlers:
 
-1. **URL matching:** The current upgrade handlers use exact string equality (`req.url === '/__devtools/ws'`). This must change to prefix matching or URL parsing (e.g., `req.url?.startsWith('/__devtools/ws')`) to support the `?bridge=server` query parameter.
+1. **URL matching:** The WebSocket upgrade handlers use exact string equality (`req.url === '/__devtools/ws'`) in both the standalone server (line 305) and external server (line 273) code paths. Both must change to prefix matching or URL parsing (e.g., `req.url?.startsWith('/__devtools/ws')`) to support the `?bridge=server` query parameter. Note: the SSE (`/__devtools/sse`) and POST (`/__devtools/send`) URL checks do NOT need this change since they don't use query parameters.
 2. **`handleNewConnection` signature:** The current `wss.on('connection', (ws: WebSocket) => {...})` callback only receives `ws`. It must also accept the `req` parameter (which `wss.emit('connection', ws, req)` already passes) to inspect the URL and tag the connection as a server bridge.
 
 **Echo prevention:** Events include a unique `eventId`. The sending `EventClient` tracks sent IDs in a ring buffer (200 entries) and ignores incoming events with matching IDs.
@@ -132,7 +132,7 @@ Additive changes — existing events without these fields work exactly as before
 - Extend `handleNewConnection` to accept the `req` parameter from WebSocket `connection` event
 - Track server bridge vs browser client WebSocket connections (tag based on `?bridge=server`)
 - Route server bridge WebSocket messages through `emit()` (both `emitEventToClients` and `emitToServer`)
-- Update POST handler (`/__devtools/send`) to check `source` field and route `"server-bridge"` messages through `emit()` instead of just `emitToServer()`
+- Update POST handler (`/__devtools/send`) to check `source` field and route `"server-bridge"` messages through `emit()` instead of just `emitToServer()` — both the standalone handler (in `createSSEServer()`) and the external server handler (in `start()`) need this change
 
 ### `packages/event-bus-client/src/plugin.ts` (EventClient)
 - Add `declare const __TANSTACK_DEVTOOLS_PORT__` / `__TANSTACK_DEVTOOLS_HOST__` / `__TANSTACK_DEVTOOLS_PROTOCOL__` placeholders (following existing codebase convention from `client.ts`)
