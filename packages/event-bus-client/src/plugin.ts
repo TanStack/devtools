@@ -41,6 +41,12 @@ function getDevtoolsProtocol(): 'http' | 'https' | undefined {
   }
 }
 
+let globalEventIdCounter = 0
+
+function generateEventId(): string {
+  return `${++globalEventIdCounter}-${Date.now()}`
+}
+
 type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
   [Key in keyof TEventMap & string]: TanStackDevtoolsEvent<Key, TEventMap[Key]>
 }[keyof TEventMap & string]
@@ -253,6 +259,157 @@ export class EventClient<TEventMap extends Record<string, any>> {
     this.dispatchCustomEvent('tanstack-dispatch-event', event)
   }
 
+  private connectWebSocket() {
+    if (this.#wsConnecting || this.#ws) return
+    if (this.#wsGaveUp) return // WebSocket permanently unavailable, use HTTP-only
+
+    this.#wsConnecting = true
+
+    const port = this.#networkPort ?? getDevtoolsPort()
+    const host = this.#networkHost ?? getDevtoolsHost() ?? 'localhost'
+    const protocol = this.#networkProtocol ?? getDevtoolsProtocol() ?? 'http'
+    const wsProtocol = protocol === 'https' ? 'wss' : 'ws'
+    const url = `${wsProtocol}://${host}:${port}/__devtools/ws?bridge=server`
+
+    this.debugLog('Connecting to ServerEventBus via WebSocket', url)
+
+    try {
+      const ws = new WebSocket(url)
+
+      ws.addEventListener('open', () => {
+        this.debugLog('WebSocket connected to ServerEventBus')
+        this.#ws = ws
+        this.#wsConnecting = false
+        this.#connected = true
+        this.#wsReconnectDelay = 100 // reset backoff
+        this.#wsReconnectAttempts = 0
+
+        // Flush queued events
+        const queued = [...this.#queuedEvents]
+        this.#queuedEvents = []
+        for (const event of queued) {
+          this.sendViaNetwork(event)
+        }
+      })
+
+      ws.addEventListener('message', (e) => {
+        try {
+          const data = typeof e.data === 'string' ? e.data : e.data.toString()
+          const event = JSON.parse(data)
+
+          // Dedup: ignore events we sent ourselves
+          if (event.eventId && this.#sentEventIds.has(event.eventId)) {
+            this.debugLog('Ignoring echoed event', event.eventId)
+            return
+          }
+
+          this.debugLog('Received event via network transport', event)
+
+          // Dispatch on local EventTarget so .on() listeners fire
+          const target = this.#eventTarget()
+          try {
+            target.dispatchEvent(new CustomEvent(event.type, { detail: event }))
+            target.dispatchEvent(new CustomEvent('tanstack-devtools-global', { detail: event }))
+          } catch {
+            // EventTarget may not support CustomEvent in all environments
+          }
+        } catch {
+          this.debugLog('Failed to parse incoming WebSocket message')
+        }
+      })
+
+      ws.addEventListener('close', () => {
+        this.debugLog('WebSocket connection closed')
+        this.#ws = null
+        this.#connected = false
+        this.#wsConnecting = false
+        this.scheduleReconnect()
+      })
+
+      ws.addEventListener('error', () => {
+        this.debugLog('WebSocket connection error')
+        this.#wsConnecting = false
+      })
+    } catch {
+      this.debugLog('Failed to create WebSocket connection')
+      this.#wsConnecting = false
+      this.scheduleReconnect()
+    }
+  }
+
+  private scheduleReconnect() {
+    if (this.#wsReconnectTimer) return
+    if (!this.#useNetworkTransport) return
+    if (this.#wsGaveUp) return
+
+    this.#wsReconnectAttempts++
+    if (this.#wsReconnectAttempts >= this.#wsMaxReconnectAttempts) {
+      this.debugLog('WebSocket permanently unavailable, falling back to HTTP-only')
+      this.#wsGaveUp = true
+      // Flush any queued events via HTTP POST
+      const queued = [...this.#queuedEvents]
+      this.#queuedEvents = []
+      for (const event of queued) {
+        this.sendViaHttp({ ...event, eventId: generateEventId(), source: 'server-bridge' })
+      }
+      return
+    }
+
+    this.debugLog(`Scheduling reconnect in ${this.#wsReconnectDelay}ms (attempt ${this.#wsReconnectAttempts}/${this.#wsMaxReconnectAttempts})`)
+    this.#wsReconnectTimer = setTimeout(() => {
+      this.#wsReconnectTimer = null
+      this.connectWebSocket()
+    }, this.#wsReconnectDelay)
+
+    // Exponential backoff, max 5s
+    this.#wsReconnectDelay = Math.min(this.#wsReconnectDelay * 2, 5000)
+  }
+
+  private sendViaNetwork(event: TanStackDevtoolsEvent<string, any>) {
+    const eventWithId = {
+      ...event,
+      eventId: generateEventId(),
+      source: 'server-bridge' as const,
+    }
+    this.#sentEventIds.add(eventWithId.eventId!)
+
+    if (this.#wsGaveUp) {
+      // HTTP-only mode — WebSocket permanently unavailable
+      this.sendViaHttp(eventWithId)
+      return
+    }
+
+    if (this.#ws && this.#ws.readyState === (globalThis.WebSocket?.OPEN ?? 1)) {
+      this.debugLog('Sending event via WebSocket', eventWithId)
+      this.#ws.send(JSON.stringify(eventWithId))
+    } else {
+      // HTTP POST fallback for when WebSocket is temporarily disconnected
+      this.sendViaHttp(eventWithId)
+    }
+  }
+
+  private sendViaHttp(event: TanStackDevtoolsEvent<string, any>) {
+    const port = this.#networkPort ?? getDevtoolsPort()
+    const host = this.#networkHost ?? getDevtoolsHost() ?? 'localhost'
+    const protocol = this.#networkProtocol ?? getDevtoolsProtocol() ?? 'http'
+
+    if (!port) return
+
+    this.debugLog('Sending event via HTTP POST fallback', event)
+
+    try {
+      fetch(`${protocol}://${host}:${port}/__devtools/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event),
+      }).catch(() => {
+        this.debugLog('HTTP POST fallback failed')
+      })
+    } catch {
+      this.debugLog('fetch not available for HTTP POST fallback')
+    }
+  }
+
   createEventPayload<TEvent extends keyof TEventMap & string>(
     eventSuffix: TEvent,
     payload: TEventMap[TEvent],
@@ -286,6 +443,20 @@ export class EventClient<TEventMap extends Record<string, any>> {
           detail: this.createEventPayload(eventSuffix, payload),
         }),
       )
+    }
+
+    // Network transport path — skip in-process handshake entirely.
+    // Must come BEFORE #failedToConnect check because in isolated workers
+    // the in-process handshake always fails.
+    if (this.#useNetworkTransport) {
+      const event = this.createEventPayload(eventSuffix, payload)
+      if (!this.#connected) {
+        this.#queuedEvents.push(event)
+        this.connectWebSocket()
+        return
+      }
+      this.sendViaNetwork(event)
+      return
     }
 
     if (this.#failedToConnect) {
@@ -383,19 +554,17 @@ export class EventClient<TEventMap extends Record<string, any>> {
       )
   }
 
-  /** Tear down network transport resources. Full implementation in Task 6. */
-  dispose() {
-    this.debugLog('Disposing EventClient', {
-      useNetworkTransport: this.#useNetworkTransport,
-      wsConnecting: this.#wsConnecting,
-      wsReconnectDelay: this.#wsReconnectDelay,
-      wsReconnectAttempts: this.#wsReconnectAttempts,
-      wsGaveUp: this.#wsGaveUp,
-      wsMaxReconnectAttempts: this.#wsMaxReconnectAttempts,
-      networkPort: this.#networkPort,
-      networkHost: this.#networkHost,
-      networkProtocol: this.#networkProtocol,
-    })
+  /** @internal — only for testing and createNetworkTransportClient */
+  ___enableNetworkTransport(port: number, host: string, protocol: 'http' | 'https') {
+    this.#useNetworkTransport = true
+    this.#networkTransportDetected = true
+    this.#networkPort = port
+    this.#networkHost = host
+    this.#networkProtocol = protocol
+  }
+
+  /** @internal */
+  ___destroyNetworkTransport() {
     if (this.#wsReconnectTimer) {
       clearTimeout(this.#wsReconnectTimer)
       this.#wsReconnectTimer = null
@@ -404,16 +573,31 @@ export class EventClient<TEventMap extends Record<string, any>> {
       this.#ws.close()
       this.#ws = null
     }
-    this.#wsConnecting = false
-    this.#wsReconnectAttempts = 0
-    this.#wsReconnectDelay = 100
-    this.#wsGaveUp = false
-    this.#wsMaxReconnectAttempts = 10
+    this.#connected = false
     this.#useNetworkTransport = false
-    this.#networkPort = undefined
-    this.#networkHost = undefined
-    this.#networkProtocol = undefined
-    this.#sentEventIds.has('') // keep reference alive
-    this.stopConnectLoop()
   }
+}
+
+/**
+ * Creates an EventClient with network transport explicitly enabled.
+ * Used for testing and for environments where compile-time placeholder
+ * replacement is not available.
+ */
+export function createNetworkTransportClient<TEventMap extends Record<string, any>>({
+  pluginId,
+  port,
+  host = 'localhost',
+  protocol = 'http',
+  debug = false,
+}: {
+  pluginId: string
+  port: number
+  host?: string
+  protocol?: 'http' | 'https'
+  debug?: boolean
+}): EventClient<TEventMap> & { destroy: () => void } {
+  const client = new EventClient<TEventMap>({ pluginId, debug })
+  ;(client as any).___enableNetworkTransport(port, host, protocol)
+  ;(client as any).destroy = () => (client as any).___destroyNetworkTransport()
+  return client as EventClient<TEventMap> & { destroy: () => void }
 }
