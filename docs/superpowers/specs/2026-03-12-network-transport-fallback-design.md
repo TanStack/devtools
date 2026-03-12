@@ -1,7 +1,7 @@
 # Network Transport Fallback for Isolated Server Runtimes
 
 **Date:** 2026-03-12
-**Status:** Draft
+**Status:** Implemented
 **Issue:** https://github.com/TanStack/ai/issues/339
 
 ## Problem
