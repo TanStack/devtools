@@ -1,3 +1,5 @@
+import { RingBuffer } from './ring-buffer'
+
 interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   type: TEventName
   payload: TPayload
@@ -7,6 +9,36 @@ interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
 }
 declare global {
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
+}
+
+// Compile-time placeholders replaced by the Vite plugin's connection-injection transform.
+// When not replaced (no Vite plugin), these remain undefined and network transport is disabled.
+declare const __TANSTACK_DEVTOOLS_PORT__: number | undefined
+declare const __TANSTACK_DEVTOOLS_HOST__: string | undefined
+declare const __TANSTACK_DEVTOOLS_PROTOCOL__: 'http' | 'https' | undefined
+
+function getDevtoolsPort(): number | undefined {
+  try {
+    return typeof __TANSTACK_DEVTOOLS_PORT__ !== 'undefined' ? __TANSTACK_DEVTOOLS_PORT__ : undefined
+  } catch {
+    return undefined
+  }
+}
+
+function getDevtoolsHost(): string | undefined {
+  try {
+    return typeof __TANSTACK_DEVTOOLS_HOST__ !== 'undefined' ? __TANSTACK_DEVTOOLS_HOST__ : undefined
+  } catch {
+    return undefined
+  }
+}
+
+function getDevtoolsProtocol(): 'http' | 'https' | undefined {
+  try {
+    return typeof __TANSTACK_DEVTOOLS_PROTOCOL__ !== 'undefined' ? __TANSTACK_DEVTOOLS_PROTOCOL__ : undefined
+  } catch {
+    return undefined
+  }
 }
 
 type AllDevtoolsEvents<TEventMap extends Record<string, any>> = {
@@ -27,6 +59,20 @@ export class EventClient<TEventMap extends Record<string, any>> {
   #connecting = false
   #failedToConnect = false
   #internalEventTarget: EventTarget | null = null
+  #useNetworkTransport = false
+  #networkTransportDetected = false // one-time detection flag
+  #cachedLocalTarget: EventTarget | null = null // cached for consistent listener registration
+  #ws: WebSocket | null = null
+  #wsConnecting = false
+  #wsReconnectTimer: ReturnType<typeof setTimeout> | null = null
+  #wsReconnectDelay = 100 // exponential backoff: 100, 200, 400, ... 5000ms
+  #wsMaxReconnectAttempts = 10
+  #wsReconnectAttempts = 0
+  #wsGaveUp = false // true when WebSocket is permanently unavailable, use HTTP-only
+  #sentEventIds = new RingBuffer(200)
+  #networkPort: number | undefined = undefined
+  #networkHost: string | undefined = undefined
+  #networkProtocol: 'http' | 'https' | undefined = undefined
 
   #onConnected = () => {
     this.debugLog('Connected to event bus')
@@ -129,35 +175,53 @@ export class EventClient<TEventMap extends Record<string, any>> {
       this.debugLog('Using global event target')
       return globalThis.__TANSTACK_EVENT_TARGET__
     }
-    // CLient event target is the browser window object
+    // Client event target is the browser window object
     if (
       typeof window !== 'undefined' &&
       typeof window.addEventListener !== 'undefined'
     ) {
       this.debugLog('Using window as event target')
-
       return window
     }
-    // Protect against non-web environments like react-native
-    const eventTarget =
-      typeof EventTarget !== 'undefined' ? new EventTarget() : undefined
 
-    // For non-web environments like react-native
-    if (
-      typeof eventTarget === 'undefined' ||
-      typeof eventTarget.addEventListener === 'undefined'
-    ) {
+    // We're in an isolated server environment (worker thread, separate process, etc.)
+    // Check if devtools server coordinates are available (Vite plugin replaced placeholders)
+    if (!this.#networkTransportDetected) {
+      this.#networkTransportDetected = true
+      const port = getDevtoolsPort()
+      const host = getDevtoolsHost()
+      const protocol = getDevtoolsProtocol()
+      if (port !== undefined) {
+        this.#useNetworkTransport = true
+        this.#networkPort = port
+        this.#networkHost = host
+        this.#networkProtocol = protocol
+        this.debugLog('Network transport activated — devtools server detected at port', port)
+      }
+    }
+
+    // Return cached local EventTarget to ensure .on() and emit() use the same instance
+    if (this.#cachedLocalTarget) {
+      return this.#cachedLocalTarget
+    }
+
+    // Protect against non-web environments like react-native
+    if (typeof EventTarget === 'undefined') {
       this.debugLog(
         'No event mechanism available, running in non-web environment',
       )
-      return {
+      const noop = {
         addEventListener: () => {},
         removeEventListener: () => {},
         dispatchEvent: () => false,
       }
+      this.#cachedLocalTarget = noop as any
+      return noop
     }
 
-    this.debugLog('Using new EventTarget as fallback')
+    const eventTarget = new EventTarget()
+    this.#cachedLocalTarget = eventTarget
+    this.debugLog('Using cached local EventTarget as fallback')
     return eventTarget
   }
 
@@ -317,5 +381,39 @@ export class EventClient<TEventMap extends Record<string, any>> {
         'tanstack-devtools-global',
         handler,
       )
+  }
+
+  /** Tear down network transport resources. Full implementation in Task 6. */
+  dispose() {
+    this.debugLog('Disposing EventClient', {
+      useNetworkTransport: this.#useNetworkTransport,
+      wsConnecting: this.#wsConnecting,
+      wsReconnectDelay: this.#wsReconnectDelay,
+      wsReconnectAttempts: this.#wsReconnectAttempts,
+      wsGaveUp: this.#wsGaveUp,
+      wsMaxReconnectAttempts: this.#wsMaxReconnectAttempts,
+      networkPort: this.#networkPort,
+      networkHost: this.#networkHost,
+      networkProtocol: this.#networkProtocol,
+    })
+    if (this.#wsReconnectTimer) {
+      clearTimeout(this.#wsReconnectTimer)
+      this.#wsReconnectTimer = null
+    }
+    if (this.#ws) {
+      this.#ws.close()
+      this.#ws = null
+    }
+    this.#wsConnecting = false
+    this.#wsReconnectAttempts = 0
+    this.#wsReconnectDelay = 100
+    this.#wsGaveUp = false
+    this.#wsMaxReconnectAttempts = 10
+    this.#useNetworkTransport = false
+    this.#networkPort = undefined
+    this.#networkHost = undefined
+    this.#networkProtocol = undefined
+    this.#sentEventIds.has('') // keep reference alive
+    this.stopConnectLoop()
   }
 }
