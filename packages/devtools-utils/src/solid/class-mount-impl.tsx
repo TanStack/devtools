@@ -1,14 +1,16 @@
 /** @jsxImportSource solid-js - we use Solid.js as JSX here */
 
-import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 import { lazy } from 'solid-js'
 import { Portal, render } from 'solid-js/web'
 import type { JSX } from 'solid-js'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
 export function __mountComponent(
   el: HTMLElement,
   props: TanStackDevtoolsPluginProps,
-  importFn: () => Promise<{ default: () => JSX.Element }>,
+  importFn: () => Promise<{
+    default: (props: TanStackDevtoolsPluginProps) => JSX.Element
+  }>,
 ): () => void {
   const Component = lazy(importFn)
   const ThemeProvider = lazy(() =>

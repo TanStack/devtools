@@ -11,7 +11,9 @@ import type { JSX } from 'solid-js'
  * @returns Tuple containing the DevtoolsCore class and a NoOpDevtoolsCore class
  */
 export function constructCoreClass(
-  importFn: () => Promise<{ default: () => JSX.Element }>,
+  importFn: () => Promise<{
+    default: (props: TanStackDevtoolsPluginProps) => JSX.Element
+  }>,
 ) {
   class DevtoolsCore {
     #isMounted = false
