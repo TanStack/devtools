@@ -1,0 +1,21 @@
+{
+  "projectName": "start-repro",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "npm",
+  "tailwind": true,
+  "addOnOptions": {},
+  "git": true,
+  "version": 1,
+  "framework": "react-cra",
+  "chosenAddOns": [
+    "biome",
+    "cloudflare",
+    "start",
+    "tanstack-query",
+    "ai",
+    "store",
+    "shadcn",
+    "compiler"
+  ]
+}

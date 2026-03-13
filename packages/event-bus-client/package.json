@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-event-client",
-  "version": "0.4.0",
+  "version": "0.4.3",
   "description": "TanStack Event Client is a lightweight event client for TanStack Devtools event bus.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -34,13 +34,18 @@
     },
     "./package.json": "./package.json"
   },
+  "bin": {
+    "intent": "./bin/intent.js"
+  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
   "files": [
     "dist/",
-    "src"
+    "src",
+    "skills",
+    "bin"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",

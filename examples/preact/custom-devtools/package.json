@@ -9,7 +9,7 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "0.4.0",
+    "@tanstack/devtools-event-client": "0.4.3",
     "@tanstack/preact-devtools": "workspace:*",
     "preact": "^10.28.0"
   },

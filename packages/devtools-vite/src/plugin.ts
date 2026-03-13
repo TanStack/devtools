@@ -2,7 +2,11 @@ import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
 import { normalizePath } from 'vite'
 import chalk from 'chalk'
-import { handleDevToolsViteRequest, readPackageJson } from './utils'
+import {
+  handleDevToolsViteRequest,
+  readPackageJson,
+  stripEnhancedLogPrefix,
+} from './utils'
 import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
 import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
@@ -13,9 +17,16 @@ import {
   emitOutdatedDeps,
   installPackage,
 } from './package-manager'
+import { generateConsolePipeCode } from './virtual-console'
+import type { ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
 import type { EditorConfig } from './editor'
-import type { ServerEventBusConfig } from '@tanstack/devtools-event-bus/server'
+import type {
+  HttpServerLike,
+  ServerEventBusConfig,
+} from '@tanstack/devtools-event-bus/server'
+
+export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
 
 export type TanStackDevtoolsViteConfig = {
   /**
@@ -70,6 +81,23 @@ export type TanStackDevtoolsViteConfig = {
       components?: Array<string | RegExp>
     }
   }
+  /**
+   * Configuration for console piping between client and server.
+   * When enabled, console logs from the client will appear in the terminal,
+   * and server logs will appear in the browser console.
+   */
+  consolePiping?: {
+    /**
+     * Whether to enable console piping.
+     * @default true
+     */
+    enabled?: boolean
+    /**
+     * Which console methods to pipe.
+     * @default ['log', 'warn', 'error', 'info', 'debug']
+     */
+    levels?: Array<ConsoleLevel>
+  }
 }
 
 export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
@@ -82,9 +110,14 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   const injectSourceConfig = args?.injectSource ?? { enabled: true }
   const removeDevtoolsOnBuild = args?.removeDevtoolsOnBuild ?? true
   const serverBusEnabled = args?.eventBusConfig?.enabled ?? true
+  const consolePipingConfig = args?.consolePiping ?? { enabled: true }
+  const consolePipingLevels: Array<ConsoleLevel> =
+    consolePipingConfig.levels ?? ['log', 'warn', 'error', 'info', 'debug']
 
   let devtoolsFileId: string | null = null
   let devtoolsPort: number | null = null
+  let devtoolsHost: string | null = null
+  let devtoolsProtocol: 'http' | 'https' | null = null
 
   return [
     {
@@ -93,16 +126,15 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(config) {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
-      transform(code, id) {
-        if (
-          id.includes('node_modules') ||
-          id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build')
-        )
-          return
-
-        return addSourceToJsx(code, id, args?.injectSource?.ignore)
+      transform: {
+        filter: {
+          id: {
+            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+          },
+        },
+        handler(code, id) {
+          return addSourceToJsx(code, id, args?.injectSource?.ignore)
+        },
       },
     },
     {
@@ -142,9 +174,24 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       async configureServer(server) {
         if (serverBusEnabled) {
           const preferredPort = args?.eventBusConfig?.port ?? 4206
+          const isHttps = !!server.config.server.https
+          const serverHost =
+            typeof server.config.server.host === 'string'
+              ? server.config.server.host
+              : 'localhost'
+
+          devtoolsProtocol = isHttps ? 'https' : 'http'
+          devtoolsHost = serverHost
+
           const bus = new ServerEventBus({
             ...args?.eventBusConfig,
             port: preferredPort,
+            host: serverHost,
+            // When HTTPS is enabled, piggyback on Vite's server
+            // so WebSocket/SSE connections share the same TLS certificate
+            ...(isHttps && server.httpServer
+              ? { httpServer: server.httpServer as HttpServerLike }
+              : {}),
           })
           // start() now handles EADDRINUSE and returns the actual port
           devtoolsPort = await bus.start()
@@ -175,16 +222,77 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }
           await editor.open(path, lineNum, columnNum)
         }
+
+        // SSE clients for broadcasting server logs to browser
+        const sseClients: Array<{
+          res: ServerResponse
+          id: number
+        }> = []
+        let sseClientId = 0
+        const consolePipingEnabled = consolePipingConfig.enabled ?? true
+
         server.middlewares.use((req, res, next) =>
-          handleDevToolsViteRequest(req, res, next, (parsedData) => {
-            const { data, routine } = parsedData
-            if (routine === 'open-source') {
-              return handleOpenSource({
-                data: { type: data.type, data },
-                openInEditor,
-              })
-            }
-            return
+          handleDevToolsViteRequest(req, res, next, {
+            onOpenSource: (parsedData) => {
+              const { data, routine } = parsedData
+              if (routine === 'open-source') {
+                return handleOpenSource({
+                  data: { type: data.type, data },
+                  openInEditor,
+                })
+              }
+              return
+            },
+            ...(consolePipingEnabled
+              ? {
+                  onConsolePipe: (entries) => {
+                    for (const entry of entries) {
+                      const prefix = chalk.cyan('[Client]')
+                      const logMethod = console[entry.level as ConsoleLevel]
+                      const cleanedArgs = stripEnhancedLogPrefix(
+                        entry.args,
+                        (loc) => chalk.gray(loc),
+                      )
+                      logMethod(prefix, ...cleanedArgs)
+                    }
+                  },
+                  onConsolePipeSSE: (res, req) => {
+                    res.setHeader('Content-Type', 'text/event-stream')
+                    res.setHeader('Cache-Control', 'no-cache')
+                    res.setHeader('Connection', 'keep-alive')
+                    res.setHeader('Access-Control-Allow-Origin', '*')
+                    res.flushHeaders()
+
+                    const clientId = ++sseClientId
+                    sseClients.push({ res, id: clientId })
+
+                    req.on('close', () => {
+                      const index = sseClients.findIndex(
+                        (c) => c.id === clientId,
+                      )
+                      if (index !== -1) {
+                        sseClients.splice(index, 1)
+                      }
+                    })
+                  },
+                  onServerConsolePipe: (entries) => {
+                    try {
+                      const data = JSON.stringify({
+                        entries: entries.map((e) => ({
+                          level: e.level,
+                          args: e.args,
+                          source: 'server',
+                          timestamp: e.timestamp || Date.now(),
+                        })),
+                      })
+
+                      for (const client of sseClients) {
+                        client.res.write(`data: ${data}\n\n`)
+                      }
+                    } catch {}
+                  },
+                }
+              : {}),
           }),
         )
       },
@@ -417,6 +525,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
             packageJson,
           })
         })
+
+        // Console piping is now handled via HTTP endpoints in the custom-server plugin
       },
       async handleHotUpdate({ file }) {
         if (file.endsWith('package.json')) {
@@ -428,24 +538,70 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         }
       },
     },
+    // Inject console piping code into entry files (both client and server)
+    {
+      name: '@tanstack/devtools:console-pipe-transform',
+      enforce: 'pre',
+      apply(config, { command }) {
+        return (
+          config.mode === 'development' &&
+          command === 'serve' &&
+          (consolePipingConfig.enabled ?? true)
+        )
+      },
+      transform: {
+        filter: {
+          id: {
+            include: /\.(tsx?|jsx?)$/,
+            exclude: [/node_modules/, /\/dist\//, /\?/],
+          },
+          code: {
+            exclude: /__tsdConsolePipe/, // avoid transforming files that already contain the console pipe code
+          },
+        },
+        handler(code) {
+          // Check if this is a root entry file (with <html> JSX or client entry points)
+          // In SSR frameworks, this file runs on BOTH server (SSR) and client (hydration)
+          // so our runtime check (typeof window === 'undefined') handles both environments
+          const isRootEntry =
+            /<html[\s>]/i.test(code) ||
+            code.includes('StartClient') ||
+            code.includes('hydrateRoot') ||
+            code.includes('createRoot') ||
+            (code.includes('solid-js/web') && code.includes('render('))
+
+          if (isRootEntry) {
+            const viteServerUrl = `http://localhost:${port}`
+            const inlineCode = generateConsolePipeCode(
+              consolePipingLevels,
+              viteServerUrl,
+            )
+
+            return `${inlineCode}\n${code}`
+          }
+
+          return undefined
+        },
+      },
+    },
     {
       name: '@tanstack/devtools:better-console-logs',
       enforce: 'pre',
       apply(config) {
         return config.mode === 'development' && enhancedLogsConfig.enabled
       },
-      transform(code, id) {
-        // Ignore anything external
-        if (
-          id.includes('node_modules') ||
-          id.includes('?raw') ||
-          id.includes('dist') ||
-          id.includes('build') ||
-          !code.includes('console.')
-        )
-          return
-
-        return enhanceConsoleLog(code, id, port)
+      transform: {
+        filter: {
+          id: {
+            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+          },
+          code: {
+            include: 'console.',
+          },
+        },
+        handler(code, id) {
+          return enhanceConsoleLog(code, id, port)
+        },
       },
     },
     {
@@ -467,22 +623,42 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       },
     },
     {
-      name: '@tanstack/devtools:port-injection',
+      name: '@tanstack/devtools:connection-injection',
       apply(config, { command }) {
         return config.mode === 'development' && command === 'serve'
       },
       transform(code, id) {
-        // Only transform @tanstack packages that contain the port placeholder
-        if (!code.includes('__TANSTACK_DEVTOOLS_PORT__')) return
+        // Only transform @tanstack packages that contain the connection placeholders
+        const hasPlaceholder =
+          code.includes('__TANSTACK_DEVTOOLS_PORT__') ||
+          code.includes('__TANSTACK_DEVTOOLS_HOST__') ||
+          code.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')
+        if (!hasPlaceholder) return
         if (
           !id.includes('@tanstack/devtools') &&
           !id.includes('@tanstack/event-bus')
         )
           return
 
-        // Replace placeholder with actual port (or fallback to 4206 if not resolved yet)
+        // Replace placeholders with actual values (or fallback defaults)
         const portValue = devtoolsPort ?? 4206
-        return code.replace(/__TANSTACK_DEVTOOLS_PORT__/g, String(portValue))
+        const hostValue = devtoolsHost ?? 'localhost'
+        const protocolValue = devtoolsProtocol ?? 'http'
+
+        let result = code
+        result = result.replace(
+          /__TANSTACK_DEVTOOLS_PORT__/g,
+          String(portValue),
+        )
+        result = result.replace(
+          /__TANSTACK_DEVTOOLS_HOST__/g,
+          JSON.stringify(hostValue),
+        )
+        result = result.replace(
+          /__TANSTACK_DEVTOOLS_PROTOCOL__/g,
+          JSON.stringify(protocolValue),
+        )
+        return result
       },
     },
   ]

@@ -1,5 +1,30 @@
 # @tanstack/devtools-utils
 
+## 0.3.4
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.3.3
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
+## 0.3.2
+
+### Patch Changes
+
+- Fix issues with bundling solid ([#367](https://github.com/TanStack/devtools/pull/367))
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [[`b3e375f`](https://github.com/TanStack/devtools/commit/b3e375f1b09f69f36bd7b8e6f10197af1aa7fd2a), [`a629bc3`](https://github.com/TanStack/devtools/commit/a629bc3927ddb035a5c5f1104a975e1d8ddeaaf9)]:
+  - @tanstack/devtools-ui@0.5.0
+
 ## 0.3.0
 
 ### Minor Changes

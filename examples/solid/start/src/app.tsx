@@ -4,7 +4,7 @@ import './app.css'
 
 export default function App() {
   const [count, setCount] = createSignal(0)
-
+  console.log('App component rendered with count:', count())
   return (
     <main>
       <TanStackDevtools plugins={[]} />

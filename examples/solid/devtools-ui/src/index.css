@@ -1,0 +1,99 @@
+:root {
+  --app-background-color: #f9fafb;
+  --app-heading-color: #101828;
+  --app-button-bg: #f2f4f7;
+  --app-button-border: #d0d5dd;
+  --app-button-text: #101828;
+  --app-button-hover: #eaecf0;
+  --app-card-bg: #f9fafb;
+  --app-card-border: #d0d5dd;
+}
+
+[data-theme='light'] {
+  --app-background-color: #f9fafb;
+  --app-heading-color: #101828;
+  --app-button-bg: #f2f4f7;
+  --app-button-border: #d0d5dd;
+  --app-button-text: #101828;
+  --app-button-hover: #eaecf0;
+  --app-card-bg: #f9fafb;
+  --app-card-border: #d0d5dd;
+}
+
+[data-theme='dark'] {
+  --app-background-color: #191c24;
+  --app-heading-color: #f2f4f7;
+  --app-button-bg: #212530;
+  --app-button-border: #292e3d;
+  --app-button-text: #f2f4f7;
+  --app-button-hover: #292e3d;
+  --app-card-bg: #212530;
+  --app-card-border: #292e3d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --app-background-color: #191c24;
+    --app-heading-color: #f2f4f7;
+    --app-button-bg: #212530;
+    --app-button-border: #292e3d;
+    --app-button-text: #f2f4f7;
+    --app-button-hover: #292e3d;
+    --app-card-bg: #212530;
+    --app-card-border: #292e3d;
+  }
+}
+
+body {
+  background-color: var(--app-background-color);
+}
+
+.app-shell {
+  padding: 16px;
+}
+
+.theme-toggle {
+  border: 1px solid var(--app-button-border);
+  background-color: var(--app-button-bg);
+  color: var(--app-button-text);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--app-button-hover);
+}
+
+.theme-toggle:active {
+  transform: translateY(1px);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid #1570ef;
+  outline-offset: 2px;
+}
+
+.json-tree-container {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--app-card-border);
+  border-radius: 10px;
+  background-color: var(--app-card-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: Arial;
+  color: var(--app-heading-color);
+}

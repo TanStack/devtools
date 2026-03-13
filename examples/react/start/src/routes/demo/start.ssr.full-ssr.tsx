@@ -5,6 +5,7 @@ import { emitRouteNavigation } from '../../devtools'
 export const Route = createFileRoute('/demo/start/ssr/full-ssr')({
   component: RouteComponent,
   loader: async () => {
+    console.log('Navigated to Full SSR Demo')
     emitRouteNavigation('Full SSR', '/demo/start/ssr/full-ssr')
     return await getPunkSongs()
   },

@@ -1,13 +1,29 @@
 import { parseWithBigInt, stringifyWithBigInt } from '../utils/json'
 
-// Declare the global placeholder that gets replaced by the Vite plugin at transform time
-// Falls back to 4206 when not using the Vite plugin or in non-transformed environments
+// Declare the global placeholders that get replaced by the Vite plugin at transform time
+// Fall back to defaults when not using the Vite plugin or in non-transformed environments
 declare const __TANSTACK_DEVTOOLS_PORT__: number | undefined
+declare const __TANSTACK_DEVTOOLS_HOST__: string | undefined
+declare const __TANSTACK_DEVTOOLS_PROTOCOL__: 'http' | 'https' | undefined
 
 function getDefaultPort(configPort: number): number {
   if (typeof __TANSTACK_DEVTOOLS_PORT__ !== 'undefined')
     return __TANSTACK_DEVTOOLS_PORT__
   return configPort
+}
+
+function getDefaultHost(configHost: string): string {
+  if (typeof __TANSTACK_DEVTOOLS_HOST__ !== 'undefined')
+    return __TANSTACK_DEVTOOLS_HOST__
+  return configHost
+}
+
+function getDefaultProtocol(
+  configProtocol: 'http' | 'https',
+): 'http' | 'https' {
+  if (typeof __TANSTACK_DEVTOOLS_PROTOCOL__ !== 'undefined')
+    return __TANSTACK_DEVTOOLS_PROTOCOL__
+  return configProtocol
 }
 
 interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
@@ -33,10 +49,24 @@ export interface ClientEventBusConfig {
    * Defaults to 4206.
    */
   port?: number
+
+  /**
+   * Optional host to connect to the devtools server event bus.
+   * Defaults to 'localhost'.
+   */
+  host?: string
+
+  /**
+   * Optional protocol to use for connecting to the devtools server event bus.
+   * Defaults to 'http'. Set to 'https' when the dev server uses HTTPS.
+   */
+  protocol?: 'http' | 'https'
 }
 
 export class ClientEventBus {
   #port: number
+  #host: string
+  #protocol: 'http' | 'https'
   #socket: WebSocket | null
   #eventSource: EventSource | null
   #eventTarget: EventTarget
@@ -56,6 +86,8 @@ export class ClientEventBus {
   }
   constructor({
     port = 4206,
+    host = 'localhost',
+    protocol = 'http',
     debug = false,
     connectToServerBus = false,
   }: ClientEventBusConfig = {}) {
@@ -63,6 +95,8 @@ export class ClientEventBus {
     this.#broadcastChannel = new BroadcastChannel('tanstack-devtools')
     this.#eventSource = null
     this.#port = getDefaultPort(port)
+    this.#host = getDefaultHost(host)
+    this.#protocol = getDefaultProtocol(protocol)
     this.#socket = null
     this.#connectToServerBus = connectToServerBus
     this.#eventTarget = this.getGlobalTarget()
@@ -102,7 +136,7 @@ export class ClientEventBus {
     } else if (this.#eventSource) {
       this.debugLog('Emitting event to server via SSE', event)
 
-      fetch(`http://localhost:${this.#port}/__devtools/send`, {
+      fetch(`${this.#protocol}://${this.#host}:${this.#port}/__devtools/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: json,
@@ -160,7 +194,7 @@ export class ClientEventBus {
   private connectSSE() {
     this.debugLog('Connecting to SSE server')
     this.#eventSource = new EventSource(
-      `http://localhost:${this.#port}/__devtools/sse`,
+      `${this.#protocol}://${this.#host}:${this.#port}/__devtools/sse`,
     )
     this.#eventSource.onmessage = (e) => {
       this.debugLog('Received message from SSE server', e.data)
@@ -171,7 +205,10 @@ export class ClientEventBus {
   private connectWebSocket() {
     this.debugLog('Connecting to WebSocket server')
 
-    this.#socket = new WebSocket(`ws://localhost:${this.#port}/__devtools/ws`)
+    const wsProtocol = this.#protocol === 'https' ? 'wss' : 'ws'
+    this.#socket = new WebSocket(
+      `${wsProtocol}://${this.#host}:${this.#port}/__devtools/ws`,
+    )
     this.#socket.onmessage = (e) => {
       this.debugLog('Received message from server', e.data)
       this.handleEventReceived(e.data)
