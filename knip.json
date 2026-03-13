@@ -4,15 +4,7 @@
   "ignoreWorkspaces": ["examples/**"],
   "workspaces": {
     "packages/devtools-a11y": {
-      "entry": [
-        "vite.config.react.ts",
-        "vite.config.solid.ts",
-        "src/core/production.ts",
-        "src/react/index.ts",
-        "src/react/production.ts",
-        "src/solid/index.ts",
-        "src/solid/production.ts"
-      ]
+      "ignoreDependencies": ["solid-js"]
     },
 
     "packages/devtools-utils": {
