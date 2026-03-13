@@ -2,13 +2,15 @@
 
 import { lazy } from 'solid-js'
 import { Portal, render } from 'solid-js/web'
+
 import type { JSX } from 'solid-js'
+import type { ThemeType } from '@tanstack/devtools-ui'
 
 export function __mountComponent(
   el: HTMLElement,
-  theme: 'light' | 'dark',
+  theme: ThemeType,
   importFn: () => Promise<{
-    default: (props: { theme: 'light' | 'dark' }) => JSX.Element
+    default: (props: { theme: ThemeType }) => JSX.Element
   }>,
 ): () => void {
   const Component = lazy(importFn)
