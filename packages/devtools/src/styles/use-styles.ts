@@ -119,6 +119,32 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin-bottom: 2rem;
       border-radius: 0.75rem;
     `,
+    seoSubNav: css`
+      display: flex;
+      flex-direction: row;
+      gap: 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+    `,
+    seoSubNavLabel: css`
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      cursor: pointer;
+      font-family: inherit;
+      &:hover {
+        color: ${t(colors.gray[800], colors.gray[200])};
+      }
+    `,
+    seoSubNavLabelActive: css`
+      color: ${t(colors.gray[900], colors.gray[100])};
+      border-bottom-color: ${t(colors.gray[900], colors.gray[100])};
+    `,
     seoPreviewSection: css`
       display: flex;
       flex-direction: row;
@@ -203,6 +229,139 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-weight: 500;
       margin-left: 0;
       padding: 0 10px 8px 10px;
+      font-size: 0.875rem;
+    `,
+    serpPreviewBlock: css`
+      margin-bottom: 1.5rem;
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 10px;
+      padding: 1rem;
+    `,
+    serpPreviewLabel: css`
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
+    serpSnippet: css`
+      border: 1px solid ${t(colors.gray[100], colors.gray[800])};
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      background: ${t(colors.white, colors.darkGray[900])};
+      max-width: 600px;
+      font-family: ${fontFamily.sans};
+      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+    `,
+    serpSnippetMobile: css`
+      border: 1px solid ${t(colors.gray[100], colors.gray[800])};
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      background: ${t(colors.white, colors.darkGray[900])};
+      max-width: 380px;
+      font-family: ${fontFamily.sans};
+      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+    `,
+    serpSnippetDescMobile: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      margin: 0;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    `,
+    serpSnippetTopRow: css`
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    `,
+    serpSnippetFavicon: css`
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: contain;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `,
+    serpSnippetDefaultFavicon: css`
+      width: 28px;
+      height: 28px;
+      background-color: ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 50%;
+      flex-shrink: 0;
+      object-fit: contain;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `,
+    serpSnippetSiteColumn: css`
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-width: 0;
+    `,
+    serpSnippetSiteName: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.4;
+      margin: 0;
+    `,
+    serpSnippetSiteUrl: css`
+      font-size: 0.75rem;
+      color: ${t(colors.gray[500], colors.gray[500])};
+      line-height: 1.4;
+      margin: 0;
+    `,
+    serpSnippetTitle: css`
+      font-size: 1.25rem;
+      font-weight: 400;
+      color: ${t('#1a0dab', '#8ab4f8')};
+      margin: 0 0 4px 0;
+      line-height: 1.3;
+    `,
+    serpSnippetDesc: css`
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+      margin: 0;
+      line-height: 1.5;
+    `,
+    serpMeasureHidden: css`
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      visibility: hidden;
+      pointer-events: none;
+      box-sizing: border-box;
+    `,
+    serpMeasureHiddenMobile: css`
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      width: 340px;
+      visibility: hidden;
+      pointer-events: none;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    `,
+    serpReportSection: css`
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
+    serpErrorList: css`
+      margin: 4px 0 0 0;
+      padding-left: 1.25rem;
+      list-style-type: disc;
+    `,
+    serpReportItem: css`
+      margin-top: 0.25rem;
+      color: ${t(colors.red[700], colors.red[400])};
       font-size: 0.875rem;
     `,
     devtoolsPanelContainer: (
