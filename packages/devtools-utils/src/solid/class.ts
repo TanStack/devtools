@@ -1,5 +1,3 @@
-/** @jsxImportSource solid-js - we use Solid.js as JSX here */
-
 import type { JSX } from 'solid-js'
 
 /**
@@ -8,56 +6,41 @@ import type { JSX } from 'solid-js'
  * It returns a tuple containing the main DevtoolsCore class and a NoOpDevtoolsCore class.
  * The NoOpDevtoolsCore class is a no-op implementation that can be used for production if you want to explicitly exclude
  * the Devtools from your application.
- * @param importPath The path to the Solid component to be lazily imported
+ * @param importFn A function that returns a dynamic import of the Solid component
  * @returns Tuple containing the DevtoolsCore class and a NoOpDevtoolsCore class
  */
-export function constructCoreClass(Component: () => JSX.Element) {
+export function constructCoreClass(
+  importFn: () => Promise<{ default: () => JSX.Element }>,
+) {
   class DevtoolsCore {
     #isMounted = false
     #isMounting = false
-    #mountCb: (() => void) | null = null
+    #abortMount = false
     #dispose?: () => void
-    #Component: any
-    #ThemeProvider: any
 
     constructor() {}
 
     async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
-      this.#isMounting = true
-      const { lazy } = await import('solid-js')
-      const { render } = await import('solid-js/web')
-
-      if (this.#isMounted) {
+      if (this.#isMounted || this.#isMounting) {
         throw new Error('Devtools is already mounted')
       }
+      this.#isMounting = true
+      this.#abortMount = false
 
-      const mountTo = el
-      const dispose = render(() => {
-        this.#Component = Component
+      try {
+        const { __mountComponent } = await import('./class-mount-impl')
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- can be set by unmount() during await
+        if (this.#abortMount) {
+          this.#isMounting = false
+          return
+        }
 
-        this.#ThemeProvider = lazy(() =>
-          import('@tanstack/devtools-ui').then((mod) => ({
-            default: mod.ThemeContextProvider,
-          })),
-        )
-
-        const Devtools = this.#Component
-        const ThemeProvider = this.#ThemeProvider
-
-        return (
-          <ThemeProvider theme={theme}>
-            <Devtools />
-          </ThemeProvider>
-        )
-      }, mountTo)
-
-      this.#isMounted = true
-      this.#isMounting = false
-      this.#dispose = dispose
-
-      if (this.#mountCb) {
-        this.#mountCb()
-        this.#mountCb = null
+        this.#dispose = __mountComponent(el, theme, importFn)
+        this.#isMounted = true
+        this.#isMounting = false
+      } catch (err) {
+        this.#isMounting = false
+        console.error('[TanStack Devtools] Failed to load:', err)
       }
     }
 
@@ -67,10 +50,8 @@ export function constructCoreClass(Component: () => JSX.Element) {
       }
 
       if (this.#isMounting) {
-        this.#mountCb = () => {
-          this.#dispose?.()
-          this.#isMounted = false
-        }
+        this.#abortMount = true
+        this.#isMounting = false
         return
       }
 

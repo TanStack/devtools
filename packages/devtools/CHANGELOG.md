@@ -1,5 +1,29 @@
 # @tanstack/devtools
 
+## 0.10.14
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.10.13
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
+## 0.10.12
+
+### Patch Changes
+
+- Fix Rspack compatibility by avoiding direct `import.meta` access patterns and add a regression test to prevent reintroduction. ([#349](https://github.com/TanStack/devtools/pull/349))
+
+## 0.10.11
+
+### Patch Changes
+
+- Fix issues with bundling solid ([#367](https://github.com/TanStack/devtools/pull/367))
+
 ## 0.10.10
 
 ### Patch Changes
