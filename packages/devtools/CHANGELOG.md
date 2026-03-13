@@ -1,5 +1,18 @@
 # @tanstack/devtools
 
+## 0.11.0
+
+### Minor Changes
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
+### Patch Changes
+
+- Adds tanstack Devtool plugin. PR also includes some minor patches ([#326](https://github.com/TanStack/devtools/pull/326))
+
+- Updated dependencies [[`7c33985`](https://github.com/TanStack/devtools/commit/7c339855988d03896cb42d00eeb555750a3a1aff)]:
+  - @tanstack/devtools-ui@0.5.1
+
 ## 0.10.14
 
 ### Patch Changes

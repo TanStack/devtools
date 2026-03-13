@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/devtools-event-client": "0.4.3",
-    "@tanstack/react-devtools": "^0.9.13",
+    "@tanstack/react-devtools": "^0.10.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },

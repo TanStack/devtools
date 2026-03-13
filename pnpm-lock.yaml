@@ -111,7 +111,7 @@ importers:
         specifier: ^2.10.2
         version: 2.10.3(@babel/core@7.28.6)(preact@10.28.2)(rollup@4.57.0)(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       '@tanstack/devtools-ui':
-        specifier: 0.5.0
+        specifier: 0.5.1
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
         specifier: 0.5.5
@@ -151,7 +151,7 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/devtools-a11y
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       react:
         specifier: ^19.2.0
@@ -182,7 +182,7 @@ importers:
         specifier: 0.4.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       '@tanstack/react-form':
         specifier: ^1.23.7
@@ -210,7 +210,7 @@ importers:
         version: 4.3.6
     devDependencies:
       '@tanstack/devtools-ui':
-        specifier: 0.5.0
+        specifier: 0.5.1
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
         specifier: 0.5.5
@@ -391,7 +391,7 @@ importers:
         specifier: 0.4.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       react:
         specifier: ^19.2.0
@@ -416,7 +416,7 @@ importers:
   examples/react/drizzle:
     dependencies:
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.132.0
@@ -471,7 +471,7 @@ importers:
         specifier: 0.4.3
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -496,7 +496,7 @@ importers:
         version: 4.3.6
     devDependencies:
       '@tanstack/devtools-ui':
-        specifier: 0.5.0
+        specifier: 0.5.1
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
         specifier: 0.5.5
@@ -529,7 +529,7 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.132.0
@@ -608,7 +608,7 @@ importers:
         specifier: workspace:^
         version: link:../../../packages/event-bus-client
       '@tanstack/react-devtools':
-        specifier: ^0.9.13
+        specifier: ^0.10.0
         version: link:../../../packages/react-devtools
       '@tanstack/react-query':
         specifier: ^5.90.1
@@ -654,7 +654,7 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/devtools-a11y
       '@tanstack/solid-devtools':
-        specifier: ^0.7.33
+        specifier: ^0.8.0
         version: link:../../../packages/solid-devtools
       solid-js:
         specifier: ^1.9.9
@@ -676,7 +676,7 @@ importers:
   examples/solid/basic:
     dependencies:
       '@tanstack/solid-devtools':
-        specifier: ^0.7.33
+        specifier: ^0.8.0
         version: link:../../../packages/solid-devtools
       '@tanstack/solid-query':
         specifier: ^5.90.1
@@ -710,10 +710,10 @@ importers:
   examples/solid/devtools-ui:
     dependencies:
       '@tanstack/devtools-ui':
-        specifier: 0.5.0
+        specifier: 0.5.1
         version: link:../../../packages/devtools-ui
       '@tanstack/solid-devtools':
-        specifier: ^0.7.33
+        specifier: ^0.8.0
         version: link:../../../packages/solid-devtools
       solid-js:
         specifier: ^1.9.9
@@ -738,7 +738,7 @@ importers:
         specifier: ^1.2.0
         version: 1.2.1(@testing-library/jest-dom@6.9.1)(solid-js@1.9.11)(vinxi@0.5.11(@types/node@22.19.7)(db0@0.3.4(drizzle-orm@0.44.7(pg@8.17.2)))(drizzle-orm@0.44.7(pg@8.17.2))(ioredis@5.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(vite@7.3.1(@types/node@22.19.7)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))
       '@tanstack/solid-devtools':
-        specifier: ^0.7.33
+        specifier: ^0.8.0
         version: link:../../../packages/solid-devtools
       solid-js:
         specifier: ^1.9.9
@@ -750,10 +750,10 @@ importers:
   examples/vue/basic:
     dependencies:
       '@tanstack/devtools':
-        specifier: ^0.10.14
+        specifier: ^0.11.0
         version: link:../../../packages/devtools
       '@tanstack/vue-devtools':
-        specifier: ^0.2.13
+        specifier: ^0.2.14
         version: link:../../../packages/vue-devtools
       '@tanstack/vue-query':
         specifier: ^5.90.5

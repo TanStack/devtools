@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.5.1
+
+### Patch Changes
+
+- Adds tanstack Devtool plugin. PR also includes some minor patches ([#326](https://github.com/TanStack/devtools/pull/326))
+
 ## 0.5.0
 
 ### Minor Changes
