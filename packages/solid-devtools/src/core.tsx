@@ -12,47 +12,24 @@ import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
+  TanStackDevtoolsPluginProps,
 } from '@tanstack/devtools'
 
 type SolidPluginRender =
   | JSX.Element
   | ((
       el: HTMLDivElement | HTMLHeadingElement,
-      theme: 'dark' | 'light',
+      props: TanStackDevtoolsPluginProps,
     ) => JSX.Element)
-  | ((props: { theme: 'dark' | 'light' }) => JSX.Element)
 const convertRender = (
   el: HTMLDivElement | HTMLHeadingElement,
   Component: SolidPluginRender,
-  theme: 'dark' | 'light',
-) => {
-  el.style.display = 'block'
-  el.style.height = '100%'
-  el.style.width = '100%'
-  el.style.minHeight = '0'
-  el.style.minWidth = '0'
-
-  let element: JSX.Element
-
-  if (typeof Component === 'function') {
-    if (Component.length >= 2) {
-      element = (
-        Component as (
-          el: HTMLDivElement | HTMLHeadingElement,
-          theme: 'dark' | 'light',
-        ) => JSX.Element
-      )(el, theme)
-    } else {
-      element = (
-        Component as (props: { theme: 'dark' | 'light' }) => JSX.Element
-      )({ theme })
-    }
-  } else {
-    element = Component
-  }
-
-  return <Portal mount={el}>{element}</Portal>
-}
+  props: TanStackDevtoolsPluginProps,
+) => (
+  <Portal mount={el}>
+    {typeof Component === 'function' ? Component(el, props) : Component}
+  </Portal>
+)
 
 export type TanStackDevtoolsSolidPlugin = Omit<
   TanStackDevtoolsPlugin,
@@ -62,15 +39,10 @@ export type TanStackDevtoolsSolidPlugin = Omit<
    * The render function can be a SolidJS element or a function that returns a SolidJS element.
    * If it's a function, it will be called to render the plugin, otherwise it will be rendered directly.
    *
-   * The render function can optionally accept the current theme.
-   *
    * Example:
    * ```ts
    *   {
    *     render: () => <CustomPluginComponent />,
-   *   }
-   *   {
-   *     render: ({ theme }) => <CustomPluginComponent theme={theme} />,
    *   }
    * ```
    * or
@@ -157,10 +129,10 @@ export default function SolidDevtoolsCore({
         typeof plugin.name === 'string'
           ? plugin.name
           : // The check above confirms that `plugin.name` is of Render type
-            (el, theme) =>
-              convertRender(el, plugin.name as SolidPluginRender, theme),
-      render: (el: HTMLDivElement, theme: 'dark' | 'light') =>
-        convertRender(el, plugin.render, theme),
+            (el, props) =>
+              convertRender(el, plugin.name as SolidPluginRender, props),
+      render: (el: HTMLDivElement, props: TanStackDevtoolsPluginProps) =>
+        convertRender(el, plugin.render, props),
     })),
   )
 
