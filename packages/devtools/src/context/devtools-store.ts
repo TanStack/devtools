@@ -112,10 +112,12 @@ export const initialState: DevtoolsStore = {
     triggerHidden: false,
     customTrigger: undefined,
   },
-  state: {
-    activeTab: 'plugins',
-    height: 400,
-    activePlugins: [],
-    persistOpen: false,
-  },
+state: {
+  activeTab: 'plugins',
+  height: typeof window !== 'undefined' 
+    ? Math.min(400, Math.max(300, window.innerHeight * 0.5))
+    : 400,
+  activePlugins: [],
+  persistOpen: false,
+},
 }
