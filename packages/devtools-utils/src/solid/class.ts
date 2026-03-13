@@ -1,4 +1,7 @@
+import type { ThemeType } from '@tanstack/devtools-ui'
 import type { JSX } from 'solid-js'
+
+export type DevtoolProps = { theme: ThemeType }
 
 /**
  * Constructs the core class for the Devtools.
@@ -10,7 +13,7 @@ import type { JSX } from 'solid-js'
  * @returns Tuple containing the DevtoolsCore class and a NoOpDevtoolsCore class
  */
 export function constructCoreClass(
-  importFn: () => Promise<{ default: () => JSX.Element }>,
+  importFn: () => Promise<{ default: (props: DevtoolProps) => JSX.Element }>,
 ) {
   class DevtoolsCore {
     #isMounted = false

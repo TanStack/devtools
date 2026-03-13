@@ -3,7 +3,7 @@ import { createEffect, createSignal } from 'solid-js'
 import { useTheme } from '../components/theme'
 import { tokens } from './tokens'
 import type { ButtonVariant } from '../components/button'
-import type { Theme } from '../components/theme'
+import type { ThemeType } from '../components/theme'
 
 const buttonVariantColors: Record<
   ButtonVariant,
@@ -53,7 +53,7 @@ const buttonVariantColors: Record<
   },
 }
 export const css = goober.css
-const stylesFactory = (theme: Theme = 'dark') => {
+const stylesFactory = (theme: ThemeType = 'dark') => {
   const { colors, font, size, border } = tokens
   const { fontFamily } = font
 

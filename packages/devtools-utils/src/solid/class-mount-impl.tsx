@@ -2,27 +2,24 @@
 
 import { lazy } from 'solid-js'
 import { Portal, render } from 'solid-js/web'
+
 import type { JSX } from 'solid-js'
+import type { ThemeType } from '@tanstack/devtools-ui'
 
 export function __mountComponent(
   el: HTMLElement,
-  theme: 'light' | 'dark',
-  importFn: () => Promise<{ default: () => JSX.Element }>,
+  theme: ThemeType,
+  importFn: () => Promise<{
+    default: (props: { theme: ThemeType }) => JSX.Element
+  }>,
 ): () => void {
   const Component = lazy(importFn)
-  const ThemeProvider = lazy(() =>
-    import('@tanstack/devtools-ui').then((m) => ({
-      default: m.ThemeContextProvider,
-    })),
-  )
 
   return render(
     () => (
       <Portal mount={el}>
         <div style={{ height: '100%' }}>
-          <ThemeProvider theme={theme}>
-            <Component />
-          </ThemeProvider>
+          <Component theme={theme} />
         </div>
       </Portal>
     ),
