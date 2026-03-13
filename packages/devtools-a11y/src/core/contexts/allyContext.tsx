@@ -38,6 +38,7 @@ function useAllyValue() {
   )
 
   const triggerAllyScan = async () => {
+    setAllyResult('state', 'scanning')
     setAllyResult({ audit: await runAudit(config), state: 'done' })
   }
 

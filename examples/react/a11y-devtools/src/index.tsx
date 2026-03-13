@@ -8,6 +8,6 @@ import App from './App'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
-    <TanStackDevtools plugins={[a11yDevtoolsPlugin()]} />§
+    <TanStackDevtools plugins={[a11yDevtoolsPlugin()]} />
   </StrictMode>,
 )

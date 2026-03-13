@@ -97,7 +97,16 @@
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
+    "preact": {
+      "optional": true
+    },
     "react": {
+      "optional": true
+    },
+    "solid-js": {
+      "optional": true
+    },
+    "vue": {
       "optional": true
     }
   }
