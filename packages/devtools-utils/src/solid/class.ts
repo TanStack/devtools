@@ -1,7 +1,7 @@
 import type { ThemeType } from '@tanstack/devtools-ui'
 import type { JSX } from 'solid-js'
 
-export type DevtoolProps = {theme: ThemeType}
+export type DevtoolProps = { theme: ThemeType }
 
 /**
  * Constructs the core class for the Devtools.

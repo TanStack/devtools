@@ -72,7 +72,9 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {"@tanstack/devtools-ui": "workspace:*"},
+  "dependencies": {
+    "@tanstack/devtools-ui": "workspace:*"
+  },
   "peerDependencies": {
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
