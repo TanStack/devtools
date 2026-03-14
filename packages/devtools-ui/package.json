@@ -55,14 +55,14 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
-    "dayjs": "^1.11.19",
-    "goober": "^2.1.16",
-    "solid-js": "^1.9.9"
+    "dayjs": "^1.11.20",
+    "goober": "^2.1.18",
+    "solid-js": "^1.9.11"
   },
   "peerDependencies": {
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
-    "vite-plugin-solid": "^2.11.8"
+    "vite-plugin-solid": "^2.11.11"
   }
 }
