@@ -876,9 +876,6 @@ importers:
 
   packages/devtools-utils:
     dependencies:
-      '@tanstack/devtools-ui':
-        specifier: workspace:^
-        version: link:../devtools-ui
       '@types/react':
         specifier: '>=17.0.0'
         version: 19.2.10
