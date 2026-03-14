@@ -1,0 +1,67 @@
+{
+  "name": "@tanstack/angular-devtools",
+  "version": "0.0.1",
+  "description": "TanStack Devtools is a set of tools for building advanced devtools for your Angular application.",
+  "author": "Tanner Linsley",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TanStack/devtools.git",
+    "directory": "packages/angular-devtools"
+  },
+  "homepage": "https://tanstack.com/devtools",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "angular",
+    "devtools"
+  ],
+  "type": "module",
+  "module": "dist/fesm2022/tanstack-angular-devtools.mjs",
+  "types": "./dist/types/tanstack-angular-devtools.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/tanstack-angular-devtools.d.ts",
+      "default": "./dist/fesm2022/tanstack-angular-devtools.mjs"
+    },
+    "./provider": {
+      "types": "./dist/types/tanstack-angular-devtools-provider.d.ts",
+      "default": "./dist/fesm2022/tanstack-angular-devtools-provider.mjs"
+    },
+    "./package.json": {
+      "default": "./package.json"
+    }
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist",
+    "src",
+    "provider"
+  ],
+  "scripts": {
+    "clean": "premove ./build ./dist",
+    "test:eslint": "eslint ./src",
+    "test:lib": "vitest --passWithNoTests",
+    "test:lib:dev": "pnpm test:lib --watch",
+    "test:types": "tsc",
+    "test:build": "publint --strict",
+    "build": "ng-packagr -p ng-package.json -c tsconfig.build.json && rm -rf ./dist/package.json && rm -rf ./dist/provider/package.json"
+  },
+  "dependencies": {
+    "@tanstack/devtools": "workspace:*",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/core": "^21.2.0",
+    "ng-packagr": "^21.2.0",
+    "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=21.0.0"
+  }
+}
