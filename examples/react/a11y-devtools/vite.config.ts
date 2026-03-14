@@ -3,5 +3,5 @@ import { defineConfig } from 'vite'
 import { devtools } from '@tanstack/devtools-vite'
 
 export default defineConfig({
-  plugins: [ devtools(), react() ],
+  plugins: [devtools(), react()],
 })
