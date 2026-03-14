@@ -857,6 +857,9 @@ importers:
 
   packages/devtools-ui:
     dependencies:
+      '@tanstack/devtools':
+        specifier: workspace:^
+        version: link:../devtools
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -877,7 +880,7 @@ importers:
   packages/devtools-utils:
     dependencies:
       '@tanstack/devtools-ui':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../devtools-ui
       '@types/react':
         specifier: '>=17.0.0'
