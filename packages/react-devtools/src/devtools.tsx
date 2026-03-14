@@ -6,11 +6,12 @@ import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
+  TanStackDevtoolsPluginProps,
 } from '@tanstack/devtools'
 
 type PluginRender =
   | JSX.Element
-  | ((el: HTMLElement, theme: 'dark' | 'light') => JSX.Element)
+  | ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => JSX.Element)
 
 type TriggerProps = {
   theme: 'dark' | 'light'
@@ -120,10 +121,10 @@ const convertRender = (
     React.SetStateAction<Record<string, JSX.Element>>
   >,
   e: HTMLElement,
-  theme: 'dark' | 'light',
+  props: TanStackDevtoolsPluginProps,
 ) => {
   const element =
-    typeof Component === 'function' ? Component(e, theme) : Component
+    typeof Component === 'function' ? Component(e, props) : Component
 
   setComponents((prev) => ({
     ...prev,
@@ -177,7 +178,7 @@ export const TanStackDevtools = ({
           name:
             typeof plugin.name === 'string'
               ? plugin.name
-              : (e, theme) => {
+              : (e, props) => {
                   const id = e.getAttribute('id')!
                   const target = e.ownerDocument.getElementById(id)
 
@@ -192,7 +193,7 @@ export const TanStackDevtools = ({
                     plugin.name as PluginRender,
                     setTitleComponents,
                     e,
-                    theme,
+                    props,
                   )
                 },
           render: (e, theme) => {

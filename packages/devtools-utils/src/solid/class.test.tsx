@@ -28,16 +28,23 @@ describe('constructCoreClass', () => {
     const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
     const el = document.createElement('div')
-    await instance.mount(el, 'dark')
-    expect(mountComponentMock).toHaveBeenCalledWith(el, 'dark', importFn)
+    const props = { theme: 'dark' as const, devtoolsOpen: true }
+    await instance.mount(el, props)
+    expect(mountComponentMock).toHaveBeenCalledWith(el, props, importFn)
   })
 
   it('DevtoolsCore should throw if mount is called twice without unmounting', async () => {
     const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
+    await instance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     await expect(
-      instance.mount(document.createElement('div'), 'dark'),
+      instance.mount(document.createElement('div'), {
+        theme: 'dark',
+        devtoolsOpen: true,
+      }),
     ).rejects.toThrow('Devtools is already mounted')
   })
 
@@ -50,17 +57,26 @@ describe('constructCoreClass', () => {
   it('DevtoolsCore should allow mount after unmount', async () => {
     const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
+    await instance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     instance.unmount()
     await expect(
-      instance.mount(document.createElement('div'), 'dark'),
+      instance.mount(document.createElement('div'), {
+        theme: 'dark',
+        devtoolsOpen: true,
+      }),
     ).resolves.not.toThrow()
   })
 
   it('DevtoolsCore should call dispose on unmount', async () => {
     const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
-    await instance.mount(document.createElement('div'), 'dark')
+    await instance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     instance.unmount()
     expect(disposeMock).toHaveBeenCalled()
   })
@@ -68,7 +84,10 @@ describe('constructCoreClass', () => {
   it('DevtoolsCore should abort mount if unmount is called during mounting', async () => {
     const [DevtoolsCore] = constructCoreClass(importFn)
     const instance = new DevtoolsCore()
-    const mountPromise = instance.mount(document.createElement('div'), 'dark')
+    const mountPromise = instance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     // Unmount while mount is in progress — triggers abort path
     // Note: since the mock resolves immediately, this tests the #abortMount flag
     await mountPromise
@@ -80,16 +99,25 @@ describe('constructCoreClass', () => {
   it('NoOpDevtoolsCore should not call __mountComponent when mount is called', async () => {
     const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
-    await noOpInstance.mount(document.createElement('div'), 'dark')
+    await noOpInstance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     expect(mountComponentMock).not.toHaveBeenCalled()
   })
 
   it('NoOpDevtoolsCore should not throw if mount is called multiple times', async () => {
     const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
-    await noOpInstance.mount(document.createElement('div'), 'dark')
+    await noOpInstance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     await expect(
-      noOpInstance.mount(document.createElement('div'), 'dark'),
+      noOpInstance.mount(document.createElement('div'), {
+        theme: 'dark',
+        devtoolsOpen: true,
+      }),
     ).resolves.not.toThrow()
   })
 
@@ -102,7 +130,10 @@ describe('constructCoreClass', () => {
   it('NoOpDevtoolsCore should not throw if unmount is called after mount', async () => {
     const [, NoOpDevtoolsCore] = constructCoreClass(importFn)
     const noOpInstance = new NoOpDevtoolsCore()
-    await noOpInstance.mount(document.createElement('div'), 'dark')
+    await noOpInstance.mount(document.createElement('div'), {
+      theme: 'dark',
+      devtoolsOpen: true,
+    })
     expect(() => noOpInstance.unmount()).not.toThrow()
   })
 })

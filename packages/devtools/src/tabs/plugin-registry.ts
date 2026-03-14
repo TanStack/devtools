@@ -208,6 +208,24 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     tags: ['TanStack'],
   },
 
+  // TanStack A11y Devtools
+  '@tanstack/devtools-a11y': {
+    packageName: '@tanstack/devtools-a11y',
+    title: 'Accessibility Devtools',
+    description:
+      'Audit accessibility issues in real-time with axe-core. Supports WCAG 2.1/2.2, live monitoring, and visual overlays.',
+    pluginImport: {
+      importName: 'createA11yPlugin',
+      type: 'function',
+    },
+    pluginId: 'devtools-a11y',
+    docsUrl: 'https://tanstack.com/devtools/latest/docs/plugins/a11y',
+    author: 'TanStack',
+    framework: 'react',
+    isNew: true,
+    tags: ['TanStack', 'a11y'],
+  },
+
   // ==========================================
   // THIRD-PARTY PLUGINS - Examples
   // ==========================================
