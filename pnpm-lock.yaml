@@ -857,9 +857,6 @@ importers:
 
   packages/devtools-ui:
     dependencies:
-      '@tanstack/devtools':
-        specifier: workspace:^
-        version: link:../devtools
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

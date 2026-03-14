@@ -13,6 +13,7 @@ import type {
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
   TanStackDevtoolsPluginProps,
+  TanStackDevtoolsTheme,
 } from '@tanstack/devtools'
 
 type SolidPluginRender =
@@ -76,7 +77,7 @@ export type TanStackDevtoolsSolidPlugin = Omit<
   name: string | SolidPluginRender
 }
 interface TriggerProps {
-  theme: 'light' | 'dark'
+  theme: TanStackDevtoolsTheme
 }
 export interface TanStackDevtoolsInit {
   /**

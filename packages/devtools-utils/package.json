@@ -72,9 +72,6 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@tanstack/devtools-ui": "workspace:^"
-  },
   "devDependencies": {
     "@tanstack/devtools": "workspace:^",
     "tsup": "^8.5.0",
