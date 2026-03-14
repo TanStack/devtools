@@ -24,7 +24,7 @@
     "drizzle-orm": "^0.44.5",
     "pg": "^8.16.3",
     "typescript": "~5.9.2",
-    "vite": "^7.1.7",
+    "vite": "^8.0.0",
     "vite-plugin-inspect": "11.3.3"
   }
 }

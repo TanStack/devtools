@@ -87,7 +87,7 @@
     "goober": "^2.1.16"
   },
   "devDependencies": {
-    "vite-plugin-solid": "^2.11.8"
+    "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
     "@types/react": ">=17.0.0",
