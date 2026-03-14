@@ -3,11 +3,14 @@
 import { lazy } from 'solid-js'
 import { Portal, render } from 'solid-js/web'
 import type { JSX } from 'solid-js'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
 export function __mountComponent(
   el: HTMLElement,
-  theme: 'light' | 'dark',
-  importFn: () => Promise<{ default: () => JSX.Element }>,
+  props: TanStackDevtoolsPluginProps,
+  importFn: () => Promise<{
+    default: (props: TanStackDevtoolsPluginProps) => JSX.Element
+  }>,
 ): () => void {
   const Component = lazy(importFn)
   const ThemeProvider = lazy(() =>
@@ -20,8 +23,8 @@ export function __mountComponent(
     () => (
       <Portal mount={el}>
         <div style={{ height: '100%' }}>
-          <ThemeProvider theme={theme}>
-            <Component />
+          <ThemeProvider theme={props.theme}>
+            <Component {...props} />
           </ThemeProvider>
         </div>
       </Portal>

@@ -6,10 +6,9 @@ import { useStyles } from '../styles/use-styles'
 import { PLUGIN_CONTAINER_ID, PLUGIN_TITLE_CONTAINER_ID } from '../constants'
 import { PluginMarketplace } from './plugin-marketplace'
 
-export const PluginsTab = () => {
+export const PluginsTab = (props: { isOpen: boolean }) => {
   const { plugins, activePlugins, toggleActivePlugins } = usePlugins()
   const { expanded, hoverUtils, animationMs, setForceExpand } = useDrawContext()
-
   const [pluginRefs, setPluginRefs] = createSignal(
     new Map<string, HTMLDivElement>(),
   )
@@ -37,7 +36,10 @@ export const PluginsTab = () => {
       const ref = pluginRefs().get(plugin.id!)
 
       if (ref) {
-        plugin.render(ref, theme())
+        plugin.render(ref, {
+          theme: theme(),
+          devtoolsOpen: props.isOpen,
+        })
       }
     })
   })
@@ -86,7 +88,10 @@ export const PluginsTab = () => {
                     if (pluginHeading) {
                       typeof plugin.name === 'string'
                         ? (pluginHeading.textContent = plugin.name)
-                        : plugin.name(pluginHeading, theme())
+                        : plugin.name(pluginHeading, {
+                            theme: theme(),
+                            devtoolsOpen: props.isOpen,
+                          })
                     }
                   })
 
