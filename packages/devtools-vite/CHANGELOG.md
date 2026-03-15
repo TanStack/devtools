@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.6.0
+
+### Minor Changes
+
+- Bumps vite versions to include v8 ([#388](https://github.com/TanStack/devtools/pull/388))
+
 ## 0.5.5
 
 ### Patch Changes

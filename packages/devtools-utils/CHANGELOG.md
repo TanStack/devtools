@@ -1,5 +1,13 @@
 # @tanstack/devtools-utils
 
+## 0.4.0
+
+### Minor Changes
+
+- Extract devtools-ui from devtools-utils to avoid theme miss-match ([#386](https://github.com/TanStack/devtools/pull/386))
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
 ## 0.3.4
 
 ### Patch Changes
