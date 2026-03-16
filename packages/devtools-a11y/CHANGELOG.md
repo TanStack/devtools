@@ -1,5 +1,11 @@
 # @tanstack/devtools-a11y
 
+## 0.1.2
+
+### Patch Changes
+
+- Extract theme provider and fix pnpm overrides ([#392](https://github.com/TanStack/devtools/pull/392))
+
 ## 0.1.1
 
 ### Patch Changes
