@@ -1,78 +1,73 @@
 import chalk from 'chalk'
 import { normalizePath } from 'vite'
-import { gen, parse, t, trav } from './babel'
-import type { types as Babel } from '@babel/core'
-import type { ParseResult } from '@babel/parser'
+import { Visitor, parseSync } from 'oxc-parser'
+import type { CallExpression, MemberExpression } from 'oxc-parser'
 
-const transform = (
-  ast: ParseResult<Babel.File>,
-  filePath: string,
-  port: number,
-) => {
-  let didTransform = false
+type Insertion = {
+  at: number
+  text: string
+}
 
-  trav(ast, {
-    CallExpression(path) {
-      const callee = path.node.callee
-      // Match console.log(...) or console.error(...)
-      if (
-        callee.type === 'MemberExpression' &&
-        callee.object.type === 'Identifier' &&
-        callee.object.name === 'console' &&
-        callee.property.type === 'Identifier' &&
-        (callee.property.name === 'log' || callee.property.name === 'error')
-      ) {
-        const location = path.node.loc
-        if (!location) {
-          return
-        }
-        const [lineNumber, column] = [
-          location.start.line,
-          location.start.column,
-        ]
-        const finalPath = `${filePath}:${lineNumber}:${column + 1}`
-        const logMessage = `${chalk.magenta('LOG')} ${chalk.blueBright(`${finalPath}`)}\n → `
+const buildLineStarts = (source: string) => {
+  const starts = [0]
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '\n') {
+      starts.push(i + 1)
+    }
+  }
+  return starts
+}
 
-        const serverLogMessage = t.arrayExpression([
-          t.stringLiteral(logMessage),
-        ])
-        const browserLogMessage = t.arrayExpression([
-          // LOG with css formatting specifiers: %c
-          t.stringLiteral(
-            `%c${'LOG'}%c %c${`Go to Source: http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(finalPath)}`}%c \n → `,
-          ),
-          // magenta
-          t.stringLiteral('color:#A0A'),
-          t.stringLiteral('color:#FFF'),
-          // blueBright
-          t.stringLiteral('color:#55F'),
-          t.stringLiteral('color:#FFF'),
-        ])
+const offsetToLineColumn = (offset: number, lineStarts: Array<number>) => {
+  // Binary search to find the nearest line start <= offset.
+  let low = 0
+  let high = lineStarts.length - 1
 
-        // typeof window === "undefined"
-        const checkServerCondition = t.binaryExpression(
-          '===',
-          t.unaryExpression('typeof', t.identifier('window')),
-          t.stringLiteral('undefined'),
-        )
+  while (low <= high) {
+    const mid = (low + high) >> 1
+    const lineStart = lineStarts[mid]
+    if (lineStart === undefined) {
+      break
+    }
 
-        // ...(isServer ? serverLogMessage : browserLogMessage)
-        path.node.arguments.unshift(
-          t.spreadElement(
-            t.conditionalExpression(
-              checkServerCondition,
-              serverLogMessage,
-              browserLogMessage,
-            ),
-          ),
-        )
+    if (lineStart <= offset) {
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
 
-        didTransform = true
-      }
-    },
-  })
+  const lineIndex = Math.max(0, high)
+  const lineStart = lineStarts[lineIndex] ?? 0
 
-  return didTransform
+  return {
+    line: lineIndex + 1,
+    column: offset - lineStart + 1,
+  }
+}
+
+const isConsoleMemberExpression = (
+  callee: CallExpression['callee'],
+): callee is MemberExpression => {
+  return (
+    callee.type === 'MemberExpression' &&
+    callee.computed === false &&
+    callee.object.type === 'Identifier' &&
+    callee.object.name === 'console' &&
+    callee.property.type === 'Identifier' &&
+    (callee.property.name === 'log' || callee.property.name === 'error')
+  )
+}
+
+const applyInsertions = (source: string, insertions: Array<Insertion>) => {
+  const ordered = [...insertions].sort((a, b) => b.at - a.at)
+
+  let next = source
+  for (const insertion of ordered) {
+    next = next.slice(0, insertion.at) + insertion.text + next.slice(insertion.at)
+  }
+
+  return next
 }
 
 export function enhanceConsoleLog(code: string, id: string, port: number) {
@@ -81,21 +76,66 @@ export function enhanceConsoleLog(code: string, id: string, port: number) {
   const location = filePath?.replace(normalizePath(process.cwd()), '')!
 
   try {
-    const ast = parse(code, {
+    const result = parseSync(filePath ?? id, code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
+      lang: 'tsx',
+      range: true,
     })
-    const didTransform = transform(ast, location, port)
-    if (!didTransform) {
+
+    if (result.errors.length > 0) {
       return
     }
-    return gen(ast, {
-      sourceMaps: true,
-      retainLines: true,
-      filename: id,
-      sourceFileName: filePath,
-    })
-  } catch (e) {
+
+    const insertions: Array<Insertion> = []
+    const lineStarts = buildLineStarts(code)
+
+    new Visitor({
+      CallExpression(node) {
+        if (!isConsoleMemberExpression(node.callee)) {
+          return
+        }
+
+        const { line, column } = offsetToLineColumn(node.start, lineStarts)
+        const finalPath = `${location}:${line}:${column}`
+
+        const serverLogMessage = `${chalk.magenta('LOG')} ${chalk.blueBright(finalPath)}\n → `
+        const browserLogMessage = `%cLOG%c %cGo to Source: http://localhost:${port}/__tsd/open-source?source=${encodeURIComponent(
+          finalPath,
+        )}%c \n → `
+
+        const argsArray =
+          `[${JSON.stringify(serverLogMessage)}]` +
+          ` : [${JSON.stringify(browserLogMessage)},` +
+          `${JSON.stringify('color:#A0A')},` +
+          `${JSON.stringify('color:#FFF')},` +
+          `${JSON.stringify('color:#55F')},` +
+          `${JSON.stringify('color:#FFF')}]`
+
+        const injectedPrefix =
+          `...(typeof window === 'undefined' ? ${argsArray})` +
+          `${node.arguments.length > 0 ? ', ' : ''}`
+
+        const insertionPoint =
+          node.arguments[0]?.start !== undefined
+            ? node.arguments[0].start
+            : node.end - 1
+
+        insertions.push({
+          at: insertionPoint,
+          text: injectedPrefix,
+        })
+      },
+    }).visit(result.program)
+
+    if (insertions.length === 0) {
+      return
+    }
+
+    return {
+      code: applyInsertions(code, insertions),
+      map: null,
+    }
+  } catch {
     return
   }
 }

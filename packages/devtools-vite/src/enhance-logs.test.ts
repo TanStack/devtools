@@ -28,7 +28,7 @@ describe('enhance-logs', () => {
   test('it does not add enhanced console.logs to console.log that is not called', () => {
     const output = enhanceConsoleLog(
       `
-        console.log 
+        console.log
         `,
       'test.jsx',
       3000,
@@ -106,7 +106,7 @@ describe('enhance-logs', () => {
   test('it does not add enhanced console.error to console.error that is not called', () => {
     const output = enhanceConsoleLog(
       `
-        console.log 
+        console.log
         `,
       'test.jsx',
       3000,
