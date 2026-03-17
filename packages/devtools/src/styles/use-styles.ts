@@ -256,6 +256,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     },
     devtoolsPanel: css`
       display: flex;
+      min-width: 0;
+      min-height: 0;
       font-size: ${fontSize.sm};
       font-family: ${fontFamily.sans};
       background-color: ${t(colors.white, colors.darkGray[700])};
@@ -429,12 +431,21 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     tabContent: css`
       transition: all 0.2s ease-in-out;
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
       width: 100%;
       height: 100%;
     `,
     pluginsTabPanel: css`
       display: flex;
+      flex: 1 1 auto;
       flex-direction: row;
+      min-width: 0;
+      min-height: 0;
       width: 100%;
       height: 100%;
       overflow: hidden;
@@ -503,8 +514,27 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
     `,
     pluginsTabContent: css`
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
       width: 100%;
       height: 100%;
+
+      & > * {
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+      }
+
+      & > * > * {
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+      }
 
       &:not(:last-child) {
         border-right: 5px solid ${t(colors.purple[200], colors.purple[800])};
