@@ -60,6 +60,18 @@
         "default": "./dist/esm/solid/production.js"
       }
     },
+    "./angular": {
+      "import": {
+        "types": "./dist/esm/angular/index.d.ts",
+        "default": "./dist/esm/angular/index.js"
+      }
+    },
+    "./angular/production": {
+      "import": {
+        "types": "./dist/esm/angular/production.d.ts",
+        "default": "./dist/esm/angular/production.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -94,6 +106,7 @@
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
     "solid-js": ">=1.9.7",
+    "@angular/core":">=19.0.0",
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
@@ -107,6 +120,9 @@
       "optional": true
     },
     "vue": {
+      "optional": true
+    },
+    "@angular/core": {
       "optional": true
     }
   }

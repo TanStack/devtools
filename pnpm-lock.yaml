@@ -87,6 +87,58 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(happy-dom@18.0.1)(jiti@2.6.1)(jsdom@27.4.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  examples/angular/a11y-devtools:
+    dependencies:
+      '@angular/common':
+        specifier: ^21.2.0
+        version: 21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2)
+      '@angular/compiler':
+        specifier: ^21.2.0
+        version: 21.2.4
+      '@angular/core':
+        specifier: ^21.2.0
+        version: 21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)
+      '@angular/forms':
+        specifier: ^21.2.0
+        version: 21.2.4(@angular/common@21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(@angular/platform-browser@21.2.4(@angular/common@21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@angular/platform-browser':
+        specifier: ^21.2.0
+        version: 21.2.4(@angular/common@21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))
+      '@angular/router':
+        specifier: ^21.2.0
+        version: 21.2.4(@angular/common@21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(@angular/platform-browser@21.2.4(@angular/common@21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)))(rxjs@7.8.2)
+      '@tanstack/angular-devtools':
+        specifier: ^0.0.1
+        version: link:../../../packages/angular-devtools
+      '@tanstack/devtools-a11y':
+        specifier: ^0.1.2
+        version: link:../../../packages/devtools-a11y
+      '@tanstack/devtools-event-client':
+        specifier: 0.4.2
+        version: 0.4.2
+      rxjs:
+        specifier: ~7.8.0
+        version: 7.8.2
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+    devDependencies:
+      '@angular/build':
+        specifier: ^21.2.0
+        version: 21.2.2(@angular/compiler-cli@21.2.4(@angular/compiler@21.2.4)(typescript@5.9.3))(@angular/compiler@21.2.4)(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(@angular/platform-browser@21.2.4(@angular/common@21.2.4(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)))(@types/node@22.19.7)(chokidar@5.0.0)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.0(@angular/compiler-cli@21.2.4(@angular/compiler@21.2.4)(typescript@5.9.3))(tailwindcss@4.1.18)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.8)(tailwindcss@4.1.18)(terser@5.46.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@22.19.7)(happy-dom@18.0.1)(jiti@2.6.1)(jsdom@27.4.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.98.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(yaml@2.8.2)
+      '@angular/cli':
+        specifier: ^21.2.0
+        version: 21.2.2(@types/node@22.19.7)(chokidar@5.0.0)
+      '@angular/compiler-cli':
+        specifier: ^21.2.0
+        version: 21.2.4(@angular/compiler@21.2.4)(typescript@5.9.3)
+      prettier:
+        specifier: ^3.8.1
+        version: 3.8.1
+      typescript:
+        specifier: ~5.9.2
+        version: 5.9.3
+
   examples/angular/basic:
     dependencies:
       '@angular/common':
@@ -992,6 +1044,9 @@ importers:
 
   packages/devtools-a11y:
     dependencies:
+      '@angular/core':
+        specifier: '>=19.0.0'
+        version: 21.2.4(@angular/compiler@21.2.4)(rxjs@7.8.2)
       '@tanstack/devtools-ui':
         specifier: workspace:*
         version: link:../devtools-ui

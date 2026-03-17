@@ -2,6 +2,7 @@ import type { Type } from '@angular/core'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
+  TanStackDevtoolsPluginProps,
 } from '@tanstack/devtools'
 
 export type TanStackDevtoolsAngularPluginInputs =
@@ -17,11 +18,11 @@ interface DefaultExport<T> {
 }
 
 export type TanStackDevtoolsAngularFunctionalComponent<
-  TInputs extends NonNullable<unknown> = Record<string, unknown>,
+  TInputs extends NonNullable<unknown> = Record<string, any>,
 > = (inputs: () => TInputs, hostElement: HTMLElement) => () => void
 
 export type TanStackDevtoolsAngularPluginRenderFn =
-  | TanStackDevtoolsAngularFunctionalComponent<Record<string, unknown>>
+  | TanStackDevtoolsAngularFunctionalComponent<TanStackDevtoolsPluginProps>
   | DefaultExport<Type<unknown> | null>
   | Type<unknown>
   | null

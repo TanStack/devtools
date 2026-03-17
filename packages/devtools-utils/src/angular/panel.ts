@@ -5,7 +5,8 @@ export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
 }
 
 interface BaseCorePanelClass {
-  mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
+  [key: string]: any;
+  mount: <T extends HTMLElement>(el: T, props: TanStackDevtoolsPluginProps) => void
   unmount: () => void
 }
 
@@ -26,9 +27,9 @@ export function createAngularPanel<
   TCoreDevtoolsClass extends BaseCorePanelClass,
 >(
   CoreClass:
-    | CoreClassConstructor<TComponentProps, TCoreDevtoolsClass>
+    | CoreClassConstructor<TanStackDevtoolsPluginProps, TCoreDevtoolsClass>
     | (() => Promise<
-        CoreClassConstructor<TComponentProps, TCoreDevtoolsClass>
+        CoreClassConstructor<TanStackDevtoolsPluginProps, TCoreDevtoolsClass>
       >),
 ) {
   return [
@@ -39,7 +40,7 @@ export function createAngularPanel<
         let unmount: null | (() => void) = null
 
         function mount(instance: TCoreDevtoolsClass) {
-          instance.mount(panel, inputs().theme)
+          instance.mount(panel, inputs())
           unmount = () => instance.unmount()
         }
 

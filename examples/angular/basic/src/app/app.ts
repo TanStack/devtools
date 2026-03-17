@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
 import { createCounter } from './counter'
 import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools'
 import { TanStackDevtools } from '@tanstack/angular-devtools'
+import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +24,7 @@ import { TanStackDevtools } from '@tanstack/angular-devtools'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  readonly plugins = signal<NonNullable<TanStackDevtoolsAngularInit['plugins']>>([
+  readonly plugins = signal<TanStackDevtoolsAngularPlugin[]>([
     {
       name: 'Custom devtools',
       render: () => import('./devtools/custom-devtools-panel'),
