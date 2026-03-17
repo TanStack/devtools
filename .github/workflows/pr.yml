@@ -24,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Tools
-        uses: tanstack/config/.github/setup@main
+        uses: TanStack/config/.github/setup@main
       - name: Get base and head commits for `nx affected`
         uses: nrwl/nx-set-shas@v4.4.0
         with:
@@ -38,7 +38,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
       - name: Setup Tools
-        uses: tanstack/config/.github/setup@main
+        uses: TanStack/config/.github/setup@main
       - name: Build Packages
         run: pnpm run build:all
       - name: Publish Previews
@@ -60,6 +60,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6.0.2
       - name: Setup Tools
-        uses: tanstack/config/.github/setup@main
+        uses: TanStack/config/.github/setup@main
       - name: Changeset Preview
-        uses: tanstack/config/.github/changeset-preview@main
+        uses: TanStack/config/.github/changeset-preview@main
