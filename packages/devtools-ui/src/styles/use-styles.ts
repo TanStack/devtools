@@ -677,6 +677,10 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
     },
     mainPanel: {
       panel: (withPadding: boolean) => css`
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        min-height: 0;
         padding: ${withPadding ? tokens.size[3] : 0};
         background: ${t(colors.gray[50], colors.darkGray[700])};
         overflow-y: auto;

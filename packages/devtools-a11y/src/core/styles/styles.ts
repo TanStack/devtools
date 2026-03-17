@@ -64,6 +64,7 @@ function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
 
     root: css`
       height: 100%;
+      min-height: 0;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -168,6 +169,7 @@ function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
 
     content: css`
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       padding: 16px;
     `,
