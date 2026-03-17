@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -78,14 +78,11 @@
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@tanstack/devtools-ui": "workspace:^"
-  },
   "devDependencies": {
     "@tanstack/devtools": "workspace:^",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.8"
+    "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
     "@angular/core": ">=19.0.0",

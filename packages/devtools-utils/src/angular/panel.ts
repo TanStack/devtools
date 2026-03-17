@@ -1,5 +1,7 @@
-export type DevtoolsPanelProps = {
-  theme?: 'dark' | 'light' | 'system'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
+
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
+  [key: string]: any
 }
 
 interface BaseCorePanelClass {

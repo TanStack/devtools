@@ -1,7 +1,8 @@
 import { createEffect, createSignal } from 'solid-js'
 import { render } from 'solid-js/web'
-
 import { JsonTree, ThemeContextProvider } from '@tanstack/devtools-ui'
+
+import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 
 import './index.css'
 
@@ -20,7 +21,7 @@ const JsonTreePath = {
 const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)')
 
 function App() {
-  const [theme, setTheme] = createSignal<'light' | 'dark'>(
+  const [theme, setTheme] = createSignal<TanStackDevtoolsTheme>(
     darkThemeMq.matches ? 'dark' : 'light',
   )
 

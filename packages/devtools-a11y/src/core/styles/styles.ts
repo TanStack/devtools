@@ -2,6 +2,7 @@ import * as goober from 'goober'
 import { useTheme } from '@tanstack/devtools-ui'
 import { createMemo } from 'solid-js'
 
+import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 import type { RuleCategory, SeverityThreshold } from '../types/types'
 
 const SEVERITY_COLORS: Record<SeverityThreshold, string> = {
@@ -49,7 +50,7 @@ const css = goober.css
 const FONT_SCALE = 1.1
 const fontPx = (size: number) => `calc(${size}px * ${FONT_SCALE})`
 
-function createA11yPanelStyles(theme: 'light' | 'dark') {
+function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
   const bg = t('#f9fafb;', '#191c24')

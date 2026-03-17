@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-a11y",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Accessibility auditing plugin for TanStack Devtools powered by axe-core",
   "author": "TanStack",
   "license": "MIT",
@@ -87,7 +87,7 @@
     "goober": "^2.1.16"
   },
   "devDependencies": {
-    "vite-plugin-solid": "^2.11.8"
+    "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
     "@types/react": ">=17.0.0",

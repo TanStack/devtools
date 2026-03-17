@@ -11,7 +11,7 @@
   "dependencies": {
     "@tanstack/devtools-client": "0.0.6",
     "@tanstack/devtools-event-client": "0.4.3",
-    "@tanstack/react-devtools": "^0.9.13",
+    "@tanstack/react-devtools": "^0.10.0",
     "@tanstack/react-form": "^1.23.7",
     "@tanstack/react-query": "^5.90.1",
     "@tanstack/react-query-devtools": "^5.90.1",
@@ -22,14 +22,14 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@tanstack/devtools-ui": "0.5.0",
-    "@tanstack/devtools-vite": "0.5.5",
+    "@tanstack/devtools-ui": "0.5.1",
+    "@tanstack/devtools-vite": "0.6.0",
     "@tanstack/react-form-devtools": "^0.1.7",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@vitejs/plugin-react": "^6.0.1",
     "sonda": "0.9.0",
-    "vite": "^7.1.7",
+    "vite": "^8.0.0",
     "vite-plugin-inspect": "11.3.3"
   },
   "browserslist": {

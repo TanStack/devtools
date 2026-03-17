@@ -2,8 +2,9 @@ import * as goober from 'goober'
 import { createEffect, createSignal } from 'solid-js'
 import { useTheme } from '../components/theme'
 import { tokens } from './tokens'
+
+import type { TanStackDevtoolsTheme } from '../components/theme'
 import type { ButtonVariant } from '../components/button'
-import type { Theme } from '../components/theme'
 
 const buttonVariantColors: Record<
   ButtonVariant,
@@ -118,7 +119,7 @@ const buttonVariantColors: Record<
   },
 }
 export const css = goober.css
-const stylesFactory = (theme: Theme = 'dark') => {
+const stylesFactory = (theme: TanStackDevtoolsTheme) => {
   const { colors, font, size, border } = tokens
   const { fontFamily } = font
 

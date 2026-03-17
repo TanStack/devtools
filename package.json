@@ -55,14 +55,14 @@
     }
   ],
   "devDependencies": {
-    "@changesets/cli": "^2.29.7",
+    "@changesets/cli": "^2.30.0",
     "@faker-js/faker": "^9.9.0",
     "@size-limit/preset-small-lib": "^11.2.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
     "@tanstack/eslint-config": "0.3.2",
     "@tanstack/intent": "^0.0.14",
-    "@tanstack/typedoc-config": "0.2.1",
-    "@tanstack/vite-config": "0.2.1",
+    "@tanstack/typedoc-config": "0.3.3",
+    "@tanstack/vite-config": "0.4.3",
     "@testing-library/jest-dom": "^6.8.0",
     "@types/node": "^22.15.2",
     "eslint": "^9.36.0",
@@ -79,11 +79,12 @@
     "size-limit": "^11.2.0",
     "tinyglobby": "^0.2.15",
     "typescript": "~5.9.2",
-    "vite": "^7.1.7",
+    "vite": "^8.0.0",
     "vitest": "^3.2.4"
   },
   "overrides": {
     "@tanstack/devtools": "workspace:*",
+    "@tanstack/devtools-a11y": "workspace:*",
     "@tanstack/react-devtools": "workspace:*",
     "@tanstack/preact-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",

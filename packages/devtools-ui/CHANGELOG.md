@@ -1,5 +1,13 @@
 # @tanstack/devtools-ui
 
+## 0.5.1
+
+### Patch Changes
+
+- Extract devtools-ui from devtools-utils to avoid theme miss-match ([#386](https://github.com/TanStack/devtools/pull/386))
+
+- Adds tanstack Devtool plugin. PR also includes some minor patches ([#326](https://github.com/TanStack/devtools/pull/326))
+
 ## 0.5.0
 
 ### Minor Changes

@@ -2,12 +2,13 @@ import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/vite-config'
 import solid from 'vite-plugin-solid'
 import packageJson from './package.json'
+import type { Plugin } from 'vite'
 
 const config = defineConfig({
   plugins: [
     solid({
       ssr: true,
-    }),
+    }) as any satisfies Plugin,
   ],
   test: {
     name: packageJson.name,

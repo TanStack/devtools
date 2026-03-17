@@ -1,5 +1,6 @@
 import type { TabName } from '../tabs'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
+import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 
 type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta'
 type KeyboardKey = ModifierKey | (string & {})
@@ -21,7 +22,7 @@ type TriggerPosition =
   | 'middle-right'
 
 type TriggerProps = {
-  theme: 'light' | 'dark'
+  theme: TanStackDevtoolsTheme
 }
 
 export type DevtoolsStore = {
@@ -71,7 +72,7 @@ export type DevtoolsStore = {
      * The theme of the dev tools
      * @default "dark"
      */
-    theme: 'light' | 'dark'
+    theme: TanStackDevtoolsTheme
 
     /**
      * Whether the trigger should be completely hidden or not (you can still open with the hotkey)

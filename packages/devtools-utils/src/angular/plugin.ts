@@ -1,21 +1,27 @@
 import type { Type } from '@angular/core'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
+
+
+export interface DevtoolsPluginProps extends TanStackDevtoolsPluginProps {
+  [key: string]: any;
+}
 
 export type TanStackDevtoolsAngularPluginRenderFn<
-  TInputs extends Record<string, unknown>,
+  TInputs extends DevtoolsPluginProps,
 > =
   | ((inputs: () => TInputs, hostElement: HTMLElement) => () => void)
   | Type<unknown>
   | null
 
 export type TanStackDevtoolsAngularPluginRender<
-  T extends Record<string, unknown>,
+  T extends DevtoolsPluginProps,
 > =
   | Type<any>
   | (() =>
       | TanStackDevtoolsAngularPluginRenderFn<T>
       | Promise<TanStackDevtoolsAngularPluginRenderFn<T>>)
 
-export function createAngularPlugin<T extends Record<string, unknown>>({
+export function createAngularPlugin<T extends DevtoolsPluginProps>({
   render,
   ...config
 }: {
