@@ -10,7 +10,7 @@ TanStack Devtools is a framework-agnostic devtool for managing and debugging dev
 Install the devtools and the Vite plugin:
 
 ```bash
-npm install @tanstack/react-devtools @tanstack/devtools-vite
+npm install -D @tanstack/react-devtools @tanstack/devtools-vite
 ```
 
 Add the `TanStackDevtools` component to the root of your application:
