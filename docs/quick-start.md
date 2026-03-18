@@ -65,7 +65,7 @@ createRoot(document.getElementById('root')!).render(
 Install the devtools and the Vite plugin:
 
 ```bash
-npm install @tanstack/preact-devtools @tanstack/devtools-vite
+npm install -D @tanstack/preact-devtools @tanstack/devtools-vite
 ```
 
 Add the `TanStackDevtools` component using Preact's `render()` function:
@@ -114,7 +114,7 @@ render(
 Install the devtools and the Vite plugin:
 
 ```bash
-npm install @tanstack/solid-devtools @tanstack/devtools-vite
+npm install -D @tanstack/solid-devtools @tanstack/devtools-vite
 ```
 
 Add the `TanStackDevtools` component using Solid's `render(() => ...)` pattern:
@@ -167,7 +167,7 @@ render(() => (
 Install the Vue devtools adapter:
 
 ```bash
-npm install @tanstack/vue-devtools
+npm install -D @tanstack/vue-devtools
 ```
 
 > The Vite plugin (`@tanstack/devtools-vite`) is optional for Vue but recommended if you want features like enhanced console logs and go-to-source.
