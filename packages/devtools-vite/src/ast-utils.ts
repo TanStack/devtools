@@ -1,9 +1,5 @@
 import type { Node } from 'oxc-parser'
 
-export function isNode(value: unknown): value is Node {
-  return typeof value === 'object' && value !== null && 'type' in value
-}
-
 /**
  * Cache of keys that hold child nodes (objects/arrays) per AST node type.
  * Since oxc-parser produces AST via JSON.parse, every instance of a given
