@@ -1,193 +1,189 @@
-import { gen, parse, trav } from './babel'
-import type { t } from './babel'
-import type { types as Babel, NodePath } from '@babel/core'
-import type { ParseResult } from '@babel/parser'
+import MagicString from 'magic-string'
+import { parseSync } from 'oxc-parser'
+import { walk } from './ast-utils'
+import type { JSXOpeningElement } from 'oxc-parser'
 
 const isTanStackDevtoolsImport = (source: string) =>
   source === '@tanstack/react-devtools' ||
   source === '@tanstack/devtools' ||
   source === '@tanstack/solid-devtools'
 
-const getImportedNames = (importDecl: t.ImportDeclaration) => {
-  return importDecl.specifiers.map((spec) => spec.local.name)
-}
+/**
+ * Extract component names referenced in the `plugins` prop of a devtools element.
+ */
+function getPluginReferences(opening: JSXOpeningElement): Array<string> {
+  const refs: Array<string> = []
 
-const getLeftoverImports = (node: NodePath<t.JSXElement>) => {
-  const finalReferences: Array<string> = []
-  node.traverse({
-    JSXAttribute(path) {
-      const node = path.node
-      const propName =
-        typeof node.name.name === 'string'
-          ? node.name.name
-          : node.name.name.name
+  for (const attr of opening.attributes) {
+    if (attr.type !== 'JSXAttribute') continue
+    if (attr.name.type !== 'JSXIdentifier' || attr.name.name !== 'plugins')
+      continue
+    if (
+      !attr.value ||
+      attr.value.type !== 'JSXExpressionContainer' ||
+      attr.value.expression.type !== 'ArrayExpression'
+    )
+      continue
 
-      if (
-        propName === 'plugins' &&
-        node.value?.type === 'JSXExpressionContainer' &&
-        node.value.expression.type === 'ArrayExpression'
-      ) {
-        const elements = node.value.expression.elements
+    for (const el of attr.value.expression.elements) {
+      if (!el || el.type !== 'ObjectExpression') continue
 
-        elements.forEach((el) => {
-          if (el?.type === 'ObjectExpression') {
-            // { name: "something", render: ()=> <Component /> }
-            const props = el.properties
-            const referencesToRemove = props
-              .map((prop) => {
-                if (
-                  prop.type === 'ObjectProperty' &&
-                  prop.key.type === 'Identifier' &&
-                  prop.key.name === 'render'
-                ) {
-                  const value = prop.value
-                  // handle <ReactRouterPanel />
-                  if (
-                    value.type === 'JSXElement' &&
-                    value.openingElement.name.type === 'JSXIdentifier'
-                  ) {
-                    const elementName = value.openingElement.name.name
-                    return elementName
-                  }
-                  // handle () => <ReactRouterPanel /> or function() { return <ReactRouterPanel /> }
-                  if (
-                    value.type === 'ArrowFunctionExpression' ||
-                    value.type === 'FunctionExpression'
-                  ) {
-                    const body = value.body
-                    if (
-                      body.type === 'JSXElement' &&
-                      body.openingElement.name.type === 'JSXIdentifier'
-                    ) {
-                      const elementName = body.openingElement.name.name
-                      return elementName
-                    }
-                  }
-                  // handle render: SomeComponent
-                  if (value.type === 'Identifier') {
-                    const elementName = value.name
-                    return elementName
-                  }
-
-                  // handle render: someFunction()
-                  if (
-                    value.type === 'CallExpression' &&
-                    value.callee.type === 'Identifier'
-                  ) {
-                    const elementName = value.callee.name
-                    return elementName
-                  }
-
-                  return ''
-                }
-                return ''
-              })
-              .filter(Boolean)
-            finalReferences.push(...referencesToRemove)
-          }
-        })
-      }
-    },
-  })
-  return finalReferences
-}
-
-const transform = (ast: ParseResult<Babel.File>) => {
-  let didTransform = false
-  const devtoolsComponentNames = new Set()
-  const finalReferences: Array<string> = []
-
-  const transformations: Array<() => void> = []
-
-  trav(ast, {
-    ImportDeclaration(path) {
-      const importSource = path.node.source.value
-      if (isTanStackDevtoolsImport(importSource)) {
-        getImportedNames(path.node).forEach((name) =>
-          devtoolsComponentNames.add(name),
+      for (const prop of el.properties) {
+        if (
+          prop.type !== 'Property' ||
+          prop.key.type !== 'Identifier' ||
+          prop.key.name !== 'render'
         )
+          continue
 
-        transformations.push(() => {
-          path.remove()
-        })
+        const value = prop.value
 
-        didTransform = true
-      }
-    },
-    JSXElement(path) {
-      const opening = path.node.openingElement
-      if (
-        opening.name.type === 'JSXIdentifier' &&
-        devtoolsComponentNames.has(opening.name.name)
-      ) {
-        const refs = getLeftoverImports(path)
-
-        finalReferences.push(...refs)
-        transformations.push(() => {
-          path.remove()
-        })
-        didTransform = true
-      }
-      if (
-        opening.name.type === 'JSXMemberExpression' &&
-        opening.name.object.type === 'JSXIdentifier' &&
-        devtoolsComponentNames.has(opening.name.object.name)
-      ) {
-        const refs = getLeftoverImports(path)
-        finalReferences.push(...refs)
-        transformations.push(() => {
-          path.remove()
-        })
-        didTransform = true
-      }
-    },
-  })
-
-  trav(ast, {
-    ImportDeclaration(path) {
-      const imports = path.node.specifiers
-      for (const imported of imports) {
-        if (imported.type === 'ImportSpecifier') {
-          if (finalReferences.includes(imported.local.name)) {
-            transformations.push(() => {
-              // remove the specifier
-              path.node.specifiers = path.node.specifiers.filter(
-                (spec) => spec !== imported,
-              )
-              // remove whole import if nothing is left
-              if (path.node.specifiers.length === 0) {
-                path.remove()
-              }
-            })
+        // handle <ReactRouterPanel />
+        if (
+          value.type === 'JSXElement' &&
+          value.openingElement.name.type === 'JSXIdentifier'
+        ) {
+          refs.push(value.openingElement.name.name)
+        }
+        // handle () => <ReactRouterPanel />
+        else if (
+          value.type === 'ArrowFunctionExpression' ||
+          value.type === 'FunctionExpression'
+        ) {
+          const body = value.body
+          if (
+            body &&
+            body.type === 'JSXElement' &&
+            body.openingElement.name.type === 'JSXIdentifier'
+          ) {
+            refs.push(body.openingElement.name.name)
           }
         }
+        // handle render: SomeComponent
+        else if (value.type === 'Identifier') {
+          refs.push(value.name)
+        }
+        // handle render: someFunction()
+        else if (
+          value.type === 'CallExpression' &&
+          value.callee.type === 'Identifier'
+        ) {
+          refs.push(value.callee.name)
+        }
       }
-    },
-  })
+    }
+  }
 
-  transformations.forEach((fn) => fn())
-
-  return didTransform
+  return refs
 }
 
 export function removeDevtools(code: string, id: string) {
-  const [filePath] = id.split('?')
+  const filePath = id.split('?')[0]!
 
   try {
-    const ast = parse(code, {
+    const result = parseSync(filePath, code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
+      lang: 'tsx',
     })
-    const didTransform = transform(ast)
-    if (!didTransform) {
-      return
+    if (result.errors.length > 0) return
+
+    const s = new MagicString(code)
+    const devtoolsNames = new Set<string>()
+    const pluginRefs: Array<string> = []
+
+    // Pass 1: Collect devtools import names and mark for removal
+    walk(result.program, (node) => {
+      if (
+        node.type === 'ImportDeclaration' &&
+        isTanStackDevtoolsImport(node.source.value)
+      ) {
+        for (const spec of node.specifiers) {
+          devtoolsNames.add(spec.local.name)
+        }
+        let end = node.end
+        if (code[end] === '\n') end++
+        s.remove(node.start, end)
+      }
+    })
+
+    if (devtoolsNames.size === 0) return
+
+    // Pass 2: Find and remove devtools JSX elements, collect plugin references
+    walk(result.program, (node) => {
+      if (node.type !== 'JSXElement') return
+
+      const opening = node.openingElement
+      let matches = false
+
+      if (
+        opening.name.type === 'JSXIdentifier' &&
+        devtoolsNames.has(opening.name.name)
+      ) {
+        matches = true
+      } else if (
+        opening.name.type === 'JSXMemberExpression' &&
+        opening.name.object.type === 'JSXIdentifier' &&
+        devtoolsNames.has(opening.name.object.name)
+      ) {
+        matches = true
+      }
+
+      if (!matches) return
+
+      pluginRefs.push(...getPluginReferences(opening))
+
+      let end = node.end
+      if (code[end] === '\n') end++
+      s.remove(node.start, end)
+    })
+
+    // Pass 3: Remove plugin imports that are no longer referenced
+    if (pluginRefs.length > 0) {
+      walk(result.program, (node) => {
+        if (node.type !== 'ImportDeclaration') return
+        if (isTanStackDevtoolsImport(node.source.value)) return
+
+        const toRemove = node.specifiers.filter(
+          (spec) =>
+            spec.type === 'ImportSpecifier' &&
+            pluginRefs.includes(spec.local.name),
+        )
+
+        if (toRemove.length === 0) return
+
+        const remaining = node.specifiers.filter(
+          (spec) => !toRemove.includes(spec),
+        )
+
+        if (remaining.length === 0) {
+          let end = node.end
+          if (code[end] === '\n') end++
+          s.remove(node.start, end)
+        } else {
+          // Rebuild import with remaining specifiers
+          const specTexts = remaining.map((spec) =>
+            code.slice(spec.start, spec.end),
+          )
+          const sourceText = code.slice(node.source.start, node.source.end)
+          s.overwrite(
+            node.start,
+            node.end,
+            `import { ${specTexts.join(', ')} } from ${sourceText}`,
+          )
+        }
+      })
     }
-    return gen(ast, {
-      sourceMaps: true,
-      retainLines: true,
-      filename: id,
-      sourceFileName: filePath,
-    })
+
+    if (!s.hasChanged()) return
+
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: filePath,
+        file: id,
+        includeContent: true,
+      }),
+    }
   } catch (e) {
     return
   }
