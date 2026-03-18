@@ -1,7 +1,7 @@
 export interface Loc {
-  /** 1-based line number (matches Babel convention) */
+  /** 1-based line number */
   line: number
-  /** 0-based column offset (matches Babel convention) */
+  /** 0-based column offset */
   column: number
 }
 

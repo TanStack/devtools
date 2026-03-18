@@ -43,7 +43,7 @@ declare function defineDevtoolsConfig(
 
 ## `injectSource`
 
-Controls source injection -- the Babel transform that adds `data-tsd-source` attributes to JSX elements for the "Go to Source" feature.
+Controls source injection -- the AST transform that adds `data-tsd-source` attributes to JSX elements for the "Go to Source" feature.
 
 | Field               | Type                      | Default     | Description                                                                                                                                                                                              |
 | ------------------- | ------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -117,7 +117,7 @@ devtools({
 
 ## `enhancedLogs`
 
-Controls the Babel transform that prepends source location information to `console.log()` and `console.error()` calls.
+Controls the AST transform that prepends source location information to `console.log()` and `console.error()` calls.
 
 | Field     | Type      | Default | Description                                                                                                                                                                                           |
 | --------- | --------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
