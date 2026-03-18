@@ -1,40 +1,39 @@
 import { readFileSync, writeFileSync } from 'node:fs'
-import { gen, parse, t, trav } from './babel'
+import MagicString from 'magic-string'
+import { parseSync } from 'oxc-parser'
+import { walk } from './ast-utils'
+import type { Node } from 'oxc-parser'
 import type { PluginInjection } from '@tanstack/devtools-client'
-import type { types as Babel } from '@babel/core'
-import type { ParseResult } from '@babel/parser'
+
+const devtoolsPackages = [
+  '@tanstack/react-devtools',
+  '@tanstack/solid-devtools',
+  '@tanstack/vue-devtools',
+  '@tanstack/svelte-devtools',
+  '@tanstack/angular-devtools',
+]
 
 /**
  * Detects if a file imports TanStack devtools packages
- * Handles: import X from '@tanstack/react-devtools'
- *          import * as X from '@tanstack/react-devtools'
- *          import { TanStackDevtools } from '@tanstack/react-devtools'
  */
 const detectDevtoolsImport = (code: string): boolean => {
-  const devtoolsPackages = [
-    '@tanstack/react-devtools',
-    '@tanstack/solid-devtools',
-    '@tanstack/vue-devtools',
-    '@tanstack/svelte-devtools',
-    '@tanstack/angular-devtools',
-  ]
-
   try {
-    const ast = parse(code, {
+    const result = parseSync('input.tsx', code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
+      lang: 'tsx',
     })
+    if (result.errors.length > 0) return false
 
     let hasDevtoolsImport = false
 
-    trav(ast, {
-      ImportDeclaration(path) {
-        const importSource = path.node.source.value
-        if (devtoolsPackages.includes(importSource)) {
-          hasDevtoolsImport = true
-          path.stop()
-        }
-      },
+    walk(result.program, (node) => {
+      if (hasDevtoolsImport) return
+      if (
+        node.type === 'ImportDeclaration' &&
+        devtoolsPackages.includes(node.source.value)
+      ) {
+        hasDevtoolsImport = true
+      }
     })
 
     return hasDevtoolsImport
@@ -47,232 +46,200 @@ const detectDevtoolsImport = (code: string): boolean => {
  * Finds the TanStackDevtools component name in the file
  * Handles renamed imports and namespace imports
  */
-export const findDevtoolsComponentName = (
-  ast: ParseResult<Babel.File>,
-): string | null => {
-  let componentName: string | null = null
-  const devtoolsPackages = [
-    '@tanstack/react-devtools',
-    '@tanstack/solid-devtools',
-    '@tanstack/vue-devtools',
-    '@tanstack/svelte-devtools',
-    '@tanstack/angular-devtools',
-  ]
+export const findDevtoolsComponentName = (code: string): string | null => {
+  try {
+    const result = parseSync('input.tsx', code, {
+      sourceType: 'module',
+      lang: 'tsx',
+    })
+    if (result.errors.length > 0) return null
 
-  trav(ast, {
-    ImportDeclaration(path) {
-      const importSource = path.node.source.value
-      if (devtoolsPackages.includes(importSource)) {
-        // Check for: import { TanStackDevtools } from '@tanstack/...'
-        const namedImport = path.node.specifiers.find(
-          (spec) =>
-            t.isImportSpecifier(spec) &&
-            t.isIdentifier(spec.imported) &&
-            spec.imported.name === 'TanStackDevtools',
-        )
-        if (namedImport && t.isImportSpecifier(namedImport)) {
-          componentName = namedImport.local.name
-          path.stop()
+    let componentName: string | null = null
+
+    walk(result.program, (node) => {
+      if (componentName) return
+      if (node.type !== 'ImportDeclaration') return
+      if (!devtoolsPackages.includes(node.source.value)) return
+
+      for (const spec of node.specifiers) {
+        // import { TanStackDevtools } or import { TanStackDevtools as X }
+        if (
+          spec.type === 'ImportSpecifier' &&
+          spec.imported.type === 'Identifier' &&
+          spec.imported.name === 'TanStackDevtools'
+        ) {
+          componentName = spec.local.name
           return
         }
-
-        // Check for: import * as DevtoolsName from '@tanstack/...'
-        const namespaceImport = path.node.specifiers.find((spec) =>
-          t.isImportNamespaceSpecifier(spec),
-        )
-        if (namespaceImport && t.isImportNamespaceSpecifier(namespaceImport)) {
-          // For namespace imports, we need to look for DevtoolsName.TanStackDevtools
-          componentName = `${namespaceImport.local.name}.TanStackDevtools`
-          path.stop()
+        // import * as X from '...'
+        if (spec.type === 'ImportNamespaceSpecifier') {
+          componentName = `${spec.local.name}.TanStackDevtools`
           return
         }
       }
-    },
-  })
+    })
 
-  return componentName
+    return componentName
+  } catch (e) {
+    return null
+  }
+}
+
+/**
+ * Check if a plugin already exists in the array expression
+ */
+function pluginExists(
+  code: string,
+  node: Node,
+  importName: string,
+  displayName: string,
+  pluginType: string,
+): boolean {
+  if (node.type !== 'ArrayExpression') return false
+
+  for (const element of node.elements) {
+    if (!element) continue
+
+    if (pluginType === 'function') {
+      if (
+        element.type === 'CallExpression' &&
+        element.callee.type === 'Identifier' &&
+        element.callee.name === importName
+      ) {
+        return true
+      }
+    } else {
+      if (element.type !== 'ObjectExpression') continue
+      for (const prop of element.properties) {
+        if (
+          prop.type === 'Property' &&
+          prop.key.type === 'Identifier' &&
+          prop.key.name === 'name' &&
+          prop.value.type === 'Literal' &&
+          code.slice(prop.value.start + 1, prop.value.end - 1) === displayName
+        ) {
+          return true
+        }
+      }
+    }
+  }
+
+  return false
+}
+
+function buildPluginString(
+  importName: string,
+  displayName: string,
+  pluginType: string,
+): string {
+  if (pluginType === 'function') {
+    return `${importName}()`
+  }
+  return `{ name: "${displayName}", render: <${importName} /> }`
 }
 
 export const transformAndInject = (
-  ast: ParseResult<Babel.File>,
+  code: string,
   injection: PluginInjection,
   devtoolsComponentName: string,
-) => {
-  let didTransform = false
-
-  // Use pluginImport if provided, otherwise generate from package name
+): { code: string; transformed: boolean } | null => {
   const importName = injection.pluginImport?.importName
   const pluginType = injection.pluginImport?.type || 'jsx'
   const displayName = injection.pluginName
 
   if (!importName) {
-    return false
+    return null
   }
-  // Handle namespace imports like DevtoolsModule.TanStackDevtools
-  const isNamespaceImport = devtoolsComponentName.includes('.')
 
-  // Find and modify the TanStackDevtools JSX element
-  trav(ast, {
-    JSXOpeningElement(path) {
-      const elementName = path.node.name
+  try {
+    const result = parseSync('input.tsx', code, {
+      sourceType: 'module',
+      lang: 'tsx',
+    })
+    if (result.errors.length > 0) return null
+
+    const s = new MagicString(code)
+    const isNamespaceImport = devtoolsComponentName.includes('.')
+
+    walk(result.program, (node) => {
+      if (node.type !== 'JSXOpeningElement') return
+
       let matches = false
-
       if (isNamespaceImport) {
-        // Handle <DevtoolsModule.TanStackDevtools />
-        if (t.isJSXMemberExpression(elementName)) {
-          const fullName = `${t.isJSXIdentifier(elementName.object) ? elementName.object.name : ''}.${t.isJSXIdentifier(elementName.property) ? elementName.property.name : ''}`
+        if (node.name.type === 'JSXMemberExpression') {
+          const fullName = `${node.name.object.type === 'JSXIdentifier' ? node.name.object.name : ''}.${node.name.property.name}`
           matches = fullName === devtoolsComponentName
         }
       } else {
-        // Handle <TanStackDevtools /> or <RenamedDevtools />
         matches =
-          t.isJSXIdentifier(elementName) &&
-          elementName.name === devtoolsComponentName
+          node.name.type === 'JSXIdentifier' &&
+          node.name.name === devtoolsComponentName
       }
 
-      if (matches) {
-        // Find the plugins prop
-        const pluginsProp = path.node.attributes.find(
-          (attr) =>
-            t.isJSXAttribute(attr) &&
-            t.isJSXIdentifier(attr.name) &&
-            attr.name.name === 'plugins',
-        )
-        // plugins found
-        if (pluginsProp && t.isJSXAttribute(pluginsProp)) {
-          // Check if plugins prop has a value
-          if (
-            pluginsProp.value &&
-            t.isJSXExpressionContainer(pluginsProp.value)
-          ) {
-            const expression = pluginsProp.value.expression
+      if (!matches) return
 
-            // If it's an array expression, add our plugin to it
-            if (t.isArrayExpression(expression)) {
-              // Check if plugin already exists
-              const pluginExists = expression.elements.some((element) => {
-                if (!element) return false
+      // Find the plugins prop
+      const pluginsProp = node.attributes.find(
+        (attr) =>
+          attr.type === 'JSXAttribute' &&
+          attr.name.type === 'JSXIdentifier' &&
+          attr.name.name === 'plugins',
+      )
 
-                // For function-based plugins, check if the function call exists
-                if (pluginType === 'function') {
-                  return (
-                    t.isCallExpression(element) &&
-                    t.isIdentifier(element.callee) &&
-                    element.callee.name === importName
-                  )
-                }
-
-                // For JSX plugins, check object with name property
-                if (!t.isObjectExpression(element)) return false
-
-                return element.properties.some((prop) => {
-                  if (
-                    !t.isObjectProperty(prop) ||
-                    !t.isIdentifier(prop.key) ||
-                    prop.key.name !== 'name'
-                  ) {
-                    return false
-                  }
-
-                  return (
-                    t.isStringLiteral(prop.value) &&
-                    prop.value.value === displayName
-                  )
-                })
-              })
-
-              if (!pluginExists) {
-                // For function-based plugins, add them directly as function calls
-                // For JSX plugins, wrap them in objects with name and render
-                if (pluginType === 'function') {
-                  // Add directly: FormDevtoolsPlugin()
-                  expression.elements.push(
-                    t.callExpression(t.identifier(importName), []),
-                  )
-                } else {
-                  // Add as object: { name: "...", render: <Component /> }
-                  const renderValue = t.jsxElement(
-                    t.jsxOpeningElement(t.jsxIdentifier(importName), [], true),
-                    null,
-                    [],
-                    true,
-                  )
-
-                  expression.elements.push(
-                    t.objectExpression([
-                      t.objectProperty(
-                        t.identifier('name'),
-                        t.stringLiteral(displayName),
-                      ),
-                      t.objectProperty(t.identifier('render'), renderValue),
-                    ]),
-                  )
-                }
-
-                didTransform = true
+      if (pluginsProp && pluginsProp.type === 'JSXAttribute') {
+        if (
+          pluginsProp.value &&
+          pluginsProp.value.type === 'JSXExpressionContainer'
+        ) {
+          const expression = pluginsProp.value.expression
+          if (expression.type === 'ArrayExpression') {
+            if (
+              !pluginExists(code, expression, importName, displayName, pluginType)
+            ) {
+              const pluginStr = buildPluginString(
+                importName,
+                displayName,
+                pluginType,
+              )
+              // Insert before closing ']'
+              const arrayEnd = expression.end - 1
+              let prefix = ''
+              if (expression.elements.length > 0) {
+                const arrayContent = code.slice(expression.start + 1, arrayEnd)
+                prefix = arrayContent.trimEnd().endsWith(',') ? ' ' : ', '
               }
+              s.appendLeft(arrayEnd, prefix + pluginStr)
             }
           }
-        } else {
-          // No plugins prop exists, create one with our plugin
-          // For function-based plugins, add them directly as function calls
-          // For JSX plugins, wrap them in objects with name and render
-          let pluginElement
-          if (pluginType === 'function') {
-            // Add directly: plugins={[FormDevtoolsPlugin()]}
-            pluginElement = t.callExpression(t.identifier(importName), [])
-          } else {
-            // Add as object: plugins={[{ name: "...", render: <Component /> }]}
-            const renderValue = t.jsxElement(
-              t.jsxOpeningElement(t.jsxIdentifier(importName), [], true),
-              null,
-              [],
-              true,
-            )
-
-            pluginElement = t.objectExpression([
-              t.objectProperty(
-                t.identifier('name'),
-                t.stringLiteral(displayName),
-              ),
-              t.objectProperty(t.identifier('render'), renderValue),
-            ])
-          }
-
-          path.node.attributes.push(
-            t.jsxAttribute(
-              t.jsxIdentifier('plugins'),
-              t.jsxExpressionContainer(t.arrayExpression([pluginElement])),
-            ),
-          )
-
-          didTransform = true
         }
-      }
-    },
-  })
-
-  // Add import at the top of the file if transform happened
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (didTransform) {
-    const importDeclaration = t.importDeclaration(
-      [t.importSpecifier(t.identifier(importName), t.identifier(importName))],
-      t.stringLiteral(injection.packageName),
-    )
-
-    // Find the last import declaration
-    let lastImportIndex = -1
-    ast.program.body.forEach((node, index) => {
-      if (t.isImportDeclaration(node)) {
-        lastImportIndex = index
+      } else {
+        // No plugins prop — create one
+        const pluginStr = buildPluginString(importName, displayName, pluginType)
+        const attrStr = ` plugins={[${pluginStr}]}`
+        if (node.selfClosing) {
+          s.appendLeft(node.end - 2, attrStr)
+        } else {
+          s.appendLeft(node.end - 1, attrStr)
+        }
       }
     })
 
-    // Insert after the last import or at the beginning
-    ast.program.body.splice(lastImportIndex + 1, 0, importDeclaration)
-  }
+    // Add import at the top of the file if transform happened
+    if (s.hasChanged()) {
+      const importStr = `\nimport { ${importName} } from "${injection.packageName}";`
+      let lastImportEnd = 0
+      walk(result.program, (n) => {
+        if (n.type === 'ImportDeclaration' && n.end > lastImportEnd) {
+          lastImportEnd = n.end
+        }
+      })
+      s.appendRight(lastImportEnd, importStr)
+    }
 
-  return didTransform
+    return { code: s.toString(), transformed: s.hasChanged() }
+  } catch (e) {
+    return null
+  }
 }
 
 /**
@@ -291,17 +258,9 @@ export function injectPluginIntoFile(
   injection: PluginInjection,
 ): { success: boolean; error?: string } {
   try {
-    // Read the file
     const code = readFileSync(filePath, 'utf-8')
 
-    // Parse the code
-    const ast = parse(code, {
-      sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
-    })
-
-    // Find the devtools component name (handles renamed imports)
-    const devtoolsComponentName = findDevtoolsComponentName(ast)
+    const devtoolsComponentName = findDevtoolsComponentName(code)
     if (!devtoolsComponentName) {
       return {
         success: false,
@@ -309,27 +268,15 @@ export function injectPluginIntoFile(
       }
     }
 
-    // Transform and inject
-    const didTransform = transformAndInject(
-      ast,
-      injection,
-      devtoolsComponentName,
-    )
+    const result = transformAndInject(code, injection, devtoolsComponentName)
 
-    if (!didTransform) {
+    if (!result?.transformed) {
       return {
         success: false,
         error: 'Plugin already exists or no TanStackDevtools component found',
       }
     }
 
-    // Generate the new code
-    const result = gen(ast, {
-      sourceMaps: false,
-      retainLines: false,
-    })
-
-    // Write back to file
     writeFileSync(filePath, result.code, 'utf-8')
 
     return { success: true }
