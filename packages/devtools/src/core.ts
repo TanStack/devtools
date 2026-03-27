@@ -40,9 +40,8 @@ export class TanStackDevtoolsCore {
     ...initialState.settings,
   }
   #plugins: Array<TanStackDevtoolsPlugin> = []
-  #isMounted = false
-  #isMounting = false
-  #abortMount = false
+  #state: 'mounted' | 'mounting' | 'unmounted' = 'unmounted'
+  #mountAbortController?: AbortController
   #dispose?: () => void
   #eventBus?: { stop: () => void }
   #eventBusConfig: ClientEventBusConfig | undefined
@@ -60,16 +59,15 @@ export class TanStackDevtoolsCore {
   mount<T extends HTMLElement>(el: T) {
     if (typeof document === 'undefined') return
 
-    if (this.#isMounted || this.#isMounting) {
+    if (this.#state === 'mounted' || this.#state === 'mounting') {
       throw new Error('Devtools is already mounted')
     }
-    this.#isMounting = true
-    this.#abortMount = false
+    this.#state = 'mounting'
+    const { signal } = (this.#mountAbortController = new AbortController())
 
     import('./mount-impl')
       .then(({ mountDevtools }) => {
-        if (this.#abortMount) {
-          this.#isMounting = false
+        if (signal.aborted) {
           return
         }
 
@@ -85,27 +83,22 @@ export class TanStackDevtoolsCore {
 
         this.#dispose = result.dispose
         this.#eventBus = result.eventBus
-        this.#isMounted = true
-        this.#isMounting = false
+        this.#state = 'mounted'
       })
       .catch((err) => {
-        this.#isMounting = false
+        this.#state = 'unmounted'
         console.error('[TanStack Devtools] Failed to load:', err)
       })
   }
 
   unmount() {
-    if (!this.#isMounted && !this.#isMounting) {
+    if (this.#state === 'unmounted') {
       throw new Error('Devtools is not mounted')
     }
-    if (this.#isMounting) {
-      this.#abortMount = true
-      this.#isMounting = false
-      return
-    }
+    this.#mountAbortController?.abort()
     this.#eventBus?.stop()
     this.#dispose?.()
-    this.#isMounted = false
+    this.#state = 'unmounted'
   }
 
   setConfig(config: Partial<TanStackDevtoolsInit>) {
@@ -116,7 +109,7 @@ export class TanStackDevtoolsCore {
     if (config.plugins) {
       this.#plugins = config.plugins
       // Update the reactive store if mounted
-      if (this.#isMounted && this.#setPlugins) {
+      if (this.#state === 'mounted' && this.#setPlugins) {
         this.#setPlugins(config.plugins)
       }
     }
