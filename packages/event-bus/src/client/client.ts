@@ -30,6 +30,8 @@ interface TanStackDevtoolsEvent<TEventName extends string, TPayload = any> {
   type: TEventName
   payload: TPayload
   pluginId?: string // Optional pluginId to filter events by plugin
+  eventId?: string
+  source?: 'server-bridge'
 }
 
 export interface ClientEventBusConfig {

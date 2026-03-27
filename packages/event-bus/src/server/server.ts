@@ -11,6 +11,8 @@ export interface TanStackDevtoolsEvent<
   type: TEventName
   payload: TPayload
   pluginId?: string // Optional pluginId to filter events by plugin
+  eventId?: string
+  source?: 'server-bridge'
 }
 // Used so no new server starts up when HMR happens
 declare global {
@@ -50,6 +52,7 @@ export interface ServerEventBusConfig {
 export class ServerEventBus {
   #eventTarget: EventTarget
   #clients = new Set<WebSocket>()
+  #bridgeClients = new Set<WebSocket>()
   #sseClients = new Set<http.ServerResponse>()
   #server: http.Server | null = null
   #wssServer: WebSocketServer | null = null
@@ -157,7 +160,11 @@ export class ServerEventBus {
           try {
             const msg = parseWithBigInt(body)
             this.debugLog('Received event from client', msg)
-            this.emitToServer(msg)
+            if (msg.source === 'server-bridge') {
+              this.emit(msg)
+            } else {
+              this.emitToServer(msg)
+            }
           } catch {}
         })
         res.writeHead(200).end()
@@ -184,17 +191,35 @@ export class ServerEventBus {
   }
 
   private handleNewConnection(wss: WebSocketServer) {
-    wss.on('connection', (ws: WebSocket) => {
-      this.debugLog('New WebSocket client connected')
+    wss.on('connection', (ws: WebSocket, req: http.IncomingMessage) => {
+      const isBridge = (() => {
+        try {
+          const url = new URL(req?.url ?? '', 'http://localhost')
+          return url.searchParams.get('bridge') === 'server'
+        } catch {
+          return false
+        }
+      })()
+      this.debugLog(`New WebSocket client connected (bridge: ${isBridge})`)
       this.#clients.add(ws)
+      if (isBridge) {
+        this.#bridgeClients.add(ws)
+      }
       ws.on('close', () => {
         this.debugLog('WebSocket client disconnected')
         this.#clients.delete(ws)
+        this.#bridgeClients.delete(ws)
       })
       ws.on('message', (msg) => {
         this.debugLog('Received message from WebSocket client', msg.toString())
         const data = parseWithBigInt(msg.toString())
-        this.emitToServer(data)
+        if (isBridge) {
+          // Bridge messages go to both browser clients and in-process EventTarget
+          this.emit(data)
+        } else {
+          // Browser messages go to in-process EventTarget only
+          this.emitToServer(data)
+        }
       })
     })
   }
@@ -256,7 +281,11 @@ export class ServerEventBus {
                   'Received event from client (external server)',
                   msg,
                 )
-                this.emitToServer(msg)
+                if (msg.source === 'server-bridge') {
+                  this.emit(msg)
+                } else {
+                  this.emitToServer(msg)
+                }
               } catch {}
             })
             res.writeHead(200).end()
@@ -270,7 +299,10 @@ export class ServerEventBus {
           socket: Duplex,
           head: Buffer,
         ) => {
-          if (req.url === '/__devtools/ws') {
+          if (
+            req.url === '/__devtools/ws' ||
+            req.url?.startsWith('/__devtools/ws?')
+          ) {
             wss.handleUpgrade(req, socket, head, (ws) => {
               this.debugLog(
                 'WebSocket connection established (external server)',
@@ -302,7 +334,10 @@ export class ServerEventBus {
 
       // Handle connection upgrade for WebSocket
       server.on('upgrade', (req, socket, head) => {
-        if (req.url === '/__devtools/ws') {
+        if (
+          req.url === '/__devtools/ws' ||
+          req.url?.startsWith('/__devtools/ws?')
+        ) {
           wss.handleUpgrade(req, socket, head, (ws) => {
             this.debugLog('WebSocket connection established')
             wss.emit('connection', ws, req)
@@ -373,6 +408,7 @@ export class ServerEventBus {
     })
     this.debugLog('Clearing all connections')
     this.#clients.clear()
+    this.#bridgeClients.clear()
     this.#sseClients.forEach((res) => res.end())
     this.#sseClients.clear()
     this.debugLog('Cleared all WS/SSE connections')
