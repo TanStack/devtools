@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { Visitor, parseSync } from 'oxc-parser'
 import type { PluginInjection } from '@tanstack/devtools-client'
+import type { ArrayExpressionElement, JSXElementName } from 'oxc-parser'
 
 type Edit = {
   at: number
@@ -35,7 +36,7 @@ const applyEdits = (code: string, edits: Array<Edit>) => {
   return next
 }
 
-const getJsxName = (name: any): string => {
+const getJsxName = (name: JSXElementName): string => {
   if (name.type === 'JSXIdentifier') {
     return name.name
   }
@@ -60,7 +61,7 @@ const makePluginElement = (
 }
 
 const isPluginAlreadyInArray = (
-  elements: Array<any>,
+  elements: Array<ArrayExpressionElement>,
   pluginType: 'jsx' | 'function',
   importName: string,
   displayName: string,
@@ -82,15 +83,23 @@ const isPluginAlreadyInArray = (
       return false
     }
 
-    return element.properties.some((prop: any) => {
+    return element.properties.some((prop) => {
       if (prop.type !== 'Property') {
         return false
       }
 
       const keyName =
-        prop.key.type === 'Identifier' ? prop.key.name : prop.key.type === 'Literal' ? prop.key.value : null
+        prop.key.type === 'Identifier'
+          ? prop.key.name
+          : prop.key.type === 'Literal'
+            ? prop.key.value
+            : null
 
-      return keyName === 'name' && prop.value.type === 'Literal' && prop.value.value === displayName
+      return (
+        keyName === 'name' &&
+        prop.value.type === 'Literal' &&
+        prop.value.value === displayName
+      )
     })
   })
 }
@@ -142,7 +151,7 @@ export function findDevtoolsComponentName(code: string): string | null {
         }
 
         const namedImport = node.specifiers.find(
-          (spec: any) =>
+          (spec) =>
             spec.type === 'ImportSpecifier' &&
             spec.imported.type === 'Identifier' &&
             spec.imported.name === 'TanStackDevtools',
@@ -154,13 +163,10 @@ export function findDevtoolsComponentName(code: string): string | null {
         }
 
         const namespaceImport = node.specifiers.find(
-          (spec: any) => spec.type === 'ImportNamespaceSpecifier',
+          (spec) => spec.type === 'ImportNamespaceSpecifier',
         )
 
-        if (
-          namespaceImport &&
-          namespaceImport.type === 'ImportNamespaceSpecifier'
-        ) {
+        if (namespaceImport) {
           componentName = `${namespaceImport.local.name}.TanStackDevtools`
         }
       },
@@ -194,7 +200,7 @@ export function transformAndInject(
 
   const edits: Array<Edit> = []
 
-  const importExists = ast.program.body.some((node: any) => {
+  const importExists = ast.program.body.some((node) => {
     if (node.type !== 'ImportDeclaration') {
       return false
     }
@@ -204,7 +210,7 @@ export function transformAndInject(
     }
 
     return node.specifiers.some(
-      (spec: any) =>
+      (spec) =>
         spec.type === 'ImportSpecifier' && spec.local.name === importName,
     )
   })
@@ -216,10 +222,14 @@ export function transformAndInject(
         return
       }
 
-      const pluginElement = makePluginElement(pluginType, importName, displayName)
+      const pluginElement = makePluginElement(
+        pluginType,
+        importName,
+        displayName,
+      )
 
       const pluginsProp = node.attributes.find(
-        (attr: any) =>
+        (attr) =>
           attr.type === 'JSXAttribute' &&
           attr.name.type === 'JSXIdentifier' &&
           attr.name.name === 'plugins',
@@ -278,7 +288,9 @@ export function transformAndInject(
   }
 
   if (!importExists) {
-    const imports = ast.program.body.filter((node: any) => node.type === 'ImportDeclaration')
+    const imports = ast.program.body.filter(
+      (node) => node.type === 'ImportDeclaration',
+    )
     const lastImport = imports[imports.length - 1]
     const importAt = lastImport ? lastImport.end : 0
 
