@@ -9,6 +9,7 @@ type Edit = {
 
 const devtoolsPackages = [
   '@tanstack/react-devtools',
+  '@tanstack/preact-devtools',
   '@tanstack/solid-devtools',
   '@tanstack/vue-devtools',
   '@tanstack/svelte-devtools',
