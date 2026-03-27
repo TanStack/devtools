@@ -63,14 +63,14 @@ export default function DevtoolsExample() {
             RouterProvider,
             createRootRoute,
             createRoute,
-            createRouter
-          } from '@tanstack/react-router';
+            createRouter,
+          } from '@tanstack/react-router'
 
 
           export default function DevtoolsExample() {
             return  (<>
                 <RouterProvider router={router} />
-              </>);
+              </>)
 
           }
 
@@ -135,14 +135,14 @@ export default function DevtoolsExample() {
             RouterProvider,
             createRootRoute,
             createRoute,
-            createRouter
-          } from '@tanstack/react-router';
+            createRouter,
+          } from '@tanstack/react-router'
 
 
           export default function DevtoolsExample() {
             return ( <>
                 <RouterProvider router={router} />
-              </>);
+              </>)
 
           }
 
@@ -207,14 +207,14 @@ export default function DevtoolsExample() {
             RouterProvider,
             createRootRoute,
             createRoute,
-            createRouter
-          } from '@tanstack/react-router';
+            createRouter,
+          } from '@tanstack/react-router'
 
 
           export default function DevtoolsExample() {
             return  (<>
                 <RouterProvider router={router} />
-              </>);
+              </>)
 
           }
 
@@ -280,8 +280,8 @@ import {
   RouterProvider,
   createRootRoute,
   createRoute,
-  createRouter
-} from '@tanstack/react-router' ;
+  createRouter,
+} from '@tanstack/react-router'
 
 
 
@@ -290,7 +290,7 @@ export default function DevtoolsExample() {
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
     )
@@ -339,7 +339,7 @@ export default function DevtoolsExample() {
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -380,14 +380,14 @@ export default function DevtoolsExample() {
 
       expect(output).toBe(
         removeEmptySpace(`
-   import * as Stuff from '@tanstack/react-query-devtools';
+   import * as Stuff from '@tanstack/react-query-devtools'
 
 export default function DevtoolsExample() {
   return (
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -430,7 +430,7 @@ export default function DevtoolsExample() {
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -473,7 +473,7 @@ export default function DevtoolsExample() {
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -516,7 +516,7 @@ export default function DevtoolsExample() {
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -559,7 +559,7 @@ export default function DevtoolsExample() {
     <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
