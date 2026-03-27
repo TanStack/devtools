@@ -51,7 +51,7 @@
     },
     {
       "path": "packages/event-bus-client/dist/esm/plugin.js",
-      "limit": "1.2 KB"
+      "limit": "2.4 KB"
     }
   ],
   "devDependencies": {

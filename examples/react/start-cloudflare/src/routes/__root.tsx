@@ -22,6 +22,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body style={{ margin: 0, fontFamily: 'system-ui, sans-serif' }}>
         {children}
         <TanStackDevtools
+          eventBusConfig={{
+          connectToServerBus: true
+        }}
           config={{ position: 'bottom-right' }}
           plugins={[
             {
