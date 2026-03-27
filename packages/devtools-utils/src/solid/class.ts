@@ -1,3 +1,4 @@
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 import type { JSX } from 'solid-js'
 
 /**
@@ -10,7 +11,9 @@ import type { JSX } from 'solid-js'
  * @returns Tuple containing the DevtoolsCore class and a NoOpDevtoolsCore class
  */
 export function constructCoreClass(
-  importFn: () => Promise<{ default: () => JSX.Element }>,
+  importFn: () => Promise<{
+    default: (props: TanStackDevtoolsPluginProps) => JSX.Element
+  }>,
 ) {
   class DevtoolsCore {
     #isMounted = false
@@ -20,7 +23,10 @@ export function constructCoreClass(
 
     constructor() {}
 
-    async mount<T extends HTMLElement>(el: T, theme: 'light' | 'dark') {
+    async mount<T extends HTMLElement>(
+      el: T,
+      props: TanStackDevtoolsPluginProps,
+    ) {
       if (this.#isMounted || this.#isMounting) {
         throw new Error('Devtools is already mounted')
       }
@@ -35,7 +41,7 @@ export function constructCoreClass(
           return
         }
 
-        this.#dispose = __mountComponent(el, theme, importFn)
+        this.#dispose = __mountComponent(el, props, importFn)
         this.#isMounted = true
         this.#isMounting = false
       } catch (err) {
@@ -62,7 +68,10 @@ export function constructCoreClass(
     constructor() {
       super()
     }
-    async mount<T extends HTMLElement>(_el: T, _theme: 'light' | 'dark') {}
+    async mount<T extends HTMLElement>(
+      _el: T,
+      _props: TanStackDevtoolsPluginProps,
+    ) {}
     unmount() {}
   }
 

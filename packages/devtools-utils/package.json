@@ -75,6 +75,12 @@
   "dependencies": {
     "@tanstack/devtools-ui": "workspace:^"
   },
+  "devDependencies": {
+    "@tanstack/devtools": "workspace:^",
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
+    "vite-plugin-solid": "^2.11.8"
+  },
   "peerDependencies": {
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
@@ -114,10 +120,5 @@
     "test:types": "tsc",
     "test:build": "publint --strict",
     "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.solid-class.ts && tsup"
-  },
-  "devDependencies": {
-    "tsup": "^8.5.0",
-    "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.8"
   }
 }
