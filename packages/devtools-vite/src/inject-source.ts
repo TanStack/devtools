@@ -1,283 +1,210 @@
 import { normalizePath } from 'vite'
-import { gen, parse, t, trav } from './babel'
+import { parseSync, visitorKeys } from 'oxc-parser'
 import { matcher } from './matcher'
-import type { types as Babel, NodePath } from '@babel/core'
-import type { ParseResult } from '@babel/parser'
 
-const getPropsNameFromFunctionDeclaration = (
-  functionDeclaration:
-    | t.VariableDeclarator
-    | t.FunctionExpression
-    | t.FunctionDeclaration
-    | t.ArrowFunctionExpression,
-) => {
-  let propsName: string | null = null
-
-  if (functionDeclaration.type === 'FunctionExpression') {
-    const firstArgument = functionDeclaration.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-    return propsName
-  }
-  if (functionDeclaration.type === 'ArrowFunctionExpression') {
-    const firstArgument = functionDeclaration.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-    return propsName
-  }
-  if (functionDeclaration.type === 'FunctionDeclaration') {
-    const firstArgument = functionDeclaration.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-    return propsName
-  }
-  // Arrow function case
-  if (
-    functionDeclaration.init?.type === 'ArrowFunctionExpression' ||
-    functionDeclaration.init?.type === 'FunctionExpression'
-  ) {
-    const firstArgument = functionDeclaration.init.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-  }
-  return propsName
+type IgnoreOptions = {
+  files?: Array<string | RegExp>
+  components?: Array<string | RegExp>
 }
 
-const getNameOfElement = (
-  element: t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName,
-): string => {
+type Edit = {
+  at: number
+  text: string
+}
+
+const buildLineStarts = (source: string) => {
+  const starts = [0]
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] === '\n') {
+      starts.push(i + 1)
+    }
+  }
+  return starts
+}
+
+const offsetToLineColumn = (offset: number, lineStarts: Array<number>) => {
+  let low = 0
+  let high = lineStarts.length - 1
+
+  while (low <= high) {
+    const mid = (low + high) >> 1
+    const lineStart = lineStarts[mid] ?? 0
+    if (lineStart <= offset) {
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+
+  const lineIndex = Math.max(0, high)
+  const lineStart = lineStarts[lineIndex] ?? 0
+
+  return {
+    line: lineIndex + 1,
+    column: offset - lineStart + 1,
+  }
+}
+
+const getPropsNameFromParams = (params: Array<any>): string | null => {
+  const firstArgument = params[0]
+  if (!firstArgument) {
+    return null
+  }
+
+  if (firstArgument.type === 'Identifier') {
+    return firstArgument.name
+  }
+
+  if (firstArgument.type === 'ObjectPattern') {
+    for (const prop of firstArgument.properties) {
+      if (prop.type === 'RestElement' && prop.argument.type === 'Identifier') {
+        return prop.argument.name
+      }
+    }
+  }
+
+  return null
+}
+
+const getElementName = (element: any): string => {
   if (element.type === 'JSXIdentifier') {
     return element.name
   }
+
   if (element.type === 'JSXMemberExpression') {
-    return `${getNameOfElement(element.object)}.${getNameOfElement(element.property)}`
+    return `${getElementName(element.object)}.${getElementName(element.property)}`
   }
 
-  return `${element.namespace.name}:${element.name.name}`
+  if (element.type === 'JSXNamespacedName') {
+    return `${element.namespace.name}:${element.name.name}`
+  }
+
+  return ''
 }
 
-const transformJSX = (
-  element: NodePath<t.JSXOpeningElement>,
-  propsName: string | null,
-  file: string,
-  ignorePatterns: Array<string | RegExp>,
-) => {
-  const loc = element.node.loc
-  if (!loc) return
-  const line = loc.start.line
-  const column = loc.start.column
-  const nameOfElement = getNameOfElement(element.node.name)
-  const isIgnored = matcher(ignorePatterns, nameOfElement)
-  if (
-    nameOfElement === 'Fragment' ||
-    nameOfElement === 'React.Fragment' ||
-    isIgnored
-  ) {
-    return
-  }
-  const hasDataSource = element.node.attributes.some(
+const hasDataSourceAttribute = (attributes: Array<any>) => {
+  return attributes.some(
     (attr) =>
       attr.type === 'JSXAttribute' &&
       attr.name.type === 'JSXIdentifier' &&
       attr.name.name === 'data-tsd-source',
   )
-  // Check if props are spread
-  const hasSpread = element.node.attributes.some(
+}
+
+const hasPropsSpread = (attributes: Array<any>, propsName: string | null) => {
+  if (!propsName) {
+    return false
+  }
+
+  return attributes.some(
     (attr) =>
       attr.type === 'JSXSpreadAttribute' &&
       attr.argument.type === 'Identifier' &&
       attr.argument.name === propsName,
   )
-
-  if (hasSpread || hasDataSource) {
-    // Do not inject if props are spread
-    return
-  }
-
-  // Inject data-source as a string: "<file>:<line>:<column>"
-  element.node.attributes.push(
-    t.jsxAttribute(
-      t.jsxIdentifier('data-tsd-source'),
-      t.stringLiteral(`${file}:${line}:${column + 1}`),
-    ),
-  )
-
-  return true
 }
 
-const transform = (
-  ast: ParseResult<Babel.File>,
-  file: string,
-  ignorePatterns: Array<string | RegExp>,
-) => {
-  let didTransform = false
+const applyEdits = (code: string, edits: Array<Edit>) => {
+  const ordered = [...edits].sort((a, b) => b.at - a.at)
+  let next = code
 
-  trav(ast, {
-    FunctionDeclaration(functionDeclaration) {
-      const propsName = getPropsNameFromFunctionDeclaration(
-        functionDeclaration.node,
-      )
-      functionDeclaration.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-    ArrowFunctionExpression(path) {
-      const propsName = getPropsNameFromFunctionDeclaration(path.node)
-      path.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-    FunctionExpression(path) {
-      const propsName = getPropsNameFromFunctionDeclaration(path.node)
-      path.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-    VariableDeclaration(path) {
-      const functionDeclaration = path.node.declarations.find((decl) => {
-        return (
-          decl.init?.type === 'ArrowFunctionExpression' ||
-          decl.init?.type === 'FunctionExpression'
-        )
-      })
-      if (!functionDeclaration) {
-        return
-      }
-      const propsName = getPropsNameFromFunctionDeclaration(functionDeclaration)
+  for (const edit of ordered) {
+    next = next.slice(0, edit.at) + edit.text + next.slice(edit.at)
+  }
 
-      path.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-  })
-
-  return didTransform
+  return next
 }
 
 export function addSourceToJsx(
   code: string,
   id: string,
-  ignore: {
-    files?: Array<string | RegExp>
-    components?: Array<string | RegExp>
-  } = {},
+  ignore: IgnoreOptions = {},
 ) {
   const [filePath] = id.split('?')
   // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
   const location = filePath?.replace(normalizePath(process.cwd()), '')!
 
-  const fileIgnored = matcher(ignore.files || [], location)
-  if (fileIgnored) {
+  if (matcher(ignore.files || [], location)) {
     return
   }
+
   try {
-    const ast = parse(code, {
+    const result = parseSync(filePath ?? id, code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
+      lang: 'tsx',
+      range: true,
+      preserveParens: true,
     })
-    const didTransform = transform(ast, location, ignore.components || [])
-    if (!didTransform) {
+
+    if (result.errors.length > 0) {
       return
     }
-    return gen(ast, {
-      sourceMaps: true,
-      retainLines: true,
-      filename: id,
-      sourceFileName: filePath,
-    })
-  } catch (e) {
+
+    const edits: Array<Edit> = []
+    const lineStarts = buildLineStarts(code)
+
+    const walk = (node: any, propsName: string | null) => {
+      if (!node || typeof node !== 'object' || typeof node.type !== 'string') {
+        return
+      }
+
+      let scopedPropsName = propsName
+      if (
+        node.type === 'FunctionDeclaration' ||
+        node.type === 'FunctionExpression' ||
+        node.type === 'ArrowFunctionExpression'
+      ) {
+        scopedPropsName = getPropsNameFromParams(node.params || [])
+      }
+
+      if (node.type === 'JSXOpeningElement') {
+        const nameOfElement = getElementName(node.name)
+        const isIgnored = matcher(ignore.components || [], nameOfElement)
+
+        if (
+          nameOfElement !== 'Fragment' &&
+          nameOfElement !== 'React.Fragment' &&
+          !isIgnored &&
+          !hasDataSourceAttribute(node.attributes || []) &&
+          !hasPropsSpread(node.attributes || [], scopedPropsName)
+        ) {
+          const { line, column } = offsetToLineColumn(node.start, lineStarts)
+          const attributeText = ` data-tsd-source="${location}:${line}:${column}"`
+
+          const closeAngle = node.end - 1
+          const insertAt = code[node.end - 2] === '/' ? node.end - 2 : closeAngle
+
+          edits.push({
+            at: insertAt,
+            text: attributeText,
+          })
+        }
+      }
+
+      const keys = visitorKeys[node.type] || []
+      for (const key of keys) {
+        const child = node[key]
+        if (Array.isArray(child)) {
+          for (const item of child) {
+            walk(item, scopedPropsName)
+          }
+        } else {
+          walk(child, scopedPropsName)
+        }
+      }
+    }
+
+    walk(result.program, null)
+
+    if (edits.length === 0) {
+      return
+    }
+
+    return {
+      code: applyEdits(code, edits),
+      map: null,
+    }
+  } catch {
     return
   }
 }

@@ -67,13 +67,13 @@ From `packages/devtools-vite/src/index.ts`:
 
 | Sub-plugin name                               | What it does                                                                                                       | When active                                                |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `@tanstack/devtools:inject-source`            | Babel transform adding `data-tsd-source` attrs to JSX                                                              | dev mode + `injectSource.enabled`                          |
+| `@tanstack/devtools:inject-source`            | Oxc transform adding `data-tsd-source` attrs to JSX                                                              | dev mode + `injectSource.enabled`                          |
 | `@tanstack/devtools:config`                   | Reserved for future config modifications                                                                           | serve command only                                         |
 | `@tanstack/devtools:custom-server`            | Starts ServerEventBus, registers middleware for open-source/console-pipe endpoints                                 | dev mode                                                   |
 | `@tanstack/devtools:remove-devtools-on-build` | Strips devtools imports/JSX from production bundles                                                                | build command or production mode + `removeDevtoolsOnBuild` |
 | `@tanstack/devtools:event-client-setup`       | Marketplace: listens for install/add-plugin events via devtoolsEventClient                                         | dev mode + serve + not CI                                  |
 | `@tanstack/devtools:console-pipe-transform`   | Injects runtime console-pipe code into entry files                                                                 | dev mode + serve + `consolePiping.enabled`                 |
-| `@tanstack/devtools:better-console-logs`      | Babel transform prepending source location to `console.log`/`console.error`                                        | dev mode + `enhancedLogs.enabled`                          |
+| `@tanstack/devtools:better-console-logs`      | Oxc transform prepending source location to `console.log`/`console.error`                                        | dev mode + `enhancedLogs.enabled`                          |
 | `@tanstack/devtools:inject-plugin`            | Detects which file imports TanStackDevtools (for marketplace injection)                                            | dev mode + serve                                           |
 | `@tanstack/devtools:connection-injection`     | Replaces `__TANSTACK_DEVTOOLS_PORT__`, `__TANSTACK_DEVTOOLS_HOST__`, `__TANSTACK_DEVTOOLS_PROTOCOL__` placeholders | dev mode + serve                                           |
 
@@ -81,7 +81,7 @@ From `packages/devtools-vite/src/index.ts`:
 
 ### Source Injection
 
-Adds `data-tsd-source="<relative-path>:<line>:<column>"` attributes to every JSX opening element via Babel. This powers the "Go to Source" feature -- hold the inspect hotkey (default: Shift+Alt+Ctrl/Meta), hover over elements, click to open in editor.
+Adds `data-tsd-source="<relative-path>:<line>:<column>"` attributes to every JSX opening element via Oxc. This powers the "Go to Source" feature -- hold the inspect hotkey (default: Shift+Alt+Ctrl/Meta), hover over elements, click to open in editor.
 
 **Key behaviors:**
 
@@ -137,7 +137,7 @@ devtools({
 
 ### Enhanced Logging
 
-Babel transform that prepends source location info to `console.log()` and `console.error()` calls. In the browser, this renders as a clickable "Go to Source" link. On the server, it shows `LOG <path>:<line>:<column>` in chalk colors.
+Oxc transform that prepends source location info to `console.log()` and `console.error()` calls. In the browser, this renders as a clickable "Go to Source" link. On the server, it shows `LOG <path>:<line>:<column>` in chalk colors.
 
 The transform inserts a spread of a conditional expression: `...(typeof window === 'undefined' ? serverLogMessage : browserLogMessage)` as the first argument of the console call.
 
@@ -261,7 +261,7 @@ Source injection, console piping, enhanced logging, the server event bus, and th
 
 ### 4. Source injection on spread-props elements (MEDIUM)
 
-The Babel transform in `inject-source.ts` explicitly skips any JSX element that has a `{...props}` spread where `props` is the component's parameter name. This is intentional -- the spread would overwrite the injected `data-tsd-source` attribute. If source inspection doesn't work for a specific component, check if it spreads its props parameter.
+The Oxc transform in `inject-source.ts` explicitly skips any JSX element that has a `{...props}` spread where `props` is the component's parameter name. This is intentional -- the spread would overwrite the injected `data-tsd-source` attribute. If source inspection doesn't work for a specific component, check if it spreads its props parameter.
 
 ```tsx
 // data-tsd-source will NOT be injected on <div> here
@@ -301,8 +301,8 @@ These are registered on the Vite dev server (not the event bus server):
 ## Key Source Files
 
 - `packages/devtools-vite/src/plugin.ts` -- Main plugin factory with all sub-plugins and config type
-- `packages/devtools-vite/src/inject-source.ts` -- Babel transform for data-tsd-source injection
-- `packages/devtools-vite/src/enhance-logs.ts` -- Babel transform for enhanced console logs
+- `packages/devtools-vite/src/inject-source.ts` -- Oxc transform for data-tsd-source injection
+- `packages/devtools-vite/src/enhance-logs.ts` -- Oxc transform for enhanced console logs
 - `packages/devtools-vite/src/remove-devtools.ts` -- Production stripping transform
 - `packages/devtools-vite/src/virtual-console.ts` -- Console pipe runtime code generator
 - `packages/devtools-vite/src/editor.ts` -- Editor config type and launch-editor integration
