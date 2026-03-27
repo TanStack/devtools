@@ -1,246 +1,170 @@
 import { normalizePath } from 'vite'
-import { gen, parse, t, trav } from './babel'
+import MagicString from 'magic-string'
+import { parseSync } from 'oxc-parser'
+import { createLocMapper } from './offset-to-loc'
 import { matcher } from './matcher'
-import type { types as Babel, NodePath } from '@babel/core'
-import type { ParseResult } from '@babel/parser'
+import { forEachChild } from './ast-utils'
+import type {
+  JSXElementName,
+  JSXOpeningElement,
+  Node,
+  ParamPattern,
+} from 'oxc-parser'
+import type { Loc } from './offset-to-loc'
 
-const getPropsNameFromFunctionDeclaration = (
-  functionDeclaration:
-    | t.VariableDeclarator
-    | t.FunctionExpression
-    | t.FunctionDeclaration
-    | t.ArrowFunctionExpression,
-) => {
-  let propsName: string | null = null
+/**
+ * Extract the props name from a function's first parameter.
+ * Handles: `(props) => {}`, `({ ...props }) => {}`, `function(props) {}`
+ */
+function getPropsName(params: Array<ParamPattern>): string | null {
+  const first = params[0]
+  if (!first) return null
 
-  if (functionDeclaration.type === 'FunctionExpression') {
-    const firstArgument = functionDeclaration.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-    return propsName
-  }
-  if (functionDeclaration.type === 'ArrowFunctionExpression') {
-    const firstArgument = functionDeclaration.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-    return propsName
-  }
-  if (functionDeclaration.type === 'FunctionDeclaration') {
-    const firstArgument = functionDeclaration.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
-    }
-    return propsName
-  }
-  // Arrow function case
-  if (
-    functionDeclaration.init?.type === 'ArrowFunctionExpression' ||
-    functionDeclaration.init?.type === 'FunctionExpression'
-  ) {
-    const firstArgument = functionDeclaration.init.params[0]
-    // handles (props) => {}
-    if (firstArgument && firstArgument.type === 'Identifier') {
-      propsName = firstArgument.name
-    }
-    // handles ({ ...props }) => {}
-    if (firstArgument && firstArgument.type === 'ObjectPattern') {
-      firstArgument.properties.forEach((prop) => {
-        if (
-          prop.type === 'RestElement' &&
-          prop.argument.type === 'Identifier'
-        ) {
-          propsName = prop.argument.name
-        }
-      })
+  // (props) => {} or function(props) {}
+  if (first.type === 'Identifier') return first.name
+
+  // ({ ...rest }) => {} or function({ ...rest }) {}
+  if (first.type === 'ObjectPattern') {
+    for (const prop of first.properties) {
+      if (prop.type === 'RestElement' && prop.argument.type === 'Identifier') {
+        return prop.argument.name
+      }
     }
   }
-  return propsName
+
+  return null
 }
 
-const getNameOfElement = (
-  element: t.JSXIdentifier | t.JSXMemberExpression | t.JSXNamespacedName,
-): string => {
-  if (element.type === 'JSXIdentifier') {
-    return element.name
+/**
+ * Get the display name from a JSX element name node.
+ */
+function getNameOfElement(name: JSXElementName): string {
+  if (name.type === 'JSXIdentifier') return name.name
+  if (name.type === 'JSXMemberExpression') {
+    return `${getNameOfElement(name.object)}.${name.property.name}`
   }
-  if (element.type === 'JSXMemberExpression') {
-    return `${getNameOfElement(element.object)}.${getNameOfElement(element.property)}`
-  }
-
-  return `${element.namespace.name}:${element.name.name}`
+  // JSXNamespacedName
+  return `${name.namespace.name}:${name.name.name}`
 }
 
-const transformJSX = (
-  element: NodePath<t.JSXOpeningElement>,
+/**
+ * Check whether a JSXOpeningElement should receive `data-tsd-source`.
+ */
+function shouldTransform(
+  node: JSXOpeningElement,
   propsName: string | null,
-  file: string,
   ignorePatterns: Array<string | RegExp>,
-) => {
-  const loc = element.node.loc
-  if (!loc) return
-  const line = loc.start.line
-  const column = loc.start.column
-  const nameOfElement = getNameOfElement(element.node.name)
-  const isIgnored = matcher(ignorePatterns, nameOfElement)
+): boolean {
+  const nameOfElement = getNameOfElement(node.name)
+
+  if (nameOfElement === 'Fragment' || nameOfElement === 'React.Fragment') {
+    return false
+  }
+  if (matcher(ignorePatterns, nameOfElement)) return false
+
+  // Already annotated?
   if (
-    nameOfElement === 'Fragment' ||
-    nameOfElement === 'React.Fragment' ||
-    isIgnored
+    node.attributes.some(
+      (a) =>
+        a.type === 'JSXAttribute' &&
+        a.name.type === 'JSXIdentifier' &&
+        a.name.name === 'data-tsd-source',
+    )
   ) {
-    return
-  }
-  const hasDataSource = element.node.attributes.some(
-    (attr) =>
-      attr.type === 'JSXAttribute' &&
-      attr.name.type === 'JSXIdentifier' &&
-      attr.name.name === 'data-tsd-source',
-  )
-  // Check if props are spread
-  const hasSpread = element.node.attributes.some(
-    (attr) =>
-      attr.type === 'JSXSpreadAttribute' &&
-      attr.argument.type === 'Identifier' &&
-      attr.argument.name === propsName,
-  )
-
-  if (hasSpread || hasDataSource) {
-    // Do not inject if props are spread
-    return
+    return false
   }
 
-  // Inject data-source as a string: "<file>:<line>:<column>"
-  element.node.attributes.push(
-    t.jsxAttribute(
-      t.jsxIdentifier('data-tsd-source'),
-      t.stringLiteral(`${file}:${line}:${column + 1}`),
-    ),
-  )
+  // Props spread?
+  if (
+    node.attributes.some(
+      (a) =>
+        a.type === 'JSXSpreadAttribute' &&
+        a.argument.type === 'Identifier' &&
+        a.argument.name === propsName,
+    )
+  ) {
+    return false
+  }
 
   return true
 }
 
-const transform = (
-  ast: ParseResult<Babel.File>,
+/**
+ * Walk a subtree collecting every JSXOpeningElement (crosses into nested functions).
+ */
+function collectJsx(node: Node, out: Array<JSXOpeningElement>) {
+  if (node.type === 'JSXOpeningElement') {
+    out.push(node)
+    return
+  }
+  forEachChild(node, (child) => collectJsx(child, out))
+}
+
+/**
+ * Walk the AST to find all function-like nodes (in document order).
+ * For each, extract propsName and collect JSX elements from its body.
+ */
+function visitFunctions(
+  node: Node,
+  annotated: Set<number>,
   file: string,
   ignorePatterns: Array<string | RegExp>,
-) => {
+  offsetToLoc: (offset: number) => Loc,
+  s: MagicString,
+  code: string,
+): boolean {
   let didTransform = false
 
-  trav(ast, {
-    FunctionDeclaration(functionDeclaration) {
-      const propsName = getPropsNameFromFunctionDeclaration(
-        functionDeclaration.node,
-      )
-      functionDeclaration.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-    ArrowFunctionExpression(path) {
-      const propsName = getPropsNameFromFunctionDeclaration(path.node)
-      path.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-    FunctionExpression(path) {
-      const propsName = getPropsNameFromFunctionDeclaration(path.node)
-      path.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
-    VariableDeclaration(path) {
-      const functionDeclaration = path.node.declarations.find((decl) => {
-        return (
-          decl.init?.type === 'ArrowFunctionExpression' ||
-          decl.init?.type === 'FunctionExpression'
-        )
-      })
-      if (!functionDeclaration) {
-        return
-      }
-      const propsName = getPropsNameFromFunctionDeclaration(functionDeclaration)
+  const processFunction = (params: Array<ParamPattern>, body: Node) => {
+    const propsName = getPropsName(params)
+    const jsxNodes: Array<JSXOpeningElement> = []
+    collectJsx(body, jsxNodes)
 
-      path.traverse({
-        JSXOpeningElement(element) {
-          const transformed = transformJSX(
-            element,
-            propsName,
-            file,
-            ignorePatterns,
-          )
-          if (transformed) {
-            didTransform = true
-          }
-        },
-      })
-    },
+    for (const jsx of jsxNodes) {
+      if (annotated.has(jsx.start)) continue
+      if (!shouldTransform(jsx, propsName, ignorePatterns)) continue
+
+      const loc = offsetToLoc(jsx.start)
+      const attrStr = ` data-tsd-source="${file}:${loc.line}:${loc.column + 1}"`
+
+      // Insert before '>' or '/>' at the end of the opening element
+      if (jsx.selfClosing) {
+        // ends with '/>' — insert before '/>'
+        s.appendLeft(jsx.end - 2, attrStr)
+      } else {
+        // ends with '>' — insert before '>'
+        s.appendLeft(jsx.end - 1, attrStr)
+      }
+
+      annotated.add(jsx.start)
+      didTransform = true
+    }
+  }
+
+  // Check if this node is a function-like node
+  if (
+    node.type === 'FunctionDeclaration' ||
+    node.type === 'FunctionExpression'
+  ) {
+    if (node.body) processFunction(node.params, node.body)
+  } else if (node.type === 'ArrowFunctionExpression') {
+    processFunction(node.params, node.body)
+  } else if (node.type === 'VariableDeclaration') {
+    for (const decl of node.declarations) {
+      if (
+        decl.init?.type === 'ArrowFunctionExpression' ||
+        decl.init?.type === 'FunctionExpression'
+      ) {
+        if (decl.init.body) processFunction(decl.init.params, decl.init.body)
+      }
+    }
+  }
+
+  // Recurse into children to find nested functions
+  forEachChild(node, (child) => {
+    if (visitFunctions(child, annotated, file, ignorePatterns, offsetToLoc, s, code)) {
+      didTransform = true
+    }
   })
 
   return didTransform
@@ -254,29 +178,43 @@ export function addSourceToJsx(
     components?: Array<string | RegExp>
   } = {},
 ) {
-  const [filePath] = id.split('?')
-  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const location = filePath?.replace(normalizePath(process.cwd()), '')!
+  const filePath = id.split('?')[0]!
+  const location = filePath.replace(normalizePath(process.cwd()), '')
 
   const fileIgnored = matcher(ignore.files || [], location)
-  if (fileIgnored) {
-    return
-  }
+  if (fileIgnored) return
+
   try {
-    const ast = parse(code, {
+    const result = parseSync(filePath, code, {
       sourceType: 'module',
-      plugins: ['jsx', 'typescript'],
+      lang: 'tsx',
     })
-    const didTransform = transform(ast, location, ignore.components || [])
-    if (!didTransform) {
-      return
+    if (result.errors.length > 0) return
+
+    const offsetToLoc = createLocMapper(code)
+    const s = new MagicString(code)
+    const annotated = new Set<number>()
+
+    const didTransform = visitFunctions(
+      result.program,
+      annotated,
+      location,
+      ignore.components || [],
+      offsetToLoc,
+      s,
+      code,
+    )
+
+    if (!didTransform) return
+
+    return {
+      code: s.toString(),
+      map: s.generateMap({
+        source: filePath,
+        file: id,
+        includeContent: true,
+      }),
     }
-    return gen(ast, {
-      sourceMaps: true,
-      retainLines: true,
-      filename: id,
-      sourceFileName: filePath,
-    })
   } catch (e) {
     return
   }

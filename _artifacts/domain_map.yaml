@@ -231,7 +231,7 @@ skills:
 
       - mistake: 'Source injection on spread props elements'
         mechanism: >
-          The Babel transform skips elements with {...props} spread to avoid
+          The AST transform skips elements with {...props} spread to avoid
           overwriting dynamic attributes. Agent might not realize source
           inspector wont work on those elements.
         source: 'packages/devtools-vite/src/inject-source.ts'

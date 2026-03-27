@@ -54,9 +54,9 @@ describe('inject source', () => {
       )
       expect(output).toBe(
         removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function() { return <div data-tsd-source="test.jsx:3:38">Hello World</div>; }
-      });
+      export const Route = createFileRoute("/test")({
+      component: function() { return <div data-tsd-source="test.jsx:3:38">Hello World</div> },
+      })
         `),
       )
     })
@@ -102,7 +102,7 @@ describe('inject source', () => {
         addSourceToJsx(
           `
       export const Route = createFileRoute("/test")({
-      component: function({...rest}) { return <div><div {...rest}>Hello World</div></div> } 
+      component: function({...rest}) { return <div><div {...rest}>Hello World</div></div> }
       })
         `,
           'test.jsx',
@@ -110,9 +110,9 @@ describe('inject source', () => {
       )
       expect(output).toBe(
         removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: function({...rest}) { return <div data-tsd-source="test.jsx:3:47"><div {...rest}>Hello World</div></div>; }
-      });
+      export const Route = createFileRoute("/test")({
+      component: function({...rest}) { return <div data-tsd-source="test.jsx:3:47"><div {...rest}>Hello World</div></div> }
+      })
         `),
       )
     })
@@ -132,9 +132,9 @@ describe('inject source', () => {
       )
       expect(output).toBe(
         removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: () => <div data-tsd-source="test.jsx:3:24">Hello World</div>
-      });
+      export const Route = createFileRoute("/test")({
+      component: () => <div data-tsd-source="test.jsx:3:24">Hello World</div>,
+      })
         `),
       )
     })
@@ -167,7 +167,7 @@ describe('inject source', () => {
       const output = addSourceToJsx(
         `
       export const Route = createFileRoute("/test")({
-      component: ({...rest}) => <div {...rest}>Hello World</div>, 
+      component: ({...rest}) => <div {...rest}>Hello World</div>,
       })
         `,
         'test.jsx',
@@ -180,7 +180,7 @@ describe('inject source', () => {
         addSourceToJsx(
           `
       export const Route = createFileRoute("/test")({
-      component: ({...rest}) => <div><div {...rest}>Hello World</div></div>, 
+      component: ({...rest}) => <div><div {...rest}>Hello World</div></div>,
       })
         `,
           'test.jsx',
@@ -188,9 +188,9 @@ describe('inject source', () => {
       )
       expect(output).toBe(
         removeEmptySpace(`
-            export const Route = createFileRoute("/test")({
-      component: ({...rest}) => <div data-tsd-source="test.jsx:3:33"><div {...rest}>Hello World</div></div>
-      });
+      export const Route = createFileRoute("/test")({
+      component: ({...rest}) => <div data-tsd-source="test.jsx:3:33"><div {...rest}>Hello World</div></div>,
+      })
         `),
       )
     })
@@ -212,12 +212,12 @@ describe('inject source', () => {
       )
       expect(output).toBe(
         removeEmptySpace(`
-          function Parent({ ...props }) {
-            function Child({ ...props }) {
-              return <div data-tsd-source="test.jsx:4:18" />;
-            }
-            return <Child {...props} />;
-          }
+      function Parent({ ...props }) {
+        function Child({ ...props }) {
+          return <div data-tsd-source="test.jsx:4:18"   />
+        }
+        return <Child {...props} />
+      }
         `),
       )
     })
@@ -225,7 +225,7 @@ describe('inject source', () => {
       const output = removeEmptySpace(
         addSourceToJsx(
           `
-        
+
         import Custom from "external";
 
 function test({...props })  {
@@ -237,11 +237,13 @@ function test({...props })  {
       )
       expect(output).toBe(
         removeEmptySpace(`
-          import Custom from "external";
+
+        import Custom from "external";
 
 function test({...props })  {
-  return <Custom children={props.children} data-tsd-source="test.tsx:6:10" />;
-}`),
+  return <Custom children={props.children} data-tsd-source="test.tsx:6:10" />
+}
+  `),
       )
     })
     it(' props not destructured', () => {
@@ -257,10 +259,10 @@ function test({...props })  {
       )
       expect(output).toBe(
         removeEmptySpace(`
-function test(props) {
-        return <button  children={props.children} data-tsd-source="test.jsx:3:16" />;
+    function test(props){
+        return <button children={props.children} data-tsd-source="test.jsx:3:16" />
       }
-`),
+        `),
       )
     })
 
@@ -291,12 +293,12 @@ function test(props) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-function test(props) {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...props}  />
-        </div>;
+    function test(props) {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...props} />
+         </div>)
       }
-`),
+        `),
       )
     })
 
@@ -315,12 +317,12 @@ function test(props) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-function test({...props}) {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...props}  />
-        </div>;
+    function test({...props}) {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...props} />
+         </div>)
       }
-`),
+        `),
       )
     })
 
@@ -339,12 +341,12 @@ function test({...props}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-function test({...rest}) {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...rest}  />
-        </div>;
+    function test({...rest}) {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...rest} />
+         </div>)
       }
-`),
+        `),
       )
     })
 
@@ -374,9 +376,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
     function test({ ...props }) {
-        return <button  children={props.children} data-tsd-source="test.jsx:3:16" />;
+        return <button children={props.children} data-tsd-source="test.jsx:3:16" />
       }
-`),
+        `),
       )
     })
 
@@ -406,9 +408,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
     function test({ ...props }) {
-        return <CustomButton  children={props.children} data-tsd-source="test.jsx:3:16" />;
+        return <CustomButton children={props.children} data-tsd-source="test.jsx:3:16" />
       }
-`),
+        `),
       )
     })
 
@@ -438,9 +440,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       function test({ ...props }) {
-        return <CustomButton  children={props.children} data-tsd-source="test.jsx:3:16" />;
+        return <CustomButton children={props.children} data-tsd-source="test.jsx:3:16" />
       }
-`),
+        `),
       )
     })
   })
@@ -458,10 +460,10 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = function test(props) {
-        return <button  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+    const ButtonWithProps = function test(props){
+        return <button children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -492,12 +494,12 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = function test(props) {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...props}  />
-        </div>;
-      };
-`),
+      const ButtonWithProps = function test(props) {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...props} />
+         </div>)
+      }
+        `),
       )
     })
 
@@ -516,12 +518,12 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = function test({...props}) {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...props}  />
-        </div>;
-      };
-`),
+      const ButtonWithProps = function test({...props}) {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...props} />
+         </div>)
+      }
+        `),
       )
     })
 
@@ -540,12 +542,12 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = function test({...rest}) {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...rest}  />
-        </div>;
-      };
-`),
+      const ButtonWithProps = function test({...rest}) {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...rest} />
+         </div>)
+      }
+        `),
       )
     })
 
@@ -575,9 +577,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       const ButtonWithProps = function test({ ...props }) {
-        return <button  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+        return <button children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -607,9 +609,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       const ButtonWithProps = function test({ ...props }) {
-        return <CustomButton  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+        return <CustomButton children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -639,9 +641,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       export const ButtonWithProps = function test({ ...props }) {
-        return <CustomButton  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+        return <CustomButton children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
   })
@@ -659,10 +661,10 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = (props) => {
-        return <button  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+      const ButtonWithProps = (props) => {
+        return <button children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -693,12 +695,12 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = (props) => {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...props}  />
-        </div>;
-      };
-`),
+      const ButtonWithProps = (props) => {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...props} />
+         </div>)
+      }
+        `),
       )
     })
 
@@ -717,12 +719,12 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = ({...props}) => {
-        return  <div data-tsd-source="test.jsx:3:17">
-        <button {...props}  />
-        </div>;
-      };
-`),
+      const ButtonWithProps = ({...props}) => {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...props} />
+         </div>)
+      }
+        `),
       )
     })
 
@@ -741,12 +743,12 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = ({...rest}) => {
-        return  <div data-tsd-source= "test.jsx:3:17">
-        <button {...rest}  />
-        </div>;
-      };
-`),
+      const ButtonWithProps = ({...rest}) => {
+        return (<div data-tsd-source="test.jsx:3:17">
+         <button {...rest} />
+         </div>)
+      }
+        `),
       )
     })
 
@@ -763,10 +765,10 @@ function test({...rest}) {
       )
       expect(output).toBe(
         removeEmptySpace(`
-  const ButtonWithProps = ({ children, ...rest }) => {
-        return <button  children={children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+      const ButtonWithProps = ({ children, ...rest }) => {
+        return <button children={children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -784,9 +786,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       const ButtonWithProps = ({ ...props }) => {
-        return <button  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+        return <button children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -816,9 +818,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       const ButtonWithProps = ({ ...props }) => {
-        return <CustomButton  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+        return <CustomButton children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
 
@@ -848,9 +850,9 @@ function test({...rest}) {
       expect(output).toBe(
         removeEmptySpace(`
       export const ButtonWithProps = ({ ...props }) => {
-        return <CustomButton  children={props.children} data-tsd-source="test.jsx:3:16" />;
-      };
-`),
+        return <CustomButton children={props.children} data-tsd-source="test.jsx:3:16" />
+      }
+        `),
       )
     })
   })
