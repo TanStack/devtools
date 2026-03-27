@@ -506,6 +506,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       width: 100%;
       height: 100%;
 
+      & > * > * {
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+      }
+
       &:not(:last-child) {
         border-right: 5px solid ${t(colors.purple[200], colors.purple[800])};
       }
