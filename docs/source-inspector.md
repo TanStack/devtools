@@ -18,13 +18,13 @@ The feature only works in development. In production builds, source attributes a
 
 ```mermaid
 flowchart LR
-    A["Your JSX/TSX files"] -- "Babel transform" --> B["data-tsd-source<br/>attributes injected"]
+    A["Your JSX/TSX files"] -- "AST transform" --> B["data-tsd-source<br/>attributes injected"]
     B -- "Hold inspect hotkey<br/>+ click element" --> C["Devtools reads<br/>data-tsd-source"]
     C -- "HTTP request" --> D["Vite dev server"]
     D -- "launch-editor" --> E["Opens file in editor<br/>at exact line"]
 ```
 
-The Vite plugin uses Babel to parse your JSX/TSX files during development. It adds a `data-tsd-source="filepath:line:column"` attribute to every JSX element. When you activate the source inspector and click an element, the devtools reads this attribute and sends a request to the Vite dev server. The server then launches your editor at the specified file and line using `launch-editor`.
+The Vite plugin uses oxc-parser to parse your JSX/TSX files during development. It adds a `data-tsd-source="filepath:line:column"` attribute to every JSX element via MagicString. When you activate the source inspector and click an element, the devtools reads this attribute and sends a request to the Vite dev server. The server then launches your editor at the specified file and line using `launch-editor`.
 
 ## Activating the Inspector
 

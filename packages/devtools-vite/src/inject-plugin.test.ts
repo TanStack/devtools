@@ -4,7 +4,6 @@ import {
   findDevtoolsComponentName,
   transformAndInject,
 } from './inject-plugin'
-import { gen, parse } from './babel'
 
 const removeEmptySpace = (str: string) => {
   return str.replace(/\s/g, '').trim()
@@ -20,27 +19,21 @@ const testTransform = (
     type: 'jsx' | 'function'
   },
 ) => {
-  const ast = parse(code, {
-    sourceType: 'module',
-    plugins: ['jsx', 'typescript'],
-  })
-
-  const devtoolsComponentName = findDevtoolsComponentName(ast)
+  const devtoolsComponentName = findDevtoolsComponentName(code)
   if (!devtoolsComponentName) {
     return { transformed: false, code }
   }
 
-  const didTransform = transformAndInject(
-    ast,
+  const result = transformAndInject(
+    code,
     { packageName, pluginName, pluginImport },
     devtoolsComponentName,
   )
 
-  if (!didTransform) {
+  if (!result?.transformed) {
     return { transformed: false, code }
   }
 
-  const result = gen(ast, { sourceMaps: false, retainLines: false })
   return { transformed: true, code: result.code }
 }
 
@@ -103,7 +96,7 @@ describe('inject-plugin', () => {
     test('should add plugin to existing empty plugins array', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[]} />
         }
@@ -122,14 +115,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -139,7 +132,7 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import { OtherPlugin } from '@tanstack/other-plugin'
-        
+
         function App() {
           return <TanStackDevtools plugins={[
             { name: 'other', render: <OtherPlugin /> }
@@ -160,10 +153,10 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
-          import { OtherPlugin } from '@tanstack/other-plugin';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
+          import { OtherPlugin } from '@tanstack/other-plugin'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[
               { name: 'other', render: <OtherPlugin /> },
@@ -171,7 +164,7 @@ describe('inject-plugin', () => {
                 name: "TanStack Query",
                 render: <ReactQueryDevtoolsPanel />
               }
-            ]} />;
+            ]} />
           }
         `),
       )
@@ -180,7 +173,7 @@ describe('inject-plugin', () => {
     test('should create plugins prop if it does not exist', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools />
         }
@@ -199,14 +192,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -215,7 +208,7 @@ describe('inject-plugin', () => {
     test('should create plugins prop with other existing props', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools position="bottom-right" />
         }
@@ -234,14 +227,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <TanStackDevtools position="bottom-right" plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -251,7 +244,7 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[
             { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> }
@@ -277,7 +270,7 @@ describe('inject-plugin', () => {
     test('should handle renamed named import', () => {
       const code = `
         import { TanStackDevtools as DevtoolsPanel } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <DevtoolsPanel plugins={[]} />
         }
@@ -296,14 +289,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools as DevtoolsPanel } from '@tanstack/react-devtools';
+          import { TanStackDevtools as DevtoolsPanel } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <DevtoolsPanel plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -312,7 +305,7 @@ describe('inject-plugin', () => {
     test('should handle renamed import without plugins prop', () => {
       const code = `
         import { TanStackDevtools as MyDevtools } from '@tanstack/solid-devtools'
-        
+
         function App() {
           return <MyDevtools />
         }
@@ -331,14 +324,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools as MyDevtools } from '@tanstack/solid-devtools';
+          import { TanStackDevtools as MyDevtools } from '@tanstack/solid-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <MyDevtools plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -349,7 +342,7 @@ describe('inject-plugin', () => {
     test('should handle namespace import', () => {
       const code = `
         import * as DevtoolsModule from '@tanstack/react-devtools'
-        
+
         function App() {
           return <DevtoolsModule.TanStackDevtools plugins={[]} />
         }
@@ -368,14 +361,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import * as DevtoolsModule from '@tanstack/react-devtools';
+          import * as DevtoolsModule from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <DevtoolsModule.TanStackDevtools plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -384,7 +377,7 @@ describe('inject-plugin', () => {
     test('should handle namespace import without plugins prop', () => {
       const code = `
         import * as TSD from '@tanstack/solid-devtools'
-        
+
         function App() {
           return <TSD.TanStackDevtools />
         }
@@ -403,14 +396,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import * as TSD from '@tanstack/solid-devtools';
+          import * as TSD from '@tanstack/solid-devtools'
           import { SolidRouterDevtoolsPanel } from "@tanstack/solid-router-devtools";
-          
+
           function App() {
             return <TSD.TanStackDevtools plugins={[{
               name: "TanStack Router",
               render: <SolidRouterDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -421,7 +414,7 @@ describe('inject-plugin', () => {
     test('should handle router devtools', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[]} />
         }
@@ -440,14 +433,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[{
               name: "TanStack Router",
               render: <ReactRouterDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -456,7 +449,7 @@ describe('inject-plugin', () => {
     test('should handle form devtools', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/solid-devtools'
-        
+
         function App() {
           return <TanStackDevtools />
         }
@@ -475,14 +468,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/solid-devtools';
+          import { TanStackDevtools } from '@tanstack/solid-devtools'
           import { ReactFormDevtoolsPanel } from "@tanstack/react-form-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[{
               name: "TanStack Form",
               render: <ReactFormDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -491,7 +484,7 @@ describe('inject-plugin', () => {
     test('should handle query devtools', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/vue-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[]} />
         }
@@ -510,14 +503,14 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/vue-devtools';
+          import { TanStackDevtools } from '@tanstack/vue-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
+            }]} />
           }
         `),
       )
@@ -528,7 +521,7 @@ describe('inject-plugin', () => {
     test('should not transform files without TanStackDevtools component', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <div>Hello World</div>
         }
@@ -550,7 +543,7 @@ describe('inject-plugin', () => {
     test('should handle TanStackDevtools with children', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return (
             <TanStackDevtools plugins={[]}>
@@ -573,16 +566,18 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
-            return <TanStackDevtools plugins={[{
-              name: "TanStack Query",
-              render: <ReactQueryDevtoolsPanel />
-            }]}>
-              <div>Custom content</div>
-            </TanStackDevtools>;
+            return (
+              <TanStackDevtools plugins={[{
+                name: "TanStack Query",
+                render: <ReactQueryDevtoolsPanel />
+              }]}>
+                <div>Custom content</div>
+              </TanStackDevtools>
+            )
           }
         `),
       )
@@ -591,7 +586,7 @@ describe('inject-plugin', () => {
     test('should handle multiple TanStackDevtools in same file', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return (
             <>
@@ -615,20 +610,22 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
-            return <>
-              <TanStackDevtools plugins={[{
-                name: "TanStack Query",
-                render: <ReactQueryDevtoolsPanel />
-              }]} />
-              <TanStackDevtools plugins={[{
-                name: "TanStack Query",
-                render: <ReactQueryDevtoolsPanel />
-              }]} />
-            </>;
+            return (
+              <>
+                <TanStackDevtools plugins={[{
+                  name: "TanStack Query",
+                  render: <ReactQueryDevtoolsPanel />
+                }]} />
+                <TanStackDevtools plugins={[{
+                  name: "TanStack Query",
+                  render: <ReactQueryDevtoolsPanel />
+                }]} />
+              </>
+            )
           }
         `),
       )
@@ -637,7 +634,7 @@ describe('inject-plugin', () => {
     test('should handle TanStackDevtools deeply nested', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return (
             <div>
@@ -664,20 +661,22 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
-            return <div>
-              <header>
-                <nav>
-                  <TanStackDevtools plugins={[{
-                    name: "TanStack Query",
-                    render: <ReactQueryDevtoolsPanel />
-                  }]} />
-                </nav>
-              </header>
-            </div>;
+            return (
+              <div>
+                <header>
+                  <nav>
+                    <TanStackDevtools plugins={[{
+                      name: "TanStack Query",
+                      render: <ReactQueryDevtoolsPanel />
+                    }]} />
+                  </nav>
+                </header>
+              </div>
+            )
           }
         `),
       )
@@ -687,10 +686,10 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import { useState } from 'react'
-        
+
         function App() {
           const [count, setCount] = useState(0)
-          
+
           return (
             <div>
               <button onClick={() => setCount(count + 1)}>
@@ -715,21 +714,23 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
-          import { useState } from 'react';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
+          import { useState } from 'react'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
-            const [count, setCount] = useState(0);
-            return <div>
-              <button onClick={() => setCount(count + 1)}>
-                Count: {count}
-              </button>
-              <TanStackDevtools plugins={[{
-                name: "TanStack Query",
-                render: <ReactQueryDevtoolsPanel />
-              }]} />
-            </div>;
+            const [count, setCount] = useState(0)
+            return (
+              <div>
+                <button onClick={() => setCount(count + 1)}>
+                  Count: {count}
+                </button>
+                <TanStackDevtools plugins={[{
+                  name: "TanStack Query",
+                  render: <ReactQueryDevtoolsPanel />
+                }]} />
+              </div>
+            )
           }
         `),
       )
@@ -739,7 +740,7 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import type { FC } from 'react'
-        
+
         const App: FC = () => {
           return <TanStackDevtools plugins={[]} />
         }
@@ -758,16 +759,16 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
-          import type { FC } from 'react';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
+          import type { FC } from 'react'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           const App: FC = () => {
             return <TanStackDevtools plugins={[{
               name: "TanStack Query",
               render: <ReactQueryDevtoolsPanel />
-            }]} />;
-          };
+            }]} />
+          }
         `),
       )
     })
@@ -775,7 +776,7 @@ describe('inject-plugin', () => {
     test('should handle plugins array with trailing comma', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[
             { name: 'other', render: <OtherPlugin /> },
@@ -796,9 +797,9 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[
               { name: 'other', render: <OtherPlugin /> },
@@ -806,7 +807,7 @@ describe('inject-plugin', () => {
                 name: "TanStack Query",
                 render: <ReactQueryDevtoolsPanel />
               }
-            ]} />;
+            ]} />
           }
         `),
       )
@@ -815,7 +816,7 @@ describe('inject-plugin', () => {
     test('should not transform if devtools import not found', () => {
       const code = `
         import { SomeOtherComponent } from 'some-package'
-        
+
         function App() {
           return <SomeOtherComponent />
         }
@@ -839,7 +840,7 @@ describe('inject-plugin', () => {
     test('should add function plugin to empty plugins array', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[]} />
         }
@@ -858,11 +859,11 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
-          
+
           function App() {
-            return <TanStackDevtools plugins={[FormDevtoolsPlugin()]} />;
+            return <TanStackDevtools plugins={[FormDevtoolsPlugin()]} />
           }
         `),
       )
@@ -872,7 +873,7 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[
             { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> }
@@ -893,15 +894,15 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
-          import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
+          import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
           import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
-          
+
           function App() {
             return <TanStackDevtools plugins={[
               { name: 'TanStack Query', render: <ReactQueryDevtoolsPanel /> },
               FormDevtoolsPlugin()
-            ]} />;
+            ]} />
           }
         `),
       )
@@ -910,7 +911,7 @@ describe('inject-plugin', () => {
     test('should create plugins prop with function plugin when it does not exist', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools />
         }
@@ -929,11 +930,11 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
           import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
-          
+
           function App() {
-            return <TanStackDevtools plugins={[FormDevtoolsPlugin()]} />;
+            return <TanStackDevtools plugins={[FormDevtoolsPlugin()]} />
           }
         `),
       )
@@ -943,7 +944,7 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import { FormDevtoolsPlugin } from '@tanstack/react-form-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[FormDevtoolsPlugin()]} />
         }
@@ -965,7 +966,7 @@ describe('inject-plugin', () => {
     test('should handle function plugin with renamed devtools import', () => {
       const code = `
         import { TanStackDevtools as DevtoolsPanel } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <DevtoolsPanel plugins={[]} />
         }
@@ -984,11 +985,11 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools as DevtoolsPanel } from '@tanstack/react-devtools';
+          import { TanStackDevtools as DevtoolsPanel } from '@tanstack/react-devtools'
           import { FormDevtoolsPlugin } from "@tanstack/react-form-devtools";
-          
+
           function App() {
-            return <DevtoolsPanel plugins={[FormDevtoolsPlugin()]} />;
+            return <DevtoolsPanel plugins={[FormDevtoolsPlugin()]} />
           }
         `),
       )
@@ -997,7 +998,7 @@ describe('inject-plugin', () => {
     test('should handle function plugin with namespace import', () => {
       const code = `
         import * as DevtoolsModule from '@tanstack/solid-devtools'
-        
+
         function App() {
           return <DevtoolsModule.TanStackDevtools plugins={[]} />
         }
@@ -1016,11 +1017,11 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import * as DevtoolsModule from '@tanstack/solid-devtools';
+          import * as DevtoolsModule from '@tanstack/solid-devtools'
           import { FormDevtoolsPlugin } from "@tanstack/solid-form-devtools";
-          
+
           function App() {
-            return <DevtoolsModule.TanStackDevtools plugins={[FormDevtoolsPlugin()]} />;
+            return <DevtoolsModule.TanStackDevtools plugins={[FormDevtoolsPlugin()]} />
           }
         `),
       )
@@ -1030,7 +1031,7 @@ describe('inject-plugin', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
         import { FormDevtoolsPlugin } from '@tanstack/react-form-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[FormDevtoolsPlugin()]} />
         }
@@ -1049,12 +1050,12 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(true)
       expect(removeEmptySpace(result.code)).toBe(
         removeEmptySpace(`
-          import { TanStackDevtools } from '@tanstack/react-devtools';
-          import { FormDevtoolsPlugin } from '@tanstack/react-form-devtools';
+          import { TanStackDevtools } from '@tanstack/react-devtools'
+          import { FormDevtoolsPlugin } from '@tanstack/react-form-devtools'
           import { RouterDevtoolsPlugin } from "@tanstack/react-router-devtools";
-          
+
           function App() {
-            return <TanStackDevtools plugins={[FormDevtoolsPlugin(), RouterDevtoolsPlugin()]} />;
+            return <TanStackDevtools plugins={[FormDevtoolsPlugin(), RouterDevtoolsPlugin()]} />
           }
         `),
       )
@@ -1063,7 +1064,7 @@ describe('inject-plugin', () => {
     test('should not transform when pluginImport is not provided', () => {
       const code = `
         import { TanStackDevtools } from '@tanstack/react-devtools'
-        
+
         function App() {
           return <TanStackDevtools plugins={[]} />
         }
