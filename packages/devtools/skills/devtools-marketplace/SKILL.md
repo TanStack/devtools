@@ -222,7 +222,7 @@ The auto-install pipeline lives in `packages/devtools-vite/src/inject-plugin.ts`
 
 1. **Package installation** -- The Vite plugin detects the project's package manager and runs the appropriate install command.
 2. **File detection** -- It scans project files for imports from `@tanstack/react-devtools`, `@tanstack/solid-devtools`, `@tanstack/vue-devtools`, etc.
-3. **AST transformation** -- It parses the file with Babel, finds the `<TanStackDevtools />` JSX element, and modifies the `plugins` prop.
+3. **AST transformation** -- It parses the file with Oxc, finds the `<TanStackDevtools />` JSX element, and modifies the `plugins` prop.
 4. **Import insertion** -- It adds `import { <importName> } from '<packageName>'` after the last existing import.
 5. **Plugin injection** -- Based on `pluginImport.type`:
    - `'function'`: Appends `ImportName()` directly to the plugins array

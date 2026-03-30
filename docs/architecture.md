@@ -194,7 +194,7 @@ Adapters do not re-implement the devtools UI, manage settings, handle events, or
 `@tanstack/devtools-vite` is a collection of Vite plugins that enhance the development experience and clean up production builds. It returns an array of Vite plugins, each handling a specific concern:
 
 ### Source injection (`@tanstack/devtools:inject-source`)
-Uses Babel to parse JSX/TSX files and injects `data-tsd-source` attributes on every JSX element. These attributes encode the file path, line number, and column number of each element in source code, which the source inspector feature uses to implement click-to-open-in-editor.
+Uses Oxc to parse JSX/TSX files and injects `data-tsd-source` attributes on every JSX element. These attributes encode the file path, line number, and column number of each element in source code, which the source inspector feature uses to implement click-to-open-in-editor.
 
 ### Server event bus (`@tanstack/devtools:custom-server`)
 Starts a `ServerEventBus` on the Vite dev server. Also sets up middleware for the go-to-source editor integration and bidirectional console piping (client logs appear in the terminal, server logs appear in the browser).
