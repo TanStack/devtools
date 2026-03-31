@@ -1,11 +1,10 @@
 import { For } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-
-type Severity = 'error' | 'warning' | 'info'
+import { seoSeverityColor, type SeoSeverity } from './seo-severity'
 
 type Issue = {
-  severity: Severity
+  severity: SeoSeverity
   message: string
 }
 
@@ -17,12 +16,6 @@ type CanonicalData = {
   indexable: boolean
   follow: boolean
   issues: Array<Issue>
-}
-
-function severityColor(severity: Severity): string {
-  if (severity === 'error') return '#dc2626'
-  if (severity === 'warning') return '#d97706'
-  return '#2563eb'
 }
 
 function getCanonicalData(): CanonicalData {
@@ -173,7 +166,7 @@ export function CanonicalUrlPreviewSection() {
         <ul class={styles().serpErrorList}>
           <For each={data.issues}>
             {(issue) => (
-              <li style={{ color: severityColor(issue.severity), 'margin-top': '4px' }}>
+              <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
                 [{issue.severity}] {issue.message}
               </li>
             )}

@@ -1,13 +1,12 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
+import { seoSeverityColor, type SeoSeverity } from './seo-severity'
 
 type JsonLdValue = Record<string, unknown>
 
-type IssueSeverity = 'error' | 'warning' | 'info'
-
 type ValidationIssue = {
-  severity: IssueSeverity
+  severity: SeoSeverity
   message: string
 }
 
@@ -15,7 +14,6 @@ type SchemaRule = {
   required: Array<string>
   recommended: Array<string>
   optional: Array<string>
-  allowed: Array<string>
 }
 
 type JsonLdEntry = {
@@ -31,85 +29,41 @@ const SUPPORTED_RULES: Record<string, SchemaRule> = {
     required: ['@context', '@type', 'name', 'url'],
     recommended: ['potentialAction'],
     optional: ['description', 'inLanguage'],
-    allowed: ['name', 'url', 'description', 'inLanguage', 'potentialAction'],
   },
   Organization: {
     required: ['@context', '@type', 'name', 'url'],
     recommended: ['logo', 'sameAs'],
     optional: ['description', 'email', 'telephone'],
-    allowed: [
-      'name',
-      'url',
-      'logo',
-      'sameAs',
-      'description',
-      'email',
-      'telephone',
-    ],
   },
   Person: {
     required: ['@context', '@type', 'name'],
     recommended: ['url', 'sameAs'],
-    optional: ['image', 'jobTitle'],
-    allowed: ['name', 'url', 'sameAs', 'image', 'jobTitle', 'description'],
+    optional: ['image', 'jobTitle', 'description'],
   },
   Article: {
     required: ['@context', '@type', 'headline', 'datePublished', 'author'],
     recommended: ['dateModified', 'image', 'mainEntityOfPage'],
     optional: ['description', 'publisher'],
-    allowed: [
-      'headline',
-      'datePublished',
-      'author',
-      'dateModified',
-      'image',
-      'mainEntityOfPage',
-      'description',
-      'publisher',
-    ],
   },
   Product: {
     required: ['@context', '@type', 'name'],
     recommended: ['image', 'description', 'offers'],
     optional: ['brand', 'sku', 'aggregateRating', 'review'],
-    allowed: [
-      'name',
-      'image',
-      'description',
-      'offers',
-      'brand',
-      'sku',
-      'aggregateRating',
-      'review',
-    ],
   },
   BreadcrumbList: {
     required: ['@context', '@type', 'itemListElement'],
     recommended: [],
     optional: ['name'],
-    allowed: ['itemListElement', 'name'],
   },
   FAQPage: {
     required: ['@context', '@type', 'mainEntity'],
     recommended: [],
     optional: [],
-    allowed: ['mainEntity'],
   },
   LocalBusiness: {
     required: ['@context', '@type', 'name', 'address'],
     recommended: ['telephone', 'openingHours'],
-    optional: ['geo', 'priceRange', 'url', 'sameAs'],
-    allowed: [
-      'name',
-      'address',
-      'telephone',
-      'openingHours',
-      'geo',
-      'priceRange',
-      'url',
-      'sameAs',
-      'image',
-    ],
+    optional: ['geo', 'priceRange', 'url', 'sameAs', 'image'],
   },
 }
 
@@ -222,7 +176,12 @@ function validateEntityByType(entity: JsonLdValue, typeName: string): Array<Vali
     })
   }
 
-  const allowedSet = new Set([...rules.allowed, ...Array.from(RESERVED_KEYS)])
+  const allowedSet = new Set([
+    ...rules.required,
+    ...rules.recommended,
+    ...rules.optional,
+    ...RESERVED_KEYS,
+  ])
   const unknownKeys = Object.keys(entity).filter((key) => !allowedSet.has(key))
   if (unknownKeys.length > 0) {
     issues.push({
@@ -317,12 +276,6 @@ function analyzeJsonLdScripts(): Array<JsonLdEntry> {
   })
 }
 
-function severityColor(severity: IssueSeverity): string {
-  if (severity === 'error') return '#dc2626'
-  if (severity === 'warning') return '#d97706'
-  return '#2563eb'
-}
-
 function getJsonLdScore(entries: Array<JsonLdEntry>): number {
   let errors = 0
   let warnings = 0
@@ -409,7 +362,7 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
           <ul class={styles().serpErrorList}>
             <For each={props.entry.issues}>
               {(issue) => (
-                <li style={{ color: severityColor(issue.severity), 'margin-top': '4px' }}>
+                <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
                   [{issue.severity}] {issue.message}
                 </li>
               )}

@@ -1,8 +1,7 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-
-type Severity = 'error' | 'warning' | 'info'
+import { seoSeverityColor, type SeoSeverity } from './seo-severity'
 
 type HeadingItem = {
   id: string
@@ -12,14 +11,8 @@ type HeadingItem = {
 }
 
 type HeadingIssue = {
-  severity: Severity
+  severity: SeoSeverity
   message: string
-}
-
-function severityColor(severity: Severity): string {
-  if (severity === 'error') return '#dc2626'
-  if (severity === 'warning') return '#d97706'
-  return '#2563eb'
 }
 
 function extractHeadings(): Array<HeadingItem> {
@@ -141,7 +134,7 @@ export function HeadingStructurePreviewSection() {
         <ul class={styles().serpErrorList}>
           <For each={issues}>
             {(issue) => (
-              <li style={{ color: severityColor(issue.severity), 'margin-top': '4px' }}>
+              <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
                 [{issue.severity}] {issue.message}
               </li>
             )}

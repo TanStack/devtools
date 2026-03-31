@@ -1,12 +1,12 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
+import { seoSeverityColor, type SeoSeverity } from './seo-severity'
 
-type Severity = 'error' | 'warning' | 'info'
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
 
 type LinkIssue = {
-  severity: Severity
+  severity: SeoSeverity
   message: string
 }
 
@@ -16,12 +16,6 @@ type LinkRow = {
   resolvedHref: string | null
   kind: LinkKind
   issues: Array<LinkIssue>
-}
-
-function severityColor(severity: Severity): string {
-  if (severity === 'error') return '#dc2626'
-  if (severity === 'warning') return '#d97706'
-  return '#2563eb'
 }
 
 function classifyLink(anchor: HTMLAnchorElement): LinkRow {
@@ -162,7 +156,7 @@ export function LinksPreviewSection() {
                     <ul class={styles().serpErrorList}>
                       <For each={row.issues}>
                         {(issue) => (
-                          <li style={{ color: severityColor(issue.severity) }}>
+                          <li style={{ color: seoSeverityColor(issue.severity) }}>
                             [{issue.severity}] {issue.message}
                           </li>
                         )}
