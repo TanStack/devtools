@@ -743,69 +743,129 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 11px;
       color: ${t(colors.gray[500], colors.gray[400])};
     `,
-    seoOverviewSectionList: css`
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    seoOverviewCheckListCaption: css`
+      margin: 0 0 8px 0;
+      font-size: 11px;
+      line-height: 1.4;
+      color: ${t(colors.gray[500], colors.gray[400])};
     `,
-    seoOverviewSectionButton: css`
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      text-align: left;
-      padding: 8px 10px;
-      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      border-radius: 6px;
-      background: ${t(colors.white, colors.darkGray[900])};
-      cursor: pointer;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      font-size: 13px;
-      font-family: inherit;
-    `,
-    seoOverviewSectionIcon: css`
+    seoOverviewScoreRingWrap: css`
       flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      font-weight: 700;
     `,
-    seoOverviewSectionIconPass: css`
-      background: ${t(colors.green[50], '#16a34a18')};
-      color: #16a34a;
+    seoOverviewScoreRingSvg: css`
+      display: block;
     `,
-    seoOverviewSectionIconError: css`
-      background: #dc262618;
-      color: #dc2626;
+    seoOverviewScoreRingTrack: css`
+      fill: none;
+      stroke: ${t(colors.gray[200], colors.gray[700])};
+      stroke-width: 3;
     `,
-    seoOverviewSectionIconWarn: css`
-      background: #d9770618;
-      color: #d97706;
+    seoOverviewScoreRingLabel: css`
+      font-size: 10px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      font-family: ${fontFamily.sans};
+      fill: ${t(colors.gray[800], colors.gray[100])};
     `,
-    seoOverviewSectionIconInfo: css`
-      background: #2563eb18;
-      color: #2563eb;
+    seoOverviewCheckList: css`
+      display: flex;
+      flex-direction: column;
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-radius: 8px;
+      overflow: hidden;
     `,
-    seoOverviewSectionBody: css`
-      flex-grow: 1;
+    seoOverviewCheckRow: css`
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      margin: 0;
+      padding: 9px 10px;
+      text-align: left;
+      border: none;
+      border-bottom: 1px solid ${t(colors.gray[100], colors.gray[800])};
+      background: ${t(colors.white, colors.darkGray[900])};
+      color: ${t(colors.gray[900], colors.gray[100])};
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.1s ease;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background: ${t(colors.gray[50], colors.gray[800] + '55')};
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &:focus-visible {
+        position: relative;
+        z-index: 1;
+        box-shadow: inset 0 0 0 2px ${t(colors.blue[500], colors.blue[400])};
+      }
+    `,
+    seoOverviewCheckBody: css`
+      flex: 1;
       min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     `,
-    seoOverviewSectionTitle: css`
+    seoOverviewCheckTitle: css`
       font-weight: 500;
       font-size: 13px;
+      line-height: 1.3;
     `,
-    seoOverviewSectionHint: css`
+    seoOverviewCheckMeta: css`
       font-size: 11px;
+      line-height: 1.35;
       color: ${t(colors.gray[500], colors.gray[400])};
-      margin-top: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     `,
-    seoOverviewSectionChevron: css`
-      color: ${t(colors.gray[400], colors.gray[600])};
+    seoOverviewCheckCounts: css`
       flex-shrink: 0;
+      font-family: ${fontFamily.mono};
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+    `,
+    seoOverviewCheckNError: css`
+      color: #dc2626;
+      font-weight: 500;
+    `,
+    seoOverviewCheckNWarn: css`
+      color: #d97706;
+      font-weight: 500;
+    `,
+    seoOverviewCheckNInfo: css`
+      color: ${t(colors.blue[600], colors.blue[400])};
+      font-weight: 500;
+    `,
+    seoOverviewCheckNZero: css`
+      color: ${t(colors.gray[400], colors.gray[600])};
+      font-weight: 400;
+    `,
+    seoOverviewCheckNSep: css`
+      color: ${t(colors.gray[300], colors.gray[600])};
+      margin: 0 1px;
+      font-weight: 400;
+    `,
+    seoOverviewCheckChevron: css`
+      flex-shrink: 0;
+      color: ${t(colors.gray[400], colors.gray[500])};
+      font-size: 15px;
+      line-height: 1.2;
     `,
     seoHeadingTreeHeaderRow: css`
       display: flex;

@@ -10,6 +10,8 @@ import { getHeadingStructureSummary } from './heading-structure-preview'
 import { getLinksPreviewSummary } from './links-preview'
 import {
   aggregateSeoHealth,
+  countBySeverity,
+  sectionHealthScore,
   worstSeverity,
   type SeoDetailView,
   type SeoSectionSummary,
@@ -26,11 +28,11 @@ type OverviewRow = {
   summary: SeoSectionSummary
 }
 
-function severityGlyph(severity: SeoSeverity | null): string {
-  if (severity === 'error') return '✕'
-  if (severity === 'warning') return '!'
-  if (severity === 'info') return 'i'
-  return '✓'
+function sectionStatusPhrase(severity: SeoSeverity | null): string {
+  if (severity === null) return 'No blocking issues'
+  if (severity === 'error') return 'Has errors'
+  if (severity === 'warning') return 'Has warnings'
+  return 'Info only'
 }
 
 function MetaRow(props: { label: string; value: string }) {
@@ -40,6 +42,82 @@ function MetaRow(props: { label: string; value: string }) {
       <span class={styles().seoMetaRowLabel}>{props.label}</span>
       <span class={styles().seoMetaRowValue}>{props.value}</span>
     </div>
+  )
+}
+
+function lerpByte(a: number, b: number, t: number) {
+  return Math.round(a + (b - a) * t)
+}
+
+/** Red → amber → green (Lighthouse-style) for the ring stroke. */
+function scoreToRingColor(score: number): string {
+  const s = Math.max(0, Math.min(100, score))
+  const red = { r: 255, g: 78, b: 66 }
+  const amber = { r: 255, g: 164, b: 0 }
+  const green = { r: 12, g: 206, b: 107 }
+  if (s <= 50) {
+    const t = s / 50
+    return `rgb(${lerpByte(red.r, amber.r, t)},${lerpByte(red.g, amber.g, t)},${lerpByte(red.b, amber.b, t)})`
+  }
+  const t = (s - 50) / 50
+  return `rgb(${lerpByte(amber.r, green.r, t)},${lerpByte(amber.g, green.g, t)},${lerpByte(amber.b, green.b, t)})`
+}
+
+function SeoSubsectionScoreRing(props: { score: number }) {
+  const styles = useStyles()
+  const s = styles()
+  const score = Math.max(0, Math.min(100, props.score))
+  const size = 36
+  const stroke = 3
+  const r = (size - stroke) / 2 - 0.25
+  const cx = size / 2
+  const cy = size / 2
+  const circumference = 2 * Math.PI * r
+  const arcLength = (score / 100) * circumference
+  const strokeColor = scoreToRingColor(score)
+  const label = String(Math.round(score))
+
+  return (
+    <span
+      class={s.seoOverviewScoreRingWrap}
+      aria-hidden="true"
+      title={`${Math.round(score)} out of 100`}
+    >
+      <svg
+        class={s.seoOverviewScoreRingSvg}
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+      >
+        <circle
+          class={s.seoOverviewScoreRingTrack}
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+        />
+        <circle
+          cx={cx}
+          cy={cy}
+          r={r}
+          fill="none"
+          stroke={strokeColor}
+          stroke-width={stroke}
+          stroke-linecap="round"
+          stroke-dasharray={`${arcLength} ${circumference}`}
+          transform={`rotate(-90 ${cx} ${cy})`}
+        />
+        <text
+          class={s.seoOverviewScoreRingLabel}
+          x={cx}
+          y={cy}
+          dominant-baseline="central"
+          text-anchor="middle"
+        >
+          {label}
+        </text>
+      </svg>
+    </span>
   )
 }
 
@@ -107,16 +185,6 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
     return `${s.seoHealthFill} ${tierFill}`
   }
 
-  const sectionIconClass = (sev: SeoSeverity | null) => {
-    const s = styles()
-    if (sev === null) return `${s.seoOverviewSectionIcon} ${s.seoOverviewSectionIconPass}`
-    return `${s.seoOverviewSectionIcon} ${pickSeverityClass(sev, {
-      error: s.seoOverviewSectionIconError,
-      warning: s.seoOverviewSectionIconWarn,
-      info: s.seoOverviewSectionIconInfo,
-    })}`
-  }
-
   const issueBulletClass = (sev: SeoSeverity) => {
     const s = styles()
     return `${s.seoIssueBullet} ${pickSeverityClass(sev, {
@@ -138,8 +206,8 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
   return (
     <Section>
       <SectionDescription>
-        Quick check for indexability, URL signals, and a roll-up of every SEO
-        subsection. Open a row to inspect and fix details.
+        Indexability, URL signals, and a combined read on the other SEO panels.
+        Use the list below to jump straight into a subsection.
       </SectionDescription>
 
       <div class={styles().serpPreviewBlock}>
@@ -239,39 +307,87 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
       </Show>
 
       <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Sections</div>
-        <div class={styles().seoOverviewSectionList}>
+        <div class={styles().serpPreviewLabel}>Subsections</div>
+        <p class={styles().seoOverviewCheckListCaption}>
+          Ring score matches overall SEO math (errors / warnings / info). Counts
+          on the right are raw totals for that panel.
+        </p>
+        <div class={styles().seoOverviewCheckList}>
           <For each={bundle().rows}>
             {(row) => {
-              const sev = () => worstSeverity(row.summary.issues)
-              const issueLine = () => {
-                const total = row.summary.issueCount ?? row.summary.issues.length
-                const capped = row.summary.issueCount != null
-                if (total === 0) return 'No issues'
-                const suffix =
-                  capped && row.summary.issueCount! > row.summary.issues.length
-                    ? ` (${row.summary.issues.length} of ${row.summary.issueCount} shown)`
-                    : ''
-                return `${total} issue${total === 1 ? '' : 's'}${suffix}`
-              }
+              const sev = worstSeverity(row.summary.issues)
+              const c = countBySeverity(row.summary.issues)
+              const subsectionScore = sectionHealthScore(row.summary.issues)
+              const totalIssues =
+                row.summary.issueCount ?? row.summary.issues.length
+              const cappedSuffix =
+                row.summary.issueCount != null &&
+                row.summary.issueCount > row.summary.issues.length
+                  ? ` (${row.summary.issues.length} of ${row.summary.issueCount} listed)`
+                  : ''
+              const issueLine =
+                totalIssues === 0
+                  ? 'No issues'
+                  : `${totalIssues} issue${totalIssues === 1 ? '' : 's'}${cappedSuffix}`
+              const metaLine = row.summary.hint
+                ? `${row.summary.hint} · ${issueLine}`
+                : issueLine
+              const ariaBits = [
+                `${row.title}. Score ${Math.round(subsectionScore)} out of 100.`,
+                sectionStatusPhrase(sev) + '.',
+                metaLine,
+                `${c.error} errors, ${c.warning} warnings, ${c.info} info.`,
+                'Open subsection.',
+              ]
               return (
                 <button
                   type="button"
-                  aria-label={`Open ${row.title} for details`}
-                  class={styles().seoOverviewSectionButton}
+                  aria-label={ariaBits.join(' ')}
+                  class={styles().seoOverviewCheckRow}
                   onClick={() => props.goTo(row.id)}
                 >
-                  <span class={sectionIconClass(sev())} aria-hidden="true">
-                    {severityGlyph(sev())}
+                  <SeoSubsectionScoreRing score={subsectionScore} />
+                  <span class={styles().seoOverviewCheckBody}>
+                    <span class={styles().seoOverviewCheckTitle}>{row.title}</span>
+                    <span class={styles().seoOverviewCheckMeta}>{metaLine}</span>
                   </span>
-                  <span class={styles().seoOverviewSectionBody}>
-                    <div class={styles().seoOverviewSectionTitle}>{row.title}</div>
-                    <div class={styles().seoOverviewSectionHint}>
-                      {row.summary.hint ? `${row.summary.hint} · ` : ''}
-                      {issueLine()}
-                    </div>
+                  <span
+                    class={styles().seoOverviewCheckCounts}
+                    aria-hidden="true"
+                  >
+                    <span
+                      class={
+                        c.error > 0
+                          ? styles().seoOverviewCheckNError
+                          : styles().seoOverviewCheckNZero
+                      }
+                    >
+                      {c.error}
+                    </span>
+                    <span class={styles().seoOverviewCheckNSep}>/</span>
+                    <span
+                      class={
+                        c.warning > 0
+                          ? styles().seoOverviewCheckNWarn
+                          : styles().seoOverviewCheckNZero
+                      }
+                    >
+                      {c.warning}
+                    </span>
+                    <span class={styles().seoOverviewCheckNSep}>/</span>
+                    <span
+                      class={
+                        c.info > 0
+                          ? styles().seoOverviewCheckNInfo
+                          : styles().seoOverviewCheckNZero
+                      }
+                    >
+                      {c.info}
+                    </span>
                   </span>
-                  <span class={styles().seoOverviewSectionChevron}>›</span>
+                  <span class={styles().seoOverviewCheckChevron} aria-hidden="true">
+                    ›
+                  </span>
                 </button>
               )
             }}

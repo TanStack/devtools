@@ -46,6 +46,19 @@ export function countBySeverity(issues: Array<SeoIssue>): {
 }
 
 /**
+ * 0–100 health for one subsection’s issues, using the same penalty weights as
+ * aggregateSeoHealth().
+ */
+export function sectionHealthScore(issues: Array<SeoIssue>): number {
+  const counts = countBySeverity(issues)
+  const penalty = Math.min(
+    100,
+    counts.error * 22 + counts.warning * 9 + counts.info * 2,
+  )
+  return Math.max(0, 100 - penalty)
+}
+
+/**
  * Merges section summaries into a simple score and label for the overview.
  * Heuristic: errors and warnings reduce the score; info has a small effect.
  */
