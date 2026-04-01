@@ -122,11 +122,43 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     seoSubNav: css`
       display: flex;
       flex-direction: row;
+      flex-wrap: nowrap;
       gap: 0;
       margin-bottom: 1rem;
       border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      min-width: 0;
+
+      @media (max-width: 1024px) {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+
+        &::after {
+          content: '';
+          flex-shrink: 0;
+          width: max(20px, env(safe-area-inset-right, 0px));
+          align-self: stretch;
+        }
+
+        &::-webkit-scrollbar {
+          height: 5px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: ${t(colors.gray[100], colors.gray[800])};
+          border-radius: 4px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background: ${t(colors.gray[300], colors.gray[600])};
+          border-radius: 4px;
+        }
+      }
     `,
     seoSubNavLabel: css`
+      flex-shrink: 0;
       padding: 0.5rem 1rem;
       font-size: 0.875rem;
       font-weight: 500;
@@ -137,6 +169,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin-bottom: -1px;
       cursor: pointer;
       font-family: inherit;
+      white-space: nowrap;
       &:hover {
         color: ${t(colors.gray[800], colors.gray[200])};
       }
