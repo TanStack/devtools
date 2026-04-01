@@ -254,7 +254,11 @@ function SerpSnippetPreview(props: {
           <strong>Issues for {props.label}:</strong>
           <ul class={styles().serpErrorList}>
             <For each={props.issues}>
-              {(issue) => <li class={styles().serpReportItem}>{issue}</li>}
+              {(issue) => (
+                <li class={styles().seoIssueText} style={{ 'margin-top': '0.25rem' }}>
+                  {issue}
+                </li>
+              )}
             </For>
           </ul>
         </div>

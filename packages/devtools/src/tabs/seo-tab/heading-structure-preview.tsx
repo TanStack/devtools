@@ -36,13 +36,18 @@ function extractHeadings(): Array<HeadingItem> {
 
 function validateHeadings(headings: Array<HeadingItem>): Array<HeadingIssue> {
   if (headings.length === 0) {
-    return [{ severity: 'error', message: 'No heading tags found on this page.' }]
+    return [
+      { severity: 'error', message: 'No heading tags found on this page.' },
+    ]
   }
 
   const issues: Array<HeadingIssue> = []
   const h1Count = headings.filter((h) => h.level === 1).length
   if (h1Count === 0) {
-    issues.push({ severity: 'error', message: 'No H1 heading found on this page.' })
+    issues.push({
+      severity: 'error',
+      message: 'No H1 heading found on this page.',
+    })
   } else if (h1Count > 1) {
     issues.push({
       severity: 'warning',
@@ -91,6 +96,15 @@ export function getHeadingStructureSummary(): SeoSectionSummary {
   }
 }
 
+const HEADING_LEVEL_COLORS: Record<number, string> = {
+  1: '#60a5fa',
+  2: '#34d399',
+  3: '#a78bfa',
+  4: '#f59e0b',
+  5: '#f87171',
+  6: '#94a3b8',
+}
+
 export function HeadingStructurePreviewSection() {
   const styles = useStyles()
   const headings = extractHeadings()
@@ -102,9 +116,26 @@ export function HeadingStructurePreviewSection() {
         Visualizes heading structure (`h1`-`h6`) in DOM order and highlights
         common hierarchy issues. This section scans once when opened.
       </SectionDescription>
+
+      {/* Heading tree */}
       <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>
-          Total headings: {headings.length}
+        <div
+          style={{
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'space-between',
+            'margin-bottom': '10px',
+          }}
+        >
+          <div
+            class={styles().serpPreviewLabel}
+            style={{ 'margin-bottom': '0' }}
+          >
+            Heading tree
+          </div>
+          <span style={{ 'font-size': '11px', color: '#6b7280' }}>
+            {headings.length} heading{headings.length === 1 ? '' : 's'}
+          </span>
         </div>
         <Show
           when={headings.length > 0}
@@ -114,35 +145,86 @@ export function HeadingStructurePreviewSection() {
             </div>
           }
         >
-          <ul class={styles().serpErrorList} style={{ 'list-style': 'none', padding: '0' }}>
+          <ul
+            style={{
+              margin: '0',
+              padding: '0',
+              'list-style': 'none',
+              display: 'flex',
+              'flex-direction': 'column',
+              gap: '3px',
+            }}
+          >
             <For each={headings}>
-              {(heading) => (
-                <li
-                  style={{
-                    display: 'flex',
-                    gap: '8px',
-                    'align-items': 'baseline',
-                    'margin-top': '6px',
-                    'padding-left': `${(heading.level - 1) * 12}px`,
-                  }}
-                >
-                  <strong>{heading.tag.toUpperCase()}</strong>
-                  <span>{heading.text || '(empty heading)'}</span>
-                </li>
-              )}
+              {(heading) => {
+                const color = HEADING_LEVEL_COLORS[heading.level] ?? '#94a3b8'
+                return (
+                  <li
+                    style={{
+                      display: 'flex',
+                      gap: '8px',
+                      'align-items': 'baseline',
+                      'padding-left': `${(heading.level - 1) * 14}px`,
+                    }}
+                  >
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        'align-items': 'center',
+                        'justify-content': 'center',
+                        'min-width': '26px',
+                        height: '16px',
+                        'border-radius': '3px',
+                        'font-size': '10px',
+                        'font-weight': '700',
+                        'letter-spacing': '0.03em',
+                        background: `${color}18`,
+                        color,
+                        'flex-shrink': '0',
+                        'font-family': 'monospace',
+                      }}
+                    >
+                      {heading.tag.toUpperCase()}
+                    </span>
+                    <span
+                      class={styles().seoIssueText}
+                      style={{
+                        'font-size': '12px',
+                        'font-style': heading.text ? 'normal' : 'italic',
+                        opacity: heading.text ? 1 : 0.65,
+                      }}
+                    >
+                      {heading.text || '(empty)'}
+                    </span>
+                  </li>
+                )
+              }}
             </For>
           </ul>
         </Show>
       </div>
 
+      {/* Structure issues */}
       <Show when={issues.length > 0}>
         <div class={styles().serpPreviewBlock}>
           <div class={styles().serpPreviewLabel}>Structure issues</div>
-          <ul class={styles().serpErrorList}>
+          <ul class={styles().seoIssueList}>
             <For each={issues}>
               {(issue) => (
-                <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
-                  [{issue.severity}] {issue.message}
+                <li class={styles().seoIssueRow}>
+                  <span
+                    class={styles().seoIssueBullet}
+                    style={{ color: seoSeverityColor(issue.severity) }}
+                  >
+                    ●
+                  </span>
+                  <span class={styles().seoIssueMessage}>{issue.message}</span>
+                  <span
+                    class={styles().seoIssueSeverityBadge}
+                    style={{ color: seoSeverityColor(issue.severity) }}
+                  >
+                    {issue.severity}
+                  </span>
                 </li>
               )}
             </For>

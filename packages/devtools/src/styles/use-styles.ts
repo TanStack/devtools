@@ -364,6 +364,81 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       color: ${t(colors.red[700], colors.red[400])};
       font-size: 0.875rem;
     `,
+    /**
+     * SEO validation rows: message uses default panel foreground; keep
+     * `seoSeverityColor` only on the bullet and severity label.
+     */
+    seoIssueList: css`
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    `,
+    seoIssueListNested: css`
+      margin: 6px 0 0 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    `,
+    seoIssueRow: css`
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 0.875rem;
+      line-height: 1.45;
+    `,
+    seoIssueRowCompact: css`
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      font-size: 0.6875rem;
+      line-height: 1.45;
+    `,
+    seoIssueBullet: css`
+      flex-shrink: 0;
+      padding-top: 1px;
+    `,
+    /** Default foreground for SEO issue copy (no layout). */
+    seoIssueText: css`
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.45;
+    `,
+    seoIssueMessage: css`
+      flex: 1;
+      min-width: 0;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.45;
+    `,
+    seoIssueSeverityBadge: css`
+      flex-shrink: 0;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+      padding-top: 2px;
+    `,
+    seoMetaRow: css`
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+      font-size: 0.75rem;
+      padding: 5px 0;
+      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+    `,
+    seoMetaRowLabel: css`
+      min-width: 130px;
+      flex-shrink: 0;
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
+    seoMetaRowValue: css`
+      word-break: break-all;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.45;
+    `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],
       isDetached: boolean,

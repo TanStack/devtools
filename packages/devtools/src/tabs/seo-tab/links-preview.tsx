@@ -128,6 +128,13 @@ export function getLinksPreviewSummary(): SeoSectionSummary {
   }
 }
 
+const KIND_BADGE: Record<LinkKind, { label: string; color: string }> = {
+  internal: { label: 'Internal', color: '#6b7280' },
+  external: { label: 'External', color: '#3b82f6' },
+  'non-web': { label: 'Non-web', color: '#d97706' },
+  invalid: { label: 'Invalid', color: '#dc2626' },
+}
+
 export function LinksPreviewSection() {
   const styles = useStyles()
   const links = analyzeLinks()
@@ -138,10 +145,7 @@ export function LinksPreviewSection() {
       acc[row.kind] += 1
       return acc
     },
-    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<
-      LinkKind,
-      number
-    >,
+    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<LinkKind, number>,
   )
 
   return (
@@ -151,60 +155,180 @@ export function LinksPreviewSection() {
         classification, URL quality, and common SEO/security flags.
       </SectionDescription>
 
+      {/* Summary stats */}
       <div class={styles().serpPreviewBlock}>
         <div class={styles().serpPreviewLabel}>Links summary</div>
-        <div style={{ display: 'flex', gap: '12px', 'flex-wrap': 'wrap' }}>
-          <span>Total: {links.length}</span>
-          <span>Internal: {counts.internal}</span>
-          <span>External: {counts.external}</span>
-          <span>Non-web: {counts['non-web']}</span>
-          <span>Invalid: {counts.invalid}</span>
+        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
+          <span
+            style={{
+              padding: '2px 8px',
+              'border-radius': '999px',
+              'font-size': '11px',
+              'font-weight': '500',
+              background: '#37415118',
+              color: '#9ca3af',
+            }}
+          >
+            {links.length} total
+          </span>
+          <span
+            style={{
+              padding: '2px 8px',
+              'border-radius': '999px',
+              'font-size': '11px',
+              'font-weight': '500',
+              background: '#6b728018',
+              color: '#6b7280',
+            }}
+          >
+            {counts.internal} internal
+          </span>
+          <span
+            style={{
+              padding: '2px 8px',
+              'border-radius': '999px',
+              'font-size': '11px',
+              'font-weight': '500',
+              background: '#3b82f618',
+              color: '#3b82f6',
+            }}
+          >
+            {counts.external} external
+          </span>
+          <Show when={counts['non-web'] > 0}>
+            <span
+              style={{
+                padding: '2px 8px',
+                'border-radius': '999px',
+                'font-size': '11px',
+                'font-weight': '500',
+                background: '#d9770618',
+                color: '#d97706',
+              }}
+            >
+              {counts['non-web']} non-web
+            </span>
+          </Show>
+          <Show when={counts.invalid > 0}>
+            <span
+              style={{
+                padding: '2px 8px',
+                'border-radius': '999px',
+                'font-size': '11px',
+                'font-weight': '500',
+                background: '#dc262618',
+                color: '#dc2626',
+              }}
+            >
+              {counts.invalid} invalid
+            </span>
+          </Show>
           <Show when={issueCount > 0}>
-            <span>Issues: {issueCount}</span>
+            <span
+              style={{
+                padding: '2px 8px',
+                'border-radius': '999px',
+                'font-size': '11px',
+                'font-weight': '500',
+                background: '#d9770618',
+                color: '#d97706',
+              }}
+            >
+              {issueCount} issue{issueCount === 1 ? '' : 's'}
+            </span>
           </Show>
         </div>
       </div>
 
+      {/* Links list */}
       <Show
         when={links.length > 0}
         fallback={
-          <div class={styles().seoMissingTagsSection}>
-            No links found on this page.
-          </div>
+          <div class={styles().seoMissingTagsSection}>No links found on this page.</div>
         }
       >
         <div class={styles().serpPreviewBlock}>
           <div class={styles().serpPreviewLabel}>Links report</div>
-          <ul
-            class={styles().serpErrorList}
-            style={{ 'list-style': 'none', padding: '0' }}
-          >
+          <ul style={{ margin: '0', padding: '0', 'list-style': 'none', display: 'flex', 'flex-direction': 'column', gap: '0' }}>
             <For each={links}>
-              {(row) => (
-                <li
-                  style={{ 'margin-bottom': '12px', 'padding-bottom': '8px' }}
-                >
-                  <div>
-                    <strong>{row.text || '(no text)'}</strong> - {row.kind}
-                  </div>
-                  <div style={{ 'font-size': '12px', color: '#9ca3af' }}>
-                    {row.resolvedHref || row.href}
-                  </div>
-                  <Show when={row.issues.length > 0}>
-                    <ul class={styles().serpErrorList}>
-                      <For each={row.issues}>
-                        {(issue) => (
-                          <li
-                            style={{ color: seoSeverityColor(issue.severity) }}
-                          >
-                            [{issue.severity}] {issue.message}
-                          </li>
-                        )}
-                      </For>
-                    </ul>
-                  </Show>
-                </li>
-              )}
+              {(row, index) => {
+                const badge = KIND_BADGE[row.kind]
+                return (
+                  <li
+                    style={{
+                      padding: '8px 0',
+                      'border-bottom': index() < links.length - 1 ? '1px solid #1f2937' : 'none',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        'align-items': 'center',
+                        gap: '8px',
+                        'margin-bottom': '2px',
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: 'inline-flex',
+                          'align-items': 'center',
+                          padding: '1px 6px',
+                          'border-radius': '3px',
+                          'font-size': '10px',
+                          'font-weight': '600',
+                          'letter-spacing': '0.03em',
+                          background: `${badge.color}18`,
+                          color: badge.color,
+                          'flex-shrink': '0',
+                        }}
+                      >
+                        {badge.label}
+                      </span>
+                      <span
+                        class={styles().seoIssueText}
+                        style={{
+                          'font-size': '12px',
+                          'font-weight': '500',
+                          overflow: 'hidden',
+                          'white-space': 'nowrap',
+                          'text-overflow': 'ellipsis',
+                        }}
+                      >
+                        {row.text || '(no text)'}
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        'font-size': '11px',
+                        color: '#6b7280',
+                        overflow: 'hidden',
+                        'white-space': 'nowrap',
+                        'text-overflow': 'ellipsis',
+                        'padding-left': '2px',
+                      }}
+                    >
+                      {row.resolvedHref || row.href}
+                    </div>
+                    <Show when={row.issues.length > 0}>
+                      <ul class={styles().seoIssueListNested}>
+                        <For each={row.issues}>
+                          {(issue) => (
+                            <li class={styles().seoIssueRowCompact}>
+                              <span
+                                class={styles().seoIssueBullet}
+                                style={{ color: seoSeverityColor(issue.severity) }}
+                              >
+                                ●
+                              </span>
+                              <span class={styles().seoIssueMessage}>{issue.message}</span>
+                            </li>
+                          )}
+                        </For>
+                      </ul>
+                    </Show>
+                  </li>
+                )
+              }}
             </For>
           </ul>
         </div>

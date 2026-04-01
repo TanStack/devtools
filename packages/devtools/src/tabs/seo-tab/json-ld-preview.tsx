@@ -338,40 +338,55 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
 
   return (
     <div class={styles().serpPreviewBlock}>
-      <div class={styles().serpPreviewLabel}>JSON-LD Block #{props.index + 1}</div>
-      <div style={{ 'margin-bottom': '8px', 'font-size': '12px' }}>
-        <strong>Detected types:</strong>{' '}
-        {props.entry.types.length > 0 ? props.entry.types.join(', ') : 'Unknown'}
+      {/* Block header */}
+      <div
+        style={{
+          display: 'flex',
+          'align-items': 'center',
+          'justify-content': 'space-between',
+          'margin-bottom': '10px',
+        }}
+      >
+        <div>
+          <div class={styles().serpPreviewLabel} style={{ 'margin-bottom': '2px' }}>
+            Block #{props.index + 1}
+          </div>
+          <div style={{ 'font-size': '11px', color: '#6b7280' }}>
+            {props.entry.types.length > 0 ? props.entry.types.join(', ') : 'Unknown type'}
+          </div>
+        </div>
+        <Show when={props.entry.parsed}>
+          <button
+            type="button"
+            onClick={copyParsed}
+            style={{
+              border: '1px solid #374151',
+              'border-radius': '5px',
+              padding: '3px 10px',
+              background: 'transparent',
+              cursor: 'pointer',
+              'font-size': '11px',
+              color: '#9ca3af',
+            }}
+          >
+            Copy
+          </button>
+        </Show>
       </div>
-      <Show when={props.entry.parsed}>
-        <button
-          type="button"
-          onClick={copyParsed}
-          style={{
-            'margin-bottom': '8px',
-            border: '1px solid #6b7280',
-            'border-radius': '6px',
-            padding: '4px 8px',
-            background: 'transparent',
-            cursor: 'pointer',
-            'font-size': '12px',
-          }}
-        >
-          Copy parsed JSON-LD
-        </button>
-      </Show>
+
+      {/* Raw / parsed content */}
       <pre
         style={{
           margin: '0',
-          'max-height': '280px',
+          'max-height': '260px',
           overflow: 'auto',
           padding: '10px',
-          'font-size': '12px',
-          'line-height': '1.4',
+          'font-size': '11px',
+          'line-height': '1.5',
           'border-radius': '6px',
-          border: '1px solid #374151',
-          background: '#111827',
-          color: '#e5e7eb',
+          border: '1px solid #1f2937',
+          background: '#0d1117',
+          color: '#d1d5db',
           'white-space': 'pre-wrap',
           'word-break': 'break-word',
         }}
@@ -380,23 +395,34 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
           ? JSON.stringify(props.entry.parsed, null, 2)
           : props.entry.raw || 'No JSON-LD content found.'}
       </pre>
+
+      {/* Issues */}
       <Show when={props.entry.issues.length > 0}>
-        <div style={{ 'margin-top': '10px' }}>
-          <strong>Validation issues:</strong>
-          <ul class={styles().serpErrorList}>
-            <For each={props.entry.issues}>
-              {(issue) => (
-                <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
-                  [{issue.severity}] {issue.message}
-                </li>
-              )}
-            </For>
-          </ul>
-        </div>
+        <ul class={styles().seoIssueList} style={{ 'margin-top': '10px' }}>
+          <For each={props.entry.issues}>
+            {(issue) => (
+              <li class={styles().seoIssueRow}>
+                <span
+                  class={styles().seoIssueBullet}
+                  style={{ color: seoSeverityColor(issue.severity) }}
+                >
+                  ●
+                </span>
+                <span class={styles().seoIssueMessage}>{issue.message}</span>
+                <span
+                  class={styles().seoIssueSeverityBadge}
+                  style={{ color: seoSeverityColor(issue.severity) }}
+                >
+                  {issue.severity}
+                </span>
+              </li>
+            )}
+          </For>
+        </ul>
       </Show>
       <Show when={props.entry.issues.length === 0}>
-        <div style={{ 'margin-top': '10px', color: '#16a34a', 'font-size': '13px' }}>
-          No validation issues found for this block.
+        <div style={{ 'margin-top': '8px', color: '#16a34a', 'font-size': '12px' }}>
+          ✓ No validation issues
         </div>
       </Show>
     </div>
@@ -437,9 +463,9 @@ export function JsonLdPreviewSection() {
         <div
           style={{
             'margin-bottom': '12px',
-            border: '1px solid #374151',
+            border: '1px solid #1f2937',
             'border-radius': '8px',
-            padding: '10px',
+            padding: '12px',
             background: '#111827',
           }}
         >
@@ -448,18 +474,21 @@ export function JsonLdPreviewSection() {
               display: 'flex',
               'justify-content': 'space-between',
               'align-items': 'center',
-              'font-size': '13px',
               'margin-bottom': '6px',
             }}
           >
-            <strong>JSON-LD Health</strong>
-            <span style={{ color: barColor }}>{score}%</span>
+            <span style={{ 'font-size': '12px', 'font-weight': '600', color: '#d1d5db' }}>
+              JSON-LD Health
+            </span>
+            <span style={{ 'font-size': '13px', 'font-weight': '600', color: barColor }}>
+              {score}%
+            </span>
           </div>
           <div
             style={{
               width: '100%',
-              height: '8px',
-              background: '#374151',
+              height: '5px',
+              background: '#1f2937',
               'border-radius': '999px',
               overflow: 'hidden',
             }}
@@ -469,12 +498,21 @@ export function JsonLdPreviewSection() {
                 width: `${score}%`,
                 height: '100%',
                 background: barColor,
+                'border-radius': '999px',
               }}
             />
           </div>
-          <div style={{ 'font-size': '12px', 'margin-top': '6px', color: '#9ca3af' }}>
-            {errorCount} error(s), {warningCount} warning(s). Optional missing attributes
-            do not reduce this score.
+          <div
+            style={{
+              display: 'flex',
+              gap: '12px',
+              'margin-top': '8px',
+              'font-size': '11px',
+            }}
+          >
+            <span style={{ color: '#dc2626' }}>{errorCount} error{errorCount === 1 ? '' : 's'}</span>
+            <span style={{ color: '#d97706' }}>{warningCount} warning{warningCount === 1 ? '' : 's'}</span>
+            <span style={{ color: '#6b7280' }}>optional fields excluded from score</span>
           </div>
         </div>
         <For each={entries}>
