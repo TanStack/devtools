@@ -75,13 +75,6 @@ function validateHeadings(headings: Array<HeadingItem>): Array<HeadingIssue> {
     }
   }
 
-  if (issues.length === 0) {
-    issues.push({
-      severity: 'info',
-      message: 'Heading hierarchy looks healthy.',
-    })
-  }
-
   return issues
 }
 
@@ -129,18 +122,20 @@ export function HeadingStructurePreviewSection() {
         </Show>
       </div>
 
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Structure issues</div>
-        <ul class={styles().serpErrorList}>
-          <For each={issues}>
-            {(issue) => (
-              <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
-                [{issue.severity}] {issue.message}
-              </li>
-            )}
-          </For>
-        </ul>
-      </div>
+      <Show when={issues.length > 0}>
+        <div class={styles().serpPreviewBlock}>
+          <div class={styles().serpPreviewLabel}>Structure issues</div>
+          <ul class={styles().serpErrorList}>
+            <For each={issues}>
+              {(issue) => (
+                <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
+                  [{issue.severity}] {issue.message}
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
+      </Show>
     </Section>
   )
 }

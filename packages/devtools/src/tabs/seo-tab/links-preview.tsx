@@ -28,7 +28,10 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
   const issues: Array<LinkIssue> = []
 
   if (!text) {
-    issues.push({ severity: 'error', message: 'Missing link text or accessible label.' })
+    issues.push({
+      severity: 'error',
+      message: 'Missing link text or accessible label.',
+    })
   }
 
   if (/^\s*javascript:/i.test(href)) {
@@ -37,7 +40,6 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
   }
 
   if (href.startsWith('#')) {
-    issues.push({ severity: 'info', message: 'Hash link (in-page anchor).' })
     return { text, href, resolvedHref: null, kind: 'non-web', issues }
   }
 
@@ -51,12 +53,18 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
 
   const protocol = resolved.protocol.toLowerCase()
   if (protocol === 'mailto:' || protocol === 'tel:') {
-    issues.push({ severity: 'info', message: `Non-web link protocol (${protocol}).` })
+    issues.push({
+      severity: 'info',
+      message: `Non-web link protocol (${protocol}).`,
+    })
     return { text, href, resolvedHref: resolved.href, kind: 'non-web', issues }
   }
 
   if (protocol !== 'http:' && protocol !== 'https:') {
-    issues.push({ severity: 'warning', message: `Unexpected protocol (${protocol}).` })
+    issues.push({
+      severity: 'warning',
+      message: `Unexpected protocol (${protocol}).`,
+    })
     return { text, href, resolvedHref: resolved.href, kind: 'non-web', issues }
   }
 
@@ -92,7 +100,9 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
 }
 
 function analyzeLinks(): Array<LinkRow> {
-  const anchors = Array.from(document.body.querySelectorAll<HTMLAnchorElement>('a[href]'))
+  const anchors = Array.from(
+    document.body.querySelectorAll<HTMLAnchorElement>('a[href]'),
+  )
   return anchors
     .filter(
       (anchor) =>
@@ -112,7 +122,10 @@ export function LinksPreviewSection() {
       acc[row.kind] += 1
       return acc
     },
-    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<LinkKind, number>,
+    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<
+      LinkKind,
+      number
+    >,
   )
 
   return (
@@ -130,22 +143,31 @@ export function LinksPreviewSection() {
           <span>External: {counts.external}</span>
           <span>Non-web: {counts['non-web']}</span>
           <span>Invalid: {counts.invalid}</span>
-          <span>Issues: {issueCount}</span>
+          <Show when={issueCount > 0}>
+            <span>Issues: {issueCount}</span>
+          </Show>
         </div>
       </div>
 
       <Show
         when={links.length > 0}
         fallback={
-          <div class={styles().seoMissingTagsSection}>No links found on this page.</div>
+          <div class={styles().seoMissingTagsSection}>
+            No links found on this page.
+          </div>
         }
       >
         <div class={styles().serpPreviewBlock}>
           <div class={styles().serpPreviewLabel}>Links report</div>
-          <ul class={styles().serpErrorList} style={{ 'list-style': 'none', padding: '0' }}>
+          <ul
+            class={styles().serpErrorList}
+            style={{ 'list-style': 'none', padding: '0' }}
+          >
             <For each={links}>
               {(row) => (
-                <li style={{ 'margin-bottom': '12px', 'padding-bottom': '8px' }}>
+                <li
+                  style={{ 'margin-bottom': '12px', 'padding-bottom': '8px' }}
+                >
                   <div>
                     <strong>{row.text || '(no text)'}</strong> - {row.kind}
                   </div>
@@ -156,7 +178,9 @@ export function LinksPreviewSection() {
                     <ul class={styles().serpErrorList}>
                       <For each={row.issues}>
                         {(issue) => (
-                          <li style={{ color: seoSeverityColor(issue.severity) }}>
+                          <li
+                            style={{ color: seoSeverityColor(issue.severity) }}
+                          >
                             [{issue.severity}] {issue.message}
                           </li>
                         )}

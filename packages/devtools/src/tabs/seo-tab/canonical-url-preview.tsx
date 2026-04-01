@@ -1,4 +1,4 @@
-import { For } from 'solid-js'
+import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { seoSeverityColor, type SeoSeverity } from './seo-severity'
@@ -26,7 +26,9 @@ function getCanonicalData(): CanonicalData {
     document.head.querySelectorAll<HTMLLinkElement>('link[rel]'),
   ).filter((link) => link.rel.toLowerCase().split(/\s+/).includes('canonical'))
 
-  const canonicalRaw = canonicalLinks.map((link) => link.getAttribute('href') || '')
+  const canonicalRaw = canonicalLinks.map(
+    (link) => link.getAttribute('href') || '',
+  )
   const canonicalResolved: Array<string> = []
   const issues: Array<Issue> = []
 
@@ -34,7 +36,10 @@ function getCanonicalData(): CanonicalData {
     issues.push({ severity: 'error', message: 'No canonical link found.' })
   }
   if (canonicalLinks.length > 1) {
-    issues.push({ severity: 'error', message: 'Multiple canonical links found.' })
+    issues.push({
+      severity: 'error',
+      message: 'Multiple canonical links found.',
+    })
   }
 
   for (const raw of canonicalRaw) {
@@ -59,7 +64,10 @@ function getCanonicalData(): CanonicalData {
         })
       }
     } catch {
-      issues.push({ severity: 'error', message: `Canonical URL is invalid: ${raw}` })
+      issues.push({
+        severity: 'error',
+        message: `Canonical URL is invalid: ${raw}`,
+      })
     }
   }
 
@@ -91,7 +99,8 @@ function getCanonicalData(): CanonicalData {
   if (robots.length === 0) {
     issues.push({
       severity: 'info',
-      message: 'No robots meta found. Default behavior is usually index/follow.',
+      message:
+        'No robots meta found. Default behavior is usually index/follow.',
     })
   }
 
@@ -116,16 +125,9 @@ function getCanonicalData(): CanonicalData {
   }
 }
 
-function getScore(issues: Array<Issue>): number {
-  const errors = issues.filter((issue) => issue.severity === 'error').length
-  const warnings = issues.filter((issue) => issue.severity === 'warning').length
-  return Math.max(0, 100 - errors * 25 - warnings * 10)
-}
-
 export function CanonicalUrlPreviewSection() {
   const styles = useStyles()
   const data = getCanonicalData()
-  const score = getScore(data.issues)
 
   return (
     <Section>
@@ -137,7 +139,6 @@ export function CanonicalUrlPreviewSection() {
       <div class={styles().serpPreviewBlock}>
         <div class={styles().serpPreviewLabel}>SEO status</div>
         <div style={{ display: 'flex', gap: '12px', 'flex-wrap': 'wrap' }}>
-          <span>Score: {score}%</span>
           <span>Indexable: {data.indexable ? 'Yes' : 'No'}</span>
           <span>Follow: {data.follow ? 'Yes' : 'No'}</span>
           <span>Canonical tags: {data.canonicalRaw.length}</span>
@@ -151,28 +152,39 @@ export function CanonicalUrlPreviewSection() {
         </div>
         <div>
           <strong>Canonical:</strong>{' '}
-          {data.canonicalResolved.join(', ') || data.canonicalRaw.join(', ') || 'None'}
+          {data.canonicalResolved.join(', ') ||
+            data.canonicalRaw.join(', ') ||
+            'None'}
         </div>
         <div>
           <strong>Robots directives:</strong> {data.robots.join(', ') || 'None'}
         </div>
-        <div style={{ 'margin-top': '6px', 'font-size': '12px', color: '#9ca3af' }}>
+        <div
+          style={{ 'margin-top': '6px', 'font-size': '12px', color: '#9ca3af' }}
+        >
           X-Robots-Tag response headers are not available in this in-page view.
         </div>
       </div>
 
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Issues</div>
-        <ul class={styles().serpErrorList}>
-          <For each={data.issues}>
-            {(issue) => (
-              <li style={{ color: seoSeverityColor(issue.severity), 'margin-top': '4px' }}>
-                [{issue.severity}] {issue.message}
-              </li>
-            )}
-          </For>
-        </ul>
-      </div>
+      <Show when={data.issues.length > 0}>
+        <div class={styles().serpPreviewBlock}>
+          <div class={styles().serpPreviewLabel}>Issues</div>
+          <ul class={styles().serpErrorList}>
+            <For each={data.issues}>
+              {(issue) => (
+                <li
+                  style={{
+                    color: seoSeverityColor(issue.severity),
+                    'margin-top': '4px',
+                  }}
+                >
+                  [{issue.severity}] {issue.message}
+                </li>
+              )}
+            </For>
+          </ul>
+        </div>
+      </Show>
     </Section>
   )
 }
