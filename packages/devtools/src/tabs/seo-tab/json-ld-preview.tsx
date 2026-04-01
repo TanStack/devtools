@@ -1,7 +1,11 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-import { pickSeverityClass, seoHealthTier, type SeoSeverity } from './seo-severity'
+import {
+  pickSeverityClass,
+  seoHealthTier,
+  type SeoSeverity,
+} from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type JsonLdValue = Record<string, unknown>
@@ -69,7 +73,7 @@ const SUPPORTED_RULES: Record<string, SchemaRule> = {
 }
 
 /** Types that get field previews, structured validation, and expandable raw JSON. */
-export const JSON_LD_SUPPORTED_SCHEMA_TYPES: ReadonlyArray<string> = Object.keys(
+const JSON_LD_SUPPORTED_SCHEMA_TYPES: ReadonlyArray<string> = Object.keys(
   SUPPORTED_RULES,
 ).sort((a, b) => a.localeCompare(b))
 
@@ -110,7 +114,10 @@ function getEntities(payload: unknown): Array<JsonLdValue> {
   return [payload]
 }
 
-function hasMissingKeys(entity: JsonLdValue, keys: Array<string>): Array<string> {
+function hasMissingKeys(
+  entity: JsonLdValue,
+  keys: Array<string>,
+): Array<string> {
   return keys.filter((key) => {
     const value = entity[key]
     if (value === undefined || value === null) return true
@@ -156,7 +163,10 @@ function validateTypes(entity: JsonLdValue): Array<ValidationIssue> {
   return []
 }
 
-function validateEntityByType(entity: JsonLdValue, typeName: string): Array<ValidationIssue> {
+function validateEntityByType(
+  entity: JsonLdValue,
+  typeName: string,
+): Array<ValidationIssue> {
   const rules = SUPPORTED_RULES[typeName]
   if (!rules) {
     return [
@@ -251,7 +261,8 @@ function stringifyPreviewValue(value: unknown, maxLen = 200): string {
   if (typeof value === 'string') {
     return value.length > maxLen ? `${value.slice(0, maxLen)}…` : value
   }
-  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  if (typeof value === 'number' || typeof value === 'boolean')
+    return String(value)
   if (Array.isArray(value)) {
     if (value.length === 0) return '(empty)'
     if (value.length <= 3 && value.every((v) => typeof v === 'string')) {
@@ -273,9 +284,7 @@ function stringifyPreviewValue(value: unknown, maxLen = 200): string {
   if (isRecord(value)) {
     if (typeof value['@type'] === 'string' && (value.name ?? value.headline)) {
       const label =
-        typeof value.name === 'string'
-          ? value.name
-          : String(value.headline)
+        typeof value.name === 'string' ? value.name : String(value.headline)
       return `${value['@type']}: ${label}`
     }
     const json = JSON.stringify(value)
@@ -313,9 +322,11 @@ function getEntityPreviewRows(
   }))
 }
 
-export function analyzeJsonLdScripts(): Array<JsonLdEntry> {
+function analyzeJsonLdScripts(): Array<JsonLdEntry> {
   const scripts = Array.from(
-    document.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]'),
+    document.querySelectorAll<HTMLScriptElement>(
+      'script[type="application/ld+json"]',
+    ),
   )
 
   return scripts.map((script, index) => {
@@ -391,22 +402,32 @@ export function getJsonLdPreviewSummary(): SeoSectionSummary {
 /**
  * Counts individual schema property names called out in missing-* validation messages.
  */
-function sumMissingSchemaFieldCounts(
-  entries: Array<JsonLdEntry>,
-): { required: number; recommended: number; optional: number } {
+function sumMissingSchemaFieldCounts(entries: Array<JsonLdEntry>): {
+  required: number
+  recommended: number
+  optional: number
+} {
   const out = { required: 0, recommended: 0, optional: 0 }
   const rules: Array<{
     severity: SeoSeverity
     prefix: string
     key: keyof typeof out
   }> = [
-    { severity: 'error', prefix: 'Missing required attributes:', key: 'required' },
+    {
+      severity: 'error',
+      prefix: 'Missing required attributes:',
+      key: 'required',
+    },
     {
       severity: 'warning',
       prefix: 'Missing recommended attributes:',
       key: 'recommended',
     },
-    { severity: 'info', prefix: 'Missing optional attributes:', key: 'optional' },
+    {
+      severity: 'info',
+      prefix: 'Missing optional attributes:',
+      key: 'optional',
+    },
   ]
 
   for (const entry of entries) {
@@ -416,7 +437,10 @@ function sumMissingSchemaFieldCounts(
         if (!issue.message.startsWith(r.prefix)) continue
         const rest = issue.message.slice(r.prefix.length).trim()
         const n = rest
-          ? rest.split(',').map((x) => x.trim()).filter(Boolean).length
+          ? rest
+              .split(',')
+              .map((x) => x.trim())
+              .filter(Boolean).length
           : 0
         out[r.key] += n
       }
@@ -459,7 +483,9 @@ function JsonLdEntityPreviewCard(props: { entity: JsonLdValue }) {
         when={rows.length > 0}
         fallback={
           <div class={s.seoJsonLdEntityCardRows}>
-            <span class={s.seoJsonLdEntityCardValue}>(no fields to preview)</span>
+            <span class={s.seoJsonLdEntityCardValue}>
+              (no fields to preview)
+            </span>
           </div>
         }
       >
@@ -516,16 +542,18 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
         <div>
           <div class={s.serpPreviewLabelSub}>Block #{props.index + 1}</div>
           <div class={s.seoJsonLdBlockTypes}>
-            {props.entry.types.length > 0 ? props.entry.types.join(', ') : 'Unknown type'}
-            {showPreview ? (
-              <span> · preview</span>
-            ) : (
-              <span> · raw JSON</span>
-            )}
+            {props.entry.types.length > 0
+              ? props.entry.types.join(', ')
+              : 'Unknown type'}
+            {showPreview ? <span> · preview</span> : <span> · raw JSON</span>}
           </div>
         </div>
         <Show when={props.entry.parsed}>
-          <button type="button" class={s.seoJsonLdCopyButton} onClick={copyParsed}>
+          <button
+            type="button"
+            class={s.seoJsonLdCopyButton}
+            onClick={copyParsed}
+          >
             Copy
           </button>
         </Show>
@@ -605,7 +633,8 @@ export function JsonLdPreviewSection() {
   )
   const warningCount = entries.reduce(
     (total, entry) =>
-      total + entry.issues.filter((issue) => issue.severity === 'warning').length,
+      total +
+      entry.issues.filter((issue) => issue.severity === 'warning').length,
     0,
   )
   const infoCount = entries.reduce(
@@ -639,12 +668,10 @@ export function JsonLdPreviewSection() {
   })()
   const missingFieldsLine = (() => {
     const bits: Array<string> = []
-    if (fieldGaps.required > 0)
-      bits.push(`${fieldGaps.required} required`)
+    if (fieldGaps.required > 0) bits.push(`${fieldGaps.required} required`)
     if (fieldGaps.recommended > 0)
       bits.push(`${fieldGaps.recommended} recommended`)
-    if (fieldGaps.optional > 0)
-      bits.push(`${fieldGaps.optional} optional`)
+    if (fieldGaps.optional > 0) bits.push(`${fieldGaps.optional} optional`)
     if (bits.length === 0) return null
     return `Missing schema fields: ${bits.join(' · ')}`
   })()
@@ -652,14 +679,16 @@ export function JsonLdPreviewSection() {
   return (
     <Section>
       <SectionDescription>
-        Reads every <code>{`<script type="application/ld+json">`}</code> block when
-        you open this section. Blocks where every <code>@type</code> is in the list
-        below get compact preview cards and expandable raw JSON; any other{' '}
-        <code>@type</code> uses the full JSON view so you can inspect and copy it
-        as before. Validation messages still apply in both cases.
+        Reads every <code>{`<script type="application/ld+json">`}</code> block
+        when you open this section. Blocks where every <code>@type</code> is in
+        the list below get compact preview cards and expandable raw JSON; any
+        other <code>@type</code> uses the full JSON view so you can inspect and
+        copy it as before. Validation messages still apply in both cases.
       </SectionDescription>
       <div class={s.seoJsonLdSupportedIntro}>
-        <span class={s.seoJsonLdSupportedIntroLabel}>Supported schema types</span>
+        <span class={s.seoJsonLdSupportedIntroLabel}>
+          Supported schema types
+        </span>
         <div class={s.seoJsonLdSupportedChips}>
           <For each={[...JSON_LD_SUPPORTED_SCHEMA_TYPES]}>
             {(name) => <span class={s.seoJsonLdSupportedChip}>{name}</span>}

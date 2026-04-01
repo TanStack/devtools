@@ -102,7 +102,7 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
 
 const LINK_SUMMARY_ISSUE_CAP = 32
 
-export function analyzeLinks(): Array<LinkRow> {
+function analyzeLinks(): Array<LinkRow> {
   const anchors = Array.from(
     document.body.querySelectorAll<HTMLAnchorElement>('a[href]'),
   )
@@ -123,7 +123,7 @@ const LINK_KIND_DISPLAY_ORDER: Record<LinkKind, number> = {
   invalid: 3,
 }
 
-export function sortLinksForDisplay(links: Array<LinkRow>): Array<LinkRow> {
+function sortLinksForDisplay(links: Array<LinkRow>): Array<LinkRow> {
   return [...links].sort(
     (a, b) => LINK_KIND_DISPLAY_ORDER[a.kind] - LINK_KIND_DISPLAY_ORDER[b.kind],
   )
@@ -206,7 +206,10 @@ export function LinksPreviewSection() {
       acc[row.kind] += 1
       return acc
     },
-    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<LinkKind, number>,
+    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<
+      LinkKind,
+      number
+    >,
   )
 
   const s = styles()
@@ -236,7 +239,9 @@ export function LinksPreviewSection() {
       <div class={s.serpPreviewBlock}>
         <div class={s.serpPreviewLabel}>Links summary</div>
         <div class={s.seoChipRow}>
-          <span class={`${s.seoPill} ${s.seoPillMuted}`}>{links.length} total</span>
+          <span class={`${s.seoPill} ${s.seoPillMuted}`}>
+            {links.length} total
+          </span>
           <span class={`${s.seoPill} ${s.seoPillInternal}`}>
             {counts.internal} internal
           </span>
@@ -264,7 +269,9 @@ export function LinksPreviewSection() {
       <Show
         when={links.length > 0}
         fallback={
-          <div class={s.seoMissingTagsSection}>No links found on this page.</div>
+          <div class={s.seoMissingTagsSection}>
+            No links found on this page.
+          </div>
         }
       >
         <div class={s.serpPreviewBlock}>
@@ -288,7 +295,8 @@ export function LinksPreviewSection() {
                           {KIND_LABEL[group.kind]}
                         </span>
                         <span class={s.seoHealthLabelMuted}>
-                          {group.items.length} link{group.items.length === 1 ? '' : 's'}
+                          {group.items.length} link
+                          {group.items.length === 1 ? '' : 's'}
                         </span>
                       </span>
                       <span

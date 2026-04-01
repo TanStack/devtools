@@ -88,7 +88,7 @@ function truncateToChars(text: string, maxChars: number): string {
   return text.slice(0, maxChars - ELLIPSIS.length) + ELLIPSIS
 }
 
-export function getSerpFromHead(): SerpData {
+function getSerpFromHead(): SerpData {
   const title = document.title || ''
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
@@ -255,7 +255,9 @@ function SerpSnippetPreview(props: {
           <ul class={styles().serpErrorList}>
             <For each={props.issues}>
               {(issue) => (
-                <li class={`${styles().seoIssueText} ${styles().seoSerpIssueListItem}`}>
+                <li
+                  class={`${styles().seoIssueText} ${styles().seoSerpIssueListItem}`}
+                >
                   {issue}
                 </li>
               )}
