@@ -2,6 +2,7 @@ import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import type { SeoSectionSummary } from './seo-section-summary'
 
 type JsonLdValue = Record<string, unknown>
 
@@ -231,7 +232,7 @@ function getTypeSummary(value: unknown): Array<string> {
   return Array.from(typeSet)
 }
 
-function analyzeJsonLdScripts(): Array<JsonLdEntry> {
+export function analyzeJsonLdScripts(): Array<JsonLdEntry> {
   const scripts = Array.from(
     document.querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"]'),
   )
@@ -274,6 +275,29 @@ function analyzeJsonLdScripts(): Array<JsonLdEntry> {
       }
     }
   })
+}
+
+/**
+ * Flattens validation issues from all JSON-LD blocks for the SEO overview.
+ */
+export function getJsonLdPreviewSummary(): SeoSectionSummary {
+  const entries = analyzeJsonLdScripts()
+  if (entries.length === 0) {
+    return {
+      issues: [
+        {
+          severity: 'info',
+          message: 'No JSON-LD scripts were detected on this page.',
+        },
+      ],
+      hint: 'No blocks',
+    }
+  }
+  const issues = entries.flatMap((entry) => entry.issues)
+  return {
+    issues,
+    hint: `${entries.length} block(s)`,
+  }
 }
 
 function getJsonLdScore(entries: Array<JsonLdEntry>): number {

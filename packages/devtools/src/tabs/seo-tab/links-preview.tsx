@@ -2,6 +2,7 @@ import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import type { SeoSectionSummary } from './seo-section-summary'
 
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
 
@@ -99,7 +100,9 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
   }
 }
 
-function analyzeLinks(): Array<LinkRow> {
+const LINK_SUMMARY_ISSUE_CAP = 32
+
+export function analyzeLinks(): Array<LinkRow> {
   const anchors = Array.from(
     document.body.querySelectorAll<HTMLAnchorElement>('a[href]'),
   )
@@ -110,6 +113,19 @@ function analyzeLinks(): Array<LinkRow> {
         !anchor.closest('[data-devtools-root]'),
     )
     .map(classifyLink)
+}
+
+/**
+ * Link-level issues (capped) and totals for the SEO overview.
+ */
+export function getLinksPreviewSummary(): SeoSectionSummary {
+  const links = analyzeLinks()
+  const allIssues = links.flatMap((row) => row.issues)
+  return {
+    issues: allIssues.slice(0, LINK_SUMMARY_ISSUE_CAP),
+    issueCount: allIssues.length,
+    hint: `${links.length} link(s)`,
+  }
 }
 
 export function LinksPreviewSection() {

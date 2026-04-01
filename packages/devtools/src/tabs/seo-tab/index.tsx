@@ -6,24 +6,25 @@ import { SerpPreviewSection } from './serp-preview'
 import { JsonLdPreviewSection } from './json-ld-preview'
 import { HeadingStructurePreviewSection } from './heading-structure-preview'
 import { LinksPreviewSection } from './links-preview'
-import { CanonicalUrlPreviewSection } from './canonical-url-preview'
+import { SeoOverviewSection } from './seo-overview'
+import type { SeoDetailView } from './seo-section-summary'
 
-type SeoSubView =
-  | 'social-previews'
-  | 'serp-preview'
-  | 'json-ld-preview'
-  | 'heading-structure'
-  | 'links-preview'
-  | 'canonical-url'
+type SeoSubView = 'overview' | SeoDetailView
 
 export const SeoTab = () => {
-  const [activeView, setActiveView] =
-    createSignal<SeoSubView>('social-previews')
+  const [activeView, setActiveView] = createSignal<SeoSubView>('overview')
   const styles = useStyles()
 
   return (
     <MainPanel withPadding>
       <nav class={styles().seoSubNav} aria-label="SEO sections">
+        <button
+          type="button"
+          class={`${styles().seoSubNavLabel} ${activeView() === 'overview' ? styles().seoSubNavLabelActive : ''}`}
+          onClick={() => setActiveView('overview')}
+        >
+          SEO overview
+        </button>
         <button
           type="button"
           class={`${styles().seoSubNavLabel} ${activeView() === 'social-previews' ? styles().seoSubNavLabelActive : ''}`}
@@ -59,15 +60,11 @@ export const SeoTab = () => {
         >
           Links Preview
         </button>
-        <button
-          type="button"
-          class={`${styles().seoSubNavLabel} ${activeView() === 'canonical-url' ? styles().seoSubNavLabelActive : ''}`}
-          onClick={() => setActiveView('canonical-url')}
-        >
-          Canonical & URL
-        </button>
       </nav>
 
+      <Show when={activeView() === 'overview'}>
+        <SeoOverviewSection goTo={(view) => setActiveView(view)} />
+      </Show>
       <Show when={activeView() === 'social-previews'}>
         <SocialPreviewsSection />
       </Show>
@@ -82,9 +79,6 @@ export const SeoTab = () => {
       </Show>
       <Show when={activeView() === 'links-preview'}>
         <LinksPreviewSection />
-      </Show>
-      <Show when={activeView() === 'canonical-url'}>
-        <CanonicalUrlPreviewSection />
       </Show>
     </MainPanel>
   )

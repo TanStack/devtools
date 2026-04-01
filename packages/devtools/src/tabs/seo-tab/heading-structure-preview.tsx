@@ -2,6 +2,7 @@ import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import type { SeoSectionSummary } from './seo-section-summary'
 
 type HeadingItem = {
   id: string
@@ -76,6 +77,18 @@ function validateHeadings(headings: Array<HeadingItem>): Array<HeadingIssue> {
   }
 
   return issues
+}
+
+/**
+ * Heading hierarchy issues and count for the SEO overview.
+ */
+export function getHeadingStructureSummary(): SeoSectionSummary {
+  const headings = extractHeadings()
+  const issues = validateHeadings(headings)
+  return {
+    issues,
+    hint: `${headings.length} heading(s)`,
+  }
 }
 
 export function HeadingStructurePreviewSection() {

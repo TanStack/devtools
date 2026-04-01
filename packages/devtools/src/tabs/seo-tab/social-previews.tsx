@@ -2,6 +2,8 @@ import { For, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { useHeadChanges } from '../../hooks/use-head-changes'
+import type { SeoSectionSummary } from './seo-section-summary'
+import type { SeoSeverity } from './seo-severity'
 
 const SOCIALS = [
   {
@@ -90,6 +92,68 @@ type SocialReport = {
   missing: Array<string>
 }
 
+function analyzeSocialReports(): Array<SocialReport> {
+  const metaTags = Array.from(document.head.querySelectorAll('meta'))
+  const reports: Array<SocialReport> = []
+
+  for (const social of SOCIALS) {
+    const found: Partial<SocialMeta> = {}
+    const missing: Array<string> = []
+    for (const tag of social.tags) {
+      const meta = metaTags.find(
+        (m) =>
+          (tag.key.includes('twitter:')
+            ? false
+            : m.getAttribute('property') === tag.key) ||
+          m.getAttribute('name') === tag.key,
+      )
+
+      if (meta && meta.getAttribute('content')) {
+        found[tag.prop as keyof SocialMeta] =
+          meta.getAttribute('content') || undefined
+      } else {
+        missing.push(tag.key)
+      }
+    }
+    reports.push({ network: social.network, found, missing })
+  }
+  return reports
+}
+
+/**
+ * Builds a summary of missing social meta tags per network for the SEO overview.
+ */
+export function getSocialPreviewsSummary(): SeoSectionSummary {
+  const reports = analyzeSocialReports()
+  const issues: Array<{ severity: SeoSeverity; message: string }> = []
+  let networksWithGaps = 0
+
+  for (const report of reports) {
+    if (report.missing.length === 0) continue
+    networksWithGaps += 1
+    const titleMissing = report.missing.some((k) => k.includes('title'))
+    const descOrImageMissing = report.missing.some(
+      (k) => k.includes('description') || k.includes('image'),
+    )
+    const severity: SeoSeverity = titleMissing
+      ? 'error'
+      : descOrImageMissing
+        ? 'warning'
+        : 'info'
+    issues.push({
+      severity,
+      message: `${report.network}: missing ${report.missing.join(', ')}`,
+    })
+  }
+
+  const hint =
+    networksWithGaps === 0
+      ? 'All checked networks have core tags'
+      : `${networksWithGaps} network(s) missing tags`
+
+  return { issues, hint }
+}
+
 function SocialPreview(props: {
   meta: SocialMeta
   color: string
@@ -141,39 +205,13 @@ function SocialPreview(props: {
 }
 
 export function SocialPreviewsSection() {
-  const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
+  const [reports, setReports] = createSignal<Array<SocialReport>>(
+    analyzeSocialReports(),
+  )
   const styles = useStyles()
 
-  function analyzeHead(): Array<SocialReport> {
-    const metaTags = Array.from(document.head.querySelectorAll('meta'))
-    const reports: Array<SocialReport> = []
-
-    for (const social of SOCIALS) {
-      const found: Partial<SocialMeta> = {}
-      const missing: Array<string> = []
-      for (const tag of social.tags) {
-        const meta = metaTags.find(
-          (m) =>
-            (tag.key.includes('twitter:')
-              ? false
-              : m.getAttribute('property') === tag.key) ||
-            m.getAttribute('name') === tag.key,
-        )
-
-        if (meta && meta.getAttribute('content')) {
-          found[tag.prop as keyof SocialMeta] =
-            meta.getAttribute('content') || undefined
-        } else {
-          missing.push(tag.key)
-        }
-      }
-      reports.push({ network: social.network, found, missing })
-    }
-    return reports
-  }
-
   useHeadChanges(() => {
-    setReports(analyzeHead())
+    setReports(analyzeSocialReports())
   })
 
   return (

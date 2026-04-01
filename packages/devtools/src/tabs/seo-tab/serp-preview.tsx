@@ -2,6 +2,7 @@ import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { For, createMemo, createSignal } from 'solid-js'
 import { useHeadChanges } from '../../hooks/use-head-changes'
 import { useStyles } from '../../styles/use-styles'
+import type { SeoIssue, SeoSectionSummary } from './seo-section-summary'
 
 /** Google typically truncates titles at ~60 characters. */
 const TITLE_MAX_CHARS = 60
@@ -87,7 +88,7 @@ function truncateToChars(text: string, maxChars: number): string {
   return text.slice(0, maxChars - ELLIPSIS.length) + ELLIPSIS
 }
 
-function getSerpFromHead(): SerpData {
+export function getSerpFromHead(): SerpData {
   const title = document.title || ''
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
@@ -120,6 +121,71 @@ function getSerpFromHead(): SerpData {
   }
 
   return { title, description, siteName, favicon, url }
+}
+
+/**
+ * Title, meta description, favicon, and truncation signals for the SEO overview.
+ */
+export function getSerpPreviewSummary(): SeoSectionSummary {
+  const data = getSerpFromHead()
+  const titleText = data.title || ''
+  const descText = data.description || ''
+  const overflow: SerpOverflow = {
+    titleOverflow: titleText.length > TITLE_MAX_CHARS,
+    descriptionOverflow: descText.length > DESCRIPTION_MAX_CHARS,
+    descriptionOverflowMobile: descText.length > DESCRIPTION_MOBILE_MAX_CHARS,
+  }
+
+  const issues: Array<SeoIssue> = []
+
+  if (!data.favicon) {
+    issues.push({
+      severity: 'info',
+      message: 'No favicon or icon set on the page.',
+    })
+  }
+  if (!data.title.trim()) {
+    issues.push({
+      severity: 'error',
+      message: 'No title tag set on the page.',
+    })
+  }
+  if (!data.description.trim()) {
+    issues.push({
+      severity: 'error',
+      message: 'No meta description set on the page.',
+    })
+  }
+  if (overflow.titleOverflow) {
+    issues.push({
+      severity: 'warning',
+      message:
+        'The title is wider than 600px and it may not be displayed in full length.',
+    })
+  }
+  if (overflow.descriptionOverflow) {
+    issues.push({
+      severity: 'warning',
+      message:
+        'The meta description may get trimmed at ~960 pixels on desktop and at ~680px on mobile. Keep it below ~158 characters.',
+    })
+  }
+  if (overflow.descriptionOverflowMobile) {
+    issues.push({
+      severity: 'warning',
+      message:
+        'Description exceeds the 3-line limit for mobile view. Please shorten your text to fit within 3 lines.',
+    })
+  }
+
+  const hint =
+    data.title.trim() && data.description.trim()
+      ? 'Title and description present'
+      : !data.title.trim()
+        ? 'Missing title'
+        : 'Missing meta description'
+
+  return { issues, hint }
 }
 
 function getSerpIssues(

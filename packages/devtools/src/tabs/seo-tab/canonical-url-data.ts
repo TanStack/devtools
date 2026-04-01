@@ -1,24 +1,25 @@
-import { For, Show } from 'solid-js'
-import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
-import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import type { SeoSeverity } from './seo-severity'
 
-type Issue = {
+export type CanonicalPageIssue = {
   severity: SeoSeverity
   message: string
 }
 
-type CanonicalData = {
+/**
+ * Canonical URL, robots, and basic URL hygiene derived from the current
+ * document head and `window.location`.
+ */
+export type CanonicalPageData = {
   currentUrl: string
   canonicalRaw: Array<string>
   canonicalResolved: Array<string>
   robots: Array<string>
   indexable: boolean
   follow: boolean
-  issues: Array<Issue>
+  issues: Array<CanonicalPageIssue>
 }
 
-function getCanonicalData(): CanonicalData {
+export function getCanonicalPageData(): CanonicalPageData {
   const currentUrl = window.location.href
   const current = new URL(currentUrl)
 
@@ -30,7 +31,7 @@ function getCanonicalData(): CanonicalData {
     (link) => link.getAttribute('href') || '',
   )
   const canonicalResolved: Array<string> = []
-  const issues: Array<Issue> = []
+  const issues: Array<CanonicalPageIssue> = []
 
   if (canonicalLinks.length === 0) {
     issues.push({ severity: 'error', message: 'No canonical link found.' })
@@ -123,68 +124,4 @@ function getCanonicalData(): CanonicalData {
     follow,
     issues,
   }
-}
-
-export function CanonicalUrlPreviewSection() {
-  const styles = useStyles()
-  const data = getCanonicalData()
-
-  return (
-    <Section>
-      <SectionDescription>
-        Checks canonical URL, robots directives, indexability/follow signals,
-        and basic URL hygiene from the current page.
-      </SectionDescription>
-
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>SEO status</div>
-        <div style={{ display: 'flex', gap: '12px', 'flex-wrap': 'wrap' }}>
-          <span>Indexable: {data.indexable ? 'Yes' : 'No'}</span>
-          <span>Follow: {data.follow ? 'Yes' : 'No'}</span>
-          <span>Canonical tags: {data.canonicalRaw.length}</span>
-        </div>
-      </div>
-
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Signals</div>
-        <div>
-          <strong>Current URL:</strong> {data.currentUrl}
-        </div>
-        <div>
-          <strong>Canonical:</strong>{' '}
-          {data.canonicalResolved.join(', ') ||
-            data.canonicalRaw.join(', ') ||
-            'None'}
-        </div>
-        <div>
-          <strong>Robots directives:</strong> {data.robots.join(', ') || 'None'}
-        </div>
-        <div
-          style={{ 'margin-top': '6px', 'font-size': '12px', color: '#9ca3af' }}
-        >
-          X-Robots-Tag response headers are not available in this in-page view.
-        </div>
-      </div>
-
-      <Show when={data.issues.length > 0}>
-        <div class={styles().serpPreviewBlock}>
-          <div class={styles().serpPreviewLabel}>Issues</div>
-          <ul class={styles().serpErrorList}>
-            <For each={data.issues}>
-              {(issue) => (
-                <li
-                  style={{
-                    color: seoSeverityColor(issue.severity),
-                    'margin-top': '4px',
-                  }}
-                >
-                  [{issue.severity}] {issue.message}
-                </li>
-              )}
-            </For>
-          </ul>
-        </div>
-      </Show>
-    </Section>
-  )
 }
