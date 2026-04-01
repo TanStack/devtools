@@ -95,14 +95,16 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
         : s.seoHealthScorePoor
   }
 
-  const healthRectClass = (score: number) => {
+  const healthFillClass = (score: number) => {
     const s = styles()
     const tier = seoHealthTier(score)
-    return tier === 'good'
-      ? s.seoHealthRectGood
-      : tier === 'fair'
-        ? s.seoHealthRectFair
-        : s.seoHealthRectPoor
+    const tierFill =
+      tier === 'good'
+        ? s.seoHealthFillGood
+        : tier === 'fair'
+          ? s.seoHealthFillFair
+          : s.seoHealthFillPoor
+    return `${s.seoHealthFill} ${tierFill}`
   }
 
   const sectionIconClass = (sev: SeoSeverity | null) => {
@@ -148,22 +150,18 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
             {bundle().health.score}%
           </span>
         </div>
-        <div class={styles().seoHealthTrack}>
-          <svg
-            class={styles().seoHealthBarSvg}
-            viewBox="0 0 100 5"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <rect
-              class={healthRectClass(bundle().health.score)}
-              x="0"
-              y="0"
-              width={Math.min(100, Math.max(0, bundle().health.score))}
-              height="5"
-              rx="2.5"
-            />
-          </svg>
+        <div
+          class={styles().seoHealthTrack}
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(bundle().health.score)}
+          aria-label={`Overall SEO health ${Math.round(bundle().health.score)} percent`}
+        >
+          <div
+            class={healthFillClass(bundle().health.score)}
+            style={{ width: `${Math.min(100, Math.max(0, bundle().health.score))}%` }}
+          />
         </div>
         <div class={styles().seoHealthCountsRow}>
           <span class={styles().seoHealthCountError}>

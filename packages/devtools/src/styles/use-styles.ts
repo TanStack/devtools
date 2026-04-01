@@ -579,24 +579,41 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     seoHealthTrack: css`
       width: 100%;
-      height: 5px;
-      background: ${t(colors.gray[200], colors.gray[800])};
+      height: 10px;
       border-radius: 999px;
+      background: ${t(colors.gray[100], colors.gray[800])};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
       overflow: hidden;
+      box-shadow: inset 0 1px 2px ${t('rgba(15, 23, 42, 0.06)', 'rgba(0, 0, 0, 0.35)')};
     `,
-    seoHealthBarSvg: css`
-      width: 100%;
-      height: 5px;
-      display: block;
+    seoHealthFill: css`
+      height: 100%;
+      min-width: 0;
+      max-width: 100%;
+      border-radius: 999px;
+      transition: width 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+      box-shadow: 0 1px 2px ${t('rgba(15, 23, 42, 0.12)', 'rgba(0, 0, 0, 0.25)')};
     `,
-    seoHealthRectGood: css`
-      fill: #16a34a;
+    seoHealthFillGood: css`
+      background: linear-gradient(
+        90deg,
+        ${t(colors.green[700], '#15803d')} 0%,
+        ${t(colors.green[500], '#22c55e')} 100%
+      );
     `,
-    seoHealthRectFair: css`
-      fill: #d97706;
+    seoHealthFillFair: css`
+      background: linear-gradient(
+        90deg,
+        ${t(colors.yellow[700], '#b45309')} 0%,
+        ${t(colors.yellow[500], '#eab308')} 100%
+      );
     `,
-    seoHealthRectPoor: css`
-      fill: #dc2626;
+    seoHealthFillPoor: css`
+      background: linear-gradient(
+        90deg,
+        ${t(colors.red[700], '#b91c1c')} 0%,
+        ${t(colors.red[500], '#ef4444')} 100%
+      );
     `,
     seoHealthCountsRow: css`
       display: flex;

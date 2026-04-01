@@ -115,6 +115,20 @@ export function analyzeLinks(): Array<LinkRow> {
     .map(classifyLink)
 }
 
+/** Display order in the links report: internal, external, non-web, then invalid. */
+const LINK_KIND_DISPLAY_ORDER: Record<LinkKind, number> = {
+  internal: 0,
+  external: 1,
+  'non-web': 2,
+  invalid: 3,
+}
+
+export function sortLinksForDisplay(links: Array<LinkRow>): Array<LinkRow> {
+  return [...links].sort(
+    (a, b) => LINK_KIND_DISPLAY_ORDER[a.kind] - LINK_KIND_DISPLAY_ORDER[b.kind],
+  )
+}
+
 /**
  * Link-level issues (capped) and totals for the SEO overview.
  */
@@ -154,6 +168,7 @@ function linkKindBadgeClass(
 export function LinksPreviewSection() {
   const styles = useStyles()
   const links = analyzeLinks()
+  const linksForReport = sortLinksForDisplay(links)
   const issueCount = links.reduce((count, row) => count + row.issues.length, 0)
 
   const counts = links.reduce(
@@ -216,7 +231,7 @@ export function LinksPreviewSection() {
         <div class={s.serpPreviewBlock}>
           <div class={s.serpPreviewLabel}>Links report</div>
           <ul class={s.seoLinksReportList}>
-            <For each={links}>
+            <For each={linksForReport}>
               {(row) => (
                 <li class={s.seoLinksReportItem}>
                   <div class={s.seoLinksReportTopRow}>

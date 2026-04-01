@@ -400,13 +400,15 @@ export function JsonLdPreviewSection() {
         ? s.seoHealthScoreFair
         : s.seoHealthScorePoor
   }
-  const healthRectClass = () => {
+  const healthFillClass = () => {
     const tier = seoHealthTier(score)
-    return tier === 'good'
-      ? s.seoHealthRectGood
-      : tier === 'fair'
-        ? s.seoHealthRectFair
-        : s.seoHealthRectPoor
+    const tierFill =
+      tier === 'good'
+        ? s.seoHealthFillGood
+        : tier === 'fair'
+          ? s.seoHealthFillFair
+          : s.seoHealthFillPoor
+    return `${s.seoHealthFill} ${tierFill}`
   }
   const errorCount = entries.reduce(
     (total, entry) =>
@@ -439,22 +441,18 @@ export function JsonLdPreviewSection() {
             <span class={s.seoJsonLdHealthTitle}>JSON-LD Health</span>
             <span class={healthScoreClass()}>{score}%</span>
           </div>
-          <div class={s.seoHealthTrack}>
-            <svg
-              class={s.seoHealthBarSvg}
-              viewBox="0 0 100 5"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <rect
-                class={healthRectClass()}
-                x="0"
-                y="0"
-                width={Math.min(100, Math.max(0, score))}
-                height="5"
-                rx="2.5"
-              />
-            </svg>
+          <div
+            class={s.seoHealthTrack}
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(score)}
+            aria-label={`JSON-LD health ${Math.round(score)} percent`}
+          >
+            <div
+              class={healthFillClass()}
+              style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+            />
           </div>
           <div class={s.seoHealthCountsRow}>
             <span class={s.seoHealthCountError}>
