@@ -1,7 +1,7 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import { pickSeverityClass, type SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
@@ -128,11 +128,27 @@ export function getLinksPreviewSummary(): SeoSectionSummary {
   }
 }
 
-const KIND_BADGE: Record<LinkKind, { label: string; color: string }> = {
-  internal: { label: 'Internal', color: '#6b7280' },
-  external: { label: 'External', color: '#3b82f6' },
-  'non-web': { label: 'Non-web', color: '#d97706' },
-  invalid: { label: 'Invalid', color: '#dc2626' },
+const KIND_LABEL: Record<LinkKind, string> = {
+  internal: 'Internal',
+  external: 'External',
+  'non-web': 'Non-web',
+  invalid: 'Invalid',
+}
+
+function linkKindBadgeClass(
+  s: ReturnType<ReturnType<typeof useStyles>>,
+  kind: LinkKind,
+): string {
+  switch (kind) {
+    case 'internal':
+      return `${s.seoLinkKindBadge} ${s.seoLinkKindInternal}`
+    case 'external':
+      return `${s.seoLinkKindBadge} ${s.seoLinkKindExternal}`
+    case 'non-web':
+      return `${s.seoLinkKindBadge} ${s.seoLinkKindNonWeb}`
+    case 'invalid':
+      return `${s.seoLinkKindBadge} ${s.seoLinkKindInvalid}`
+  }
 }
 
 export function LinksPreviewSection() {
@@ -148,6 +164,14 @@ export function LinksPreviewSection() {
     { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<LinkKind, number>,
   )
 
+  const s = styles()
+  const bulletSev = (sev: SeoSeverity) =>
+    pickSeverityClass(sev, {
+      error: s.seoIssueBulletError,
+      warning: s.seoIssueBulletWarning,
+      info: s.seoIssueBulletInfo,
+    })
+
   return (
     <Section>
       <SectionDescription>
@@ -155,180 +179,73 @@ export function LinksPreviewSection() {
         classification, URL quality, and common SEO/security flags.
       </SectionDescription>
 
-      {/* Summary stats */}
-      <div class={styles().serpPreviewBlock}>
-        <div class={styles().serpPreviewLabel}>Links summary</div>
-        <div style={{ display: 'flex', gap: '6px', 'flex-wrap': 'wrap' }}>
-          <span
-            style={{
-              padding: '2px 8px',
-              'border-radius': '999px',
-              'font-size': '11px',
-              'font-weight': '500',
-              background: '#37415118',
-              color: '#9ca3af',
-            }}
-          >
-            {links.length} total
-          </span>
-          <span
-            style={{
-              padding: '2px 8px',
-              'border-radius': '999px',
-              'font-size': '11px',
-              'font-weight': '500',
-              background: '#6b728018',
-              color: '#6b7280',
-            }}
-          >
+      <div class={s.serpPreviewBlock}>
+        <div class={s.serpPreviewLabel}>Links summary</div>
+        <div class={s.seoChipRow}>
+          <span class={`${s.seoPill} ${s.seoPillMuted}`}>{links.length} total</span>
+          <span class={`${s.seoPill} ${s.seoPillInternal}`}>
             {counts.internal} internal
           </span>
-          <span
-            style={{
-              padding: '2px 8px',
-              'border-radius': '999px',
-              'font-size': '11px',
-              'font-weight': '500',
-              background: '#3b82f618',
-              color: '#3b82f6',
-            }}
-          >
+          <span class={`${s.seoPill} ${s.seoPillBlue}`}>
             {counts.external} external
           </span>
           <Show when={counts['non-web'] > 0}>
-            <span
-              style={{
-                padding: '2px 8px',
-                'border-radius': '999px',
-                'font-size': '11px',
-                'font-weight': '500',
-                background: '#d9770618',
-                color: '#d97706',
-              }}
-            >
+            <span class={`${s.seoPill} ${s.seoPillAmber}`}>
               {counts['non-web']} non-web
             </span>
           </Show>
           <Show when={counts.invalid > 0}>
-            <span
-              style={{
-                padding: '2px 8px',
-                'border-radius': '999px',
-                'font-size': '11px',
-                'font-weight': '500',
-                background: '#dc262618',
-                color: '#dc2626',
-              }}
-            >
+            <span class={`${s.seoPill} ${s.seoPillRed}`}>
               {counts.invalid} invalid
             </span>
           </Show>
           <Show when={issueCount > 0}>
-            <span
-              style={{
-                padding: '2px 8px',
-                'border-radius': '999px',
-                'font-size': '11px',
-                'font-weight': '500',
-                background: '#d9770618',
-                color: '#d97706',
-              }}
-            >
+            <span class={`${s.seoPill} ${s.seoPillAmber}`}>
               {issueCount} issue{issueCount === 1 ? '' : 's'}
             </span>
           </Show>
         </div>
       </div>
 
-      {/* Links list */}
       <Show
         when={links.length > 0}
         fallback={
-          <div class={styles().seoMissingTagsSection}>No links found on this page.</div>
+          <div class={s.seoMissingTagsSection}>No links found on this page.</div>
         }
       >
-        <div class={styles().serpPreviewBlock}>
-          <div class={styles().serpPreviewLabel}>Links report</div>
-          <ul style={{ margin: '0', padding: '0', 'list-style': 'none', display: 'flex', 'flex-direction': 'column', gap: '0' }}>
+        <div class={s.serpPreviewBlock}>
+          <div class={s.serpPreviewLabel}>Links report</div>
+          <ul class={s.seoLinksReportList}>
             <For each={links}>
-              {(row, index) => {
-                const badge = KIND_BADGE[row.kind]
-                return (
-                  <li
-                    style={{
-                      padding: '8px 0',
-                      'border-bottom': index() < links.length - 1 ? '1px solid #1f2937' : 'none',
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        'align-items': 'center',
-                        gap: '8px',
-                        'margin-bottom': '2px',
-                      }}
-                    >
-                      <span
-                        style={{
-                          display: 'inline-flex',
-                          'align-items': 'center',
-                          padding: '1px 6px',
-                          'border-radius': '3px',
-                          'font-size': '10px',
-                          'font-weight': '600',
-                          'letter-spacing': '0.03em',
-                          background: `${badge.color}18`,
-                          color: badge.color,
-                          'flex-shrink': '0',
-                        }}
-                      >
-                        {badge.label}
-                      </span>
-                      <span
-                        class={styles().seoIssueText}
-                        style={{
-                          'font-size': '12px',
-                          'font-weight': '500',
-                          overflow: 'hidden',
-                          'white-space': 'nowrap',
-                          'text-overflow': 'ellipsis',
-                        }}
-                      >
-                        {row.text || '(no text)'}
-                      </span>
-                    </div>
-                    <div
-                      style={{
-                        'font-size': '11px',
-                        color: '#6b7280',
-                        overflow: 'hidden',
-                        'white-space': 'nowrap',
-                        'text-overflow': 'ellipsis',
-                        'padding-left': '2px',
-                      }}
-                    >
-                      {row.resolvedHref || row.href}
-                    </div>
-                    <Show when={row.issues.length > 0}>
-                      <ul class={styles().seoIssueListNested}>
-                        <For each={row.issues}>
-                          {(issue) => (
-                            <li class={styles().seoIssueRowCompact}>
-                              <span
-                                class={styles().seoIssueBullet}
-                                style={{ color: seoSeverityColor(issue.severity) }}
-                              >
-                                ●
-                              </span>
-                              <span class={styles().seoIssueMessage}>{issue.message}</span>
-                            </li>
-                          )}
-                        </For>
-                      </ul>
-                    </Show>
-                  </li>
-                )
-              }}
+              {(row) => (
+                <li class={s.seoLinksReportItem}>
+                  <div class={s.seoLinksReportTopRow}>
+                    <span class={linkKindBadgeClass(s, row.kind)}>
+                      {KIND_LABEL[row.kind]}
+                    </span>
+                    <span class={s.seoLinksAnchorText}>
+                      {row.text || '(no text)'}
+                    </span>
+                  </div>
+                  <div class={s.seoLinksHrefLine}>{row.resolvedHref || row.href}</div>
+                  <Show when={row.issues.length > 0}>
+                    <ul class={s.seoIssueListNested}>
+                      <For each={row.issues}>
+                        {(issue) => (
+                          <li class={s.seoIssueRowCompact}>
+                            <span
+                              class={`${s.seoIssueBullet} ${bulletSev(issue.severity)}`}
+                            >
+                              ●
+                            </span>
+                            <span class={s.seoIssueMessage}>{issue.message}</span>
+                          </li>
+                        )}
+                      </For>
+                    </ul>
+                  </Show>
+                </li>
+              )}
             </For>
           </ul>
         </div>

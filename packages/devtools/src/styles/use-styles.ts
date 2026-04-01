@@ -364,10 +364,6 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       color: ${t(colors.red[700], colors.red[400])};
       font-size: 0.875rem;
     `,
-    /**
-     * SEO validation rows: message uses default panel foreground; keep
-     * `seoSeverityColor` only on the bullet and severity label.
-     */
     seoIssueList: css`
       margin: 0;
       padding: 0;
@@ -438,6 +434,513 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       word-break: break-all;
       color: ${t(colors.gray[900], colors.gray[100])};
       line-height: 1.45;
+    `,
+    seoIssueBulletError: css`
+      color: #dc2626;
+    `,
+    seoIssueBulletWarning: css`
+      color: #d97706;
+    `,
+    seoIssueBulletInfo: css`
+      color: #2563eb;
+    `,
+    seoIssueSeverityBadgeError: css`
+      color: #dc2626;
+    `,
+    seoIssueSeverityBadgeWarning: css`
+      color: #d97706;
+    `,
+    seoIssueSeverityBadgeInfo: css`
+      color: #2563eb;
+    `,
+    seoChipRow: css`
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    `,
+    seoPill: css`
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+    `,
+    seoPillNeutral: css`
+      background: ${t(colors.gray[100], colors.gray[800] + '40')};
+      color: ${t(colors.gray[600], colors.gray[400])};
+    `,
+    seoPillMuted: css`
+      background: ${t(colors.gray[200], '#6b728018')};
+      color: ${t(colors.gray[600], '#9ca3af')};
+    `,
+    seoPillInternal: css`
+      background: ${t(colors.gray[200], '#6b728018')};
+      color: ${t(colors.gray[700], '#6b7280')};
+    `,
+    seoPillBlue: css`
+      background: ${t(colors.blue[50], '#3b82f618')};
+      color: ${t(colors.blue[700], '#3b82f6')};
+    `,
+    seoPillAmber: css`
+      background: ${t(colors.yellow[50], '#d9770618')};
+      color: ${t(colors.yellow[700], '#d97706')};
+    `,
+    seoPillRed: css`
+      background: ${t(colors.red[50], '#dc262618')};
+      color: ${t(colors.red[700], '#dc2626')};
+    `,
+    seoLinksReportList: css`
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    `,
+    seoLinksReportItem: css`
+      padding: 8px 0;
+      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      &:last-child {
+        border-bottom: none;
+      }
+    `,
+    seoLinksReportTopRow: css`
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    `,
+    seoLinkKindBadge: css`
+      display: inline-flex;
+      align-items: center;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    `,
+    seoLinkKindInternal: css`
+      background: ${t(colors.gray[200], '#6b728018')};
+      color: ${t(colors.gray[700], '#6b7280')};
+    `,
+    seoLinkKindExternal: css`
+      background: ${t(colors.blue[50], '#3b82f618')};
+      color: ${t(colors.blue[700], '#3b82f6')};
+    `,
+    seoLinkKindNonWeb: css`
+      background: ${t(colors.yellow[50], '#d9770618')};
+      color: ${t(colors.yellow[700], '#d97706')};
+    `,
+    seoLinkKindInvalid: css`
+      background: ${t(colors.red[50], '#dc262618')};
+      color: ${t(colors.red[700], '#dc2626')};
+    `,
+    seoLinksAnchorText: css`
+      font-size: 12px;
+      font-weight: 500;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.45;
+    `,
+    seoLinksHrefLine: css`
+      font-size: 11px;
+      color: ${t(colors.gray[500], colors.gray[400])};
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      padding-left: 2px;
+    `,
+    seoHealthHeaderRow: css`
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    `,
+    seoHealthLabelMuted: css`
+      font-size: 12px;
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
+    seoHealthScoreGood: css`
+      font-size: 13px;
+      font-weight: 600;
+      color: #16a34a;
+    `,
+    seoHealthScoreFair: css`
+      font-size: 13px;
+      font-weight: 600;
+      color: #d97706;
+    `,
+    seoHealthScorePoor: css`
+      font-size: 13px;
+      font-weight: 600;
+      color: #dc2626;
+    `,
+    seoHealthTrack: css`
+      width: 100%;
+      height: 5px;
+      background: ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 999px;
+      overflow: hidden;
+    `,
+    seoHealthBarSvg: css`
+      width: 100%;
+      height: 5px;
+      display: block;
+    `,
+    seoHealthRectGood: css`
+      fill: #16a34a;
+    `,
+    seoHealthRectFair: css`
+      fill: #d97706;
+    `,
+    seoHealthRectPoor: css`
+      fill: #dc2626;
+    `,
+    seoHealthCountsRow: css`
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 11px;
+    `,
+    seoHealthCountError: css`
+      color: #dc2626;
+    `,
+    seoHealthCountWarning: css`
+      color: #d97706;
+    `,
+    seoHealthCountInfo: css`
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
+    seoOverviewPillsRow: css`
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    `,
+    seoPillStatusOk: css`
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: ${t(colors.green[50], '#16a34a18')};
+      color: ${t(colors.green[700], '#16a34a')};
+    `,
+    seoPillStatusWarn: css`
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: ${t(colors.yellow[50], '#d9770618')};
+      color: ${t(colors.yellow[700], '#d97706')};
+    `,
+    seoPillStatusBad: css`
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: ${t(colors.red[50], '#dc262618')};
+      color: ${t(colors.red[700], '#dc2626')};
+    `,
+    seoPillMetaCount: css`
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      background: ${t(colors.gray[100], colors.gray[800] + '40')};
+      color: ${t(colors.gray[600], '#9ca3af')};
+    `,
+    seoOverviewFootnote: css`
+      margin-top: 8px;
+      font-size: 11px;
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
+    seoOverviewSectionList: css`
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    `,
+    seoOverviewSectionButton: css`
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 6px;
+      background: ${t(colors.white, colors.darkGray[900])};
+      cursor: pointer;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      font-size: 13px;
+      font-family: inherit;
+    `,
+    seoOverviewSectionIcon: css`
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    `,
+    seoOverviewSectionIconPass: css`
+      background: ${t(colors.green[50], '#16a34a18')};
+      color: #16a34a;
+    `,
+    seoOverviewSectionIconError: css`
+      background: #dc262618;
+      color: #dc2626;
+    `,
+    seoOverviewSectionIconWarn: css`
+      background: #d9770618;
+      color: #d97706;
+    `,
+    seoOverviewSectionIconInfo: css`
+      background: #2563eb18;
+      color: #2563eb;
+    `,
+    seoOverviewSectionBody: css`
+      flex-grow: 1;
+      min-width: 0;
+    `,
+    seoOverviewSectionTitle: css`
+      font-weight: 500;
+      font-size: 13px;
+    `,
+    seoOverviewSectionHint: css`
+      font-size: 11px;
+      color: ${t(colors.gray[500], colors.gray[400])};
+      margin-top: 1px;
+    `,
+    seoOverviewSectionChevron: css`
+      color: ${t(colors.gray[400], colors.gray[600])};
+      flex-shrink: 0;
+    `,
+    seoHeadingTreeHeaderRow: css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    `,
+    serpPreviewLabelFlat: css`
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
+    seoHeadingTreeCount: css`
+      font-size: 11px;
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
+    seoHeadingTreeList: css`
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    `,
+    seoHeadingTreeItem: css`
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+    `,
+    seoHeadingTreeIndent1: css`
+      padding-left: 0;
+    `,
+    seoHeadingTreeIndent2: css`
+      padding-left: 14px;
+    `,
+    seoHeadingTreeIndent3: css`
+      padding-left: 28px;
+    `,
+    seoHeadingTreeIndent4: css`
+      padding-left: 42px;
+    `,
+    seoHeadingTreeIndent5: css`
+      padding-left: 56px;
+    `,
+    seoHeadingTreeIndent6: css`
+      padding-left: 70px;
+    `,
+    seoHeadingTag: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 26px;
+      height: 16px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+      font-family: monospace, ui-monospace, monospace;
+    `,
+    seoHeadingTagL1: css`
+      background: #60a5fa18;
+      color: #60a5fa;
+    `,
+    seoHeadingTagL2: css`
+      background: #34d39918;
+      color: #34d399;
+    `,
+    seoHeadingTagL3: css`
+      background: #a78bfa18;
+      color: #a78bfa;
+    `,
+    seoHeadingTagL4: css`
+      background: #f59e0b18;
+      color: #f59e0b;
+    `,
+    seoHeadingTagL5: css`
+      background: #f8717118;
+      color: #f87171;
+    `,
+    seoHeadingTagL6: css`
+      background: #94a3b818;
+      color: #94a3b8;
+    `,
+    seoHeadingLineText: css`
+      font-size: 12px;
+      font-style: normal;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.45;
+    `,
+    seoHeadingLineTextEmpty: css`
+      font-size: 12px;
+      font-style: italic;
+      opacity: 0.65;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      line-height: 1.45;
+    `,
+    seoSerpIssueListItem: css`
+      margin-top: 0.25rem;
+    `,
+    seoJsonLdBlockHeaderRow: css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    `,
+    serpPreviewLabelSub: css`
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: ${t(colors.gray[700], colors.gray[300])};
+    `,
+    seoJsonLdBlockTypes: css`
+      font-size: 11px;
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
+    seoJsonLdCopyButton: css`
+      border: 1px solid ${t(colors.gray[300], colors.gray[700])};
+      border-radius: 5px;
+      padding: 3px 10px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 11px;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      font-family: inherit;
+    `,
+    seoJsonLdPre: css`
+      margin: 0;
+      max-height: 260px;
+      overflow: auto;
+      padding: 10px;
+      font-size: 11px;
+      line-height: 1.5;
+      border-radius: 6px;
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      background: ${t(colors.gray[50], '#0d1117')};
+      color: ${t(colors.gray[800], colors.gray[300])};
+      white-space: pre-wrap;
+      word-break: break-word;
+    `,
+    seoIssueListTopSpaced: css`
+      margin-top: 10px;
+    `,
+    seoJsonLdOkLine: css`
+      margin-top: 8px;
+      color: ${t(colors.green[700], '#16a34a')};
+      font-size: 12px;
+    `,
+    seoJsonLdHealthCard: css`
+      margin-bottom: 12px;
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 8px;
+      padding: 12px;
+      background: ${t(colors.gray[50], colors.darkGray[900])};
+    `,
+    seoJsonLdHealthTitle: css`
+      font-size: 12px;
+      font-weight: 600;
+      color: ${t(colors.gray[800], colors.gray[300])};
+    `,
+    seoSocialAccentFacebook: css`
+      border-color: #4267b2;
+    `,
+    seoSocialHeaderFacebook: css`
+      color: #4267b2;
+    `,
+    seoSocialAccentTwitter: css`
+      border-color: #1da1f2;
+    `,
+    seoSocialHeaderTwitter: css`
+      color: #1da1f2;
+    `,
+    seoSocialAccentLinkedin: css`
+      border-color: #0077b5;
+    `,
+    seoSocialHeaderLinkedin: css`
+      color: #0077b5;
+    `,
+    seoSocialAccentDiscord: css`
+      border-color: #5865f2;
+    `,
+    seoSocialHeaderDiscord: css`
+      color: #5865f2;
+    `,
+    seoSocialAccentSlack: css`
+      border-color: #4a154b;
+    `,
+    seoSocialHeaderSlack: css`
+      color: #4a154b;
+    `,
+    seoSocialAccentMastodon: css`
+      border-color: #6364ff;
+    `,
+    seoSocialHeaderMastodon: css`
+      color: #6364ff;
+    `,
+    seoSocialAccentBluesky: css`
+      border-color: #1185fe;
+    `,
+    seoSocialHeaderBluesky: css`
+      color: #1185fe;
+    `,
+    seoPreviewImagePlaceholder: css`
+      background: ${t(colors.gray[200], '#222')};
+      color: ${t(colors.gray[500], '#888')};
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+      width: 100%;
     `,
     devtoolsPanelContainer: (
       panelLocation: TanStackDevtoolsConfig['panelLocation'],

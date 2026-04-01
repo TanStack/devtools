@@ -5,7 +5,20 @@ import { useHeadChanges } from '../../hooks/use-head-changes'
 import type { SeoSectionSummary } from './seo-section-summary'
 import type { SeoSeverity } from './seo-severity'
 
-const SOCIALS = [
+type SocialAccent =
+  | 'facebook'
+  | 'twitter'
+  | 'linkedin'
+  | 'discord'
+  | 'slack'
+  | 'mastodon'
+  | 'bluesky'
+
+const SOCIALS: Array<{
+  network: string
+  tags: Array<{ key: string; prop: string }>
+  accent: SocialAccent
+}> = [
   {
     network: 'Facebook',
     tags: [
@@ -14,7 +27,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#4267B2',
+    accent: 'facebook',
   },
   {
     network: 'X/Twitter',
@@ -24,7 +37,7 @@ const SOCIALS = [
       { key: 'twitter:image', prop: 'image' },
       { key: 'twitter:url', prop: 'url' },
     ],
-    color: '#1DA1F2',
+    accent: 'twitter',
   },
   {
     network: 'LinkedIn',
@@ -34,7 +47,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#0077B5',
+    accent: 'linkedin',
   },
   {
     network: 'Discord',
@@ -44,7 +57,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#5865F2',
+    accent: 'discord',
   },
   {
     network: 'Slack',
@@ -54,7 +67,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#4A154B',
+    accent: 'slack',
   },
   {
     network: 'Mastodon',
@@ -64,7 +77,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#6364FF',
+    accent: 'mastodon',
   },
   {
     network: 'Bluesky',
@@ -74,9 +87,8 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#1185FE',
+    accent: 'bluesky',
   },
-  // Add more networks as needed
 ]
 
 type SocialMeta = {
@@ -154,50 +166,60 @@ export function getSocialPreviewsSummary(): SeoSectionSummary {
   return { issues, hint }
 }
 
+function socialAccentClasses(
+  s: ReturnType<ReturnType<typeof useStyles>>,
+  accent: SocialAccent,
+): { card: string; header: string } {
+  switch (accent) {
+    case 'facebook':
+      return { card: s.seoSocialAccentFacebook, header: s.seoSocialHeaderFacebook }
+    case 'twitter':
+      return { card: s.seoSocialAccentTwitter, header: s.seoSocialHeaderTwitter }
+    case 'linkedin':
+      return { card: s.seoSocialAccentLinkedin, header: s.seoSocialHeaderLinkedin }
+    case 'discord':
+      return { card: s.seoSocialAccentDiscord, header: s.seoSocialHeaderDiscord }
+    case 'slack':
+      return { card: s.seoSocialAccentSlack, header: s.seoSocialHeaderSlack }
+    case 'mastodon':
+      return { card: s.seoSocialAccentMastodon, header: s.seoSocialHeaderMastodon }
+    case 'bluesky':
+      return { card: s.seoSocialAccentBluesky, header: s.seoSocialHeaderBluesky }
+  }
+}
+
 function SocialPreview(props: {
   meta: SocialMeta
-  color: string
   network: string
+  accent: SocialAccent
 }) {
   const styles = useStyles()
+  const s = styles()
+  const accent = socialAccentClasses(s, props.accent)
 
   return (
-    <div
-      class={styles().seoPreviewCard}
-      style={{ 'border-color': props.color }}
-    >
-      <div class={styles().seoPreviewHeader} style={{ color: props.color }}>
+    <div class={`${s.seoPreviewCard} ${accent.card}`}>
+      <div class={`${s.seoPreviewHeader} ${accent.header}`}>
         {props.network} Preview
       </div>
       {props.meta.image ? (
         <img
           src={props.meta.image}
           alt="Preview"
-          class={styles().seoPreviewImage}
+          class={s.seoPreviewImage}
         />
       ) : (
-        <div
-          class={styles().seoPreviewImage}
-          style={{
-            background: '#222',
-            color: '#888',
-            display: 'flex',
-            'align-items': 'center',
-            'justify-content': 'center',
-            'min-height': '80px',
-            width: '100%',
-          }}
-        >
+        <div class={`${s.seoPreviewImage} ${s.seoPreviewImagePlaceholder}`}>
           No Image
         </div>
       )}
-      <div class={styles().seoPreviewTitle}>
+      <div class={s.seoPreviewTitle}>
         {props.meta.title || 'No Title'}
       </div>
-      <div class={styles().seoPreviewDesc}>
+      <div class={s.seoPreviewDesc}>
         {props.meta.description || 'No Description'}
       </div>
-      <div class={styles().seoPreviewUrl}>
+      <div class={s.seoPreviewUrl}>
         {props.meta.url || window.location.href}
       </div>
     </div>
@@ -229,7 +251,7 @@ export function SocialPreviewsSection() {
               <div>
                 <SocialPreview
                   meta={report.found}
-                  color={social!.color}
+                  accent={social!.accent}
                   network={social!.network}
                 />
                 {report.missing.length > 0 ? (

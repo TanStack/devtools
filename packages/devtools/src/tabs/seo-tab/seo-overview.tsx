@@ -14,7 +14,11 @@ import {
   type SeoDetailView,
   type SeoSectionSummary,
 } from './seo-section-summary'
-import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import {
+  pickSeverityClass,
+  seoHealthTier,
+  type SeoSeverity,
+} from './seo-severity'
 
 type OverviewRow = {
   id: SeoDetailView
@@ -27,12 +31,6 @@ function severityGlyph(severity: SeoSeverity | null): string {
   if (severity === 'warning') return '!'
   if (severity === 'info') return 'i'
   return '✓'
-}
-
-function healthBarColor(score: number): string {
-  if (score >= 80) return '#16a34a'
-  if (score >= 50) return '#d97706'
-  return '#dc2626'
 }
 
 function MetaRow(props: { label: string; value: string }) {
@@ -87,6 +85,54 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
     return { canonical, rows, health }
   })
 
+  const healthScoreClass = (score: number) => {
+    const s = styles()
+    const tier = seoHealthTier(score)
+    return tier === 'good'
+      ? s.seoHealthScoreGood
+      : tier === 'fair'
+        ? s.seoHealthScoreFair
+        : s.seoHealthScorePoor
+  }
+
+  const healthRectClass = (score: number) => {
+    const s = styles()
+    const tier = seoHealthTier(score)
+    return tier === 'good'
+      ? s.seoHealthRectGood
+      : tier === 'fair'
+        ? s.seoHealthRectFair
+        : s.seoHealthRectPoor
+  }
+
+  const sectionIconClass = (sev: SeoSeverity | null) => {
+    const s = styles()
+    if (sev === null) return `${s.seoOverviewSectionIcon} ${s.seoOverviewSectionIconPass}`
+    return `${s.seoOverviewSectionIcon} ${pickSeverityClass(sev, {
+      error: s.seoOverviewSectionIconError,
+      warning: s.seoOverviewSectionIconWarn,
+      info: s.seoOverviewSectionIconInfo,
+    })}`
+  }
+
+  const issueBulletClass = (sev: SeoSeverity) => {
+    const s = styles()
+    return `${s.seoIssueBullet} ${pickSeverityClass(sev, {
+      error: s.seoIssueBulletError,
+      warning: s.seoIssueBulletWarning,
+      info: s.seoIssueBulletInfo,
+    })}`
+  }
+
+  const issueBadgeClass = (sev: SeoSeverity) => {
+    const s = styles()
+    return `${s.seoIssueSeverityBadge} ${pickSeverityClass(sev, {
+      error: s.seoIssueSeverityBadgeError,
+      warning: s.seoIssueSeverityBadgeWarning,
+      info: s.seoIssueSeverityBadgeInfo,
+    })}`
+  }
+
   return (
     <Section>
       <SectionDescription>
@@ -94,115 +140,69 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
         subsection. Open a row to inspect and fix details.
       </SectionDescription>
 
-      {/* Overall health */}
       <div class={styles().serpPreviewBlock}>
         <div class={styles().serpPreviewLabel}>Overall health</div>
-        <div
-          style={{
-            display: 'flex',
-            'justify-content': 'space-between',
-            'align-items': 'center',
-            'margin-bottom': '6px',
-          }}
-        >
-          <span style={{ 'font-size': '12px', color: '#9ca3af' }}>
-            {bundle().health.label}
-          </span>
-          <span
-            style={{
-              'font-size': '13px',
-              'font-weight': '600',
-              color: healthBarColor(bundle().health.score),
-            }}
-          >
+        <div class={styles().seoHealthHeaderRow}>
+          <span class={styles().seoHealthLabelMuted}>{bundle().health.label}</span>
+          <span class={healthScoreClass(bundle().health.score)}>
             {bundle().health.score}%
           </span>
         </div>
-        <div
-          style={{
-            width: '100%',
-            height: '5px',
-            background: '#1f2937',
-            'border-radius': '999px',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              width: `${bundle().health.score}%`,
-              height: '100%',
-              background: healthBarColor(bundle().health.score),
-              'border-radius': '999px',
-            }}
-          />
+        <div class={styles().seoHealthTrack}>
+          <svg
+            class={styles().seoHealthBarSvg}
+            viewBox="0 0 100 5"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <rect
+              class={healthRectClass(bundle().health.score)}
+              x="0"
+              y="0"
+              width={Math.min(100, Math.max(0, bundle().health.score))}
+              height="5"
+              rx="2.5"
+            />
+          </svg>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: '12px',
-            'margin-top': '8px',
-            'font-size': '11px',
-          }}
-        >
-          <span style={{ color: '#dc2626' }}>
+        <div class={styles().seoHealthCountsRow}>
+          <span class={styles().seoHealthCountError}>
             {bundle().health.counts.error} error{bundle().health.counts.error === 1 ? '' : 's'}
           </span>
-          <span style={{ color: '#d97706' }}>
-            {bundle().health.counts.warning} warning{bundle().health.counts.warning === 1 ? '' : 's'}
+          <span class={styles().seoHealthCountWarning}>
+            {bundle().health.counts.warning} warning
+            {bundle().health.counts.warning === 1 ? '' : 's'}
           </span>
-          <span style={{ color: '#6b7280' }}>
+          <span class={styles().seoHealthCountInfo}>
             {bundle().health.counts.info} info
           </span>
         </div>
       </div>
 
-      {/* Indexability & URL */}
       <div class={styles().serpPreviewBlock}>
         <div class={styles().serpPreviewLabel}>Indexability & URL</div>
-        <div style={{ display: 'flex', gap: '6px', 'margin-bottom': '10px', 'flex-wrap': 'wrap' }}>
+        <div class={styles().seoOverviewPillsRow}>
           <span
-            style={{
-              display: 'inline-flex',
-              'align-items': 'center',
-              gap: '4px',
-              padding: '2px 8px',
-              'border-radius': '999px',
-              'font-size': '11px',
-              'font-weight': '500',
-              background: bundle().canonical.indexable ? '#16a34a18' : '#dc262618',
-              color: bundle().canonical.indexable ? '#16a34a' : '#dc2626',
-            }}
+            class={
+              bundle().canonical.indexable
+                ? styles().seoPillStatusOk
+                : styles().seoPillStatusBad
+            }
           >
             ● {bundle().canonical.indexable ? 'Indexable' : 'Noindex'}
           </span>
           <span
-            style={{
-              display: 'inline-flex',
-              'align-items': 'center',
-              gap: '4px',
-              padding: '2px 8px',
-              'border-radius': '999px',
-              'font-size': '11px',
-              'font-weight': '500',
-              background: bundle().canonical.follow ? '#16a34a18' : '#d9770618',
-              color: bundle().canonical.follow ? '#16a34a' : '#d97706',
-            }}
+            class={
+              bundle().canonical.follow
+                ? styles().seoPillStatusOk
+                : styles().seoPillStatusWarn
+            }
           >
             ● {bundle().canonical.follow ? 'Follow' : 'Nofollow'}
           </span>
-          <span
-            style={{
-              display: 'inline-flex',
-              'align-items': 'center',
-              padding: '2px 8px',
-              'border-radius': '999px',
-              'font-size': '11px',
-              'font-weight': '500',
-              background: '#37415118',
-              color: '#9ca3af',
-            }}
-          >
-            {bundle().canonical.canonicalRaw.length} canonical tag{bundle().canonical.canonicalRaw.length === 1 ? '' : 's'}
+          <span class={styles().seoPillMetaCount}>
+            {bundle().canonical.canonicalRaw.length} canonical tag
+            {bundle().canonical.canonicalRaw.length === 1 ? '' : 's'}
           </span>
         </div>
         <MetaRow label="Current URL" value={bundle().canonical.currentUrl} />
@@ -218,12 +218,11 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
           label="Robots directives"
           value={bundle().canonical.robots.join(', ') || 'None'}
         />
-        <div style={{ 'margin-top': '8px', 'font-size': '11px', color: '#6b7280' }}>
+        <div class={styles().seoOverviewFootnote}>
           X-Robots-Tag response headers are not available in this in-page view.
         </div>
       </div>
 
-      {/* URL & robots issues */}
       <Show when={bundle().canonical.issues.length > 0}>
         <div class={styles().serpPreviewBlock}>
           <div class={styles().serpPreviewLabel}>URL & robots issues</div>
@@ -231,19 +230,9 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
             <For each={bundle().canonical.issues}>
               {(issue) => (
                 <li class={styles().seoIssueRow}>
-                  <span
-                    class={styles().seoIssueBullet}
-                    style={{ color: seoSeverityColor(issue.severity) }}
-                  >
-                    ●
-                  </span>
+                  <span class={issueBulletClass(issue.severity)}>●</span>
                   <span class={styles().seoIssueMessage}>{issue.message}</span>
-                  <span
-                    class={styles().seoIssueSeverityBadge}
-                    style={{ color: seoSeverityColor(issue.severity) }}
-                  >
-                    {issue.severity}
-                  </span>
+                  <span class={issueBadgeClass(issue.severity)}>{issue.severity}</span>
                 </li>
               )}
             </For>
@@ -251,10 +240,9 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
         </div>
       </Show>
 
-      {/* Sections nav */}
       <div class={styles().serpPreviewBlock}>
         <div class={styles().serpPreviewLabel}>Sections</div>
-        <div style={{ display: 'flex', 'flex-direction': 'column', gap: '4px' }}>
+        <div class={styles().seoOverviewSectionList}>
           <For each={bundle().rows}>
             {(row) => {
               const sev = () => worstSeverity(row.summary.issues)
@@ -272,48 +260,20 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
                 <button
                   type="button"
                   aria-label={`Open ${row.title} for details`}
+                  class={styles().seoOverviewSectionButton}
                   onClick={() => props.goTo(row.id)}
-                  style={{
-                    display: 'flex',
-                    'align-items': 'center',
-                    gap: '10px',
-                    width: '100%',
-                    'text-align': 'left',
-                    padding: '8px 10px',
-                    border: '1px solid #1f2937',
-                    'border-radius': '6px',
-                    background: '#111827',
-                    cursor: 'pointer',
-                    color: '#e5e7eb',
-                    'font-size': '13px',
-                  }}
                 >
-                  <span
-                    style={{
-                      'flex-shrink': '0',
-                      width: '20px',
-                      height: '20px',
-                      'border-radius': '4px',
-                      display: 'flex',
-                      'align-items': 'center',
-                      'justify-content': 'center',
-                      'font-size': '11px',
-                      'font-weight': '700',
-                      background: sev() ? `${seoSeverityColor(sev()!)}18` : '#16a34a18',
-                      color: sev() ? seoSeverityColor(sev()!) : '#16a34a',
-                    }}
-                    aria-hidden="true"
-                  >
+                  <span class={sectionIconClass(sev())} aria-hidden="true">
                     {severityGlyph(sev())}
                   </span>
-                  <span style={{ 'flex-grow': '1', 'min-width': '0' }}>
-                    <div style={{ 'font-weight': '500', 'font-size': '13px' }}>{row.title}</div>
-                    <div style={{ 'font-size': '11px', color: '#6b7280', 'margin-top': '1px' }}>
+                  <span class={styles().seoOverviewSectionBody}>
+                    <div class={styles().seoOverviewSectionTitle}>{row.title}</div>
+                    <div class={styles().seoOverviewSectionHint}>
                       {row.summary.hint ? `${row.summary.hint} · ` : ''}
                       {issueLine()}
                     </div>
                   </span>
-                  <span style={{ color: '#4b5563', 'flex-shrink': '0' }}>›</span>
+                  <span class={styles().seoOverviewSectionChevron}>›</span>
                 </button>
               )
             }}

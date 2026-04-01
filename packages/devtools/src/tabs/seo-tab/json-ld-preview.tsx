@@ -1,7 +1,7 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-import { seoSeverityColor, type SeoSeverity } from './seo-severity'
+import { pickSeverityClass, seoHealthTier, type SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type JsonLdValue = Record<string, unknown>
@@ -316,14 +316,9 @@ function getJsonLdScore(entries: Array<JsonLdEntry>): number {
   return Math.max(0, 100 - penalty)
 }
 
-function scoreColor(score: number): string {
-  if (score >= 80) return '#16a34a'
-  if (score >= 50) return '#d97706'
-  return '#dc2626'
-}
-
 function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
   const styles = useStyles()
+  const s = styles()
 
   const copyParsed = async () => {
     if (!props.entry.parsed) return
@@ -336,94 +331,57 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
     }
   }
 
+  const bulletClass = (sev: SeoSeverity) =>
+    `${s.seoIssueBullet} ${pickSeverityClass(sev, {
+      error: s.seoIssueBulletError,
+      warning: s.seoIssueBulletWarning,
+      info: s.seoIssueBulletInfo,
+    })}`
+
+  const badgeClass = (sev: SeoSeverity) =>
+    `${s.seoIssueSeverityBadge} ${pickSeverityClass(sev, {
+      error: s.seoIssueSeverityBadgeError,
+      warning: s.seoIssueSeverityBadgeWarning,
+      info: s.seoIssueSeverityBadgeInfo,
+    })}`
+
   return (
-    <div class={styles().serpPreviewBlock}>
-      {/* Block header */}
-      <div
-        style={{
-          display: 'flex',
-          'align-items': 'center',
-          'justify-content': 'space-between',
-          'margin-bottom': '10px',
-        }}
-      >
+    <div class={s.serpPreviewBlock}>
+      <div class={s.seoJsonLdBlockHeaderRow}>
         <div>
-          <div class={styles().serpPreviewLabel} style={{ 'margin-bottom': '2px' }}>
-            Block #{props.index + 1}
-          </div>
-          <div style={{ 'font-size': '11px', color: '#6b7280' }}>
+          <div class={s.serpPreviewLabelSub}>Block #{props.index + 1}</div>
+          <div class={s.seoJsonLdBlockTypes}>
             {props.entry.types.length > 0 ? props.entry.types.join(', ') : 'Unknown type'}
           </div>
         </div>
         <Show when={props.entry.parsed}>
-          <button
-            type="button"
-            onClick={copyParsed}
-            style={{
-              border: '1px solid #374151',
-              'border-radius': '5px',
-              padding: '3px 10px',
-              background: 'transparent',
-              cursor: 'pointer',
-              'font-size': '11px',
-              color: '#9ca3af',
-            }}
-          >
+          <button type="button" class={s.seoJsonLdCopyButton} onClick={copyParsed}>
             Copy
           </button>
         </Show>
       </div>
 
-      {/* Raw / parsed content */}
-      <pre
-        style={{
-          margin: '0',
-          'max-height': '260px',
-          overflow: 'auto',
-          padding: '10px',
-          'font-size': '11px',
-          'line-height': '1.5',
-          'border-radius': '6px',
-          border: '1px solid #1f2937',
-          background: '#0d1117',
-          color: '#d1d5db',
-          'white-space': 'pre-wrap',
-          'word-break': 'break-word',
-        }}
-      >
+      <pre class={s.seoJsonLdPre}>
         {props.entry.parsed
           ? JSON.stringify(props.entry.parsed, null, 2)
           : props.entry.raw || 'No JSON-LD content found.'}
       </pre>
 
-      {/* Issues */}
       <Show when={props.entry.issues.length > 0}>
-        <ul class={styles().seoIssueList} style={{ 'margin-top': '10px' }}>
+        <ul class={`${s.seoIssueList} ${s.seoIssueListTopSpaced}`}>
           <For each={props.entry.issues}>
             {(issue) => (
-              <li class={styles().seoIssueRow}>
-                <span
-                  class={styles().seoIssueBullet}
-                  style={{ color: seoSeverityColor(issue.severity) }}
-                >
-                  ●
-                </span>
-                <span class={styles().seoIssueMessage}>{issue.message}</span>
-                <span
-                  class={styles().seoIssueSeverityBadge}
-                  style={{ color: seoSeverityColor(issue.severity) }}
-                >
-                  {issue.severity}
-                </span>
+              <li class={s.seoIssueRow}>
+                <span class={bulletClass(issue.severity)}>●</span>
+                <span class={s.seoIssueMessage}>{issue.message}</span>
+                <span class={badgeClass(issue.severity)}>{issue.severity}</span>
               </li>
             )}
           </For>
         </ul>
       </Show>
       <Show when={props.entry.issues.length === 0}>
-        <div style={{ 'margin-top': '8px', color: '#16a34a', 'font-size': '12px' }}>
-          ✓ No validation issues
-        </div>
+        <div class={s.seoJsonLdOkLine}>✓ No validation issues</div>
       </Show>
     </div>
   )
@@ -433,7 +391,23 @@ export function JsonLdPreviewSection() {
   const entries = analyzeJsonLdScripts()
   const styles = useStyles()
   const score = getJsonLdScore(entries)
-  const barColor = scoreColor(score)
+  const s = styles()
+  const healthScoreClass = () => {
+    const tier = seoHealthTier(score)
+    return tier === 'good'
+      ? s.seoHealthScoreGood
+      : tier === 'fair'
+        ? s.seoHealthScoreFair
+        : s.seoHealthScorePoor
+  }
+  const healthRectClass = () => {
+    const tier = seoHealthTier(score)
+    return tier === 'good'
+      ? s.seoHealthRectGood
+      : tier === 'fair'
+        ? s.seoHealthRectFair
+        : s.seoHealthRectPoor
+  }
   const errorCount = entries.reduce(
     (total, entry) =>
       total + entry.issues.filter((issue) => issue.severity === 'error').length,
@@ -460,59 +434,38 @@ export function JsonLdPreviewSection() {
           </div>
         }
       >
-        <div
-          style={{
-            'margin-bottom': '12px',
-            border: '1px solid #1f2937',
-            'border-radius': '8px',
-            padding: '12px',
-            background: '#111827',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              'justify-content': 'space-between',
-              'align-items': 'center',
-              'margin-bottom': '6px',
-            }}
-          >
-            <span style={{ 'font-size': '12px', 'font-weight': '600', color: '#d1d5db' }}>
-              JSON-LD Health
-            </span>
-            <span style={{ 'font-size': '13px', 'font-weight': '600', color: barColor }}>
-              {score}%
-            </span>
+        <div class={s.seoJsonLdHealthCard}>
+          <div class={s.seoHealthHeaderRow}>
+            <span class={s.seoJsonLdHealthTitle}>JSON-LD Health</span>
+            <span class={healthScoreClass()}>{score}%</span>
           </div>
-          <div
-            style={{
-              width: '100%',
-              height: '5px',
-              background: '#1f2937',
-              'border-radius': '999px',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                width: `${score}%`,
-                height: '100%',
-                background: barColor,
-                'border-radius': '999px',
-              }}
-            />
+          <div class={s.seoHealthTrack}>
+            <svg
+              class={s.seoHealthBarSvg}
+              viewBox="0 0 100 5"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <rect
+                class={healthRectClass()}
+                x="0"
+                y="0"
+                width={Math.min(100, Math.max(0, score))}
+                height="5"
+                rx="2.5"
+              />
+            </svg>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              gap: '12px',
-              'margin-top': '8px',
-              'font-size': '11px',
-            }}
-          >
-            <span style={{ color: '#dc2626' }}>{errorCount} error{errorCount === 1 ? '' : 's'}</span>
-            <span style={{ color: '#d97706' }}>{warningCount} warning{warningCount === 1 ? '' : 's'}</span>
-            <span style={{ color: '#6b7280' }}>optional fields excluded from score</span>
+          <div class={s.seoHealthCountsRow}>
+            <span class={s.seoHealthCountError}>
+              {errorCount} error{errorCount === 1 ? '' : 's'}
+            </span>
+            <span class={s.seoHealthCountWarning}>
+              {warningCount} warning{warningCount === 1 ? '' : 's'}
+            </span>
+            <span class={s.seoHealthCountInfo}>
+              optional fields excluded from score
+            </span>
           </div>
         </div>
         <For each={entries}>
