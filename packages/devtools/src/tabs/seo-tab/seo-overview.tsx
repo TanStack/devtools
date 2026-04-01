@@ -139,11 +139,11 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
     const links = getLinksPreviewSummary()
 
     const rows: Array<OverviewRow> = [
+      { id: 'heading-structure', title: 'Heading structure', summary: headings },
+      { id: 'links-preview', title: 'Links', summary: links },
       { id: 'social-previews', title: 'Social previews', summary: social },
       { id: 'serp-preview', title: 'SERP preview', summary: serp },
       { id: 'json-ld-preview', title: 'JSON-LD', summary: jsonLd },
-      { id: 'heading-structure', title: 'Heading structure', summary: headings },
-      { id: 'links-preview', title: 'Links', summary: links },
     ]
 
     const canonicalSummary: SeoSectionSummary = {

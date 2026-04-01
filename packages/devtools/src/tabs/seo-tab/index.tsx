@@ -27,6 +27,20 @@ export const SeoTab = () => {
         </button>
         <button
           type="button"
+          class={`${styles().seoSubNavLabel} ${activeView() === 'heading-structure' ? styles().seoSubNavLabelActive : ''}`}
+          onClick={() => setActiveView('heading-structure')}
+        >
+          Heading Structure
+        </button>
+        <button
+          type="button"
+          class={`${styles().seoSubNavLabel} ${activeView() === 'links-preview' ? styles().seoSubNavLabelActive : ''}`}
+          onClick={() => setActiveView('links-preview')}
+        >
+          Links Preview
+        </button>
+        <button
+          type="button"
           class={`${styles().seoSubNavLabel} ${activeView() === 'social-previews' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('social-previews')}
         >
@@ -46,24 +60,16 @@ export const SeoTab = () => {
         >
           JSON-LD Preview
         </button>
-        <button
-          type="button"
-          class={`${styles().seoSubNavLabel} ${activeView() === 'heading-structure' ? styles().seoSubNavLabelActive : ''}`}
-          onClick={() => setActiveView('heading-structure')}
-        >
-          Heading Structure
-        </button>
-        <button
-          type="button"
-          class={`${styles().seoSubNavLabel} ${activeView() === 'links-preview' ? styles().seoSubNavLabelActive : ''}`}
-          onClick={() => setActiveView('links-preview')}
-        >
-          Links Preview
-        </button>
       </nav>
 
       <Show when={activeView() === 'overview'}>
         <SeoOverviewSection goTo={(view) => setActiveView(view)} />
+      </Show>
+      <Show when={activeView() === 'heading-structure'}>
+        <HeadingStructurePreviewSection />
+      </Show>
+      <Show when={activeView() === 'links-preview'}>
+        <LinksPreviewSection />
       </Show>
       <Show when={activeView() === 'social-previews'}>
         <SocialPreviewsSection />
@@ -73,12 +79,6 @@ export const SeoTab = () => {
       </Show>
       <Show when={activeView() === 'json-ld-preview'}>
         <JsonLdPreviewSection />
-      </Show>
-      <Show when={activeView() === 'heading-structure'}>
-        <HeadingStructurePreviewSection />
-      </Show>
-      <Show when={activeView() === 'links-preview'}>
-        <LinksPreviewSection />
       </Show>
     </MainPanel>
   )
