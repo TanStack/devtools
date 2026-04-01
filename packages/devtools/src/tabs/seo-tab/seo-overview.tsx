@@ -8,19 +8,15 @@ import { getSerpPreviewSummary } from './serp-preview'
 import { getJsonLdPreviewSummary } from './json-ld-preview'
 import { getHeadingStructureSummary } from './heading-structure-preview'
 import { getLinksPreviewSummary } from './links-preview'
+import { pickSeverityClass, seoHealthTier } from './seo-severity'
 import {
   aggregateSeoHealth,
   countBySeverity,
   sectionHealthScore,
   worstSeverity,
-  type SeoDetailView,
-  type SeoSectionSummary,
 } from './seo-section-summary'
-import {
-  pickSeverityClass,
-  seoHealthTier,
-  type SeoSeverity,
-} from './seo-severity'
+import type { SeoSeverity } from './seo-severity'
+import type { SeoDetailView, SeoSectionSummary } from './seo-section-summary'
 
 type OverviewRow = {
   id: SeoDetailView

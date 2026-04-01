@@ -1,7 +1,8 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-import { pickSeverityClass, type SeoSeverity } from './seo-severity'
+import { pickSeverityClass } from './seo-severity'
+import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type HeadingItem = {
@@ -29,7 +30,7 @@ function extractHeadings(): Array<HeadingItem> {
       id: node.id || `heading-${index}`,
       level,
       tag,
-      text: node.textContent?.trim() || '',
+      text: node.textContent.trim() || '',
     }
   })
 }

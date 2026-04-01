@@ -1,11 +1,8 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-import {
-  pickSeverityClass,
-  seoHealthTier,
-  type SeoSeverity,
-} from './seo-severity'
+import { pickSeverityClass, seoHealthTier } from './seo-severity'
+import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type JsonLdValue = Record<string, unknown>
@@ -269,7 +266,7 @@ function stringifyPreviewValue(value: unknown, maxLen = 200): string {
       return value.join(', ')
     }
     if (value.length === 1 && isRecord(value[0])) {
-      const o = value[0] as JsonLdValue
+      const o = value[0]
       const t = typeof o['@type'] === 'string' ? String(o['@type']) : 'Item'
       const label =
         typeof o.name === 'string'
@@ -330,7 +327,7 @@ function analyzeJsonLdScripts(): Array<JsonLdEntry> {
   )
 
   return scripts.map((script, index) => {
-    const raw = script.textContent?.trim() ?? ''
+    const raw = script.textContent.trim()
     if (!raw) {
       return {
         id: `jsonld-${index}`,
@@ -462,7 +459,7 @@ function getJsonLdScore(entries: Array<JsonLdEntry>): number {
     for (const issue of entry.issues) {
       if (issue.severity === 'error') errors += 1
       else if (issue.severity === 'warning') warnings += 1
-      else if (issue.severity === 'info') infos += 1
+      else infos += 1
     }
   }
 

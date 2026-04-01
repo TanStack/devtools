@@ -1,7 +1,8 @@
 import { For, Show, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
-import { pickSeverityClass, type SeoSeverity } from './seo-severity'
+import { pickSeverityClass } from './seo-severity'
+import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
@@ -22,7 +23,7 @@ type LinkRow = {
 function classifyLink(anchor: HTMLAnchorElement): LinkRow {
   const href = anchor.getAttribute('href')?.trim() || ''
   const text =
-    anchor.textContent?.trim() ||
+    anchor.textContent.trim() ||
     anchor.getAttribute('aria-label')?.trim() ||
     anchor.getAttribute('title')?.trim() ||
     ''
