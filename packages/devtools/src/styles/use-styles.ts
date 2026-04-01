@@ -683,6 +683,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     seoHealthCountInfo: css`
       color: ${t(colors.gray[500], colors.gray[400])};
     `,
+    seoJsonLdHealthMissingLine: css`
+      margin-top: 6px;
+      font-size: 11px;
+      line-height: 1.4;
+      color: ${t(colors.gray[500], colors.gray[400])};
+    `,
     seoOverviewPillsRow: css`
       display: flex;
       gap: 6px;
@@ -960,6 +966,100 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 12px;
       font-weight: 600;
       color: ${t(colors.gray[800], colors.gray[300])};
+    `,
+    seoJsonLdSupportedIntro: css`
+      margin: 0 0 12px 0;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      background: ${t(colors.gray[50], colors.darkGray[900])};
+    `,
+    seoJsonLdSupportedIntroLabel: css`
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    `,
+    seoJsonLdSupportedChips: css`
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    `,
+    seoJsonLdSupportedChip: css`
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: ${fontFamily.mono};
+      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      background: ${t(colors.white, colors.darkGray[800])};
+      color: ${t(colors.gray[800], colors.gray[200])};
+    `,
+    seoJsonLdCardGrid: css`
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 10px;
+    `,
+    seoJsonLdEntityCard: css`
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: ${t(colors.white, colors.darkGray[800])};
+    `,
+    seoJsonLdEntityCardHeader: css`
+      font-size: 11px;
+      font-weight: 700;
+      color: ${t(colors.blue[700], colors.blue[400])};
+      margin-bottom: 6px;
+      font-family: ${fontFamily.mono};
+    `,
+    seoJsonLdEntityCardRows: css`
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 11px;
+      line-height: 1.4;
+    `,
+    seoJsonLdEntityCardRow: css`
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+      min-width: 0;
+    `,
+    seoJsonLdEntityCardKey: css`
+      flex-shrink: 0;
+      color: ${t(colors.gray[500], colors.gray[500])};
+      font-weight: 500;
+    `,
+    seoJsonLdEntityCardValue: css`
+      color: ${t(colors.gray[900], colors.gray[100])};
+      word-break: break-word;
+      min-width: 0;
+    `,
+    seoJsonLdRawDetails: css`
+      margin-top: 4px;
+      border-radius: 6px;
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      overflow: hidden;
+    `,
+    seoJsonLdRawSummary: css`
+      cursor: pointer;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: ${t(colors.gray[600], colors.gray[400])};
+      background: ${t(colors.gray[100], colors.darkGray[800])};
+      list-style: none;
+      user-select: none;
+      &::-webkit-details-marker {
+        display: none;
+      }
     `,
     seoSocialAccentFacebook: css`
       border-color: #4267b2;
