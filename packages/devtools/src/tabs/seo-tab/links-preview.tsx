@@ -1,4 +1,4 @@
-import { For, Show } from 'solid-js'
+import { For, Show, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { pickSeverityClass, type SeoSeverity } from './seo-severity'
@@ -129,6 +129,32 @@ export function sortLinksForDisplay(links: Array<LinkRow>): Array<LinkRow> {
   )
 }
 
+const LINK_KIND_GROUPS: Array<LinkKind> = [
+  'internal',
+  'external',
+  'non-web',
+  'invalid',
+]
+
+function groupLinksByKindOrdered(
+  links: Array<LinkRow>,
+): Array<{ kind: LinkKind; items: Array<LinkRow> }> {
+  const buckets = new Map<LinkKind, Array<LinkRow>>()
+  for (const k of LINK_KIND_GROUPS) buckets.set(k, [])
+  for (const row of links) buckets.get(row.kind)!.push(row)
+  return LINK_KIND_GROUPS.filter((k) => buckets.get(k)!.length > 0).map(
+    (kind) => ({ kind, items: buckets.get(kind)! }),
+  )
+}
+
+function linksAccordionTriggerId(kind: LinkKind): string {
+  return `seo-links-accordion-trigger-${kind}`
+}
+
+function linksAccordionPanelId(kind: LinkKind): string {
+  return `seo-links-accordion-panel-${kind}`
+}
+
 /**
  * Link-level issues (capped) and totals for the SEO overview.
  */
@@ -169,6 +195,10 @@ export function LinksPreviewSection() {
   const styles = useStyles()
   const links = analyzeLinks()
   const linksForReport = sortLinksForDisplay(links)
+  const groups = groupLinksByKindOrdered(linksForReport)
+  const [openKinds, setOpenKinds] = createSignal<Set<LinkKind>>(
+    new Set(groups.map((g) => g.kind)),
+  )
   const issueCount = links.reduce((count, row) => count + row.issues.length, 0)
 
   const counts = links.reduce(
@@ -186,6 +216,15 @@ export function LinksPreviewSection() {
       warning: s.seoIssueBulletWarning,
       info: s.seoIssueBulletInfo,
     })
+
+  function toggleKind(kind: LinkKind) {
+    setOpenKinds((prev) => {
+      const next = new Set(prev)
+      if (next.has(kind)) next.delete(kind)
+      else next.add(kind)
+      return next
+    })
+  }
 
   return (
     <Section>
@@ -230,37 +269,84 @@ export function LinksPreviewSection() {
       >
         <div class={s.serpPreviewBlock}>
           <div class={s.serpPreviewLabel}>Links report</div>
-          <ul class={s.seoLinksReportList}>
-            <For each={linksForReport}>
-              {(row) => (
-                <li class={s.seoLinksReportItem}>
-                  <div class={s.seoLinksReportTopRow}>
-                    <span class={linkKindBadgeClass(s, row.kind)}>
-                      {KIND_LABEL[row.kind]}
-                    </span>
-                    <span class={s.seoLinksAnchorText}>
-                      {row.text || '(no text)'}
-                    </span>
-                  </div>
-                  <div class={s.seoLinksHrefLine}>{row.resolvedHref || row.href}</div>
-                  <Show when={row.issues.length > 0}>
-                    <ul class={s.seoIssueListNested}>
-                      <For each={row.issues}>
-                        {(issue) => (
-                          <li class={s.seoIssueRowCompact}>
-                            <span
-                              class={`${s.seoIssueBullet} ${bulletSev(issue.severity)}`}
-                            >
-                              ●
-                            </span>
-                            <span class={s.seoIssueMessage}>{issue.message}</span>
-                          </li>
-                        )}
-                      </For>
-                    </ul>
-                  </Show>
-                </li>
-              )}
+          <ul class={s.seoLinksAccordion}>
+            <For each={groups}>
+              {(group) => {
+                const expanded = () => openKinds().has(group.kind)
+                return (
+                  <li class={s.seoLinksAccordionSection}>
+                    <button
+                      type="button"
+                      class={s.seoLinksAccordionTrigger}
+                      aria-expanded={expanded()}
+                      aria-controls={linksAccordionPanelId(group.kind)}
+                      id={linksAccordionTriggerId(group.kind)}
+                      onClick={() => toggleKind(group.kind)}
+                    >
+                      <span class={s.seoLinksAccordionTriggerLeft}>
+                        <span class={linkKindBadgeClass(s, group.kind)}>
+                          {KIND_LABEL[group.kind]}
+                        </span>
+                        <span class={s.seoHealthLabelMuted}>
+                          {group.items.length} link{group.items.length === 1 ? '' : 's'}
+                        </span>
+                      </span>
+                      <span
+                        class={`${s.seoLinksAccordionChevron} ${expanded() ? s.seoLinksAccordionChevronOpen : ''}`}
+                        aria-hidden="true"
+                      >
+                        ›
+                      </span>
+                    </button>
+                    <Show when={expanded()}>
+                      <div
+                        class={s.seoLinksAccordionPanel}
+                        id={linksAccordionPanelId(group.kind)}
+                        role="region"
+                        aria-labelledby={linksAccordionTriggerId(group.kind)}
+                      >
+                        <ul class={s.seoLinksAccordionInnerList}>
+                          <For each={group.items}>
+                            {(row) => (
+                              <li class={s.seoLinksReportItem}>
+                                <div class={s.seoLinksReportTopRow}>
+                                  <span class={linkKindBadgeClass(s, row.kind)}>
+                                    {KIND_LABEL[row.kind]}
+                                  </span>
+                                  <span class={s.seoLinksAnchorText}>
+                                    {row.text || '(no text)'}
+                                  </span>
+                                </div>
+                                <div class={s.seoLinksHrefLine}>
+                                  {row.resolvedHref || row.href}
+                                </div>
+                                <Show when={row.issues.length > 0}>
+                                  <ul class={s.seoIssueListNested}>
+                                    <For each={row.issues}>
+                                      {(issue) => (
+                                        <li class={s.seoIssueRowCompact}>
+                                          <span
+                                            class={`${s.seoIssueBullet} ${bulletSev(issue.severity)}`}
+                                          >
+                                            ●
+                                          </span>
+                                          <span class={s.seoIssueMessage}>
+                                            {issue.message}
+                                          </span>
+                                        </li>
+                                      )}
+                                    </For>
+                                  </ul>
+                                </Show>
+                              </li>
+                            )}
+                          </For>
+                        </ul>
+                      </div>
+                    </Show>
+                  </li>
+                )
+              }}
             </For>
           </ul>
         </div>

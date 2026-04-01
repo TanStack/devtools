@@ -488,14 +488,6 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       background: ${t(colors.red[50], '#dc262618')};
       color: ${t(colors.red[700], '#dc2626')};
     `,
-    seoLinksReportList: css`
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    `,
     seoLinksReportItem: css`
       padding: 8px 0;
       border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
@@ -551,6 +543,67 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       white-space: nowrap;
       text-overflow: ellipsis;
       padding-left: 2px;
+    `,
+    seoLinksAccordion: css`
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    `,
+    seoLinksAccordionSection: css`
+      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      border-radius: 8px;
+      overflow: hidden;
+      background: ${t(colors.white, colors.darkGray[900])};
+    `,
+    seoLinksAccordionTrigger: css`
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 10px;
+      padding: 8px 10px;
+      border: none;
+      background: ${t(colors.gray[50], colors.darkGray[800])};
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      color: ${t(colors.gray[900], colors.gray[100])};
+      font-size: 12px;
+      font-weight: 600;
+      &:hover {
+        background: ${t(colors.gray[100], colors.darkGray[700])};
+      }
+    `,
+    seoLinksAccordionTriggerLeft: css`
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    `,
+    seoLinksAccordionChevron: css`
+      flex-shrink: 0;
+      font-size: 10px;
+      line-height: 1;
+      color: ${t(colors.gray[500], colors.gray[500])};
+      transition: transform 0.15s ease;
+    `,
+    seoLinksAccordionChevronOpen: css`
+      transform: rotate(90deg);
+    `,
+    seoLinksAccordionPanel: css`
+      border-top: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      padding: 2px 10px 6px;
+    `,
+    seoLinksAccordionInnerList: css`
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
     `,
     seoHealthHeaderRow: css`
       display: flex;
