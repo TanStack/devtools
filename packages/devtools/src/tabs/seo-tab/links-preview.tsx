@@ -41,10 +41,9 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
     return { text, href, resolvedHref: null, kind: 'invalid', issues }
   }
 
-  if (href.startsWith('#')) {
-    return { text, href, resolvedHref: null, kind: 'non-web', issues }
-  }
-
+  // Resolve relative paths and same-document fragments (#section) against the
+  // current document, matching browser behavior so framework-generated hrefs
+  // (paths without origin) and hash links classify as internal when same-origin.
   let resolved: URL | null = null
   try {
     resolved = new URL(href, window.location.href)
@@ -82,12 +81,6 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
       issues.push({
         severity: 'warning',
         message: 'External _blank link should include rel="noopener".',
-      })
-    }
-    if (!relTokens.includes('nofollow')) {
-      issues.push({
-        severity: 'info',
-        message: 'External link does not include nofollow.',
       })
     }
   }
