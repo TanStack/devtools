@@ -24,9 +24,7 @@ export type SeoDetailView =
   | 'heading-structure'
   | 'links-preview'
 
-export function worstSeverity(
-  issues: Array<SeoIssue>,
-): SeoSeverity | null {
+export function worstSeverity(issues: Array<SeoIssue>): SeoSeverity | null {
   if (issues.some((i) => i.severity === 'error')) return 'error'
   if (issues.some((i) => i.severity === 'warning')) return 'warning'
   if (issues.some((i) => i.severity === 'info')) return 'info'

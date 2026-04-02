@@ -191,7 +191,9 @@ export function HeadingStructurePreviewSection() {
                   </span>
                   <span
                     class={
-                      heading.text ? s.seoHeadingLineText : s.seoHeadingLineTextEmpty
+                      heading.text
+                        ? s.seoHeadingLineText
+                        : s.seoHeadingLineTextEmpty
                     }
                   >
                     {heading.text || '(empty)'}
@@ -212,7 +214,9 @@ export function HeadingStructurePreviewSection() {
                 <li class={s.seoIssueRow}>
                   <span class={issueBulletClass(issue.severity)}>●</span>
                   <span class={s.seoIssueMessage}>{issue.message}</span>
-                  <span class={issueBadgeClass(issue.severity)}>{issue.severity}</span>
+                  <span class={issueBadgeClass(issue.severity)}>
+                    {issue.severity}
+                  </span>
                 </li>
               )}
             </For>

@@ -172,19 +172,37 @@ function socialAccentClasses(
 ): { card: string; header: string } {
   switch (accent) {
     case 'facebook':
-      return { card: s.seoSocialAccentFacebook, header: s.seoSocialHeaderFacebook }
+      return {
+        card: s.seoSocialAccentFacebook,
+        header: s.seoSocialHeaderFacebook,
+      }
     case 'twitter':
-      return { card: s.seoSocialAccentTwitter, header: s.seoSocialHeaderTwitter }
+      return {
+        card: s.seoSocialAccentTwitter,
+        header: s.seoSocialHeaderTwitter,
+      }
     case 'linkedin':
-      return { card: s.seoSocialAccentLinkedin, header: s.seoSocialHeaderLinkedin }
+      return {
+        card: s.seoSocialAccentLinkedin,
+        header: s.seoSocialHeaderLinkedin,
+      }
     case 'discord':
-      return { card: s.seoSocialAccentDiscord, header: s.seoSocialHeaderDiscord }
+      return {
+        card: s.seoSocialAccentDiscord,
+        header: s.seoSocialHeaderDiscord,
+      }
     case 'slack':
       return { card: s.seoSocialAccentSlack, header: s.seoSocialHeaderSlack }
     case 'mastodon':
-      return { card: s.seoSocialAccentMastodon, header: s.seoSocialHeaderMastodon }
+      return {
+        card: s.seoSocialAccentMastodon,
+        header: s.seoSocialHeaderMastodon,
+      }
     case 'bluesky':
-      return { card: s.seoSocialAccentBluesky, header: s.seoSocialHeaderBluesky }
+      return {
+        card: s.seoSocialAccentBluesky,
+        header: s.seoSocialHeaderBluesky,
+      }
   }
 }
 
@@ -203,19 +221,13 @@ function SocialPreview(props: {
         {props.network} Preview
       </div>
       {props.meta.image ? (
-        <img
-          src={props.meta.image}
-          alt="Preview"
-          class={s.seoPreviewImage}
-        />
+        <img src={props.meta.image} alt="Preview" class={s.seoPreviewImage} />
       ) : (
         <div class={`${s.seoPreviewImage} ${s.seoPreviewImagePlaceholder}`}>
           No Image
         </div>
       )}
-      <div class={s.seoPreviewTitle}>
-        {props.meta.title || 'No Title'}
-      </div>
+      <div class={s.seoPreviewTitle}>{props.meta.title || 'No Title'}</div>
       <div class={s.seoPreviewDesc}>
         {props.meta.description || 'No Description'}
       </div>
