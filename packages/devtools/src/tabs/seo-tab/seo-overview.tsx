@@ -142,10 +142,10 @@ export function SeoOverviewSection(props: {
         title: 'Heading Structure',
         summary: headings,
       },
-      { id: 'links-preview', title: 'Links', summary: links },
+      { id: 'links-preview', title: 'Links Preview', summary: links },
       { id: 'social-previews', title: 'Social Previews', summary: social },
       { id: 'serp-preview', title: 'SERP Preview', summary: serp },
-      { id: 'json-ld-preview', title: 'JSON-LD', summary: jsonLd },
+      { id: 'json-ld-preview', title: 'JSON-LD Preview', summary: jsonLd },
     ]
 
     const canonicalSummary: SeoSectionSummary = {
