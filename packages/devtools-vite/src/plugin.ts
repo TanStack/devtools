@@ -146,7 +146,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           return
         }
 
-        /*  const solidDedupeDeps = [
+        const solidDedupeDeps = [
           'solid-js',
           'solid-js/web',
           'solid-js/store',
@@ -161,7 +161,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           optimizeDeps: {
             include: solidDedupeDeps,
           },
-        } */
+        }
       },
     },
     {
@@ -223,6 +223,10 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           await editor.open(path, lineNum, columnNum)
         }
 
+        const originalConsole = Object.fromEntries(
+          consolePipingLevels.map((l) => [l, console[l].bind(console)]),
+        ) as Record<ConsoleLevel, typeof console.log>
+
         // SSE clients for broadcasting server logs to browser
         const sseClients: Array<{
           res: ServerResponse
@@ -248,7 +252,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                   onConsolePipe: (entries) => {
                     for (const entry of entries) {
                       const prefix = chalk.cyan('[Client]')
-                      const logMethod = console[entry.level as ConsoleLevel]
+                      const logMethod =
+                        originalConsole[entry.level as ConsoleLevel]
                       const cleanedArgs = stripEnhancedLogPrefix(
                         entry.args,
                         (loc) => chalk.gray(loc),
