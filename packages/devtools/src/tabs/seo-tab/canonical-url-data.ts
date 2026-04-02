@@ -1,6 +1,6 @@
 import type { SeoSeverity } from './seo-severity'
 
-export type CanonicalPageIssue = {
+type CanonicalPageIssue = {
   severity: SeoSeverity
   message: string
 }
@@ -9,7 +9,7 @@ export type CanonicalPageIssue = {
  * Canonical URL, robots, and basic URL hygiene derived from the current
  * document head and `window.location`.
  */
-export type CanonicalPageData = {
+type CanonicalPageData = {
   currentUrl: string
   canonicalRaw: Array<string>
   canonicalResolved: Array<string>

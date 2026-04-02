@@ -10,7 +10,7 @@ export function pickSeverityClass<T>(
   return map[severity]
 }
 
-export type SeoHealthTier = 'good' | 'fair' | 'poor'
+type SeoHealthTier = 'good' | 'fair' | 'poor'
 
 /**
  * Buckets a 0–100 SEO health score for shared Good / Fair / Poor styling.
