@@ -117,7 +117,9 @@ function SeoSubsectionScoreRing(props: { score: number }) {
   )
 }
 
-export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void }) {
+export function SeoOverviewSection(props: {
+  goTo: (view: SeoDetailView) => void
+}) {
   const styles = useStyles()
   const [tick, setTick] = createSignal(0)
 
@@ -135,10 +137,14 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
     const links = getLinksPreviewSummary()
 
     const rows: Array<OverviewRow> = [
-      { id: 'heading-structure', title: 'Heading structure', summary: headings },
+      {
+        id: 'heading-structure',
+        title: 'Heading Structure',
+        summary: headings,
+      },
       { id: 'links-preview', title: 'Links', summary: links },
-      { id: 'social-previews', title: 'Social previews', summary: social },
-      { id: 'serp-preview', title: 'SERP preview', summary: serp },
+      { id: 'social-previews', title: 'Social Previews', summary: social },
+      { id: 'serp-preview', title: 'SERP Preview', summary: serp },
       { id: 'json-ld-preview', title: 'JSON-LD', summary: jsonLd },
     ]
 
@@ -209,7 +215,9 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
       <div class={styles().serpPreviewBlock}>
         <div class={styles().serpPreviewLabel}>Overall health</div>
         <div class={styles().seoHealthHeaderRow}>
-          <span class={styles().seoHealthLabelMuted}>{bundle().health.label}</span>
+          <span class={styles().seoHealthLabelMuted}>
+            {bundle().health.label}
+          </span>
           <span class={healthScoreClass(bundle().health.score)}>
             {bundle().health.score}%
           </span>
@@ -224,12 +232,15 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
         >
           <div
             class={healthFillClass(bundle().health.score)}
-            style={{ width: `${Math.min(100, Math.max(0, bundle().health.score))}%` }}
+            style={{
+              width: `${Math.min(100, Math.max(0, bundle().health.score))}%`,
+            }}
           />
         </div>
         <div class={styles().seoHealthCountsRow}>
           <span class={styles().seoHealthCountError}>
-            {bundle().health.counts.error} error{bundle().health.counts.error === 1 ? '' : 's'}
+            {bundle().health.counts.error} error
+            {bundle().health.counts.error === 1 ? '' : 's'}
           </span>
           <span class={styles().seoHealthCountWarning}>
             {bundle().health.counts.warning} warning
@@ -291,7 +302,9 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
                 <li class={styles().seoIssueRow}>
                   <span class={issueBulletClass(issue.severity)}>●</span>
                   <span class={styles().seoIssueMessage}>{issue.message}</span>
-                  <span class={issueBadgeClass(issue.severity)}>{issue.severity}</span>
+                  <span class={issueBadgeClass(issue.severity)}>
+                    {issue.severity}
+                  </span>
                 </li>
               )}
             </For>
@@ -341,8 +354,12 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
                 >
                   <SeoSubsectionScoreRing score={subsectionScore} />
                   <span class={styles().seoOverviewCheckBody}>
-                    <span class={styles().seoOverviewCheckTitle}>{row.title}</span>
-                    <span class={styles().seoOverviewCheckMeta}>{metaLine}</span>
+                    <span class={styles().seoOverviewCheckTitle}>
+                      {row.title}
+                    </span>
+                    <span class={styles().seoOverviewCheckMeta}>
+                      {metaLine}
+                    </span>
                   </span>
                   <span
                     class={styles().seoOverviewCheckCounts}
@@ -378,7 +395,10 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
                       {c.info}
                     </span>
                   </span>
-                  <span class={styles().seoOverviewCheckChevron} aria-hidden="true">
+                  <span
+                    class={styles().seoOverviewCheckChevron}
+                    aria-hidden="true"
+                  >
                     ›
                   </span>
                 </button>

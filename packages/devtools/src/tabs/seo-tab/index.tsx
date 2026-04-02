@@ -23,7 +23,7 @@ export const SeoTab = () => {
           class={`${styles().seoSubNavLabel} ${activeView() === 'overview' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('overview')}
         >
-          SEO overview
+          SEO Overview
         </button>
         <button
           type="button"
@@ -44,7 +44,7 @@ export const SeoTab = () => {
           class={`${styles().seoSubNavLabel} ${activeView() === 'social-previews' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('social-previews')}
         >
-          Social previews
+          Social Previews
         </button>
         <button
           type="button"
