@@ -670,7 +670,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       background: ${t(colors.gray[100], colors.gray[800])};
       border: 1px solid ${t(colors.gray[200], colors.gray[700])};
       overflow: hidden;
-      box-shadow: inset 0 1px 2px ${t('rgba(15, 23, 42, 0.06)', 'rgba(0, 0, 0, 0.35)')};
+      box-shadow: inset 0 1px 2px
+        ${t('rgba(15, 23, 42, 0.06)', 'rgba(0, 0, 0, 0.35)')};
     `,
     seoHealthFill: css`
       height: 100%;
@@ -678,7 +679,8 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       max-width: 100%;
       border-radius: 999px;
       transition: width 0.45s cubic-bezier(0.33, 1, 0.68, 1);
-      box-shadow: 0 1px 2px ${t('rgba(15, 23, 42, 0.12)', 'rgba(0, 0, 0, 0.25)')};
+      box-shadow: 0 1px 2px
+        ${t('rgba(15, 23, 42, 0.12)', 'rgba(0, 0, 0, 0.25)')};
     `,
     seoHealthFillGood: css`
       background: linear-gradient(
