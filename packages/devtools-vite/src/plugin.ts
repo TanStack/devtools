@@ -253,7 +253,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                     for (const entry of entries) {
                       const prefix = chalk.cyan('[Client]')
                       const logMethod =
-                        originalConsole[entry.level as ConsoleLevel]
+                        originalConsole[entry.level as ConsoleLevel] ||
+                        originalConsole.log
                       const cleanedArgs = stripEnhancedLogPrefix(
                         entry.args,
                         (loc) => chalk.gray(loc),
