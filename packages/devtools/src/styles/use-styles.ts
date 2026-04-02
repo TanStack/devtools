@@ -771,11 +771,6 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       background: ${t(colors.gray[100], colors.gray[800] + '40')};
       color: ${t(colors.gray[600], '#9ca3af')};
     `,
-    seoOverviewFootnote: css`
-      margin-top: 8px;
-      font-size: 11px;
-      color: ${t(colors.gray[500], colors.gray[400])};
-    `,
     seoOverviewCheckListCaption: css`
       margin: 0 0 8px 0;
       font-size: 11px;

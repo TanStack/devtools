@@ -163,8 +163,7 @@ Checks included:
 - Invalid URL format (`error`)
 - External `_blank` link without `noopener` (`warning`)
 - Unexpected protocol (`warning`)
-- External link without `nofollow` (`info`)
-- Hash, mailto, tel, and other non-web links (`info`)
+- mailto, tel, and other non-web links (`info`)
 
 ## Canonical, URL, Indexability & Follow
 
@@ -189,7 +188,3 @@ Checks included:
 - Page marked as `nofollow` (`warning`)
 - Missing robots directives (`info`)
 - URL query parameters present (`info`)
-
-Note:
-
-- `X-Robots-Tag` response headers are not reliably available from this in-page view.

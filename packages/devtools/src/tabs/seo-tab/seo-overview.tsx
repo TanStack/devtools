@@ -280,9 +280,6 @@ export function SeoOverviewSection(props: { goTo: (view: SeoDetailView) => void 
           label="Robots directives"
           value={bundle().canonical.robots.join(', ') || 'None'}
         />
-        <div class={styles().seoOverviewFootnote}>
-          X-Robots-Tag response headers are not available in this in-page view.
-        </div>
       </div>
 
       <Show when={bundle().canonical.issues.length > 0}>
