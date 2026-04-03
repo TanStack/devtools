@@ -1,10 +1,7 @@
 ---
 name: devtools-app-setup
-description: >
-  Install TanStack Devtools, pick framework adapter (React/Vue/Solid/Preact),
-  register plugins via plugins prop, configure shell (position, hotkeys, theme,
-  hideUntilHover, requireUrlFlag, eventBusConfig). TanStackDevtools component,
-  defaultOpen, localStorage persistence.
+description: >-
+  Install and configure TanStack Devtools - pick framework adapter (React/Vue/Solid/Preact), register plugins via plugins prop, configure shell (position, hotkeys, theme, hideUntilHover, requireUrlFlag, eventBusConfig). Use when setting up TanStack Devtools, adding devtools to a project, configuring the devtools shell, or when the user says "add devtools", "setup TanStack Devtools", "configure devtools panel".
 type: core
 library: '@tanstack/devtools'
 library_version: '0.10.12'
