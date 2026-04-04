@@ -3,7 +3,7 @@ import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
 import { pickSeverityClass } from './seo-severity'
 import type { SeoSeverity } from './seo-severity'
-import type { SeoSectionSummary } from './seo-section-summary'
+import { countBySeverity, type SeoSectionSummary } from './seo-section-summary'
 
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
 
@@ -162,6 +162,7 @@ export function getLinksPreviewSummary(): SeoSectionSummary {
   return {
     issues: allIssues.slice(0, LINK_SUMMARY_ISSUE_CAP),
     issueCount: allIssues.length,
+    totalCounts: countBySeverity(allIssues),
     hint: `${links.length} link(s)`,
   }
 }

@@ -6,6 +6,12 @@ export type SeoIssue = {
   message: string
 }
 
+export type SeoIssueCounts = {
+  error: number
+  warning: number
+  info: number
+}
+
 /**
  * Summary of one SEO subsection for the overview: issues plus an optional
  * one-line hint (counts, presence, etc.).
@@ -15,6 +21,8 @@ export type SeoSectionSummary = {
   hint?: string
   /** When `issues` is capped, total issues before capping. */
   issueCount?: number
+  /** Per-severity totals before any display cap is applied. */
+  totalCounts?: SeoIssueCounts
 }
 
 export type SeoDetailView =
@@ -24,31 +32,48 @@ export type SeoDetailView =
   | 'heading-structure'
   | 'links-preview'
 
-export function worstSeverity(issues: Array<SeoIssue>): SeoSeverity | null {
-  if (issues.some((i) => i.severity === 'error')) return 'error'
-  if (issues.some((i) => i.severity === 'warning')) return 'warning'
-  if (issues.some((i) => i.severity === 'info')) return 'info'
-  return null
+function countRawIssues(issues: Array<SeoIssue>): SeoIssueCounts {
+  return issues.reduce<SeoIssueCounts>(
+    (counts, issue) => {
+      counts[issue.severity] += 1
+      return counts
+    },
+    { error: 0, warning: 0, info: 0 },
+  )
 }
 
-export function countBySeverity(issues: Array<SeoIssue>): {
-  error: number
-  warning: number
-  info: number
-} {
-  return {
-    error: issues.filter((i) => i.severity === 'error').length,
-    warning: issues.filter((i) => i.severity === 'warning').length,
-    info: issues.filter((i) => i.severity === 'info').length,
-  }
+export function countBySeverity(
+  summaryOrIssues: SeoSectionSummary | Array<SeoIssue>,
+): SeoIssueCounts {
+  return Array.isArray(summaryOrIssues)
+    ? countRawIssues(summaryOrIssues)
+    : (summaryOrIssues.totalCounts ?? countRawIssues(summaryOrIssues.issues))
+}
+
+export function totalIssueCount(summary: SeoSectionSummary): number {
+  if (summary.issueCount != null) return summary.issueCount
+  const counts = countBySeverity(summary)
+  return counts.error + counts.warning + counts.info
+}
+
+export function worstSeverity(
+  summaryOrIssues: SeoSectionSummary | Array<SeoIssue>,
+): SeoSeverity | null {
+  const counts = countBySeverity(summaryOrIssues)
+  if (counts.error > 0) return 'error'
+  if (counts.warning > 0) return 'warning'
+  if (counts.info > 0) return 'info'
+  return null
 }
 
 /**
  * 0–100 health for one subsection’s issues, using the same penalty weights as
  * aggregateSeoHealth().
  */
-export function sectionHealthScore(issues: Array<SeoIssue>): number {
-  const counts = countBySeverity(issues)
+export function sectionHealthScore(
+  summaryOrIssues: SeoSectionSummary | Array<SeoIssue>,
+): number {
+  const counts = countBySeverity(summaryOrIssues)
   const penalty = Math.min(
     100,
     counts.error * 22 + counts.warning * 9 + counts.info * 2,
@@ -63,10 +88,18 @@ export function sectionHealthScore(issues: Array<SeoIssue>): number {
 export function aggregateSeoHealth(summaries: Array<SeoSectionSummary>): {
   score: number
   label: 'Good' | 'Fair' | 'Poor'
-  counts: ReturnType<typeof countBySeverity>
+  counts: SeoIssueCounts
 } {
-  const all = summaries.flatMap((s) => s.issues)
-  const counts = countBySeverity(all)
+  const counts = summaries.reduce<SeoIssueCounts>(
+    (allCounts, summary) => {
+      const summaryCounts = countBySeverity(summary)
+      allCounts.error += summaryCounts.error
+      allCounts.warning += summaryCounts.warning
+      allCounts.info += summaryCounts.info
+      return allCounts
+    },
+    { error: 0, warning: 0, info: 0 },
+  )
   const penalty = Math.min(
     100,
     counts.error * 22 + counts.warning * 9 + counts.info * 2,

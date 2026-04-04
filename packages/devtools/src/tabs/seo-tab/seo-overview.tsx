@@ -1,6 +1,7 @@
 import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useHeadChanges } from '../../hooks/use-head-changes'
+import { useLocationChanges } from '../../hooks/use-location-changes'
 import { useStyles } from '../../styles/use-styles'
 import { getCanonicalPageData } from './canonical-url-data'
 import { getSocialPreviewsSummary } from './social-previews'
@@ -13,6 +14,7 @@ import {
   aggregateSeoHealth,
   countBySeverity,
   sectionHealthScore,
+  totalIssueCount,
   worstSeverity,
 } from './seo-section-summary'
 import type { SeoSeverity } from './seo-severity'
@@ -124,6 +126,10 @@ export function SeoOverviewSection(props: {
   const [tick, setTick] = createSignal(0)
 
   useHeadChanges(() => {
+    setTick((t) => t + 1)
+  })
+
+  useLocationChanges(() => {
     setTick((t) => t + 1)
   })
 
@@ -321,15 +327,13 @@ export function SeoOverviewSection(props: {
         <div class={styles().seoOverviewCheckList}>
           <For each={bundle().rows}>
             {(row) => {
-              const sev = worstSeverity(row.summary.issues)
-              const c = countBySeverity(row.summary.issues)
-              const subsectionScore = sectionHealthScore(row.summary.issues)
-              const totalIssues =
-                row.summary.issueCount ?? row.summary.issues.length
+              const sev = worstSeverity(row.summary)
+              const c = countBySeverity(row.summary)
+              const subsectionScore = sectionHealthScore(row.summary)
+              const totalIssues = totalIssueCount(row.summary)
               const cappedSuffix =
-                row.summary.issueCount != null &&
-                row.summary.issueCount > row.summary.issues.length
-                  ? ` (${row.summary.issues.length} of ${row.summary.issueCount} listed)`
+                totalIssues > row.summary.issues.length
+                  ? ` (${row.summary.issues.length} of ${totalIssues} listed)`
                   : ''
               const issueLine =
                 totalIssues === 0
