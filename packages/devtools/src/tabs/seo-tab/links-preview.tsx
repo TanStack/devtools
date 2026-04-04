@@ -77,7 +77,11 @@ function classifyLink(anchor: HTMLAnchorElement): LinkRow {
       .split(/\s+/)
       .filter(Boolean)
 
-    if (target === '_blank' && !relTokens.includes('noopener')) {
+    if (
+      target === '_blank' &&
+      !relTokens.includes('noopener') &&
+      !relTokens.includes('noreferrer')
+    ) {
       issues.push({
         severity: 'warning',
         message: 'External _blank link should include rel="noopener".',

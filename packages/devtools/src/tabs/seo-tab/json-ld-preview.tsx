@@ -124,17 +124,20 @@ function hasMissingKeys(
   })
 }
 
+const VALID_SCHEMA_CONTEXTS = new Set([
+  'https://schema.org',
+  'http://schema.org',
+  'https://schema.org/',
+  'http://schema.org/',
+])
+
 function validateContext(entity: JsonLdValue): Array<ValidationIssue> {
   const context = entity['@context']
   if (!context) {
     return [{ severity: 'error', message: 'Missing @context attribute.' }]
   }
   if (typeof context === 'string') {
-    if (
-      !context.includes('schema.org') &&
-      context !== 'https://schema.org' &&
-      context !== 'http://schema.org'
-    ) {
+    if (!VALID_SCHEMA_CONTEXTS.has(context)) {
       return [
         {
           severity: 'error',

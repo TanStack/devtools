@@ -88,8 +88,10 @@ export function getCanonicalPageData(): CanonicalPageData {
         .filter(Boolean),
     )
 
-  const indexable = !robots.includes('noindex')
-  const follow = !robots.includes('nofollow')
+  const hasNoindex = robots.includes('noindex') || robots.includes('none')
+  const hasNofollow = robots.includes('nofollow') || robots.includes('none')
+  const indexable = !hasNoindex
+  const follow = !hasNofollow
 
   if (!indexable) {
     issues.push({ severity: 'error', message: 'Page is marked as noindex.' })
