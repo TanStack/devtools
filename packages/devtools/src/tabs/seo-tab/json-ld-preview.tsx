@@ -330,8 +330,8 @@ function analyzeJsonLdScripts(): Array<JsonLdEntry> {
   )
 
   return scripts.map((script, index) => {
-    const raw = script.textContent.trim()
-    if (!raw) {
+    const raw = script.textContent?.trim() || ''
+    if (raw.length === 0) {
       return {
         id: `jsonld-${index}`,
         raw,
