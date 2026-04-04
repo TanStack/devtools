@@ -1,9 +1,10 @@
 import { For, Show, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useStyles } from '../../styles/use-styles'
+import { countBySeverity } from './seo-section-summary'
 import { pickSeverityClass } from './seo-severity'
+import type { SeoSectionSummary } from './seo-section-summary'
 import type { SeoSeverity } from './seo-severity'
-import { countBySeverity, type SeoSectionSummary } from './seo-section-summary'
 
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
 
