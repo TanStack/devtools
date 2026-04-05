@@ -281,7 +281,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border-radius: 8px;
       padding: 1rem 1.25rem;
       background: ${t(colors.white, colors.darkGray[900])};
-      max-width: 600px;
+      max-width: 620px;
       font-family: ${fontFamily.sans};
       box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
     `,
@@ -290,7 +290,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border-radius: 8px;
       padding: 1rem 1.25rem;
       background: ${t(colors.white, colors.darkGray[900])};
-      max-width: 380px;
+      max-width: 328px;
       font-family: ${fontFamily.sans};
       box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
     `,

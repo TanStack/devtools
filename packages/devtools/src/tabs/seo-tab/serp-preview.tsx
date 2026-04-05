@@ -1,16 +1,19 @@
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { For, createMemo, createSignal } from 'solid-js'
 import { useHeadChanges } from '../../hooks/use-head-changes'
+import { tokens } from '../../styles/tokens'
 import { useStyles } from '../../styles/use-styles'
 import type { SeoIssue, SeoSectionSummary } from './seo-section-summary'
 
-/** Google typically truncates titles at ~60 characters. */
-const TITLE_MAX_CHARS = 60
-/** Meta description is often trimmed at ~158 characters on desktop. */
-const DESCRIPTION_MAX_CHARS = 158
-/** Approximate characters that fit in 3 lines at mobile width (~340px, ~14px font). */
-const DESCRIPTION_MOBILE_MAX_CHARS = 120
 const ELLIPSIS = '...'
+const DESKTOP_TITLE_MAX_WIDTH_PX = 620
+const MOBILE_TITLE_MAX_WIDTH_PX = 328
+const DESKTOP_DESCRIPTION_TOTAL_WIDTH_PX = 960
+const DESKTOP_DESCRIPTION_MAX_LINES = 2
+const MOBILE_DESCRIPTION_WIDTH_PX = 320
+const MOBILE_DESCRIPTION_MAX_LINES = 3
+const TITLE_FONT = `400 20px ${tokens.font.fontFamily.sans}`
+const DESCRIPTION_FONT = `400 14px ${tokens.font.fontFamily.sans}`
 
 type SerpData = {
   title: string
@@ -24,6 +27,14 @@ type SerpOverflow = {
   titleOverflow: boolean
   descriptionOverflow: boolean
   descriptionOverflowMobile: boolean
+}
+
+type SerpPreviewState = {
+  displayTitleDesktop: string
+  displayTitleMobile: string
+  displayDescriptionDesktop: string
+  displayDescriptionMobile: string
+  overflow: SerpOverflow
 }
 
 type SerpCheck = {
@@ -64,7 +75,7 @@ const SERP_PREVIEWS: Array<SerpPreview> = [
     extraChecks: [
       {
         message:
-          'The meta description may get trimmed at ~960 pixels on desktop and at ~680px on mobile. Keep it below ~158 characters.',
+          'The meta description exceeds the desktop preview space and may be trimmed.',
         hasIssue: (_, overflow) => overflow.descriptionOverflow,
       },
     ],
@@ -82,10 +93,251 @@ const SERP_PREVIEWS: Array<SerpPreview> = [
   },
 ]
 
-function truncateToChars(text: string, maxChars: number): string {
-  if (text.length <= maxChars) return text
-  if (maxChars <= ELLIPSIS.length) return ELLIPSIS
-  return text.slice(0, maxChars - ELLIPSIS.length) + ELLIPSIS
+let serpMeasureContext: CanvasRenderingContext2D | null | undefined = undefined
+
+function getSerpMeasureContext(): CanvasRenderingContext2D | null {
+  if (serpMeasureContext !== undefined) {
+    return serpMeasureContext
+  }
+
+  if (typeof document === 'undefined') {
+    serpMeasureContext = null
+    return serpMeasureContext
+  }
+
+  serpMeasureContext = document.createElement('canvas').getContext('2d')
+  return serpMeasureContext
+}
+
+function normalizeSnippetText(text: string): string {
+  return text.trim().replace(/\s+/g, ' ')
+}
+
+function measureTextWidth(text: string, font: string): number {
+  const context = getSerpMeasureContext()
+
+  if (!context) {
+    return text.length
+  }
+
+  context.font = font
+  return context.measureText(text).width
+}
+
+function splitLongToken(
+  token: string,
+  maxWidth: number,
+  font: string,
+): Array<string> {
+  const chars = Array.from(token)
+  const chunks: Array<string> = []
+  let current = ''
+
+  for (const char of chars) {
+    const candidate = current + char
+
+    if (current && measureTextWidth(candidate, font) > maxWidth) {
+      chunks.push(current)
+      current = char
+      continue
+    }
+
+    current = candidate
+  }
+
+  if (current) {
+    chunks.push(current)
+  }
+
+  return chunks
+}
+
+function wrapTextByWidth(
+  text: string,
+  maxWidth: number,
+  font: string,
+): Array<string> {
+  const normalized = normalizeSnippetText(text)
+
+  if (!normalized) {
+    return []
+  }
+
+  const words = normalized.split(' ')
+  const lines: Array<string> = []
+  let currentLine = ''
+
+  for (const word of words) {
+    const candidate = currentLine ? `${currentLine} ${word}` : word
+
+    if (measureTextWidth(candidate, font) <= maxWidth) {
+      currentLine = candidate
+      continue
+    }
+
+    if (currentLine) {
+      lines.push(currentLine)
+      currentLine = ''
+    }
+
+    if (measureTextWidth(word, font) <= maxWidth) {
+      currentLine = word
+      continue
+    }
+
+    const chunks = splitLongToken(word, maxWidth, font)
+    lines.push(...chunks.slice(0, -1))
+    currentLine = chunks[chunks.length - 1] || ''
+  }
+
+  if (currentLine) {
+    lines.push(currentLine)
+  }
+
+  return lines
+}
+
+function truncateToWidth(text: string, maxWidth: number, font: string): string {
+  if (measureTextWidth(text, font) <= maxWidth) {
+    return text
+  }
+
+  const chars = Array.from(text)
+  let low = 0
+  let high = chars.length
+
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2)
+    const candidate = chars.slice(0, mid).join('').trimEnd() + ELLIPSIS
+
+    if (measureTextWidth(candidate, font) <= maxWidth) {
+      low = mid
+    } else {
+      high = mid - 1
+    }
+  }
+
+  return chars.slice(0, low).join('').trimEnd() + ELLIPSIS
+}
+
+function truncateToLines(
+  text: string,
+  maxWidth: number,
+  maxLines: number,
+  font: string,
+): string {
+  const lines = wrapTextByWidth(text, maxWidth, font)
+
+  if (lines.length <= maxLines) {
+    return text
+  }
+
+  const chars = Array.from(text)
+  let low = 0
+  let high = chars.length
+
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2)
+    const candidate = chars.slice(0, mid).join('').trimEnd() + ELLIPSIS
+
+    if (wrapTextByWidth(candidate, maxWidth, font).length <= maxLines) {
+      low = mid
+    } else {
+      high = mid - 1
+    }
+  }
+
+  return chars.slice(0, low).join('').trimEnd() + ELLIPSIS
+}
+
+function truncateToTotalWrappedWidth(
+  text: string,
+  totalWidth: number,
+  maxLines: number,
+  font: string,
+): string {
+  const chars = Array.from(text)
+  const fits = (value: string) => {
+    const lines = wrapTextByWidth(value, totalWidth / maxLines, font)
+    if (lines.length > maxLines) {
+      return false
+    }
+
+    const usedWidth = lines.reduce(
+      (sum, line) => sum + measureTextWidth(line, font),
+      0,
+    )
+
+    return usedWidth <= totalWidth
+  }
+
+  if (fits(text)) {
+    return text
+  }
+
+  let low = 0
+  let high = chars.length
+
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2)
+    const candidate = chars.slice(0, mid).join('').trimEnd() + ELLIPSIS
+
+    if (fits(candidate)) {
+      low = mid
+    } else {
+      high = mid - 1
+    }
+  }
+
+  return chars.slice(0, low).join('').trimEnd() + ELLIPSIS
+}
+
+function getSerpPreviewState(data: SerpData): SerpPreviewState {
+  const titleText = data.title || 'No title'
+  const descText = data.description || 'No meta description.'
+  const desktopDescriptionLines = wrapTextByWidth(
+    descText,
+    DESKTOP_DESCRIPTION_TOTAL_WIDTH_PX / DESKTOP_DESCRIPTION_MAX_LINES,
+    DESCRIPTION_FONT,
+  )
+
+  return {
+    displayTitleDesktop: truncateToWidth(
+      titleText,
+      DESKTOP_TITLE_MAX_WIDTH_PX,
+      TITLE_FONT,
+    ),
+    displayTitleMobile: truncateToWidth(
+      titleText,
+      MOBILE_TITLE_MAX_WIDTH_PX,
+      TITLE_FONT,
+    ),
+    displayDescriptionDesktop: truncateToTotalWrappedWidth(
+      descText,
+      DESKTOP_DESCRIPTION_TOTAL_WIDTH_PX,
+      DESKTOP_DESCRIPTION_MAX_LINES,
+      DESCRIPTION_FONT,
+    ),
+    displayDescriptionMobile: truncateToLines(
+      descText,
+      MOBILE_DESCRIPTION_WIDTH_PX,
+      MOBILE_DESCRIPTION_MAX_LINES,
+      DESCRIPTION_FONT,
+    ),
+    overflow: {
+      titleOverflow:
+        measureTextWidth(titleText, TITLE_FONT) > DESKTOP_TITLE_MAX_WIDTH_PX,
+      descriptionOverflow:
+        desktopDescriptionLines.length > DESKTOP_DESCRIPTION_MAX_LINES ||
+        desktopDescriptionLines.reduce(
+          (sum, line) => sum + measureTextWidth(line, DESCRIPTION_FONT),
+          0,
+        ) > DESKTOP_DESCRIPTION_TOTAL_WIDTH_PX,
+      descriptionOverflowMobile:
+        wrapTextByWidth(descText, MOBILE_DESCRIPTION_WIDTH_PX, DESCRIPTION_FONT)
+          .length > MOBILE_DESCRIPTION_MAX_LINES,
+    },
+  }
 }
 
 function getSerpFromHead(): SerpData {
@@ -128,13 +380,8 @@ function getSerpFromHead(): SerpData {
  */
 export function getSerpPreviewSummary(): SeoSectionSummary {
   const data = getSerpFromHead()
-  const titleText = data.title || ''
-  const descText = data.description || ''
-  const overflow: SerpOverflow = {
-    titleOverflow: titleText.length > TITLE_MAX_CHARS,
-    descriptionOverflow: descText.length > DESCRIPTION_MAX_CHARS,
-    descriptionOverflowMobile: descText.length > DESCRIPTION_MOBILE_MAX_CHARS,
-  }
+  const previewState = getSerpPreviewState(data)
+  const overflow = previewState.overflow
 
   const issues: Array<SeoIssue> = []
 
@@ -167,7 +414,7 @@ export function getSerpPreviewSummary(): SeoSectionSummary {
     issues.push({
       severity: 'warning',
       message:
-        'The meta description may get trimmed at ~960 pixels on desktop and at ~680px on mobile. Keep it below ~158 characters.',
+        'The meta description exceeds the desktop preview space and may be trimmed.',
     })
   }
   if (overflow.descriptionOverflowMobile) {
@@ -198,8 +445,10 @@ function getSerpIssues(
 
 function SerpSnippetPreview(props: {
   data: SerpData
-  displayTitle: string
-  displayDescription: string
+  displayTitleDesktop: string
+  displayTitleMobile: string
+  displayDescriptionDesktop: string
+  displayDescriptionMobile: string
   isMobile: boolean
   label: string
   issues: Array<string>
@@ -232,18 +481,22 @@ function SerpSnippetPreview(props: {
           </div>
         </div>
         <div class={styles().serpSnippetTitle}>
-          {props.displayTitle || props.data.title || 'No title'}
+          {(props.isMobile
+            ? props.displayTitleMobile
+            : props.displayTitleDesktop) ||
+            props.data.title ||
+            'No title'}
         </div>
         {!props.isMobile && (
           <div class={styles().serpSnippetDesc}>
-            {props.displayDescription ||
+            {props.displayDescriptionDesktop ||
               props.data.description ||
               'No meta description.'}
           </div>
         )}
         {props.isMobile && (
           <div class={styles().serpSnippetDescMobile}>
-            {props.displayDescription ||
+            {props.displayDescriptionMobile ||
               props.data.description ||
               'No meta description.'}
           </div>
@@ -277,23 +530,7 @@ export function SerpPreviewSection() {
   })
 
   const serpPreviewState = createMemo(() => {
-    const data = serp()
-    const titleText = data.title || 'No title'
-    const descText = data.description || 'No meta description.'
-
-    const displayTitle = truncateToChars(titleText, TITLE_MAX_CHARS)
-    const displayDescription = truncateToChars(descText, DESCRIPTION_MAX_CHARS)
-
-    return {
-      displayTitle,
-      displayDescription,
-      overflow: {
-        titleOverflow: titleText.length > TITLE_MAX_CHARS,
-        descriptionOverflow: descText.length > DESCRIPTION_MAX_CHARS,
-        descriptionOverflowMobile:
-          descText.length > DESCRIPTION_MOBILE_MAX_CHARS,
-      },
-    }
+    return getSerpPreviewState(serp())
   })
 
   return (
@@ -314,8 +551,14 @@ export function SerpPreviewSection() {
           return (
             <SerpSnippetPreview
               data={serp()}
-              displayTitle={serpPreviewState().displayTitle}
-              displayDescription={serpPreviewState().displayDescription}
+              displayTitleDesktop={serpPreviewState().displayTitleDesktop}
+              displayTitleMobile={serpPreviewState().displayTitleMobile}
+              displayDescriptionDesktop={
+                serpPreviewState().displayDescriptionDesktop
+              }
+              displayDescriptionMobile={
+                serpPreviewState().displayDescriptionMobile
+              }
               isMobile={preview.isMobile}
               label={preview.label}
               issues={issues()}
