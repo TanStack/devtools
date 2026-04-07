@@ -1,5 +1,12 @@
 # @tanstack/vue-devtools
 
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies [[`aa32769`](https://github.com/TanStack/devtools/commit/aa32769932b2443a91f123f3213d687f35810d4b)]:
+  - @tanstack/devtools@0.11.2
+
 ## 0.2.15
 
 ### Patch Changes

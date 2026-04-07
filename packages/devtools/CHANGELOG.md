@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.11.2
+
+### Patch Changes
+
+- Fix duplicate Devtools UI rendering when React StrictMode is enabled. ([#404](https://github.com/TanStack/devtools/pull/404))
+
 ## 0.11.1
 
 ### Patch Changes
