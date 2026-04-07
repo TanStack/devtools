@@ -146,7 +146,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           return
         }
 
-        /* const solidDedupeDeps = [
+        /*  const solidDedupeDeps = [
           'solid-js',
           'solid-js/web',
           'solid-js/store',
