@@ -162,7 +162,17 @@ function visitFunctions(
 
   // Recurse into children to find nested functions
   forEachChild(node, (child) => {
-    if (visitFunctions(child, annotated, file, ignorePatterns, offsetToLoc, s, code)) {
+    if (
+      visitFunctions(
+        child,
+        annotated,
+        file,
+        ignorePatterns,
+        offsetToLoc,
+        s,
+        code,
+      )
+    ) {
       didTransform = true
     }
   })

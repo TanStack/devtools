@@ -194,7 +194,13 @@ export const transformAndInject = (
           const expression = pluginsProp.value.expression
           if (expression.type === 'ArrayExpression') {
             if (
-              !pluginExists(code, expression, importName, displayName, pluginType)
+              !pluginExists(
+                code,
+                expression,
+                importName,
+                displayName,
+                pluginType,
+              )
             ) {
               const pluginStr = buildPluginString(
                 importName,

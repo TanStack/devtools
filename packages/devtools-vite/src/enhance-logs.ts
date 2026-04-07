@@ -6,10 +6,7 @@ import { createLocMapper } from './offset-to-loc'
 import { walk } from './ast-utils'
 
 function escapeForStringLiteral(str: string): string {
-  return str
-    .replace(/\\/g, '\\\\')
-    .replace(/"/g, '\\"')
-    .replace(/\n/g, '\\n')
+  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n')
 }
 
 export function enhanceConsoleLog(code: string, id: string, port: number) {
