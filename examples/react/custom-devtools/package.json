@@ -9,16 +9,16 @@
     "test:types": "tsc"
   },
   "dependencies": {
-    "@tanstack/devtools-event-client": "0.4.0",
-    "@tanstack/react-devtools": "^0.9.3",
+    "@tanstack/devtools-event-client": "0.4.3",
+    "@tanstack/react-devtools": "^0.10.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
-    "@vitejs/plugin-react": "^5.0.4",
-    "vite": "^7.1.7"
+    "@vitejs/plugin-react": "^6.0.1",
+    "vite": "^8.0.0"
   },
   "browserslist": {
     "production": [

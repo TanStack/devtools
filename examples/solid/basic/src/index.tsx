@@ -13,6 +13,7 @@ import Router, { router } from './setup'
 const queryClient = new QueryClient()
 
 function App() {
+  console.log('Rendering App Component')
   return (
     <QueryClientProvider client={queryClient}>
       <h1>TanStack Devtools Solid Basic Example</h1>

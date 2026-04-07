@@ -1,14 +1,9 @@
-import { lazy } from 'solid-js'
-import { Portal, render } from 'solid-js/web'
-import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
-import { DevtoolsProvider } from './context/devtools-context'
 import { initialState } from './context/devtools-store'
-import { PiPProvider } from './context/pip-context'
-import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
 import type {
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
 } from './context/devtools-context'
+import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
 
 export interface TanStackDevtoolsInit {
   /**
@@ -45,10 +40,10 @@ export class TanStackDevtoolsCore {
     ...initialState.settings,
   }
   #plugins: Array<TanStackDevtoolsPlugin> = []
-  #isMounted = false
+  #state: 'mounted' | 'mounting' | 'unmounted' = 'unmounted'
+  #mountAbortController?: AbortController
   #dispose?: () => void
-  #Component: any
-  #eventBus: ClientEventBus | undefined
+  #eventBus?: { stop: () => void }
   #eventBusConfig: ClientEventBusConfig | undefined
   #setPlugins?: (plugins: Array<TanStackDevtoolsPlugin>) => void
 
@@ -62,48 +57,48 @@ export class TanStackDevtoolsCore {
   }
 
   mount<T extends HTMLElement>(el: T) {
-    //  tsup-preset-solid statically replaces this variable during build, which eliminates this code from server bundle
-    //  can be run outside of vite so we ignore the rule
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (import.meta?.env?.SSR) return
+    if (typeof document === 'undefined') return
 
-    if (this.#isMounted) {
+    if (this.#state === 'mounted' || this.#state === 'mounting') {
       throw new Error('Devtools is already mounted')
     }
-    const mountTo = el
-    const dispose = render(() => {
-      this.#Component = lazy(() => import('./devtools'))
-      const Devtools = this.#Component
-      this.#eventBus = new ClientEventBus(this.#eventBusConfig)
-      this.#eventBus.start()
-      return (
-        <DevtoolsProvider
-          plugins={this.#plugins}
-          config={this.#config}
-          onSetPlugins={(setPlugins) => {
-            this.#setPlugins = setPlugins
-          }}
-        >
-          <PiPProvider>
-            <Portal mount={mountTo}>
-              <Devtools />
-            </Portal>
-          </PiPProvider>
-        </DevtoolsProvider>
-      )
-    }, mountTo)
+    this.#state = 'mounting'
+    const { signal } = (this.#mountAbortController = new AbortController())
 
-    this.#isMounted = true
-    this.#dispose = dispose
+    import('./mount-impl')
+      .then(({ mountDevtools }) => {
+        if (signal.aborted) {
+          return
+        }
+
+        const result = mountDevtools({
+          el,
+          plugins: this.#plugins,
+          config: this.#config,
+          eventBusConfig: this.#eventBusConfig,
+          onSetPlugins: (setPlugins) => {
+            this.#setPlugins = setPlugins
+          },
+        })
+
+        this.#dispose = result.dispose
+        this.#eventBus = result.eventBus
+        this.#state = 'mounted'
+      })
+      .catch((err) => {
+        this.#state = 'unmounted'
+        console.error('[TanStack Devtools] Failed to load:', err)
+      })
   }
 
   unmount() {
-    if (!this.#isMounted) {
+    if (this.#state === 'unmounted') {
       throw new Error('Devtools is not mounted')
     }
+    this.#mountAbortController?.abort()
     this.#eventBus?.stop()
     this.#dispose?.()
-    this.#isMounted = false
+    this.#state = 'unmounted'
   }
 
   setConfig(config: Partial<TanStackDevtoolsInit>) {
@@ -114,7 +109,7 @@ export class TanStackDevtoolsCore {
     if (config.plugins) {
       this.#plugins = config.plugins
       // Update the reactive store if mounted
-      if (this.#isMounted && this.#setPlugins) {
+      if (this.#state === 'mounted' && this.#setPlugins) {
         this.#setPlugins(config.plugins)
       }
     }

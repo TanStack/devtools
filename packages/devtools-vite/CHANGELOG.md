@@ -1,5 +1,51 @@
 # @tanstack/devtools-event-client
 
+## 0.6.0
+
+### Minor Changes
+
+- Bumps vite versions to include v8 ([#388](https://github.com/TanStack/devtools/pull/388))
+
+## 0.5.5
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.5.4
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies [[`cf23787`](https://github.com/TanStack/devtools/commit/cf23787b9669e8999c5b2916a24c4d86231034b3)]:
+  - @tanstack/devtools-client@0.0.6
+
+## 0.5.2
+
+### Patch Changes
+
+- fix an issue with dist and build matching ([#354](https://github.com/TanStack/devtools/pull/354))
+
+## 0.5.1
+
+### Patch Changes
+
+- fix issues with https servers and console piping ([#343](https://github.com/TanStack/devtools/pull/343))
+
+- Updated dependencies [[`da41a59`](https://github.com/TanStack/devtools/commit/da41a598a94fbab0b4d4515345059c5ed62ae6fd)]:
+  - @tanstack/devtools-event-bus@0.4.1
+
+## 0.5.0
+
+### Minor Changes
+
+- Console piping functionality ([#337](https://github.com/TanStack/devtools/pull/337))
+
 ## 0.4.1
 
 ### Patch Changes

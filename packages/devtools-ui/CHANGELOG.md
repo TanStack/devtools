@@ -1,5 +1,23 @@
 # @tanstack/devtools-ui
 
+## 0.5.1
+
+### Patch Changes
+
+- Extract devtools-ui from devtools-utils to avoid theme miss-match ([#386](https://github.com/TanStack/devtools/pull/386))
+
+- Adds tanstack Devtool plugin. PR also includes some minor patches ([#326](https://github.com/TanStack/devtools/pull/326))
+
+## 0.5.0
+
+### Minor Changes
+
+- Updates devtools-ui JsonTree to display dates, as well as provide configuration for custom date format. ([#258](https://github.com/TanStack/devtools/pull/258))
+
+### Patch Changes
+
+- Fixes the deep-keys utils for the collapsePath prop, now handles any and unknown types. ([#327](https://github.com/TanStack/devtools/pull/327))
+
 ## 0.4.4
 
 ### Patch Changes

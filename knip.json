@@ -3,10 +3,17 @@
   "ignoreDependencies": ["@faker-js/faker"],
   "ignoreWorkspaces": ["examples/**"],
   "workspaces": {
+    "packages/devtools-a11y": {
+      "ignoreDependencies": ["solid-js"]
+    },
+
     "packages/devtools-utils": {
       "ignoreDependencies": ["react", "solid-js", "@types/react"],
       "entry": ["**/vite.config.solid.ts", "**/src/solid/**"],
       "project": ["**/vite.config.solid.ts", "**/src/solid/**"]
+    },
+    "packages/devtools-ui": {
+      "entry": ["**/tests/**/*.ts"]
     },
     "packages/solid-devtools": {
       "ignore": ["**/core.tsx"]

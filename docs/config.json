@@ -9,143 +9,117 @@
     {
       "label": "Getting Started",
       "children": [
-        {
-          "label": "Overview",
-          "to": "overview"
-        },
-        {
-          "label": "Quick Start",
-          "to": "quick-start"
-        },
-        {
-          "label": "Configuration",
-          "to": "configuration"
-        },
-        {
-          "label": "Plugin Configuration",
-          "to": "plugin-configuration"
-        },
-        {
-          "label": "Installation",
-          "to": "installation"
-        },
-        {
-          "label": "Vite plugin",
-          "to": "vite-plugin"
-        },
-        {
-          "label": "Third party plugins",
-          "to": "third-party-plugins"
-        },
-        {
-          "label": "Production",
-          "to": "production"
-        }
+        { "label": "Overview", "to": "overview" },
+        { "label": "Quick Start", "to": "quick-start" },
+        { "label": "Installation", "to": "installation" },
+        { "label": "Configuration", "to": "configuration" },
+        { "label": "Plugin Configuration", "to": "plugin-configuration" },
+        { "label": "Vite Plugin", "to": "vite-plugin" },
+        { "label": "Production", "to": "production" }
       ],
       "frameworks": [
         {
           "label": "react",
           "children": [
-            {
-              "label": "Basic setup",
-              "to": "framework/react/basic-setup"
-            },
-            {
-              "label": "React adapter",
-              "to": "framework/react/adapter"
-            }
+            { "label": "Basic Setup", "to": "framework/react/basic-setup" },
+            { "label": "React Adapter", "to": "framework/react/adapter" }
           ]
         },
         {
           "label": "preact",
           "children": [
-            {
-              "label": "Basic setup",
-              "to": "framework/preact/basic-setup"
-            },
-            {
-              "label": "Preact adapter",
-              "to": "framework/preact/adapter"
-            }
+            { "label": "Basic Setup", "to": "framework/preact/basic-setup" },
+            { "label": "Preact Adapter", "to": "framework/preact/adapter" }
           ]
         },
         {
           "label": "solid",
           "children": [
-            {
-              "label": "Basic setup",
-              "to": "framework/solid/basic-setup"
-            },
-            {
-              "label": "Solid Adapter",
-              "to": "framework/solid/adapter"
-            }
+            { "label": "Basic Setup", "to": "framework/solid/basic-setup" },
+            { "label": "Solid Adapter", "to": "framework/solid/adapter" }
+          ]
+        },
+        {
+          "label": "vue",
+          "children": [
+            { "label": "Basic Setup", "to": "framework/vue/basic-setup" },
+            { "label": "Vue Adapter", "to": "framework/vue/adapter" }
           ]
         }
       ]
     },
     {
+      "label": "Concepts",
+      "children": [
+        { "label": "Architecture Overview", "to": "architecture" },
+        { "label": "Event System", "to": "event-system" },
+        { "label": "Plugin Lifecycle", "to": "plugin-lifecycle" },
+        { "label": "Source Inspector", "to": "source-inspector" }
+      ]
+    },
+    {
       "label": "Guides",
-      "children": [],
+      "children": [
+        { "label": "Building Custom Plugins", "to": "building-custom-plugins" },
+        { "label": "Using devtools-utils", "to": "devtools-utils" },
+        { "label": "Bidirectional Communication", "to": "bidirectional-communication" },
+        { "label": "Third-party Plugins", "to": "third-party-plugins" }
+      ],
       "frameworks": [
         {
           "label": "react",
           "children": [
-            {
-              "label": "Custom plugins",
-              "to": "framework/react/guides/custom-plugins"
-            }
+            { "label": "Custom Plugins", "to": "framework/react/guides/custom-plugins" }
           ]
         },
         {
           "label": "preact",
           "children": [
-            {
-              "label": "Custom plugins",
-              "to": "framework/preact/guides/custom-plugins"
-            }
+            { "label": "Custom Plugins", "to": "framework/preact/guides/custom-plugins" }
           ]
         },
         {
           "label": "solid",
-          "children": []
+          "children": [
+            { "label": "Custom Plugins", "to": "framework/solid/guides/custom-plugins" }
+          ]
+        },
+        {
+          "label": "vue",
+          "children": [
+            { "label": "Custom Plugins", "to": "framework/vue/guides/custom-plugins" }
+          ]
         }
       ]
     },
     {
       "label": "API Reference",
       "children": [
-        {
-          "label": "Core API Reference",
-          "to": "reference/index"
-        }
+        { "label": "Core API Reference", "to": "reference/index" }
       ],
       "frameworks": [
         {
           "label": "react",
           "children": [
-            {
-              "label": "React Hooks",
-              "to": "framework/react/reference/index"
-            }
+            { "label": "React Reference", "to": "framework/react/reference/index" }
           ]
         },
         {
           "label": "preact",
           "children": [
-            {
-              "label": "Preact Hooks",
-              "to": "framework/preact/reference/index"
-            }
+            { "label": "Preact Reference", "to": "framework/preact/reference/index" }
           ]
         },
         {
           "label": "solid",
           "children": [
-            {
-              "label": "Solid Hooks",
-              "to": "framework/solid/reference/index"
-            }
+            { "label": "Solid Reference", "to": "framework/solid/reference/index" }
+          ]
+        },
+        {
+          "label": "vue",
+          "children": [
+            { "label": "Vue Reference", "to": "framework/vue/reference/index" }
           ]
         }
       ]
@@ -157,39 +131,55 @@
         {
           "label": "react",
           "children": [
-            {
-              "label": "Basic",
-              "to": "framework/react/examples/basic"
-            },
-            {
-              "label": "TanStack Start",
-              "to": "framework/react/examples/start"
-            },
-            {
-              "label": "Custom devtools",
-              "to": "framework/react/examples/custom-devtools"
-            }
+            { "label": "Basic", "to": "framework/react/examples/basic" },
+            { "label": "TanStack Start", "to": "framework/react/examples/start" },
+            { "label": "Custom Devtools", "to": "framework/react/examples/custom-devtools" }
           ]
         },
         {
           "label": "preact",
           "children": [
-            {
-              "label": "Basic",
-              "to": "framework/preact/examples/basic"
-            },
-            {
-              "label": "Custom devtools",
-              "to": "framework/preact/examples/custom-devtools"
-            }
+            { "label": "Basic", "to": "framework/preact/examples/basic" },
+            { "label": "Custom Devtools", "to": "framework/preact/examples/custom-devtools" }
           ]
         },
         {
           "label": "solid",
           "children": [
+            { "label": "Basic", "to": "framework/solid/examples/basic" }
+          ]
+        },
+        {
+          "label": "vue",
+          "children": [
+            { "label": "Basic", "to": "framework/vue/examples/basic" }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Plugins",
+      "children": [],
+      "frameworks": [
+        {
+          "label": "react",
+          "children": [
             {
-              "label": "Basic",
-              "to": "framework/solid/examples/basic"
+              "label": "a11y",
+              "to": "framework/react/examples/a11y-devtools"
+            }
+          ]
+        },
+        {
+          "label": "preact",
+          "children": []
+        },
+        {
+          "label": "solid",
+          "children": [
+            {
+              "label": "A11y",
+              "to": "framework/solif/examples/a11y-devtools"
             }
           ]
         }

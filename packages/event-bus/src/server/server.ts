@@ -1,6 +1,7 @@
 import http from 'node:http'
 import { WebSocket, WebSocketServer } from 'ws'
 import { parseWithBigInt, stringifyWithBigInt } from '../utils/json'
+import type { Duplex } from 'node:stream'
 
 // Shared types
 export interface TanStackDevtoolsEvent<
@@ -20,9 +21,30 @@ declare global {
   var __TANSTACK_EVENT_TARGET__: EventTarget | null
 }
 
+/**
+ * A minimal server interface that both `http.Server` and `http2.Http2SecureServer` satisfy.
+ * Used so the event bus can piggyback on any compatible server without depending on http2 types directly.
+ */
+export interface HttpServerLike {
+  on: (event: string, listener: (...args: Array<any>) => void) => this
+  removeListener: (
+    event: string,
+    listener: (...args: Array<any>) => void,
+  ) => this
+  address: () => ReturnType<http.Server['address']>
+}
+
 export interface ServerEventBusConfig {
   port?: number | undefined
+  host?: string | undefined
   debug?: boolean | undefined
+  /**
+   * An external HTTP server to attach to instead of creating a standalone one.
+   * When provided, the event bus will add its SSE/POST/WS handlers to this server
+   * instead of creating and listening on its own server.
+   * Useful for piggybacking on Vite's HTTPS-enabled server.
+   */
+  httpServer?: HttpServerLike | undefined
 }
 
 export class ServerEventBus {
@@ -32,7 +54,15 @@ export class ServerEventBus {
   #server: http.Server | null = null
   #wssServer: WebSocketServer | null = null
   #port: number
+  #host: string
   #debug: boolean
+  #externalServer: HttpServerLike | null = null
+  #externalRequestHandler:
+    | ((req: http.IncomingMessage, res: http.ServerResponse) => void)
+    | null = null
+  #externalUpgradeHandler:
+    | ((req: http.IncomingMessage, socket: Duplex, head: Buffer) => void)
+    | null = null
   #dispatcher = (e: Event) => {
     const event = (e as CustomEvent).detail
     this.debugLog('Dispatching event from dispatcher, forwarding', event)
@@ -44,8 +74,14 @@ export class ServerEventBus {
     )
     this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
-  constructor({ port = 4206, debug = false }: ServerEventBusConfig = {}) {
+  constructor({
+    port = 4206,
+    host = 'localhost',
+    debug = false,
+    httpServer,
+  }: ServerEventBusConfig = {}) {
     this.#port = port
+    this.#host = host
     this.#eventTarget =
       globalThis.__TANSTACK_EVENT_TARGET__ ?? new EventTarget()
     // we want to set the global event target only once so that we can emit/listen to events on the server
@@ -54,6 +90,7 @@ export class ServerEventBus {
     }
     this.#server = globalThis.__TANSTACK_DEVTOOLS_SERVER__ ?? null
     this.#wssServer = globalThis.__TANSTACK_DEVTOOLS_WSS_SERVER__ ?? null
+    this.#externalServer = httpServer ?? null
     this.#debug = debug
     this.debugLog('Initializing server event bus')
   }
@@ -173,9 +210,6 @@ export class ServerEventBus {
         resolve(this.#port)
         return
       }
-      this.debugLog('Starting server event bus')
-      const server = this.createSSEServer()
-      const wss = this.createWebSocketServer()
 
       this.#eventTarget.addEventListener(
         'tanstack-dispatch-event',
@@ -185,6 +219,85 @@ export class ServerEventBus {
         'tanstack-connect',
         this.#connectFunction,
       )
+
+      // When an external server is provided (e.g. Vite's HTTPS server),
+      // piggyback on it instead of creating a standalone server.
+      if (this.#externalServer) {
+        this.debugLog('Piggybacking on external HTTP server')
+        const wss = this.createWebSocketServer()
+        this.handleNewConnection(wss)
+
+        // Add request handler for SSE and POST endpoints
+        this.#externalRequestHandler = (
+          req: http.IncomingMessage,
+          res: http.ServerResponse,
+        ) => {
+          if (req.url === '/__devtools/sse') {
+            res.writeHead(200, {
+              'Content-Type': 'text/event-stream',
+              'Cache-Control': 'no-cache',
+              Connection: 'keep-alive',
+              'Access-Control-Allow-Origin': '*',
+            })
+            res.write('\n')
+            this.debugLog('New SSE client connected (external server)')
+            this.#sseClients.add(res)
+            req.on('close', () => this.#sseClients.delete(res))
+            return
+          }
+
+          if (req.url === '/__devtools/send' && req.method === 'POST') {
+            let body = ''
+            req.on('data', (chunk) => (body += chunk))
+            req.on('end', () => {
+              try {
+                const msg = parseWithBigInt(body)
+                this.debugLog(
+                  'Received event from client (external server)',
+                  msg,
+                )
+                this.emitToServer(msg)
+              } catch {}
+            })
+            res.writeHead(200).end()
+            return
+          }
+        }
+
+        // Add upgrade handler for WebSocket
+        this.#externalUpgradeHandler = (
+          req: http.IncomingMessage,
+          socket: Duplex,
+          head: Buffer,
+        ) => {
+          if (req.url === '/__devtools/ws') {
+            wss.handleUpgrade(req, socket, head, (ws) => {
+              this.debugLog(
+                'WebSocket connection established (external server)',
+              )
+              wss.emit('connection', ws, req)
+            })
+          }
+        }
+
+        this.#externalServer.on('request', this.#externalRequestHandler)
+        this.#externalServer.on('upgrade', this.#externalUpgradeHandler)
+
+        // Resolve port from the external server's address
+        const address = this.#externalServer.address()
+        if (typeof address === 'object' && address) {
+          this.#port = address.port
+        }
+        this.debugLog(`Attached to external server on port ${this.#port}`)
+        resolve(this.#port)
+        return
+      }
+
+      // Standalone mode: create our own HTTP + WebSocket server
+      this.debugLog('Starting server event bus')
+      const server = this.createSSEServer()
+      const wss = this.createWebSocketServer()
+
       this.handleNewConnection(wss)
 
       // Handle connection upgrade for WebSocket
@@ -198,12 +311,12 @@ export class ServerEventBus {
       })
 
       const tryListen = (port: number) => {
-        server.listen(port, () => {
+        server.listen(port, this.#host, () => {
           const address = server.address()
           if (typeof address === 'object' && address) {
             this.#port = address.port
           }
-          this.debugLog(`Listening on http://localhost:${this.#port}`)
+          this.debugLog(`Listening on http://${this.#host}:${this.#port}`)
           resolve(this.#port)
         })
       }
@@ -232,9 +345,29 @@ export class ServerEventBus {
   }
 
   stop() {
-    this.#server?.close(() => {
-      this.debugLog('Server stopped')
-    })
+    // Only close the server if we own it (standalone mode)
+    if (!this.#externalServer) {
+      this.#server?.close(() => {
+        this.debugLog('Server stopped')
+      })
+    } else {
+      // Remove our listeners from the external server without closing it
+      if (this.#externalRequestHandler) {
+        this.#externalServer.removeListener(
+          'request',
+          this.#externalRequestHandler,
+        )
+        this.#externalRequestHandler = null
+      }
+      if (this.#externalUpgradeHandler) {
+        this.#externalServer.removeListener(
+          'upgrade',
+          this.#externalUpgradeHandler,
+        )
+        this.#externalUpgradeHandler = null
+      }
+      this.debugLog('Detached from external server')
+    }
     this.#wssServer?.close(() => {
       this.debugLog('WebSocket server stopped')
     })
@@ -245,6 +378,7 @@ export class ServerEventBus {
     this.debugLog('Cleared all WS/SSE connections')
     this.#server = null
     this.#wssServer = null
+    this.#externalServer = null
     this.#eventTarget.removeEventListener(
       'tanstack-dispatch-event',
       this.#dispatcher,
