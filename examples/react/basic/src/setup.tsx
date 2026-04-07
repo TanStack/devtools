@@ -55,14 +55,10 @@ const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
 const router = createRouter({
   routeTree,
 })
-
 export default function DevtoolsExample() {
   return (
     <>
       <TanStackDevtools
-        eventBusConfig={{
-          connectToServerBus: true,
-        }}
         config={{ sourceAction: 'copy-path' }}
         plugins={[
           {
