@@ -55,6 +55,7 @@ const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
 const router = createRouter({
   routeTree,
 })
+
 export default function DevtoolsExample() {
   return (
     <>
@@ -62,6 +63,7 @@ export default function DevtoolsExample() {
         eventBusConfig={{
           connectToServerBus: true,
         }}
+        config={{ sourceAction: 'copy-path' }}
         plugins={[
           {
             name: 'TanStack Query',

@@ -30,12 +30,32 @@ export const SourceInspector = () => {
 
   const downList = useKeyDownList()
 
+  const [disabledAfterClick, setDisabledAfterClick] = createSignal(false)
+
   const isHighlightingKeysHeld = createMemo(() => {
     return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
   })
 
   createEffect(() => {
     if (!isHighlightingKeysHeld()) {
+      setDisabledAfterClick(false)
+    }
+  })
+
+  const isActive = createMemo(
+    () => isHighlightingKeysHeld() && !disabledAfterClick(),
+  )
+
+  createEffect(() => {
+    if (isActive()) {
+      document.body.style.cursor = 'pointer'
+    } else {
+      document.body.style.cursor = ''
+    }
+  })
+
+  createEffect(() => {
+    if (!isActive()) {
       resetHighlight()
       return
     }
@@ -78,6 +98,12 @@ export const SourceInspector = () => {
     window.getSelection()?.removeAllRanges()
     e.preventDefault()
     e.stopPropagation()
+    setDisabledAfterClick(true)
+
+    if (settings().sourceAction === 'copy-path') {
+      navigator.clipboard.writeText(highlightState.dataSource).catch(() => {})
+      return
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
