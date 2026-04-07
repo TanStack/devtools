@@ -67,6 +67,25 @@ export default {
 
 Both `files` and `components` accept arrays of strings (exact match) or RegExp patterns.
 
+## Click Action
+
+By default, clicking an inspected element opens the file in your editor. You can change this to copy the source path to the clipboard instead using the `sourceAction` setting:
+
+```ts
+<TanStackDevtools
+  config={{
+    sourceAction: 'copy-path',
+  }}
+/>
+```
+
+| Value | Behavior |
+| --- | --- |
+| `"ide-warp"` | Opens the file in your editor at the exact line (default) |
+| `"copy-path"` | Copies the `filepath:line:column` string to the clipboard |
+
+This is useful in environments where the Vite dev server cannot reach your editor, or when you want to paste the path elsewhere.
+
 ## Editor Configuration
 
 Most popular editors work out of the box via the `launch-editor` package. Supported editors include VS Code, WebStorm, Sublime Text, Atom, and more ([full list](https://github.com/yyx990803/launch-editor?tab=readme-ov-file#supported-editors)).
