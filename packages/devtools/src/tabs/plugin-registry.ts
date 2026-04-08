@@ -259,6 +259,27 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     isNew: true,
     tags: ['Router', 'Prefetch', 'Analytics', 'Overlay', 'TanStack'],
   },
+
+  // Santos Vilanculos — Inertia 3 Devtools for React
+  '@santosvilanculos/bevor-react': {
+    packageName: '@santosvilanculos/bevor-react',
+    title: 'Inertia 3 Devtools',
+    description: 'Inertia 3 devtools built on top of TanStack DevTools',
+    pluginImport: {
+      importName: 'inertiaDevtoolsPlugin',
+      type: 'function',
+    },
+    pluginId: 'inertia-devtools',
+    logoUrl:
+      'https://raw.githubusercontent.com/santosvilanculos/bevor/main/logo.png',
+    docsUrl:
+      'https://github.com/SantosVilanculos/bevor/tree/main/packages/react',
+    repoUrl: 'https://github.com/SantosVilanculos/bevor',
+    author: 'Santos Vilanculos (santosvilanculos@yahoo.com)',
+    framework: 'react',
+    isNew: true,
+    tags: ['TanStack', 'React', 'Inertia', 'Laravel'],
+  },
 }
 
 /**
