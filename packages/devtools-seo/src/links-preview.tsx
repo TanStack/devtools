@@ -1,6 +1,6 @@
 import { For, Show, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { useSeoStyles } from './use-seo-styles'
 import { countBySeverity } from './seo-section-summary'
 import { pickSeverityClass } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
@@ -176,7 +176,7 @@ const KIND_LABEL: Record<LinkKind, string> = {
 }
 
 function linkKindBadgeClass(
-  s: ReturnType<ReturnType<typeof useStyles>>,
+  s: ReturnType<ReturnType<typeof useSeoStyles>>,
   kind: LinkKind,
 ): string {
   switch (kind) {
@@ -192,7 +192,7 @@ function linkKindBadgeClass(
 }
 
 export function LinksPreviewSection() {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const links = analyzeLinks()
   const linksForReport = sortLinksForDisplay(links)
   const groups = groupLinksByKindOrdered(linksForReport)

@@ -1,8 +1,8 @@
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { For, createMemo, createSignal } from 'solid-js'
-import { useHeadChanges } from '../../hooks/use-head-changes'
-import { tokens } from '../../styles/tokens'
-import { useStyles } from '../../styles/use-styles'
+import { useHeadChanges } from './hooks/use-head-changes'
+import { tokens } from './tokens'
+import { useSeoStyles } from './use-seo-styles'
 import type { SeoIssue, SeoSectionSummary } from './seo-section-summary'
 
 const ELLIPSIS = '...'
@@ -453,7 +453,7 @@ function SerpSnippetPreview(props: {
   label: string
   issues: Array<string>
 }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
 
   return (
     <div class={styles().serpPreviewBlock}>

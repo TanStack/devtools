@@ -1,8 +1,8 @@
 import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useHeadChanges } from '../../hooks/use-head-changes'
-import { useLocationChanges } from '../../hooks/use-location-changes'
-import { useStyles } from '../../styles/use-styles'
+import { useHeadChanges } from './hooks/use-head-changes'
+import { useLocationChanges } from './hooks/use-location-changes'
+import { useSeoStyles } from './use-seo-styles'
 import { getCanonicalPageData } from './canonical-url-data'
 import { getSocialPreviewsSummary } from './social-previews'
 import { getSerpPreviewSummary } from './serp-preview'
@@ -34,7 +34,7 @@ function sectionStatusPhrase(severity: SeoSeverity | null): string {
 }
 
 function MetaRow(props: { label: string; value: string }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   return (
     <div class={styles().seoMetaRow}>
       <span class={styles().seoMetaRowLabel}>{props.label}</span>
@@ -62,7 +62,7 @@ function scoreToRingColor(score: number): string {
 }
 
 function SeoSubsectionScoreRing(props: { score: number }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const s = styles()
   const score = Math.max(0, Math.min(100, props.score))
   const size = 36
@@ -122,7 +122,7 @@ function SeoSubsectionScoreRing(props: { score: number }) {
 export function SeoOverviewSection(props: {
   goTo: (view: SeoDetailView) => void
 }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const [tick, setTick] = createSignal(0)
 
   useHeadChanges(() => {

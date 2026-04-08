@@ -1,7 +1,7 @@
 import { For, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
-import { useHeadChanges } from '../../hooks/use-head-changes'
+import { useSeoStyles } from './use-seo-styles'
+import { useHeadChanges } from './hooks/use-head-changes'
 import type { SeoSectionSummary } from './seo-section-summary'
 import type { SeoSeverity } from './seo-severity'
 
@@ -167,7 +167,7 @@ export function getSocialPreviewsSummary(): SeoSectionSummary {
 }
 
 function socialAccentClasses(
-  s: ReturnType<ReturnType<typeof useStyles>>,
+  s: ReturnType<ReturnType<typeof useSeoStyles>>,
   accent: SocialAccent,
 ): { card: string; header: string } {
   switch (accent) {
@@ -211,7 +211,7 @@ function SocialPreview(props: {
   network: string
   accent: SocialAccent
 }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const s = styles()
   const accent = socialAccentClasses(s, props.accent)
 
@@ -242,7 +242,7 @@ export function SocialPreviewsSection() {
   const [reports, setReports] = createSignal<Array<SocialReport>>(
     analyzeSocialReports(),
   )
-  const styles = useStyles()
+  const styles = useSeoStyles()
 
   useHeadChanges(() => {
     setReports(analyzeSocialReports())

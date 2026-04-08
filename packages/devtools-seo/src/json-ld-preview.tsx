@@ -1,6 +1,6 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass, seoHealthTier } from './seo-severity'
 import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
@@ -471,7 +471,7 @@ function getJsonLdScore(entries: Array<JsonLdEntry>): number {
 }
 
 function JsonLdEntityPreviewCard(props: { entity: JsonLdValue }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const s = styles()
   const header = getTypeList(props.entity).join(' · ') || 'Entity'
   const rows = getEntityPreviewRows(props.entity)
@@ -505,7 +505,7 @@ function JsonLdEntityPreviewCard(props: { entity: JsonLdValue }) {
 }
 
 function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const s = styles()
 
   const copyParsed = async () => {
@@ -604,7 +604,7 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
 
 export function JsonLdPreviewSection() {
   const entries = analyzeJsonLdScripts()
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const score = getJsonLdScore(entries)
   const s = styles()
   const fieldGaps = sumMissingSchemaFieldCounts(entries)

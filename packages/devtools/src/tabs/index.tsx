@@ -1,7 +1,7 @@
+import { SeoTab } from '@tanstack/devtools-seo'
 import { Cogs, List, PageSearch } from '@tanstack/devtools-ui/icons'
 import { SettingsTab } from './settings-tab'
 import { PluginsTab } from './plugins-tab'
-import { SeoTab } from './seo-tab'
 
 export const tabs = [
   {

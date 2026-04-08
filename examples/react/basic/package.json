@@ -11,6 +11,7 @@
   "dependencies": {
     "@tanstack/devtools-client": "0.0.6",
     "@tanstack/devtools-event-client": "0.4.3",
+    "@tanstack/devtools-seo": "workspace:*",
     "@tanstack/react-devtools": "^0.10.1",
     "@tanstack/react-form": "^1.23.7",
     "@tanstack/react-query": "^5.90.1",
@@ -22,6 +23,7 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
+    "@tanstack/devtools-a11y": "workspace:^",
     "@tanstack/devtools-ui": "0.5.1",
     "@tanstack/devtools-vite": "0.6.0",
     "@tanstack/react-form-devtools": "^0.1.7",

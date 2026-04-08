@@ -1,6 +1,6 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass } from './seo-severity'
 import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
@@ -98,7 +98,7 @@ export function getHeadingStructureSummary(): SeoSectionSummary {
 }
 
 function headingIndentClass(
-  s: ReturnType<ReturnType<typeof useStyles>>,
+  s: ReturnType<ReturnType<typeof useSeoStyles>>,
   level: HeadingItem['level'],
 ): string {
   switch (level) {
@@ -118,7 +118,7 @@ function headingIndentClass(
 }
 
 function headingTagClass(
-  s: ReturnType<ReturnType<typeof useStyles>>,
+  s: ReturnType<ReturnType<typeof useSeoStyles>>,
   level: HeadingItem['level'],
 ): string {
   const base = s.seoHeadingTag
@@ -139,7 +139,7 @@ function headingTagClass(
 }
 
 export function HeadingStructurePreviewSection() {
-  const styles = useStyles()
+  const styles = useSeoStyles()
   const headings = extractHeadings()
   const issues = validateHeadings(headings)
   const s = styles()

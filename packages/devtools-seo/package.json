@@ -1,0 +1,61 @@
+{
+  "name": "@tanstack/devtools-seo",
+  "version": "0.1.0",
+  "description": "SEO overview panel for TanStack Devtools",
+  "author": "TanStack",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TanStack/devtools.git",
+    "directory": "packages/devtools-seo"
+  },
+  "homepage": "https://tanstack.com/devtools",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "devtools",
+    "seo",
+    "solid-js"
+  ],
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist/",
+    "src"
+  ],
+  "scripts": {
+    "clean": "premove ./build ./dist",
+    "lint:fix": "eslint ./src --fix",
+    "test:eslint": "eslint ./src",
+    "test:types": "tsc",
+    "test:build": "publint --strict",
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@tanstack/devtools-ui": "workspace:*",
+    "goober": "^2.1.16",
+    "solid-js": "^1.9.9"
+  },
+  "peerDependencies": {
+    "solid-js": ">=1.9.7"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
+    "vite-plugin-solid": "^2.11.11"
+  }
+}
