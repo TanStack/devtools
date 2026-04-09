@@ -85,7 +85,6 @@
   "overrides": {
     "@tanstack/devtools": "workspace:*",
     "@tanstack/devtools-a11y": "workspace:*",
-    "@tanstack/devtools-seo": "workspace:*",
     "@tanstack/react-devtools": "workspace:*",
     "@tanstack/preact-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
