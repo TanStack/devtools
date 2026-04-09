@@ -17,9 +17,15 @@ export const SeoTab = () => {
 
   return (
     <MainPanel withPadding>
-      <nav class={styles().seoSubNav} aria-label="SEO sections">
+      <nav
+        class={styles().seoSubNav}
+        aria-label="SEO sections"
+        role="tablist"
+      >
         <button
           type="button"
+          role="tab"
+          aria-selected={activeView() === 'overview'}
           class={`${styles().seoSubNavLabel} ${activeView() === 'overview' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('overview')}
         >
@@ -27,6 +33,8 @@ export const SeoTab = () => {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeView() === 'heading-structure'}
           class={`${styles().seoSubNavLabel} ${activeView() === 'heading-structure' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('heading-structure')}
         >
@@ -34,6 +42,8 @@ export const SeoTab = () => {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeView() === 'links-preview'}
           class={`${styles().seoSubNavLabel} ${activeView() === 'links-preview' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('links-preview')}
         >
@@ -41,6 +51,8 @@ export const SeoTab = () => {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeView() === 'social-previews'}
           class={`${styles().seoSubNavLabel} ${activeView() === 'social-previews' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('social-previews')}
         >
@@ -48,6 +60,8 @@ export const SeoTab = () => {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeView() === 'serp-preview'}
           class={`${styles().seoSubNavLabel} ${activeView() === 'serp-preview' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('serp-preview')}
         >
@@ -55,6 +69,8 @@ export const SeoTab = () => {
         </button>
         <button
           type="button"
+          role="tab"
+          aria-selected={activeView() === 'json-ld-preview'}
           class={`${styles().seoSubNavLabel} ${activeView() === 'json-ld-preview' ? styles().seoSubNavLabelActive : ''}`}
           onClick={() => setActiveView('json-ld-preview')}
         >

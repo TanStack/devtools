@@ -4,6 +4,7 @@ import { isInsideDevtools } from './devtools-dom-filter'
 import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass, seoHealthTier } from './seo-severity'
 import type { SeoSeverity } from './seo-severity'
+import { sectionHealthScore } from './seo-section-summary'
 import type { SeoSectionSummary } from './seo-section-summary'
 
 type JsonLdValue = Record<string, unknown>
@@ -84,8 +85,6 @@ function entryUsesOnlySupportedTypes(entry: JsonLdEntry): boolean {
   return entry.types.every(isSupportedSchemaType)
 }
 
-const RESERVED_KEYS = new Set(['@context', '@type', '@id', '@graph'])
-
 function isRecord(value: unknown): value is JsonLdValue {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
@@ -134,8 +133,31 @@ const VALID_SCHEMA_CONTEXTS = new Set([
 
 function validateContext(entity: JsonLdValue): Array<ValidationIssue> {
   const context = entity['@context']
-  if (!context) {
+  if (context === undefined) {
     return [{ severity: 'error', message: 'Missing @context attribute.' }]
+  }
+  if (context === null || isRecord(context)) {
+    return []
+  }
+  if (Array.isArray(context)) {
+    const stringContexts = context.filter(
+      (value): value is string => typeof value === 'string',
+    )
+
+    if (
+      stringContexts.length > 0 &&
+      !stringContexts.some((value) => VALID_SCHEMA_CONTEXTS.has(value))
+    ) {
+      return [
+        {
+          severity: 'error',
+          message:
+            'Array @context is missing a schema.org context URL in its string entries.',
+        },
+      ]
+    }
+
+    return []
   }
   if (typeof context === 'string') {
     if (!VALID_SCHEMA_CONTEXTS.has(context)) {
@@ -151,7 +173,8 @@ function validateContext(entity: JsonLdValue): Array<ValidationIssue> {
   return [
     {
       severity: 'error',
-      message: 'Invalid @context type. Expected a string schema.org URL.',
+      message:
+        'Invalid @context type. Expected a schema.org URL, object, array, or null.',
     },
   ]
 }
@@ -199,20 +222,6 @@ function validateEntityByType(
     issues.push({
       severity: 'info',
       message: `Missing optional attributes: ${missingOptional.join(', ')}`,
-    })
-  }
-
-  const allowedSet = new Set([
-    ...rules.required,
-    ...rules.recommended,
-    ...rules.optional,
-    ...RESERVED_KEYS,
-  ])
-  const unknownKeys = Object.keys(entity).filter((key) => !allowedSet.has(key))
-  if (unknownKeys.length > 0) {
-    issues.push({
-      severity: 'warning',
-      message: `Possible invalid attributes for ${typeName}: ${unknownKeys.join(', ')}`,
     })
   }
 
@@ -455,20 +464,7 @@ function sumMissingSchemaFieldCounts(entries: Array<JsonLdEntry>): {
  * small penalty so optional-field gaps match how the SEO overview weights them.
  */
 function getJsonLdScore(entries: Array<JsonLdEntry>): number {
-  let errors = 0
-  let warnings = 0
-  let infos = 0
-
-  for (const entry of entries) {
-    for (const issue of entry.issues) {
-      if (issue.severity === 'error') errors += 1
-      else if (issue.severity === 'warning') warnings += 1
-      else infos += 1
-    }
-  }
-
-  const penalty = Math.min(100, errors * 20 + warnings * 10 + infos * 2)
-  return Math.max(0, 100 - penalty)
+  return sectionHealthScore(entries.flatMap((entry) => entry.issues))
 }
 
 function JsonLdEntityPreviewCard(props: { entity: JsonLdValue }) {

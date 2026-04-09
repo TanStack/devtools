@@ -32,23 +32,30 @@ function observeLocationChanges() {
     emitLocationChangeIfNeeded()
   }
 
-  window.history.pushState = function (...args) {
-    originalPushState.apply(this, args)
+  function patchedPushState(...args: Parameters<History['pushState']>) {
+    originalPushState.apply(window.history, args)
     dispatchLocationChangeEvent()
   }
 
-  window.history.replaceState = function (...args) {
-    originalReplaceState.apply(this, args)
+  function patchedReplaceState(...args: Parameters<History['replaceState']>) {
+    originalReplaceState.apply(window.history, args)
     dispatchLocationChangeEvent()
   }
+
+  window.history.pushState = patchedPushState
+  window.history.replaceState = patchedReplaceState
 
   window.addEventListener('popstate', handleLocationSignal)
   window.addEventListener('hashchange', handleLocationSignal)
   window.addEventListener(LOCATION_CHANGE_EVENT, handleLocationSignal)
 
   teardownLocationObservation = () => {
-    window.history.pushState = originalPushState
-    window.history.replaceState = originalReplaceState
+    if (window.history.pushState === patchedPushState) {
+      window.history.pushState = originalPushState
+    }
+    if (window.history.replaceState === patchedReplaceState) {
+      window.history.replaceState = originalReplaceState
+    }
     window.removeEventListener('popstate', handleLocationSignal)
     window.removeEventListener('hashchange', handleLocationSignal)
     window.removeEventListener(LOCATION_CHANGE_EVENT, handleLocationSignal)

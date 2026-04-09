@@ -1,4 +1,11 @@
-import { For, Show, createMemo, createSignal } from 'solid-js'
+import {
+  For,
+  Show,
+  createMemo,
+  createSignal,
+  onCleanup,
+  onMount,
+} from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass } from './seo-severity'
@@ -143,9 +150,29 @@ function headingTagClass(
 export function HeadingStructurePreviewSection() {
   const styles = useSeoStyles()
   const [tick, setTick] = createSignal(0)
+  const rescan = () => setTick((t) => t + 1)
 
-  useLocationChanges(() => {
-    setTick((t) => t + 1)
+  useLocationChanges(rescan)
+
+  onMount(() => {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        const target = mutation.target
+        if (target instanceof Element && isInsideDevtools(target)) continue
+        if (target.parentElement && isInsideDevtools(target.parentElement))
+          continue
+        rescan()
+        break
+      }
+    })
+
+    observer.observe(document.body, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    })
+
+    onCleanup(() => observer.disconnect())
   })
 
   const headings = createMemo(() => {
@@ -174,7 +201,7 @@ export function HeadingStructurePreviewSection() {
     <Section>
       <SectionDescription>
         Visualizes heading structure (`h1`-`h6`) in DOM order and highlights
-        common hierarchy issues. This section scans once when opened.
+        common hierarchy issues. This section refreshes as the page changes.
       </SectionDescription>
 
       <div class={s.serpPreviewBlock}>

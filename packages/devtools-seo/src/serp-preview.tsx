@@ -1,6 +1,7 @@
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { For, createMemo, createSignal } from 'solid-js'
 import { useHeadChanges } from './hooks/use-head-changes'
+import { useLocationChanges } from './hooks/use-location-changes'
 import { tokens } from './tokens'
 import { useSeoStyles } from './use-seo-styles'
 import type { SeoIssue, SeoSectionSummary } from './seo-section-summary'
@@ -526,6 +527,10 @@ export function SerpPreviewSection() {
   const [serp, setSerp] = createSignal<SerpData>(getSerpFromHead())
 
   useHeadChanges(() => {
+    setSerp(getSerpFromHead())
+  })
+
+  useLocationChanges(() => {
     setSerp(getSerpFromHead())
   })
 
