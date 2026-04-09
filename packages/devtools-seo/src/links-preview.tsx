@@ -1,8 +1,9 @@
-import { For, Show, createSignal } from 'solid-js'
+import { For, Show, createEffect, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useSeoStyles } from './use-seo-styles'
 import { countBySeverity } from './seo-section-summary'
 import { pickSeverityClass } from './seo-severity'
+import { useLocationChanges } from './hooks/use-location-changes'
 import type { SeoSectionSummary } from './seo-section-summary'
 import type { SeoSeverity } from './seo-severity'
 
@@ -193,23 +194,49 @@ function linkKindBadgeClass(
 
 export function LinksPreviewSection() {
   const styles = useSeoStyles()
-  const links = analyzeLinks()
-  const linksForReport = sortLinksForDisplay(links)
-  const groups = groupLinksByKindOrdered(linksForReport)
-  const [openKinds, setOpenKinds] = createSignal<Set<LinkKind>>(
-    new Set(groups.map((g) => g.kind)),
-  )
-  const issueCount = links.reduce((count, row) => count + row.issues.length, 0)
+  const [tick, setTick] = createSignal(0)
 
-  const counts = links.reduce(
-    (acc, row) => {
-      acc[row.kind] += 1
-      return acc
-    },
-    { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<
-      LinkKind,
-      number
-    >,
+  useLocationChanges(() => {
+    setTick((t) => t + 1)
+  })
+
+  const links = createMemo(() => {
+    void tick()
+    return analyzeLinks()
+  })
+
+  const linksForReport = createMemo(() => sortLinksForDisplay(links()))
+  const groups = createMemo(() => groupLinksByKindOrdered(linksForReport()))
+  const [openKinds, setOpenKinds] = createSignal<Set<LinkKind>>(
+    new Set(groups().map((g) => g.kind)),
+  )
+
+  createEffect(() => {
+    const kinds = groups().map((g) => g.kind)
+    if (openKinds().size === 0 && kinds.length > 0) {
+      setOpenKinds(new Set(kinds))
+    }
+  })
+
+  useLocationChanges(() => {
+    setOpenKinds(new Set(groups().map((g) => g.kind)))
+  })
+
+  const issueCount = createMemo(() =>
+    links().reduce((count, row) => count + row.issues.length, 0),
+  )
+
+  const counts = createMemo(() =>
+    links().reduce(
+      (acc, row) => {
+        acc[row.kind] += 1
+        return acc
+      },
+      { internal: 0, external: 0, 'non-web': 0, invalid: 0 } as Record<
+        LinkKind,
+        number
+      >,
+    ),
   )
 
   const s = styles()
@@ -240,34 +267,34 @@ export function LinksPreviewSection() {
         <div class={s.serpPreviewLabel}>Links summary</div>
         <div class={s.seoChipRow}>
           <span class={`${s.seoPill} ${s.seoPillMuted}`}>
-            {links.length} total
+            {links().length} total
           </span>
           <span class={`${s.seoPill} ${s.seoPillInternal}`}>
-            {counts.internal} internal
+            {counts().internal} internal
           </span>
           <span class={`${s.seoPill} ${s.seoPillBlue}`}>
-            {counts.external} external
+            {counts().external} external
           </span>
-          <Show when={counts['non-web'] > 0}>
+          <Show when={counts()['non-web'] > 0}>
             <span class={`${s.seoPill} ${s.seoPillAmber}`}>
-              {counts['non-web']} non-web
+              {counts()['non-web']} non-web
             </span>
           </Show>
-          <Show when={counts.invalid > 0}>
+          <Show when={counts().invalid > 0}>
             <span class={`${s.seoPill} ${s.seoPillRed}`}>
-              {counts.invalid} invalid
+              {counts().invalid} invalid
             </span>
           </Show>
-          <Show when={issueCount > 0}>
+          <Show when={issueCount() > 0}>
             <span class={`${s.seoPill} ${s.seoPillAmber}`}>
-              {issueCount} issue{issueCount === 1 ? '' : 's'}
+              {issueCount()} issue{issueCount() === 1 ? '' : 's'}
             </span>
           </Show>
         </div>
       </div>
 
       <Show
-        when={links.length > 0}
+        when={links().length > 0}
         fallback={
           <div class={s.seoMissingTagsSection}>
             No links found on this page.
@@ -277,7 +304,7 @@ export function LinksPreviewSection() {
         <div class={s.serpPreviewBlock}>
           <div class={s.serpPreviewLabel}>Links report</div>
           <ul class={s.seoLinksAccordion}>
-            <For each={groups}>
+            <For each={groups()}>
               {(group) => {
                 const expanded = () => openKinds().has(group.kind)
                 return (

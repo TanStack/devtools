@@ -1,7 +1,8 @@
-import { For, Show } from 'solid-js'
+import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass } from './seo-severity'
+import { useLocationChanges } from './hooks/use-location-changes'
 import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
 
@@ -140,8 +141,18 @@ function headingTagClass(
 
 export function HeadingStructurePreviewSection() {
   const styles = useSeoStyles()
-  const headings = extractHeadings()
-  const issues = validateHeadings(headings)
+  const [tick, setTick] = createSignal(0)
+
+  useLocationChanges(() => {
+    setTick((t) => t + 1)
+  })
+
+  const headings = createMemo(() => {
+    void tick()
+    return extractHeadings()
+  })
+
+  const issues = createMemo(() => validateHeadings(headings()))
   const s = styles()
 
   const issueBulletClass = (sev: SeoSeverity) =>
@@ -169,11 +180,11 @@ export function HeadingStructurePreviewSection() {
         <div class={s.seoHeadingTreeHeaderRow}>
           <div class={s.serpPreviewLabelFlat}>Heading tree</div>
           <span class={s.seoHeadingTreeCount}>
-            {headings.length} heading{headings.length === 1 ? '' : 's'}
+            {headings().length} heading{headings().length === 1 ? '' : 's'}
           </span>
         </div>
         <Show
-          when={headings.length > 0}
+          when={headings().length > 0}
           fallback={
             <div class={s.seoMissingTagsSection}>
               No headings found on this page.
@@ -181,7 +192,7 @@ export function HeadingStructurePreviewSection() {
           }
         >
           <ul class={s.seoHeadingTreeList}>
-            <For each={headings}>
+            <For each={headings()}>
               {(heading) => (
                 <li
                   class={`${s.seoHeadingTreeItem} ${headingIndentClass(s, heading.level)}`}
@@ -205,11 +216,11 @@ export function HeadingStructurePreviewSection() {
         </Show>
       </div>
 
-      <Show when={issues.length > 0}>
+      <Show when={issues().length > 0}>
         <div class={s.serpPreviewBlock}>
           <div class={s.serpPreviewLabel}>Structure issues</div>
           <ul class={s.seoIssueList}>
-            <For each={issues}>
+            <For each={issues()}>
               {(issue) => (
                 <li class={s.seoIssueRow}>
                   <span class={issueBulletClass(issue.severity)}>●</span>

@@ -47,7 +47,7 @@
   "size-limit": [
     {
       "path": "packages/devtools/dist/index.js",
-      "limit": "69 KB"
+      "limit": "60 KB"
     },
     {
       "path": "packages/event-bus-client/dist/esm/plugin.js",
