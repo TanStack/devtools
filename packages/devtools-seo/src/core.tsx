@@ -2,8 +2,6 @@
 
 import { constructCoreClass } from '@tanstack/devtools-utils/solid'
 
-const [SeoDevtoolsCore, SeoDevtoolsCoreNoOp] = constructCoreClass(
-  () => import('./solid-panel'),
-)
+const [SeoDevtoolsCore] = constructCoreClass(() => import('./solid-panel'))
 
-export { SeoDevtoolsCore, SeoDevtoolsCoreNoOp }
+export { SeoDevtoolsCore }

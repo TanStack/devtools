@@ -54,7 +54,6 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@tanstack/devtools": "workspace:*",
     "@tanstack/devtools-ui": "workspace:*",
     "@tanstack/devtools-utils": "workspace:*",
     "goober": "^2.1.16",

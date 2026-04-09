@@ -5,7 +5,7 @@ import { tokens } from './tokens'
 
 import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 
-export function createSeoStyles(theme: TanStackDevtoolsTheme) {
+function createSeoStyles(theme: TanStackDevtoolsTheme) {
   const { colors, font } = tokens
   const { fontFamily } = font
   const css = goober.css
