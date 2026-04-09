@@ -1,5 +1,6 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
+import { isInsideDevtools } from './devtools-dom-filter'
 import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass, seoHealthTier } from './seo-severity'
 import type { SeoSeverity } from './seo-severity'
@@ -327,7 +328,7 @@ function analyzeJsonLdScripts(): Array<JsonLdEntry> {
     document.querySelectorAll<HTMLScriptElement>(
       'script[type="application/ld+json"]',
     ),
-  )
+  ).filter((script) => !isInsideDevtools(script))
 
   return scripts.map((script, index) => {
     const raw = script.textContent.trim() || ''

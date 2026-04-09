@@ -2,6 +2,7 @@ import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useSeoStyles } from './use-seo-styles'
 import { pickSeverityClass } from './seo-severity'
+import { isInsideDevtools } from './devtools-dom-filter'
 import { useLocationChanges } from './hooks/use-location-changes'
 import type { SeoSeverity } from './seo-severity'
 import type { SeoSectionSummary } from './seo-section-summary'
@@ -21,7 +22,7 @@ type HeadingIssue = {
 function extractHeadings(): Array<HeadingItem> {
   const nodes = Array.from(
     document.body.querySelectorAll<HTMLHeadingElement>('h1,h2,h3,h4,h5,h6'),
-  )
+  ).filter((node) => !isInsideDevtools(node))
 
   return nodes.map((node, index) => {
     const tag = node.tagName.toLowerCase() as HeadingItem['tag']

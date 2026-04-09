@@ -1,5 +1,6 @@
 import { For, Show, createEffect, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
+import { isInsideDevtools } from './devtools-dom-filter'
 import { useSeoStyles } from './use-seo-styles'
 import { countBySeverity } from './seo-section-summary'
 import { pickSeverityClass } from './seo-severity'
@@ -106,13 +107,7 @@ function analyzeLinks(): Array<LinkRow> {
   const anchors = Array.from(
     document.body.querySelectorAll<HTMLAnchorElement>('a[href]'),
   )
-  return anchors
-    .filter(
-      (anchor) =>
-        !anchor.closest('[data-testid="tanstack_devtools"]') &&
-        !anchor.closest('[data-devtools-root]'),
-    )
-    .map(classifyLink)
+  return anchors.filter((anchor) => !isInsideDevtools(anchor)).map(classifyLink)
 }
 
 /** Display order in the links report: internal, external, non-web, then invalid. */
