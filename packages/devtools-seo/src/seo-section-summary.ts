@@ -19,6 +19,8 @@ export type SeoIssueCounts = {
 export type SeoSectionSummary = {
   issues: Array<SeoIssue>
   hint?: string
+  /** Relative influence on the overall overview score. Default: 1 */
+  weight?: number
   /** When `issues` is capped, total issues before capping. */
   issueCount?: number
   /** Per-severity totals before any display cap is applied. */
@@ -100,12 +102,21 @@ export function aggregateSeoHealth(summaries: Array<SeoSectionSummary>): {
     },
     { error: 0, warning: 0, info: 0 },
   )
-  const penalty = Math.min(
-    100,
-    counts.error * 22 + counts.warning * 9 + counts.info * 2,
-  )
-  const score = Math.max(0, 100 - penalty)
+  const weightedScore =
+    summaries.reduce((total, summary) => {
+      const weight = Math.max(0, summary.weight ?? 1)
+      return total + sectionHealthScore(summary) * weight
+    }, 0) /
+    Math.max(
+      1,
+      summaries.reduce(
+        (total, summary) => total + Math.max(0, summary.weight ?? 1),
+        0,
+      ),
+    )
+
+  const score = Math.max(0, Math.min(100, Math.round(weightedScore)))
   const label: 'Good' | 'Fair' | 'Poor' =
-    counts.error > 0 ? 'Poor' : counts.warning > 0 ? 'Fair' : 'Good'
+    score >= 80 ? 'Good' : score >= 50 ? 'Fair' : 'Poor'
   return { score, label, counts }
 }

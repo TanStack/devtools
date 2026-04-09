@@ -202,19 +202,40 @@ export function LinksPreviewSection() {
 
   const linksForReport = createMemo(() => sortLinksForDisplay(links()))
   const groups = createMemo(() => groupLinksByKindOrdered(linksForReport()))
-  const [openKinds, setOpenKinds] = createSignal<Set<LinkKind>>(
-    new Set(groups().map((g) => g.kind)),
-  )
+  const [openKinds, setOpenKinds] = createSignal<Set<LinkKind>>(new Set())
+  const [knownGroupKey, setKnownGroupKey] = createSignal('')
 
   createEffect(() => {
     const kinds = groups().map((g) => g.kind)
-    if (openKinds().size === 0 && kinds.length > 0) {
-      setOpenKinds(new Set(kinds))
-    }
-  })
+    const nextKey = kinds.join('|')
 
-  useLocationChanges(() => {
-    setOpenKinds(new Set(groups().map((g) => g.kind)))
+    if (nextKey === knownGroupKey()) {
+      return
+    }
+
+    setOpenKinds((prev) => {
+      if (knownGroupKey() === '') {
+        return new Set(kinds)
+      }
+
+      const next = new Set<LinkKind>()
+
+      for (const kind of kinds) {
+        if (prev.has(kind)) {
+          next.add(kind)
+        }
+      }
+
+      for (const kind of kinds) {
+        if (!prev.has(kind)) {
+          next.add(kind)
+        }
+      }
+
+      return next
+    })
+
+    setKnownGroupKey(nextKey)
   })
 
   const issueCount = createMemo(() =>

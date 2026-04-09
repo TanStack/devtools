@@ -157,6 +157,7 @@ export function SeoOverviewSection(props: {
     const canonicalSummary: SeoSectionSummary = {
       issues: canonical.issues,
       hint: canonical.indexable ? 'Indexable' : 'Noindex',
+      weight: 0.55,
     }
 
     const health = aggregateSeoHealth([
