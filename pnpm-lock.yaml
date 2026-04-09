@@ -529,7 +529,7 @@ importers:
         specifier: workspace:^
         version: link:../../../packages/devtools-seo
       '@tanstack/react-devtools':
-        specifier: ^0.10.1
+        specifier: ^0.10.2
         version: link:../../../packages/react-devtools
       '@tanstack/react-router':
         specifier: ^1.132.0

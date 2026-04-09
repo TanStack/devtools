@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/devtools-seo": "workspace:^",
-    "@tanstack/react-devtools": "^0.10.1",
+    "@tanstack/react-devtools": "^0.10.2",
     "@tanstack/react-router": "^1.132.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
