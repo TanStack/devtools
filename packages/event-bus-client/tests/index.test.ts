@@ -1,16 +1,41 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import { EventClient } from '../src'
+
+class TestClientEventBus {
+  #dispatcher = (e: Event) => {
+    const event = (e as CustomEvent).detail
+    window.dispatchEvent(new CustomEvent(event.type, { detail: event }))
+    window.dispatchEvent(
+      new CustomEvent('tanstack-devtools-global', {
+        detail: event,
+      }),
+    )
+  }
+
+  #connectFunction = () => {
+    window.dispatchEvent(new CustomEvent('tanstack-connect-success'))
+  }
+
+  start() {
+    window.addEventListener('tanstack-dispatch-event', this.#dispatcher)
+    window.addEventListener('tanstack-connect', this.#connectFunction)
+  }
+
+  stop() {
+    window.removeEventListener('tanstack-dispatch-event', this.#dispatcher)
+    window.removeEventListener('tanstack-connect', this.#connectFunction)
+  }
+}
 
 // client bus uses window to dispatch events
 const clientBusEmitTarget = window
 
 describe('EventClient', () => {
-  let bus: ClientEventBus
+  let bus: TestClientEventBus
 
   beforeEach(() => {
     // Create a fresh bus for each test to ensure isolation
-    bus = new ClientEventBus()
+    bus = new TestClientEventBus()
     bus.start()
   })
 
