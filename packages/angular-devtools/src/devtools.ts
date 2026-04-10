@@ -22,11 +22,14 @@ import {
   untracked,
 } from '@angular/core'
 import type { Signal } from '@angular/core'
-import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
+import type {
+  TanStackDevtoolsPlugin,
+} from '@tanstack/devtools'
 import type {
   TanStackDevtoolsAngularFunctionalComponent,
   TanStackDevtoolsAngularInit,
   TanStackDevtoolsAngularPlugin,
+  TanStackDevtoolsAngularPluginInputProps,
   TanStackDevtoolsAngularPluginRender,
 } from './types'
 
@@ -127,7 +130,7 @@ export class TanStackDevtools {
                 ...(plugin.inputs ?? {}),
               })
             },
-      render: (e, theme) => {
+      render: (e, props) => {
         if (!plugin.render) {
           return
         }
@@ -135,7 +138,7 @@ export class TanStackDevtools {
         runInInjectionContext(this.#viewInjector, () => {
           if (isClassConstructor<unknown>(plugin.render)) {
             this.renderComponent(plugin.render, e, {
-              theme,
+              ...props,
               ...(plugin.inputs ?? {}),
             })
           } else {
@@ -146,7 +149,7 @@ export class TanStackDevtools {
               >,
               e,
               {
-                theme,
+                ...props,
                 ...(plugin.inputs ?? {}),
               },
             )
@@ -159,7 +162,7 @@ export class TanStackDevtools {
     }
   }
 
-  #normalizeInputs<TInputs extends Record<string, unknown>>(
+  #normalizeInputs<TInputs extends Record<string, any>>(
     inputs: Signal<TInputs> | (() => TInputs) | TInputs,
   ): () => TInputs {
     return isSignal(inputs)
@@ -170,7 +173,9 @@ export class TanStackDevtools {
   async #renderComponentFunction(
     renderFn: Exclude<TanStackDevtoolsAngularPluginRender, Type<any> | null>,
     container: HTMLElement,
-    inputs: (() => Record<string, unknown>) | Record<string, unknown>,
+    inputs:
+      | (() => TanStackDevtoolsAngularPluginInputProps)
+      | TanStackDevtoolsAngularPluginInputProps,
   ) {
     const result = await renderFn()
     if (!result) return
@@ -193,7 +198,7 @@ export class TanStackDevtools {
   #renderFunctionalComponent(
     fn: TanStackDevtoolsAngularFunctionalComponent,
     container: HTMLElement,
-    inputs: () => Record<string, unknown>,
+    inputs: () => TanStackDevtoolsAngularPluginInputProps,
   ) {
     const component = createComponent(TanStackPluginView, {
       hostElement: container,

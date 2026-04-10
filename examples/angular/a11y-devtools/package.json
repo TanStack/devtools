@@ -18,8 +18,8 @@
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
     "@tanstack/angular-devtools": "^0.0.1",
-    "@tanstack/devtools-event-client": "0.4.2",
     "@tanstack/devtools-a11y": "^0.1.2",
+    "@tanstack/devtools-event-client": "0.4.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

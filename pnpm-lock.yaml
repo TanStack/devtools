@@ -114,8 +114,8 @@ importers:
         specifier: ^0.1.2
         version: link:../../../packages/devtools-a11y
       '@tanstack/devtools-event-client':
-        specifier: 0.4.2
-        version: 0.4.2
+        specifier: 0.4.3
+        version: link:../../../packages/event-bus-client
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -163,8 +163,8 @@ importers:
         specifier: ^0.0.1
         version: link:../../../packages/angular-devtools
       '@tanstack/devtools-event-client':
-        specifier: 0.4.2
-        version: 0.4.2
+        specifier: 0.4.3
+        version: link:../../../packages/event-bus-client
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -212,14 +212,14 @@ importers:
         specifier: ^0.0.1
         version: link:../../../packages/angular-devtools
       '@tanstack/devtools':
-        specifier: ^0.10.13
-        version: 0.10.14(csstype@3.2.3)(solid-js@1.9.12)
+        specifier: ^0.11.2
+        version: link:../../../packages/devtools
       '@tanstack/devtools-event-client':
-        specifier: 0.4.2
-        version: 0.4.2
+        specifier: 0.4.3
+        version: link:../../../packages/event-bus-client
       '@tanstack/devtools-utils':
-        specifier: ^0.3.3
-        version: 0.3.4(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))
+        specifier: ^0.4.0
+        version: link:../../../packages/devtools-utils
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -272,8 +272,8 @@ importers:
         specifier: ^0.0.1
         version: link:../../../packages/angular-devtools
       '@tanstack/devtools-event-client':
-        specifier: 0.4.2
-        version: 0.4.2
+        specifier: 0.4.3
+        version: link:../../../packages/event-bus-client
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -458,28 +458,28 @@ importers:
         version: 4.2.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@tanstack/ai':
         specifier: latest
-        version: 0.9.2
+        version: 0.10.1
       '@tanstack/ai-anthropic':
         specifier: latest
-        version: 0.7.1(@tanstack/ai@0.9.2)(zod@4.3.6)
+        version: 0.7.2(@tanstack/ai@0.10.1)(zod@4.3.6)
       '@tanstack/ai-client':
         specifier: latest
-        version: 0.7.5
+        version: 0.7.8
       '@tanstack/ai-gemini':
         specifier: latest
-        version: 0.8.4(@modelcontextprotocol/sdk@1.26.0(zod@4.3.6))(@tanstack/ai@0.9.2)
+        version: 0.8.5(@modelcontextprotocol/sdk@1.26.0(zod@4.3.6))(@tanstack/ai@0.10.1)
       '@tanstack/ai-ollama':
         specifier: latest
-        version: 0.6.3(@tanstack/ai@0.9.2)
+        version: 0.6.4(@tanstack/ai@0.10.1)
       '@tanstack/ai-openai':
         specifier: latest
-        version: 0.7.2(@tanstack/ai-client@0.7.5)(@tanstack/ai@0.9.2)(ws@8.20.0)(zod@4.3.6)
+        version: 0.7.3(@tanstack/ai-client@0.7.8)(@tanstack/ai@0.10.1)(ws@8.20.0)(zod@4.3.6)
       '@tanstack/ai-react':
         specifier: latest
-        version: 0.7.6(@tanstack/ai@0.9.2)(@types/react@19.2.14)(react@19.2.4)
+        version: 0.7.9(@tanstack/ai@0.10.1)(@types/react@19.2.14)(react@19.2.4)
       '@tanstack/react-ai-devtools':
         specifier: latest
-        version: 0.2.19(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))
+        version: 0.2.22(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))
       '@tanstack/react-devtools':
         specifier: latest
         version: link:../../../packages/react-devtools
@@ -1001,6 +1001,9 @@ importers:
       ng-packagr:
         specifier: ^21.2.0
         version: 21.2.2(@angular/compiler-cli@21.2.8(@angular/compiler@21.2.8)(typescript@5.9.3))(tailwindcss@4.2.2)(tslib@2.8.1)(typescript@5.9.3)
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/debug@4.1.13)(@types/node@22.19.15)(happy-dom@18.0.1)(jiti@2.6.1)(jsdom@27.4.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   packages/devtools:
     dependencies:
@@ -4290,65 +4293,53 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/ai-anthropic@0.7.1':
-    resolution: {integrity: sha512-yeDZwLh/59qtG5bbvCGm/fE3eunJ7C6WQqtSiOdFvOni59wkLLjLY9kvi0Ppu21Zm6tdViGuVz9/yNtrLNbYhw==}
+  '@tanstack/ai-anthropic@0.7.2':
+    resolution: {integrity: sha512-ZV01BPuplBOhnnzPpFqoPBWLQNGFSBPkIUaE23NqGrjzyKfeWed4mkTl/Q5cg2rF1VDTS8iOYXWME206kHuiPA==}
     peerDependencies:
-      '@tanstack/ai': ^0.9.1
+      '@tanstack/ai': ^0.10.0
       zod: ^4.0.0
 
-  '@tanstack/ai-client@0.7.5':
-    resolution: {integrity: sha512-GaHbebljFNn58L3oGEI8+ZGhavwY1YFXo+MxkL6qpK0YwYJOQ5A4dJz57roiD0uCZt9k10VMdKgwgAdWyW5JRQ==}
+  '@tanstack/ai-client@0.7.8':
+    resolution: {integrity: sha512-va69Dhl5WPc+cJgiI/Bq9TaxBTPy9BEc/ArcFBhQPtpkv7MX3wldxn4Z6lDvYH32xAc4OjEBF9Ebq3KBP78oAA==}
 
-  '@tanstack/ai-devtools-core@0.3.15':
-    resolution: {integrity: sha512-ST2Hv9UVDPSd8+PZOHwt2QEtSRw7ZZHULLOMZXmO9wJZ6Wpv9+EE5NvWX3TE2K5C8vH1Wma1Ily1dKnRNt0KFw==}
+  '@tanstack/ai-devtools-core@0.3.18':
+    resolution: {integrity: sha512-wNEROAn3tEERisMp9hFeJSdsRbKkKZow0Dv04PR2W6yvkQYNMY4pfhA7tnczsSq8XyNjjp0K/2BM35H/e+pryg==}
 
-  '@tanstack/ai-event-client@0.1.4':
-    resolution: {integrity: sha512-SDZR7jjC+HNB6WHgfuF++n9WxLV0DiMiHL+77nmGg1A4B7zEQh/Nh/bqBshHcnlBDK+ZuL4QIvw1eCMnbddzww==}
+  '@tanstack/ai-event-client@0.2.1':
+    resolution: {integrity: sha512-uq3fCZlmQmkrDeGTX1Nt1i4DrXqmF9SPeR598sWo5+FU7+hWaevRLOoWAl/Vkxuh+3+vQofoLCztJSa7QwBEAg==}
     peerDependencies:
-      '@tanstack/ai': 0.9.2
+      '@tanstack/ai': 0.10.1
 
-  '@tanstack/ai-gemini@0.8.4':
-    resolution: {integrity: sha512-89bimC1QWhDglSBQGjS1+oju5bpkhNSTmAPhSkuWzZR8OO3B/2KUCQPdi44AQqNkaOBr/ZVK78cz8ZScQ04tow==}
+  '@tanstack/ai-gemini@0.8.5':
+    resolution: {integrity: sha512-8WP9TaC157kSORscex1HAvOBlnc4x3mqjs/MiymKeEBABe0AQ3FXmsyxQY7feQ2IuBWBLYPCAaFyKpPkRp7w1A==}
     peerDependencies:
-      '@tanstack/ai': ^0.9.1
+      '@tanstack/ai': ^0.10.0
 
-  '@tanstack/ai-ollama@0.6.3':
-    resolution: {integrity: sha512-wLbJyE8ujZvhTEPv3J+Ih0La3xocS27NPba0DVgXIxPP3ArHs8g6Ly65r7Dv8HCbeVj+jk/dGBwwvHBK9QSI4A==}
+  '@tanstack/ai-ollama@0.6.4':
+    resolution: {integrity: sha512-ZdbXM0SJxTPL09DaiYh+xqrJ7nSFc6zl7gYQ5S02tmDiQNBHVCWJmRVhaSdUDtJf7+xXiTL7Bff/dndSNMWU4g==}
     peerDependencies:
-      '@tanstack/ai': ^0.9.1
+      '@tanstack/ai': ^0.10.0
 
-  '@tanstack/ai-openai@0.7.2':
-    resolution: {integrity: sha512-vFNhta3sDs0HSmOgPytCslw3PBS6WpdLZdItENNKTTE7GD/lNE8a9hiJEHdQHoV8ek3jgv5XgEzRgzwjaALSjg==}
+  '@tanstack/ai-openai@0.7.3':
+    resolution: {integrity: sha512-xdxTR7E/BzeQcFte/chDA//2WpZQqDQF4op1TgKNoaTqffW9+JMlSubaZbMkawtJoImVCGjZoPVkUfb8aRldNA==}
     peerDependencies:
-      '@tanstack/ai': ^0.9.1
-      '@tanstack/ai-client': ^0.7.4
+      '@tanstack/ai': ^0.10.0
+      '@tanstack/ai-client': ^0.7.7
       zod: ^4.0.0
 
-  '@tanstack/ai-react@0.7.6':
-    resolution: {integrity: sha512-BS9MWPkUQlijQgm5Vln8TvdHUIuVJYV1biLZrkU6DU4p3TTmaqC3WU0qwoGnE7qIR2B0shcuPo2O2+nPtVXSyw==}
+  '@tanstack/ai-react@0.7.9':
+    resolution: {integrity: sha512-0UfIStN+0JrB1YsXM5PWJ2PGqiudQPWZZnkfxztfhOhhNJAKvxrmqZhe4PN9DDdbRRViUkNWt6F/916d9Y1KZw==}
     peerDependencies:
-      '@tanstack/ai': ^0.9.2
+      '@tanstack/ai': ^0.10.1
       '@types/react': '>=18.0.0'
       react: '>=18.0.0'
 
-  '@tanstack/ai@0.9.2':
-    resolution: {integrity: sha512-4Uz310m7vZPyPzJpxjWZXGo2hCtO1X1WbaexYGrxkRxyj2iXZuVFL02rDE7r5y3/v0NRjM+AimLne4cHTkWDHg==}
-    engines: {node: '>=18'}
-
-  '@tanstack/devtools-client@0.0.6':
-    resolution: {integrity: sha512-f85ZJXJnDIFOoykG/BFIixuAevJovCvJF391LPs6YjBAPhGYC50NWlx1y4iF/UmK5/cCMx+/JqI5SBOz7FanQQ==}
-    engines: {node: '>=18'}
-
-  '@tanstack/devtools-event-bus@0.4.1':
-    resolution: {integrity: sha512-cNnJ89Q021Zf883rlbBTfsaxTfi2r73/qejGtyTa7ksErF3hyDyAq1aTbo5crK9dAL7zSHh9viKY1BtMls1QOA==}
+  '@tanstack/ai@0.10.1':
+    resolution: {integrity: sha512-hPjwgVpsazcvJqPyaXkQxJY13ExKL2sftlUrWM7tk92gBd7+gbKkpBVDVkLmvfRClhDNpweDk1Anu/ezflk1TQ==}
     engines: {node: '>=18'}
 
   '@tanstack/devtools-event-client@0.3.5':
     resolution: {integrity: sha512-RL1f5ZlfZMpghrCIdzl6mLOFLTuhqmPNblZgBaeKfdtk5rfbjykurv+VfYydOFXj0vxVIoA2d/zT7xfD7Ph8fw==}
-    engines: {node: '>=18'}
-
-  '@tanstack/devtools-event-client@0.4.2':
-    resolution: {integrity: sha512-nerCPwV6RI4zQY+T5xxXEDOPgSF/gqf6dmCbDpTwkAvQJPHKgroHwKE5kvAcM3JC3ptdr5euwNV0//f8e+wmfQ==}
     engines: {node: '>=18'}
 
   '@tanstack/devtools-event-client@0.4.3':
@@ -4362,39 +4353,11 @@ packages:
     peerDependencies:
       solid-js: '>=1.9.7'
 
-  '@tanstack/devtools-ui@0.5.0':
-    resolution: {integrity: sha512-nNZ14054n31fWB61jtWhZYLRdQ3yceCE3G/RINoINUB0RqIGZAIm9DnEDwOTAOfqt4/a/D8vNk8pJu6RQUp74g==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      solid-js: '>=1.9.7'
-
   '@tanstack/devtools-ui@0.5.1':
     resolution: {integrity: sha512-T9JjAdqMSnxsVO6AQykD5vhxPF4iFLKtbYxee/bU3OLlk446F5C1220GdCmhDSz7y4lx+m8AvIS0bq6zzvdDUA==}
     engines: {node: '>=18'}
     peerDependencies:
       solid-js: '>=1.9.7'
-
-  '@tanstack/devtools-utils@0.3.4':
-    resolution: {integrity: sha512-lQdUdpSh1odWCZjtjOi9FA+MJWvIK/4TkGyeJeiOX7eY3JW+z3FNwHUR10vToHOwAJB6UGJhi04RNZQRpiM7GQ==}
-    engines: {node: '>=18'}
-    hasBin: true
-    peerDependencies:
-      '@types/react': '>=17.0.0'
-      preact: '>=10.0.0'
-      react: '>=17.0.0'
-      solid-js: '>=1.9.7'
-      vue: '>=3.2.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      preact:
-        optional: true
-      react:
-        optional: true
-      solid-js:
-        optional: true
-      vue:
-        optional: true
 
   '@tanstack/devtools-utils@0.4.0':
     resolution: {integrity: sha512-KsGzYhA8L/fCNgyyMyoUy+TKtx+DjNbzWwqH6wXL48Llzo7kvV9RynYJlaO8Qkzwm+NdHXSgsljQNjQ3CKPpZA==}
@@ -4417,13 +4380,6 @@ packages:
         optional: true
       vue:
         optional: true
-
-  '@tanstack/devtools@0.10.14':
-    resolution: {integrity: sha512-bg1e0PyjmMMsc9VSOGb9etu15CpFdAwlQ5DD2xS6N93iTPgCPWXiZQFZygrEDoKnnx1x7BM6QTaiukizaejgSA==}
-    engines: {node: '>=18'}
-    hasBin: true
-    peerDependencies:
-      solid-js: '>=1.9.7'
 
   '@tanstack/directive-functions-plugin@1.121.21':
     resolution: {integrity: sha512-B9z/HbF7gJBaRHieyX7f2uQ4LpLLAVAEutBZipH6w+CYD6RHRJvSVPzECGHF7icFhNWTiJQL2QR6K07s59yzEw==}
@@ -4472,8 +4428,8 @@ packages:
   '@tanstack/query-devtools@5.96.0':
     resolution: {integrity: sha512-MEdO1M/9ItB62OtTqVo8AIj/G6vJemA642N56bw8aIqpXKIj5VG/3xWgh2piw76NmoCIlapxjjWp1MMLmrvKJw==}
 
-  '@tanstack/react-ai-devtools@0.2.19':
-    resolution: {integrity: sha512-bbnY4kKENlFtZSHAhrspmpScUFjbgMqr+j6yhKSAVkH7FpJbyMgkVOmQKE6YeTXzrBVrHsxFaGfGJS3ZYIh1iw==}
+  '@tanstack/react-ai-devtools@0.2.22':
+    resolution: {integrity: sha512-CT+l/0rxKjLkvyN4iktJ0Dn//yt5+MIkNamvVW5b4SncfaOIM7QNWChI2OTeRHLPHJEslB5HcUh7bR/H+BGO2w==}
     peerDependencies:
       '@types/react': ^17.0.0 || ^18.0.0 || ^19.0.0
       react: ^17.0.0 || ^18.0.0 || ^19.0.0
@@ -10278,46 +10234,6 @@ packages:
       yaml:
         optional: true
 
-  vite@7.3.1:
-    resolution: {integrity: sha512-w+N7Hifpc3gRjZ63vYBXA56dvvRlNWRczTdmCBBa+CotUzAPf5b7YMdMR/8CQoeYE5LX3W4wj6RYTgonm1b9DA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': ^20.19.0 || >=22.12.0
-      jiti: '>=1.21.0'
-      less: ^4.0.0
-      lightningcss: ^1.21.0
-      sass: ^1.70.0
-      sass-embedded: ^1.70.0
-      stylus: '>=0.54.8'
-      sugarss: ^5.0.0
-      terser: ^5.16.0
-      tsx: ^4.8.1
-      yaml: ^2.4.2
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      jiti:
-        optional: true
-      less:
-        optional: true
-      lightningcss:
-        optional: true
-      sass:
-        optional: true
-      sass-embedded:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-      tsx:
-        optional: true
-      yaml:
-        optional: true
-
   vite@7.3.2:
     resolution: {integrity: sha512-Bby3NOsna2jsjfLVOHKes8sGwgl4TT0E6vvpYgnAYDIF/tie7MRaFthmKuHx1NSXjiTueXH3do80FMQgvEktRg==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -13569,21 +13485,21 @@ snapshots:
       tailwindcss: 4.2.2
       vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
-  '@tanstack/ai-anthropic@0.7.1(@tanstack/ai@0.9.2)(zod@4.3.6)':
+  '@tanstack/ai-anthropic@0.7.2(@tanstack/ai@0.10.1)(zod@4.3.6)':
     dependencies:
       '@anthropic-ai/sdk': 0.71.2(zod@4.3.6)
-      '@tanstack/ai': 0.9.2
+      '@tanstack/ai': 0.10.1
       zod: 4.3.6
 
-  '@tanstack/ai-client@0.7.5':
+  '@tanstack/ai-client@0.7.8':
     dependencies:
-      '@tanstack/ai': 0.9.2
-      '@tanstack/ai-event-client': 0.1.4(@tanstack/ai@0.9.2)
+      '@tanstack/ai': 0.10.1
+      '@tanstack/ai-event-client': 0.2.1(@tanstack/ai@0.10.1)
 
-  '@tanstack/ai-devtools-core@0.3.15(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(vue@3.5.31(typescript@5.9.3))':
+  '@tanstack/ai-devtools-core@0.3.18(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(vue@3.5.31(typescript@5.9.3))':
     dependencies:
-      '@tanstack/ai': 0.9.2
-      '@tanstack/ai-event-client': 0.1.4(@tanstack/ai@0.9.2)
+      '@tanstack/ai': 0.10.1
+      '@tanstack/ai-event-client': 0.2.1(@tanstack/ai@0.10.1)
       '@tanstack/devtools-ui': 0.5.1(csstype@3.2.3)(solid-js@1.9.12)
       '@tanstack/devtools-utils': 0.4.0(@types/react@19.2.14)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))
       goober: 2.1.18(csstype@3.2.3)
@@ -13595,76 +13511,54 @@ snapshots:
       - react
       - vue
 
-  '@tanstack/ai-event-client@0.1.4(@tanstack/ai@0.9.2)':
+  '@tanstack/ai-event-client@0.2.1(@tanstack/ai@0.10.1)':
     dependencies:
-      '@tanstack/ai': 0.9.2
+      '@tanstack/ai': 0.10.1
       '@tanstack/devtools-event-client': 0.4.3
 
-  '@tanstack/ai-gemini@0.8.4(@modelcontextprotocol/sdk@1.26.0(zod@4.3.6))(@tanstack/ai@0.9.2)':
+  '@tanstack/ai-gemini@0.8.5(@modelcontextprotocol/sdk@1.26.0(zod@4.3.6))(@tanstack/ai@0.10.1)':
     dependencies:
       '@google/genai': 1.47.0(@modelcontextprotocol/sdk@1.26.0(zod@4.3.6))
-      '@tanstack/ai': 0.9.2
+      '@tanstack/ai': 0.10.1
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - bufferutil
       - supports-color
       - utf-8-validate
 
-  '@tanstack/ai-ollama@0.6.3(@tanstack/ai@0.9.2)':
+  '@tanstack/ai-ollama@0.6.4(@tanstack/ai@0.10.1)':
     dependencies:
-      '@tanstack/ai': 0.9.2
+      '@tanstack/ai': 0.10.1
       ollama: 0.6.3
 
-  '@tanstack/ai-openai@0.7.2(@tanstack/ai-client@0.7.5)(@tanstack/ai@0.9.2)(ws@8.20.0)(zod@4.3.6)':
+  '@tanstack/ai-openai@0.7.3(@tanstack/ai-client@0.7.8)(@tanstack/ai@0.10.1)(ws@8.20.0)(zod@4.3.6)':
     dependencies:
-      '@tanstack/ai': 0.9.2
-      '@tanstack/ai-client': 0.7.5
+      '@tanstack/ai': 0.10.1
+      '@tanstack/ai-client': 0.7.8
       openai: 6.33.0(ws@8.20.0)(zod@4.3.6)
       zod: 4.3.6
     transitivePeerDependencies:
       - ws
 
-  '@tanstack/ai-react@0.7.6(@tanstack/ai@0.9.2)(@types/react@19.2.14)(react@19.2.4)':
+  '@tanstack/ai-react@0.7.9(@tanstack/ai@0.10.1)(@types/react@19.2.14)(react@19.2.4)':
     dependencies:
-      '@tanstack/ai': 0.9.2
-      '@tanstack/ai-client': 0.7.5
+      '@tanstack/ai': 0.10.1
+      '@tanstack/ai-client': 0.7.8
       '@types/react': 19.2.14
       react: 19.2.4
 
-  '@tanstack/ai@0.9.2':
+  '@tanstack/ai@0.10.1':
     dependencies:
-      '@tanstack/ai-event-client': 0.1.4(@tanstack/ai@0.9.2)
+      '@tanstack/ai-event-client': 0.2.1(@tanstack/ai@0.10.1)
       partial-json: 0.1.7
 
-  '@tanstack/devtools-client@0.0.6':
-    dependencies:
-      '@tanstack/devtools-event-client': 0.4.3
-
-  '@tanstack/devtools-event-bus@0.4.1':
-    dependencies:
-      ws: 8.20.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-
   '@tanstack/devtools-event-client@0.3.5': {}
-
-  '@tanstack/devtools-event-client@0.4.2': {}
 
   '@tanstack/devtools-event-client@0.4.3': {}
 
   '@tanstack/devtools-ui@0.4.4(csstype@3.2.3)(solid-js@1.9.12)':
     dependencies:
       clsx: 2.1.1
-      goober: 2.1.18(csstype@3.2.3)
-      solid-js: 1.9.12
-    transitivePeerDependencies:
-      - csstype
-
-  '@tanstack/devtools-ui@0.5.0(csstype@3.2.3)(solid-js@1.9.12)':
-    dependencies:
-      clsx: 2.1.1
-      dayjs: 1.11.20
       goober: 2.1.18(csstype@3.2.3)
       solid-js: 1.9.12
     transitivePeerDependencies:
@@ -13679,18 +13573,6 @@ snapshots:
     transitivePeerDependencies:
       - csstype
 
-  '@tanstack/devtools-utils@0.3.4(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))':
-    dependencies:
-      '@tanstack/devtools-ui': 0.5.1(csstype@3.2.3)(solid-js@1.9.12)
-    optionalDependencies:
-      '@types/react': 19.2.14
-      preact: 10.29.0
-      react: 19.2.4
-      solid-js: 1.9.12
-      vue: 3.5.31(typescript@5.9.3)
-    transitivePeerDependencies:
-      - csstype
-
   '@tanstack/devtools-utils@0.4.0(@types/react@19.2.14)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))':
     optionalDependencies:
       '@types/react': 19.2.14
@@ -13698,22 +13580,6 @@ snapshots:
       react: 19.2.4
       solid-js: 1.9.12
       vue: 3.5.31(typescript@5.9.3)
-
-  '@tanstack/devtools@0.10.14(csstype@3.2.3)(solid-js@1.9.12)':
-    dependencies:
-      '@solid-primitives/event-listener': 2.4.5(solid-js@1.9.12)
-      '@solid-primitives/keyboard': 1.3.5(solid-js@1.9.12)
-      '@solid-primitives/resize-observer': 2.1.5(solid-js@1.9.12)
-      '@tanstack/devtools-client': 0.0.6
-      '@tanstack/devtools-event-bus': 0.4.1
-      '@tanstack/devtools-ui': 0.5.0(csstype@3.2.3)(solid-js@1.9.12)
-      clsx: 2.1.1
-      goober: 2.1.18(csstype@3.2.3)
-      solid-js: 1.9.12
-    transitivePeerDependencies:
-      - bufferutil
-      - csstype
-      - utf-8-validate
 
   '@tanstack/directive-functions-plugin@1.121.21(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
@@ -13788,9 +13654,9 @@ snapshots:
 
   '@tanstack/query-devtools@5.96.0': {}
 
-  '@tanstack/react-ai-devtools@0.2.19(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))':
+  '@tanstack/react-ai-devtools@0.2.22(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))':
     dependencies:
-      '@tanstack/ai-devtools-core': 0.3.15(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(vue@3.5.31(typescript@5.9.3))
+      '@tanstack/ai-devtools-core': 0.3.18(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.0)(react@19.2.4)(vue@3.5.31(typescript@5.9.3))
       '@tanstack/devtools-utils': 0.4.0(@types/react@19.2.14)(preact@10.29.0)(react@19.2.4)(solid-js@1.9.12)(vue@3.5.31(typescript@5.9.3))
       '@types/react': 19.2.14
       react: 19.2.4
@@ -14628,13 +14494,13 @@ snapshots:
       chai: 5.3.3
       tinyrainbow: 2.0.0
 
-  '@vitest/mocker@3.2.4(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
+  '@vitest/mocker@3.2.4(vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
@@ -20594,7 +20460,7 @@ snapshots:
       debug: 4.4.3
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -20721,25 +20587,6 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.3
 
-  vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
-    dependencies:
-      esbuild: 0.27.4
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
-      postcss: 8.5.8
-      rollup: 4.60.1
-      tinyglobby: 0.2.15
-    optionalDependencies:
-      '@types/node': 22.19.15
-      fsevents: 2.3.3
-      jiti: 2.6.1
-      less: 4.6.4
-      lightningcss: 1.32.0
-      sass: 1.99.0
-      terser: 5.46.1
-      tsx: 4.21.0
-      yaml: 2.8.3
-
   vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       esbuild: 0.27.4
@@ -20755,6 +20602,25 @@ snapshots:
       less: 4.6.4
       lightningcss: 1.32.0
       sass: 1.97.3
+      terser: 5.46.1
+      tsx: 4.21.0
+      yaml: 2.8.3
+
+  vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
+    dependencies:
+      esbuild: 0.27.4
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
+      postcss: 8.5.8
+      rollup: 4.60.1
+      tinyglobby: 0.2.15
+    optionalDependencies:
+      '@types/node': 22.19.15
+      fsevents: 2.3.3
+      jiti: 2.6.1
+      less: 4.6.4
+      lightningcss: 1.32.0
+      sass: 1.99.0
       terser: 5.46.1
       tsx: 4.21.0
       yaml: 2.8.3
@@ -20788,7 +20654,7 @@ snapshots:
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.4
-      '@vitest/mocker': 3.2.4(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      '@vitest/mocker': 3.2.4(vite@7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@vitest/pretty-format': 3.2.4
       '@vitest/runner': 3.2.4
       '@vitest/snapshot': 3.2.4
@@ -20806,7 +20672,7 @@ snapshots:
       tinyglobby: 0.2.15
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 7.3.2(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       vite-node: 3.2.4(@types/node@22.19.15)(jiti@2.6.1)(less@4.6.4)(lightningcss@1.32.0)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       why-is-node-running: 2.3.0
     optionalDependencies:

@@ -17,12 +17,16 @@ interface DefaultExport<T> {
   default: T
 }
 
+export interface TanStackDevtoolsAngularPluginInputProps extends TanStackDevtoolsPluginProps {
+  [key: string]: any;
+}
+
 export type TanStackDevtoolsAngularFunctionalComponent<
-  TInputs extends NonNullable<unknown> = Record<string, any>,
+  TInputs extends TanStackDevtoolsAngularPluginInputProps = TanStackDevtoolsAngularPluginInputProps,
 > = (inputs: () => TInputs, hostElement: HTMLElement) => () => void
 
 export type TanStackDevtoolsAngularPluginRenderFn =
-  | TanStackDevtoolsAngularFunctionalComponent<TanStackDevtoolsPluginProps>
+  | TanStackDevtoolsAngularFunctionalComponent<TanStackDevtoolsAngularPluginInputProps>
   | DefaultExport<Type<unknown> | null>
   | Type<unknown>
   | null
