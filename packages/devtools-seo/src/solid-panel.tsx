@@ -1,7 +1,7 @@
 /** @jsxImportSource solid-js */
 
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
-import { SeoTab } from './seo-tab'
+import { SeoTab } from './tabs/seo-tab'
 
 type SeoPluginPanelProps = {
   theme: 'light' | 'dark'

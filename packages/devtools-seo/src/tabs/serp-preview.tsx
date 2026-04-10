@@ -1,10 +1,10 @@
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { For, createMemo, createSignal } from 'solid-js'
-import { useHeadChanges } from './hooks/use-head-changes'
-import { useLocationChanges } from './hooks/use-location-changes'
-import { tokens } from './tokens'
-import { useSeoStyles } from './use-seo-styles'
-import type { SeoIssue, SeoSectionSummary } from './seo-section-summary'
+import { useHeadChanges } from '../hooks/use-head-changes'
+import { useLocationChanges } from '../hooks/use-location-changes'
+import { tokens } from '../tokens'
+import { useSeoStyles } from '../use-seo-styles'
+import type { SeoIssue, SeoSectionSummary } from '../seo-section-summary'
 
 const ELLIPSIS = '...'
 const DESKTOP_TITLE_MAX_WIDTH_PX = 620

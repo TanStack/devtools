@@ -1,4 +1,4 @@
-export { SeoTab } from './seo-tab'
+export { SeoTab } from './tabs/seo-tab'
 export type {
   SeoDetailView,
   SeoIssue,

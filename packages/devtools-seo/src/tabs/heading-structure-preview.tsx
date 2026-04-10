@@ -7,12 +7,12 @@ import {
   onMount,
 } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useSeoStyles } from './use-seo-styles'
-import { pickSeverityClass } from './seo-severity'
-import { isInsideDevtools } from './devtools-dom-filter'
-import { useLocationChanges } from './hooks/use-location-changes'
-import type { SeoSeverity } from './seo-severity'
-import type { SeoSectionSummary } from './seo-section-summary'
+import { useSeoStyles } from '../use-seo-styles'
+import { pickSeverityClass } from '../seo-severity'
+import { isInsideDevtools } from '../devtools-dom-filter'
+import { useLocationChanges } from '../hooks/use-location-changes'
+import type { SeoSeverity } from '../seo-severity'
+import type { SeoSectionSummary } from '../seo-section-summary'
 
 type HeadingItem = {
   id: string

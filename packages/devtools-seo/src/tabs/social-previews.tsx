@@ -1,9 +1,9 @@
 import { For, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useSeoStyles } from './use-seo-styles'
-import { useHeadChanges } from './hooks/use-head-changes'
-import type { SeoSectionSummary } from './seo-section-summary'
-import type { SeoSeverity } from './seo-severity'
+import { useSeoStyles } from '../use-seo-styles'
+import { useHeadChanges } from '../hooks/use-head-changes'
+import type { SeoSectionSummary } from '../seo-section-summary'
+import type { SeoSeverity } from '../seo-severity'
 
 type SocialAccent =
   | 'facebook'
