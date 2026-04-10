@@ -638,22 +638,27 @@ export function JsonLdPreviewSection() {
           : s.seoHealthFillPoor
     return `${s.seoHealthFill} ${tierFill}`
   }
-  const errorCount = () => entries().reduce(
-    (total, entry) =>
-      total + entry.issues.filter((issue) => issue.severity === 'error').length,
-    0,
-  )
-  const warningCount = () => entries().reduce(
-    (total, entry) =>
-      total +
-      entry.issues.filter((issue) => issue.severity === 'warning').length,
-    0,
-  )
-  const infoCount = () => entries().reduce(
-    (total, entry) =>
-      total + entry.issues.filter((issue) => issue.severity === 'info').length,
-    0,
-  )
+  const errorCount = () =>
+    entries().reduce(
+      (total, entry) =>
+        total +
+        entry.issues.filter((issue) => issue.severity === 'error').length,
+      0,
+    )
+  const warningCount = () =>
+    entries().reduce(
+      (total, entry) =>
+        total +
+        entry.issues.filter((issue) => issue.severity === 'warning').length,
+      0,
+    )
+  const infoCount = () =>
+    entries().reduce(
+      (total, entry) =>
+        total +
+        entry.issues.filter((issue) => issue.severity === 'info').length,
+      0,
+    )
   const progressAriaLabel = createMemo(() => {
     const parts = [`JSON-LD health ${Math.round(score())} percent`]
     const sev = [
