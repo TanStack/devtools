@@ -60,6 +60,18 @@
         "default": "./dist/esm/solid/production.js"
       }
     },
+    "./angular": {
+      "import": {
+        "types": "./dist/esm/angular/index.d.ts",
+        "default": "./dist/esm/angular/index.js"
+      }
+    },
+    "./angular/production": {
+      "import": {
+        "types": "./dist/esm/angular/production.d.ts",
+        "default": "./dist/esm/angular/production.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -90,6 +102,7 @@
     "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
+    "@angular/core": ">=19.0.0",
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
@@ -107,6 +120,9 @@
       "optional": true
     },
     "vue": {
+      "optional": true
+    },
+    "@angular/core": {
       "optional": true
     }
   }
