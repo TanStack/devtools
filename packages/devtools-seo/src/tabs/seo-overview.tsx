@@ -2,23 +2,23 @@ import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { useHeadChanges } from '../hooks/use-head-changes'
 import { useLocationChanges } from '../hooks/use-location-changes'
-import { useSeoStyles } from '../use-seo-styles'
-import { getCanonicalPageData } from '../canonical-url-data'
+import { useSeoStyles } from '../utils/use-seo-styles'
+import { getCanonicalPageData } from '../utils/canonical-url-data'
 import { getSocialPreviewsSummary } from './social-previews'
 import { getSerpPreviewSummary } from './serp-preview'
 import { getJsonLdPreviewSummary } from './json-ld-preview'
 import { getHeadingStructureSummary } from './heading-structure-preview'
 import { getLinksPreviewSummary } from './links-preview'
-import { pickSeverityClass, seoHealthTier } from '../seo-severity'
+import { pickSeverityClass, seoHealthTier } from '../utils/seo-severity'
 import {
   aggregateSeoHealth,
   countBySeverity,
   sectionHealthScore,
   totalIssueCount,
   worstSeverity,
-} from '../seo-section-summary'
-import type { SeoSeverity } from '../seo-severity'
-import type { SeoDetailView, SeoSectionSummary } from '../seo-section-summary'
+} from '../utils/seo-section-summary'
+import type { SeoSeverity } from '../utils/seo-severity'
+import type { SeoDetailView, SeoSectionSummary } from '../utils/seo-section-summary'
 
 type OverviewRow = {
   id: SeoDetailView

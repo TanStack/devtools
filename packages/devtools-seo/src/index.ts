@@ -3,4 +3,4 @@ export type {
   SeoDetailView,
   SeoIssue,
   SeoSectionSummary,
-} from './seo-section-summary'
+} from './utils/seo-section-summary'

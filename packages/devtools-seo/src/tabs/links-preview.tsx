@@ -1,12 +1,12 @@
 import { For, Show, createEffect, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { isInsideDevtools } from '../devtools-dom-filter'
-import { useSeoStyles } from '../use-seo-styles'
-import { countBySeverity } from '../seo-section-summary'
-import { pickSeverityClass } from '../seo-severity'
+import { isInsideDevtools } from '../utils/devtools-dom-filter'
+import { useSeoStyles } from '../utils/use-seo-styles'
+import { countBySeverity } from '../utils/seo-section-summary'
+import { pickSeverityClass } from '../utils/seo-severity'
 import { useLocationChanges } from '../hooks/use-location-changes'
-import type { SeoSectionSummary } from '../seo-section-summary'
-import type { SeoSeverity } from '../seo-severity'
+import type { SeoSectionSummary } from '../utils/seo-section-summary'
+import type { SeoSeverity } from '../utils/seo-severity'
 
 type LinkKind = 'internal' | 'external' | 'non-web' | 'invalid'
 

@@ -1,13 +1,13 @@
 import { Show, createSignal } from 'solid-js'
 import { MainPanel } from '@tanstack/devtools-ui'
-import { useSeoStyles } from '../use-seo-styles'
+import { useSeoStyles } from '../utils/use-seo-styles'
 import { SocialPreviewsSection } from './social-previews'
 import { SerpPreviewSection } from './serp-preview'
 import { JsonLdPreviewSection } from './json-ld-preview'
 import { HeadingStructurePreviewSection } from './heading-structure-preview'
 import { LinksPreviewSection } from './links-preview'
 import { SeoOverviewSection } from './seo-overview'
-import type { SeoDetailView } from '../seo-section-summary'
+import type { SeoDetailView } from '../utils/seo-section-summary'
 
 type SeoSubView = 'overview' | SeoDetailView
 

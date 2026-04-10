@@ -1,11 +1,11 @@
 import { For, Show } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { isInsideDevtools } from '../devtools-dom-filter'
-import { sectionHealthScore } from '../seo-section-summary'
-import { useSeoStyles } from '../use-seo-styles'
-import { pickSeverityClass, seoHealthTier } from '../seo-severity'
-import type { SeoSeverity } from '../seo-severity'
-import type { SeoSectionSummary } from '../seo-section-summary'
+import { isInsideDevtools } from '../utils/devtools-dom-filter'
+import { sectionHealthScore } from '../utils/seo-section-summary'
+import { useSeoStyles } from '../utils/use-seo-styles'
+import { pickSeverityClass, seoHealthTier } from '../utils/seo-severity'
+import type { SeoSeverity } from '../utils/seo-severity'
+import type { SeoSectionSummary } from '../utils/seo-section-summary'
 
 type JsonLdValue = Record<string, unknown>
 
