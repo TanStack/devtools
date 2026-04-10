@@ -18,7 +18,10 @@ import { getJsonLdPreviewSummary } from './json-ld-preview'
 import { getHeadingStructureSummary } from './heading-structure-preview'
 import { getLinksPreviewSummary } from './links-preview'
 import type { SeoSeverity } from '../utils/seo-severity'
-import type { SeoDetailView, SeoSectionSummary } from '../utils/seo-section-summary'
+import type {
+  SeoDetailView,
+  SeoSectionSummary,
+} from '../utils/seo-section-summary'
 
 type OverviewRow = {
   id: SeoDetailView
