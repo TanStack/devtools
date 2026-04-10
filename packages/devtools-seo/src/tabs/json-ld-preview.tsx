@@ -1,5 +1,7 @@
-import { For, Show } from 'solid-js'
+import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
+import { useHeadChanges } from '../hooks/use-head-changes'
+import { useLocationChanges } from '../hooks/use-location-changes'
 import { isInsideDevtools } from '../utils/devtools-dom-filter'
 import { sectionHealthScore } from '../utils/seo-section-summary'
 import { useSeoStyles } from '../utils/use-seo-styles'
@@ -340,7 +342,7 @@ function analyzeJsonLdScripts(): Array<JsonLdEntry> {
   ).filter((script) => !isInsideDevtools(script))
 
   return scripts.map((script, index) => {
-    const raw = script.textContent.trim() || ''
+    const raw = script.text.trim()
     if (raw.length === 0) {
       return {
         id: `jsonld-${index}`,
@@ -600,13 +602,26 @@ function JsonLdBlock(props: { entry: JsonLdEntry; index: number }) {
 }
 
 export function JsonLdPreviewSection() {
-  const entries = analyzeJsonLdScripts()
   const styles = useSeoStyles()
-  const score = getJsonLdScore(entries)
+  const [tick, setTick] = createSignal(0)
+
+  useHeadChanges(() => {
+    setTick((t) => t + 1)
+  })
+
+  useLocationChanges(() => {
+    setTick((t) => t + 1)
+  })
+
+  const entries = createMemo(() => {
+    void tick()
+    return analyzeJsonLdScripts()
+  })
+  const score = createMemo(() => getJsonLdScore(entries()))
   const s = styles()
-  const fieldGaps = sumMissingSchemaFieldCounts(entries)
+  const fieldGaps = createMemo(() => sumMissingSchemaFieldCounts(entries()))
   const healthScoreClass = () => {
-    const tier = seoHealthTier(score)
+    const tier = seoHealthTier(score())
     return tier === 'good'
       ? s.seoHealthScoreGood
       : tier === 'fair'
@@ -614,7 +629,7 @@ export function JsonLdPreviewSection() {
         : s.seoHealthScorePoor
   }
   const healthFillClass = () => {
-    const tier = seoHealthTier(score)
+    const tier = seoHealthTier(score())
     const tierFill =
       tier === 'good'
         ? s.seoHealthFillGood
@@ -623,55 +638,56 @@ export function JsonLdPreviewSection() {
           : s.seoHealthFillPoor
     return `${s.seoHealthFill} ${tierFill}`
   }
-  const errorCount = entries.reduce(
+  const errorCount = () => entries().reduce(
     (total, entry) =>
       total + entry.issues.filter((issue) => issue.severity === 'error').length,
     0,
   )
-  const warningCount = entries.reduce(
+  const warningCount = () => entries().reduce(
     (total, entry) =>
       total +
       entry.issues.filter((issue) => issue.severity === 'warning').length,
     0,
   )
-  const infoCount = entries.reduce(
+  const infoCount = () => entries().reduce(
     (total, entry) =>
       total + entry.issues.filter((issue) => issue.severity === 'info').length,
     0,
   )
-  const progressAriaLabel = (() => {
-    const parts = [`JSON-LD health ${Math.round(score)} percent`]
+  const progressAriaLabel = createMemo(() => {
+    const parts = [`JSON-LD health ${Math.round(score())} percent`]
     const sev = [
-      errorCount && `${errorCount} error${errorCount === 1 ? '' : 's'}`,
-      warningCount && `${warningCount} warning${warningCount === 1 ? '' : 's'}`,
-      infoCount && `${infoCount} info`,
+      errorCount() && `${errorCount()} error${errorCount() === 1 ? '' : 's'}`,
+      warningCount() &&
+        `${warningCount()} warning${warningCount() === 1 ? '' : 's'}`,
+      infoCount() && `${infoCount()} info`,
     ].filter(Boolean)
     if (sev.length) parts.push(sev.join(', '))
     const gapBits: Array<string> = []
-    if (fieldGaps.required > 0)
+    if (fieldGaps().required > 0)
       gapBits.push(
-        `${fieldGaps.required} required field${fieldGaps.required === 1 ? '' : 's'}`,
+        `${fieldGaps().required} required field${fieldGaps().required === 1 ? '' : 's'}`,
       )
-    if (fieldGaps.recommended > 0)
+    if (fieldGaps().recommended > 0)
       gapBits.push(
-        `${fieldGaps.recommended} recommended field${fieldGaps.recommended === 1 ? '' : 's'}`,
+        `${fieldGaps().recommended} recommended field${fieldGaps().recommended === 1 ? '' : 's'}`,
       )
-    if (fieldGaps.optional > 0)
+    if (fieldGaps().optional > 0)
       gapBits.push(
-        `${fieldGaps.optional} optional field${fieldGaps.optional === 1 ? '' : 's'}`,
+        `${fieldGaps().optional} optional field${fieldGaps().optional === 1 ? '' : 's'}`,
       )
     if (gapBits.length) parts.push(`Missing: ${gapBits.join(', ')}`)
     return parts.join('. ')
-  })()
-  const missingFieldsLine = (() => {
+  })
+  const missingFieldsLine = createMemo(() => {
     const bits: Array<string> = []
-    if (fieldGaps.required > 0) bits.push(`${fieldGaps.required} required`)
-    if (fieldGaps.recommended > 0)
-      bits.push(`${fieldGaps.recommended} recommended`)
-    if (fieldGaps.optional > 0) bits.push(`${fieldGaps.optional} optional`)
+    if (fieldGaps().required > 0) bits.push(`${fieldGaps().required} required`)
+    if (fieldGaps().recommended > 0)
+      bits.push(`${fieldGaps().recommended} recommended`)
+    if (fieldGaps().optional > 0) bits.push(`${fieldGaps().optional} optional`)
     if (bits.length === 0) return null
     return `Missing schema fields: ${bits.join(' · ')}`
-  })()
+  })
 
   return (
     <Section>
@@ -693,7 +709,7 @@ export function JsonLdPreviewSection() {
         </div>
       </div>
       <Show
-        when={entries.length > 0}
+        when={entries().length > 0}
         fallback={
           <div class={styles().seoMissingTagsSection}>
             No JSON-LD scripts were detected on this page.
@@ -703,37 +719,39 @@ export function JsonLdPreviewSection() {
         <div class={s.seoJsonLdHealthCard}>
           <div class={s.seoHealthHeaderRow}>
             <span class={s.seoJsonLdHealthTitle}>JSON-LD Health</span>
-            <span class={healthScoreClass()}>{score}%</span>
+            <span class={healthScoreClass()}>{score()}%</span>
           </div>
           <div
             class={s.seoHealthTrack}
             role="progressbar"
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuenow={Math.round(score)}
-            aria-label={progressAriaLabel}
+            aria-valuenow={Math.round(score())}
+            aria-label={progressAriaLabel()}
           >
             <div
               class={healthFillClass()}
-              style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+              style={{ width: `${Math.min(100, Math.max(0, score()))}%` }}
             />
           </div>
           <div class={s.seoHealthCountsRow}>
             <span class={s.seoHealthCountError}>
-              {errorCount} error{errorCount === 1 ? '' : 's'}
+              {errorCount()} error{errorCount() === 1 ? '' : 's'}
             </span>
             <span class={s.seoHealthCountWarning}>
-              {warningCount} warning{warningCount === 1 ? '' : 's'}
+              {warningCount()} warning{warningCount() === 1 ? '' : 's'}
             </span>
             <span class={s.seoHealthCountInfo}>
-              {infoCount} info{infoCount === 1 ? '' : 's'} (2 pts each)
+              {infoCount()} info{infoCount() === 1 ? '' : 's'} (2 pts each)
             </span>
           </div>
-          <Show when={missingFieldsLine}>
-            <div class={s.seoJsonLdHealthMissingLine}>{missingFieldsLine}</div>
+          <Show when={missingFieldsLine()}>
+            <div class={s.seoJsonLdHealthMissingLine}>
+              {missingFieldsLine()}
+            </div>
           </Show>
         </div>
-        <For each={entries}>
+        <For each={entries()}>
           {(entry, index) => <JsonLdBlock entry={entry} index={index()} />}
         </For>
       </Show>
