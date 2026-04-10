@@ -1,5 +1,19 @@
 # @tanstack/devtools
 
+## 0.11.2
+
+### Patch Changes
+
+- Fix duplicate Devtools UI rendering when React StrictMode is enabled. ([#404](https://github.com/TanStack/devtools/pull/404))
+
+## 0.11.1
+
+### Patch Changes
+
+- Restore plugin scroll ([#406](https://github.com/TanStack/devtools/pull/406))
+
+- Implemented a new SERP (Search Engine Results Page) section in the SEO tab. This update introduces desktop and mobile preview of search results. It displays the current site's favicon, title and description while displaying errors and issues when they are not found or they exceed the character limit. ([#373](https://github.com/TanStack/devtools/pull/373))
+
 ## 0.11.0
 
 ### Minor Changes
