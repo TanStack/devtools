@@ -1,6 +1,4 @@
-import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-
+import { TanStackDevtools } from '@tanstack/react-devtools'
 import {
   Link,
   Outlet,
@@ -9,7 +7,8 @@ import {
   createRoute,
   createRouter,
 } from '@tanstack/react-router'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { PackageJsonPanel } from './package-json-panel'
 
 const rootRoute = createRootRoute({
@@ -28,6 +27,7 @@ const rootRoute = createRootRoute({
     </>
   ),
 })
+
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
@@ -39,6 +39,7 @@ const indexRoute = createRoute({
     )
   },
 })
+
 function About() {
   return (
     <div className="p-2">
@@ -46,15 +47,18 @@ function About() {
     </div>
   )
 }
+
 const aboutRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/about',
   component: About,
 })
+
 const routeTree = rootRoute.addChildren([indexRoute, aboutRoute])
 const router = createRouter({
   routeTree,
 })
+
 export default function DevtoolsExample() {
   return (
     <>
@@ -79,11 +83,6 @@ export default function DevtoolsExample() {
             name: 'Package.json',
             render: () => <PackageJsonPanel />,
           },
-
-          /* {
-      name: "The actual app",
-      render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
-    } */
         ]}
       />
       <RouterProvider router={router} />

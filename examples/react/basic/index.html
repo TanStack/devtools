@@ -33,11 +33,23 @@
       content="A basic example of using TanStack Devtools with React."
     />
 
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="http://localhost:3005" />
+
     <description
       >A basic example of using TanStack Devtools with React.</description
     >
   </head>
   <body>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "TanStack Devtools",
+        "url": "https://tanstack.com/devtools",
+        "logo": "https://tanstack.com/devtools/logo.png"
+      }
+    </script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.tsx"></script>

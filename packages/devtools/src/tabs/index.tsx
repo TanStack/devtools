@@ -1,7 +1,6 @@
-import { Cogs, List, PageSearch } from '@tanstack/devtools-ui/icons'
+import { Cogs, List } from '@tanstack/devtools-ui/icons'
 import { SettingsTab } from './settings-tab'
 import { PluginsTab } from './plugins-tab'
-import { SeoTab } from './seo-tab'
 
 export const tabs = [
   {
@@ -9,12 +8,6 @@ export const tabs = [
     id: 'plugins',
     component: (props: { isOpen: boolean }) => <PluginsTab {...props} />,
     icon: () => <List />,
-  },
-  {
-    name: 'SEO',
-    id: 'seo',
-    component: () => <SeoTab />,
-    icon: () => <PageSearch />,
   },
   {
     name: 'Settings',

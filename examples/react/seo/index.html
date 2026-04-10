@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/emblem-light.svg" />
+    <link rel="shortcut icon" href="/emblem-light.svg" />
+    <link rel="apple-touch-icon" href="/emblem-light.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+
+    <title>SEO Devtools Example - TanStack Devtools</title>
+    <meta
+      name="description"
+      content="A React example for the TanStack SEO devtools plugin."
+    />
+    <meta property="og:title" content="SEO Devtools Example" />
+    <meta
+      property="og:description"
+      content="Inspect page metadata, headings, links, and structured data."
+    />
+    <meta property="og:url" content="https://example.com/seo" />
+    <meta
+      property="og:image"
+      content="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SEO Devtools Example" />
+    <meta
+      name="twitter:description"
+      content="Inspect page metadata, headings, links, and structured data."
+    />
+    <link rel="canonical" href="https://example.com/seo" />
+  </head>
+  <body>
+    <script id="seo-json-ld" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TanStack Devtools SEO Example",
+        "url": "https://example.com/seo"
+      }
+    </script>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
