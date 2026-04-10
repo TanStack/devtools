@@ -8,7 +8,6 @@ import type { SeoIssue, SeoSectionSummary } from '../utils/seo-section-summary'
 
 const ELLIPSIS = '...'
 const DESKTOP_TITLE_MAX_WIDTH_PX = 620
-const MOBILE_TITLE_MAX_WIDTH_PX = 328
 const DESKTOP_DESCRIPTION_TOTAL_WIDTH_PX = 960
 const DESKTOP_DESCRIPTION_MAX_LINES = 2
 const MOBILE_DESCRIPTION_WIDTH_PX = 320
@@ -26,7 +25,6 @@ type SerpData = {
 
 type SerpOverflow = {
   titleOverflowDesktop: boolean
-  titleOverflowMobile: boolean
   descriptionOverflow: boolean
   descriptionOverflowMobile: boolean
 }
@@ -85,10 +83,6 @@ const SERP_PREVIEWS: Array<SerpPreview> = [
     label: 'Mobile preview',
     isMobile: true,
     extraChecks: [
-      {
-        message: `The title is wider than ${MOBILE_TITLE_MAX_WIDTH_PX}px and may be trimmed in the mobile preview.`,
-        hasIssue: (_, overflow) => overflow.titleOverflowMobile,
-      },
       {
         message:
           'Description exceeds the 3-line limit for mobile view. Please shorten your text to fit within 3 lines.',
@@ -314,7 +308,7 @@ function getSerpPreviewState(data: SerpData): SerpPreviewState {
     ),
     displayTitleMobile: truncateToWidth(
       titleText,
-      MOBILE_TITLE_MAX_WIDTH_PX,
+      DESKTOP_TITLE_MAX_WIDTH_PX,
       TITLE_FONT,
     ),
     displayDescriptionDesktop: truncateToTotalWrappedWidth(
@@ -332,8 +326,6 @@ function getSerpPreviewState(data: SerpData): SerpPreviewState {
     overflow: {
       titleOverflowDesktop:
         measureTextWidth(titleText, TITLE_FONT) > DESKTOP_TITLE_MAX_WIDTH_PX,
-      titleOverflowMobile:
-        measureTextWidth(titleText, TITLE_FONT) > MOBILE_TITLE_MAX_WIDTH_PX,
       descriptionOverflow:
         desktopDescriptionLines.length > DESKTOP_DESCRIPTION_MAX_LINES ||
         desktopDescriptionLines.reduce(
@@ -414,12 +406,6 @@ export function getSerpPreviewSummary(): SeoSectionSummary {
     issues.push({
       severity: 'warning',
       message: `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
-    })
-  }
-  if (overflow.titleOverflowMobile) {
-    issues.push({
-      severity: 'warning',
-      message: `The title is wider than ${MOBILE_TITLE_MAX_WIDTH_PX}px and may be trimmed in the mobile preview.`,
     })
   }
   if (overflow.descriptionOverflow) {
