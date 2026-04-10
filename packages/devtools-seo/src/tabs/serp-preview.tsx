@@ -64,8 +64,7 @@ const COMMON_CHECKS: Array<SerpCheck> = [
     hasIssue: (data) => !data.description.trim(),
   },
   {
-    message:
-      `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
+    message: `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
     hasIssue: (_, overflow) => overflow.titleOverflowDesktop,
   },
 ]
@@ -414,8 +413,7 @@ export function getSerpPreviewSummary(): SeoSectionSummary {
   if (overflow.titleOverflowDesktop) {
     issues.push({
       severity: 'warning',
-      message:
-        `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
+      message: `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
     })
   }
   if (overflow.titleOverflowMobile) {
