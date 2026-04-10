@@ -25,7 +25,8 @@ type SerpData = {
 }
 
 type SerpOverflow = {
-  titleOverflow: boolean
+  titleOverflowDesktop: boolean
+  titleOverflowMobile: boolean
   descriptionOverflow: boolean
   descriptionOverflowMobile: boolean
 }
@@ -64,8 +65,8 @@ const COMMON_CHECKS: Array<SerpCheck> = [
   },
   {
     message:
-      'The title is wider than 600px and it may not be displayed in full length.',
-    hasIssue: (_, overflow) => overflow.titleOverflow,
+      `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
+    hasIssue: (_, overflow) => overflow.titleOverflowDesktop,
   },
 ]
 
@@ -85,6 +86,10 @@ const SERP_PREVIEWS: Array<SerpPreview> = [
     label: 'Mobile preview',
     isMobile: true,
     extraChecks: [
+      {
+        message: `The title is wider than ${MOBILE_TITLE_MAX_WIDTH_PX}px and may be trimmed in the mobile preview.`,
+        hasIssue: (_, overflow) => overflow.titleOverflowMobile,
+      },
       {
         message:
           'Description exceeds the 3-line limit for mobile view. Please shorten your text to fit within 3 lines.',
@@ -326,8 +331,10 @@ function getSerpPreviewState(data: SerpData): SerpPreviewState {
       DESCRIPTION_FONT,
     ),
     overflow: {
-      titleOverflow:
+      titleOverflowDesktop:
         measureTextWidth(titleText, TITLE_FONT) > DESKTOP_TITLE_MAX_WIDTH_PX,
+      titleOverflowMobile:
+        measureTextWidth(titleText, TITLE_FONT) > MOBILE_TITLE_MAX_WIDTH_PX,
       descriptionOverflow:
         desktopDescriptionLines.length > DESKTOP_DESCRIPTION_MAX_LINES ||
         desktopDescriptionLines.reduce(
@@ -404,11 +411,17 @@ export function getSerpPreviewSummary(): SeoSectionSummary {
       message: 'No meta description set on the page.',
     })
   }
-  if (overflow.titleOverflow) {
+  if (overflow.titleOverflowDesktop) {
     issues.push({
       severity: 'warning',
       message:
-        'The title is wider than 600px and it may not be displayed in full length.',
+        `The title is wider than ${DESKTOP_TITLE_MAX_WIDTH_PX}px and it may not be displayed in full length.`,
+    })
+  }
+  if (overflow.titleOverflowMobile) {
+    issues.push({
+      severity: 'warning',
+      message: `The title is wider than ${MOBILE_TITLE_MAX_WIDTH_PX}px and may be trimmed in the mobile preview.`,
     })
   }
   if (overflow.descriptionOverflow) {
