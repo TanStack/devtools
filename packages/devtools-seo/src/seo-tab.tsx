@@ -17,11 +17,7 @@ export const SeoTab = () => {
 
   return (
     <MainPanel withPadding>
-      <nav
-        class={styles().seoSubNav}
-        aria-label="SEO sections"
-        role="tablist"
-      >
+      <nav class={styles().seoSubNav} aria-label="SEO sections" role="tablist">
         <button
           type="button"
           role="tab"
