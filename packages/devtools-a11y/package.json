@@ -83,11 +83,11 @@
   "dependencies": {
     "@tanstack/devtools-ui": "workspace:*",
     "@tanstack/devtools-utils": "workspace:^",
-    "axe-core": "^4.10.0",
-    "goober": "^2.1.16"
+    "axe-core": "^4.11.2",
+    "goober": "^2.1.18"
   },
   "devDependencies": {
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-solid": "^2.11.12"
   },
   "peerDependencies": {
     "@types/react": ">=17.0.0",
