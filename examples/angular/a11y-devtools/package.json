@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-example-angular-a11y-devtools",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -17,7 +17,7 @@
     "@angular/forms": "^21.2.0",
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
-    "@tanstack/angular-devtools": "^0.0.1",
+    "@tanstack/angular-devtools": "^0.0.2",
     "@tanstack/devtools-a11y": "^0.1.2",
     "@tanstack/devtools-event-client": "0.4.3",
     "rxjs": "~7.8.0",
