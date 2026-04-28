@@ -14,7 +14,7 @@ Each plugin can have the following configuration options:
 - `defaultOpen` (optional) - A boolean that determines if the plugin panel is open by default (default: false).
 - `id` (optional) - A unique identifier for the plugin. If not provided, a random id will be generated.
 
-Here's an example of how to configure plugins in the `TanStackDevtools` component:
+Here's an example of how to configure p lugins in the `TanStackDevtools` component:
 
 ```tsx
 import { TanStackDevtools } from '@tanstack/react-devtools'
