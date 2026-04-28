@@ -12,6 +12,7 @@
     "vite.config.preact.ts",
     "vite.config.vue.ts",
     "tests",
-    "vite.config.solid.ts"
+    "vite.config.solid.ts",
+    "vite.config.angular.ts"
   ]
 }

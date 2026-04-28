@@ -45,6 +45,13 @@
             { "label": "Basic Setup", "to": "framework/vue/basic-setup" },
             { "label": "Vue Adapter", "to": "framework/vue/adapter" }
           ]
+        },
+        {
+          "label": "angular",
+          "children": [
+            { "label": "Basic Setup", "to": "framework/angular/basic-setup" },
+            { "label": "Angular Adapter", "to": "framework/angular/adapter" }
+          ]
         }
       ]
     },
@@ -89,6 +96,12 @@
           "children": [
             { "label": "Custom Plugins", "to": "framework/vue/guides/custom-plugins" }
           ]
+        },
+        {
+          "label": "angular",
+          "children": [
+            { "label": "Custom Plugins", "to": "framework/angular/guides/custom-plugins" }
+          ]
         }
       ]
     },
@@ -120,6 +133,12 @@
           "label": "vue",
           "children": [
             { "label": "Vue Reference", "to": "framework/vue/reference/index" }
+          ]
+        },
+        {
+          "label": "angular",
+          "children": [
+            { "label": "Angular Reference", "to": "framework/angular/reference/index" }
           ]
         }
       ]
