@@ -3,7 +3,7 @@ import { createCounter } from './counter'
 import type {
   TanStackDevtoolsAngularInit,
   TanStackDevtoolsAngularPlugin,
-} from '@tanstack/angular-devtools';
+} from '@tanstack/angular-devtools'
 import {
   CustomDevtoolPanel,
   customDevtoolPlugin,

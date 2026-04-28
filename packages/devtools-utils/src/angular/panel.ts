@@ -5,8 +5,11 @@ export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {
 }
 
 interface BaseCorePanelClass {
-  [key: string]: any;
-  mount: <T extends HTMLElement>(el: T, props: TanStackDevtoolsPluginProps) => void
+  [key: string]: any
+  mount: <T extends HTMLElement>(
+    el: T,
+    props: TanStackDevtoolsPluginProps,
+  ) => void
   unmount: () => void
 }
 

@@ -1,9 +1,8 @@
 import type { Type } from '@angular/core'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-
 export interface DevtoolsPluginProps extends TanStackDevtoolsPluginProps {
-  [key: string]: any;
+  [key: string]: any
 }
 
 export type TanStackDevtoolsAngularPluginRenderFn<
@@ -13,9 +12,7 @@ export type TanStackDevtoolsAngularPluginRenderFn<
   | Type<unknown>
   | null
 
-export type TanStackDevtoolsAngularPluginRender<
-  T extends DevtoolsPluginProps,
-> =
+export type TanStackDevtoolsAngularPluginRender<T extends DevtoolsPluginProps> =
   | Type<any>
   | (() =>
       | TanStackDevtoolsAngularPluginRenderFn<T>

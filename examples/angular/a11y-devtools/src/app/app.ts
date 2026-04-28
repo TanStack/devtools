@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools';
-import { TanStackDevtools } from '@tanstack/angular-devtools';
-import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/angular';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
+import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools'
+import { TanStackDevtools } from '@tanstack/angular-devtools'
+import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/angular'
 
 @Component({
   selector: 'app-root',
@@ -136,7 +136,7 @@ import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/angular';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  readonly showModal = signal(false);
+  readonly showModal = signal(false)
 
-  readonly plugins = signal<TanStackDevtoolsAngularPlugin[]>([a11yDevtoolsPlugin()]);
+  readonly plugins = signal<TanStackDevtoolsAngularPlugin[]>([a11yDevtoolsPlugin()])
 }

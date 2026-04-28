@@ -22,9 +22,7 @@ import {
   untracked,
 } from '@angular/core'
 import type { Signal } from '@angular/core'
-import type {
-  TanStackDevtoolsPlugin,
-} from '@tanstack/devtools'
+import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
   TanStackDevtoolsAngularFunctionalComponent,
   TanStackDevtoolsAngularInit,

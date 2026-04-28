@@ -31,7 +31,7 @@ export default mergeConfig(
       './src/solid/index.ts',
       './src/solid/production.ts',
       './src/angular/index.ts',
-      './src/angular/production.ts'
+      './src/angular/production.ts',
     ],
     srcDir: './src',
     tsconfigPath: './tsconfig.json',

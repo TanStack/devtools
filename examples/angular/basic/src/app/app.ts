@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
 import { createCounter } from './counter'
 import type { TanStackDevtoolsAngularInit } from '@tanstack/angular-devtools'
 import { TanStackDevtools } from '@tanstack/angular-devtools'
-import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools';
+import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools'
 
 @Component({
   selector: 'app-root',
