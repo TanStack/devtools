@@ -1,6 +1,21 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { devtools } from '../src/plugin'
 import type { Plugin } from 'vite'
+import type * as Utils from '../src/utils'
+
+let capturedOnConsolePipe: ((entries: Array<any>) => void) | undefined
+
+vi.mock('../src/utils', async (importOriginal) => {
+  const actual = await importOriginal<typeof Utils>()
+  return {
+    ...actual,
+    handleDevToolsViteRequest: vi.fn((_req: any, _res: any, _next: any, handlers: any) => {
+      if (typeof handlers === 'object' && handlers?.onConsolePipe) {
+        capturedOnConsolePipe = handlers.onConsolePipe
+      }
+    }),
+  }
+})
 
 // Helper to find a plugin by name from the array returned by devtools()
 function findPlugin(plugins: Array<Plugin>, name: string): Plugin | undefined {
@@ -310,6 +325,75 @@ describe('devtools plugin', () => {
         'node_modules/@tanstack/event-bus/dist/client.js',
       )
       expect(result).toContain('"localhost"')
+    })
+  })
+
+  describe('configureServer - onConsolePipe uses pre-wrap console methods', () => {
+    let originalLog: typeof console.log
+    let beforeWrapSpy: ReturnType<typeof vi.fn>
+    let afterWrapSpy: ReturnType<typeof vi.fn>
+
+    beforeEach(async () => {
+      capturedOnConsolePipe = undefined
+      originalLog = console.log
+      beforeWrapSpy = vi.fn()
+      afterWrapSpy = vi.fn()
+
+      console.log = beforeWrapSpy
+
+      const plugins = devtools({ eventBusConfig: { enabled: false } })
+      const customServerPlugin = findPlugin(
+        plugins,
+        '@tanstack/devtools:custom-server',
+      )!
+
+      const server = {
+        ...createMockServer(),
+        middlewares: {
+          use: vi.fn((handler: any) => {
+            handler({ url: '/not-a-tsd-route', socket: {} }, {}, vi.fn())
+          }),
+        },
+      }
+
+      const configureServer = customServerPlugin.configureServer as (
+        server: any,
+      ) => Promise<void>
+      await configureServer(server)
+
+      console.log = afterWrapSpy
+    })
+
+    afterEach(() => {
+      console.log = originalLog
+      capturedOnConsolePipe = undefined
+    })
+
+        it('uses the captured original method directly for a known level', () => {
+      expect(capturedOnConsolePipe).toBeDefined()
+      beforeWrapSpy.mockClear()
+      afterWrapSpy.mockClear()
+
+      capturedOnConsolePipe!([
+        { level: 'log', args: ['test message'], timestamp: Date.now() },
+      ])
+
+      expect(beforeWrapSpy).toHaveBeenCalledTimes(1)
+      expect(afterWrapSpy).not.toHaveBeenCalled()
+    })
+    it('falls back to captured originalConsole.log for an unknown level, not the live console.log', () => {
+      expect(capturedOnConsolePipe).toBeDefined()
+      beforeWrapSpy.mockClear()
+      afterWrapSpy.mockClear()
+
+      // 'trace' is not in consolePipingLevels so originalConsole['trace'] is
+      // undefined and the fallback branch is taken.
+      capturedOnConsolePipe!([
+        { level: 'trace', args: ['test message'], timestamp: Date.now() },
+      ])
+
+      expect(beforeWrapSpy).toHaveBeenCalledTimes(1)
+      expect(afterWrapSpy).not.toHaveBeenCalled()
     })
   })
 

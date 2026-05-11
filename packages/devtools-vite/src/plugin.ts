@@ -254,7 +254,8 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                       const prefix = chalk.cyan('[Client]')
                       const logMethod =
                         originalConsole[entry.level as ConsoleLevel] ??
-                        console.log
+                        // log exists in consolePipingLevels
+                        (originalConsole.log)!
 
                         const cleanedArgs = stripEnhancedLogPrefix(
                         entry.args,
