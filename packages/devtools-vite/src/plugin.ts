@@ -225,7 +225,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
 
         const originalConsole = Object.fromEntries(
           consolePipingLevels.map((l) => [l, console[l].bind(console)]),
-        ) as Record<ConsoleLevel, typeof console.log>
+        ) as Partial<Record<ConsoleLevel, typeof console.log>>
 
         // SSE clients for broadcasting server logs to browser
         const sseClients: Array<{
@@ -253,8 +253,10 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                     for (const entry of entries) {
                       const prefix = chalk.cyan('[Client]')
                       const logMethod =
-                        originalConsole[entry.level as ConsoleLevel] ||
-                        originalConsole.log
+                        originalConsole[entry.level as ConsoleLevel] ??
+                        // log exists in consolePipingLevels
+                        originalConsole.log!
+
                       const cleanedArgs = stripEnhancedLogPrefix(
                         entry.args,
                         (loc) => chalk.gray(loc),
