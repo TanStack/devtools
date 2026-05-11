@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/angular-devtools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Angular application.",
   "author": "Tanner Linsley",
   "license": "MIT",

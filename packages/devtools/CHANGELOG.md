@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.12.0
+
+### Minor Changes
+
+- Adds copy path feature and config to devtools source inspector ([#419](https://github.com/TanStack/devtools/pull/419))
+
 ## 0.11.2
 
 ### Patch Changes
