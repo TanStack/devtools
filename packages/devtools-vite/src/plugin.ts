@@ -255,9 +255,9 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                       const logMethod =
                         originalConsole[entry.level as ConsoleLevel] ??
                         // log exists in consolePipingLevels
-                        (originalConsole.log)!
+                        originalConsole.log!
 
-                        const cleanedArgs = stripEnhancedLogPrefix(
+                      const cleanedArgs = stripEnhancedLogPrefix(
                         entry.args,
                         (loc) => chalk.gray(loc),
                       )

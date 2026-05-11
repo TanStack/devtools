@@ -9,11 +9,13 @@ vi.mock('../src/utils', async (importOriginal) => {
   const actual = await importOriginal<typeof Utils>()
   return {
     ...actual,
-    handleDevToolsViteRequest: vi.fn((_req: any, _res: any, _next: any, handlers: any) => {
-      if (typeof handlers === 'object' && handlers?.onConsolePipe) {
-        capturedOnConsolePipe = handlers.onConsolePipe
-      }
-    }),
+    handleDevToolsViteRequest: vi.fn(
+      (_req: any, _res: any, _next: any, handlers: any) => {
+        if (typeof handlers === 'object' && handlers?.onConsolePipe) {
+          capturedOnConsolePipe = handlers.onConsolePipe
+        }
+      },
+    ),
   }
 })
 
@@ -369,7 +371,7 @@ describe('devtools plugin', () => {
       capturedOnConsolePipe = undefined
     })
 
-        it('uses the captured original method directly for a known level', () => {
+    it('uses the captured original method directly for a known level', () => {
       expect(capturedOnConsolePipe).toBeDefined()
       beforeWrapSpy.mockClear()
       afterWrapSpy.mockClear()
