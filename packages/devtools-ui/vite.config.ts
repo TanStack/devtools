@@ -9,6 +9,8 @@ const config = defineConfig({
   test: {
     name: packageJson.name,
     dir: './',
+    include: ['tests/**/*.{ts,tsx}'],
+    exclude: ['tests/test-setup.ts', '**/node_modules/**'],
     watch: false,
     environment: 'jsdom',
     setupFiles: ['./tests/test-setup.ts'],
