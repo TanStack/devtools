@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.12.1
+
+### Patch Changes
+
+- Add inertia 3 devtool to registry ([#420](https://github.com/TanStack/devtools/pull/420))
+
 ## 0.12.0
 
 ### Minor Changes
