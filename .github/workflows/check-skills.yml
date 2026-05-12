@@ -123,25 +123,17 @@ jobs:
           git commit --allow-empty -m "chore: review stale skills for ${VERSION}"
           git push origin "$BRANCH"
 
-          node <<'NODE'
-          const fs = require('fs')
-          fs.writeFileSync('pr-body.md', `## Stale Skills Detected
-
-          The following skills may need updates after the latest release:
-
-          ${process.env.SUMMARY}
-
-          ---
-
-          ### Update Prompt
-
-          Paste this into your coding agent (Claude Code, Cursor, etc.):
-
-          ~~~
-          ${process.env.PROMPT}
-          ~~~
-          `)
-          NODE
+          {
+            printf '%s\n\n' '## Stale Skills Detected'
+            printf '%s\n\n' 'The following skills may need updates after the latest release:'
+            printf '%s\n\n' "$SUMMARY"
+            printf '%s\n\n' '---'
+            printf '%s\n\n' '### Update Prompt'
+            printf '%s\n\n' 'Paste this into your coding agent (Claude Code, Cursor, etc.):'
+            printf '%s\n' '~~~'
+            printf '%s\n' "$PROMPT"
+            printf '%s\n' '~~~'
+          } > pr-body.md
 
           gh pr create \
             --title "Review stale skills (${VERSION})" \
