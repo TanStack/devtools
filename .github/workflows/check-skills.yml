@@ -17,18 +17,21 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   check:
     name: Check for stale skills
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -108,24 +111,25 @@ jobs:
         if: steps.stale.outputs.has_stale == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ github.event.release.tag_name || 'manual' }}
+          SUMMARY: ${{ steps.summary.outputs.summary }}
+          PROMPT: ${{ steps.summary.outputs.prompt }}
         run: |
-          VERSION="${{ github.event.release.tag_name || 'manual' }}"
           BRANCH="skills/review-${VERSION}"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git commit --allow-empty -m "chore: review stale skills for ${VERSION}"
-          git push origin "$BRANCH"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
 
-          gh pr create \
-            --title "Review stale skills (${VERSION})" \
-            --body "$(cat <<'PREOF'
-          ## Stale Skills Detected
+          node <<'NODE'
+          const fs = require('fs')
+          fs.writeFileSync('pr-body.md', `## Stale Skills Detected
 
           The following skills may need updates after the latest release:
 
-          ${{ steps.summary.outputs.summary }}
+          ${process.env.SUMMARY}
 
           ---
 
@@ -134,10 +138,13 @@ jobs:
           Paste this into your coding agent (Claude Code, Cursor, etc.):
 
           ~~~
-          ${{ steps.summary.outputs.prompt }}
+          ${process.env.PROMPT}
           ~~~
+          `)
+          NODE
 
-          PREOF
-          )" \
+          gh pr create \
+            --title "Review stale skills (${VERSION})" \
+            --body-file pr-body.md \
             --head "$BRANCH" \
             --base main
