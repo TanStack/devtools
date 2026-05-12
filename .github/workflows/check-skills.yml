@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true # review job pushes a generated branch
 
       - name: Setup Node
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -121,7 +121,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git commit --allow-empty -m "chore: review stale skills for ${VERSION}"
-          git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
+          git push origin "$BRANCH"
 
           node <<'NODE'
           const fs = require('fs')
