@@ -12,6 +12,7 @@ import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
 import { enhanceConsoleLog } from './enhance-logs'
 import { detectDevtoolsFile, injectPluginIntoFile } from './inject-plugin'
+import { TANSTACK_DEVTOOLS_PACKAGES } from './devtools-packages'
 import {
   addPluginToDevtools,
   emitOutdatedDeps,
@@ -318,17 +319,10 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       },
       enforce: 'pre',
       transform(code, id) {
-        const devtoolPackages = [
-          '@tanstack/react-devtools',
-          '@tanstack/preact-devtools',
-          '@tanstack/solid-devtools',
-          '@tanstack/vue-devtools',
-          '@tanstack/devtools',
-        ]
         if (
           id.includes('node_modules') ||
           id.includes('?raw') ||
-          !devtoolPackages.some((pkg) => code.includes(pkg))
+          !TANSTACK_DEVTOOLS_PACKAGES.some((pkg) => code.includes(pkg))
         )
           return
         const transform = removeDevtools(code, id)
@@ -546,6 +540,30 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         }
       },
     },
+    // Enhanced logs must run BEFORE console-pipe-transform: the latter
+    // prepends a multi-line IIFE to root entry files, which would shift
+    // every line number computed by the oxc-parser AST and produce
+    // "Go to Source" links pointing past the end of the user's file.
+    {
+      name: '@tanstack/devtools:better-console-logs',
+      enforce: 'pre',
+      apply(config) {
+        return config.mode === 'development' && enhancedLogsConfig.enabled
+      },
+      transform: {
+        filter: {
+          id: {
+            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+          },
+          code: {
+            include: 'console.',
+          },
+        },
+        handler(code, id) {
+          return enhanceConsoleLog(code, id, port)
+        },
+      },
+    },
     // Inject console piping code into entry files (both client and server)
     {
       name: '@tanstack/devtools:console-pipe-transform',
@@ -589,26 +607,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           }
 
           return undefined
-        },
-      },
-    },
-    {
-      name: '@tanstack/devtools:better-console-logs',
-      enforce: 'pre',
-      apply(config) {
-        return config.mode === 'development' && enhancedLogsConfig.enabled
-      },
-      transform: {
-        filter: {
-          id: {
-            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
-          },
-          code: {
-            include: 'console.',
-          },
-        },
-        handler(code, id) {
-          return enhanceConsoleLog(code, id, port)
         },
       },
     },

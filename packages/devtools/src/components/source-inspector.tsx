@@ -95,22 +95,25 @@ export const SourceInspector = () => {
   createEventListener(document, 'click', (e) => {
     if (!highlightState.element) return
 
+    // Snapshot the source before any signal writes: setDisabledAfterClick
+    // below flips isActive, which causes the highlight effect to run
+    // resetHighlight() and clear dataSource before we reach the reads below.
+    const source = highlightState.dataSource
+
     window.getSelection()?.removeAllRanges()
     e.preventDefault()
     e.stopPropagation()
     setDisabledAfterClick(true)
 
     if (settings().sourceAction === 'copy-path') {
-      navigator.clipboard.writeText(highlightState.dataSource).catch(() => {})
+      navigator.clipboard.writeText(source).catch(() => {})
       return
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
     const url = new URL(
-      `__tsd/open-source?source=${encodeURIComponent(
-        highlightState.dataSource,
-      )}`,
+      `__tsd/open-source?source=${encodeURIComponent(source)}`,
       baseUrl,
     )
     fetch(url).catch(() => {})
