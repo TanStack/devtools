@@ -420,5 +420,19 @@ describe('devtools plugin', () => {
       )
       expect(plugin).toBeDefined()
     })
+
+    it('runs better-console-logs before console-pipe-transform', () => {
+      // Both plugins are enforce: 'pre' and run in array order. console-pipe
+      // prepends a multi-line IIFE to root entry files; if better-console-logs
+      // ran after, its AST line numbers would be shifted past the end of the
+      // user's file and "Go to Source" links would miss the actual source.
+      const plugins = devtools()
+      const names = plugins.map((p) => p.name)
+      const betterLogsIdx = names.indexOf('@tanstack/devtools:better-console-logs')
+      const pipeIdx = names.indexOf('@tanstack/devtools:console-pipe-transform')
+      expect(betterLogsIdx).toBeGreaterThanOrEqual(0)
+      expect(pipeIdx).toBeGreaterThanOrEqual(0)
+      expect(betterLogsIdx).toBeLessThan(pipeIdx)
+    })
   })
 })
