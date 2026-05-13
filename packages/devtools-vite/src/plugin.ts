@@ -12,6 +12,7 @@ import { removeDevtools } from './remove-devtools'
 import { addSourceToJsx } from './inject-source'
 import { enhanceConsoleLog } from './enhance-logs'
 import { detectDevtoolsFile, injectPluginIntoFile } from './inject-plugin'
+import { TANSTACK_DEVTOOLS_PACKAGES } from './devtools-packages'
 import {
   addPluginToDevtools,
   emitOutdatedDeps,
@@ -310,17 +311,10 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       },
       enforce: 'pre',
       transform(code, id) {
-        const devtoolPackages = [
-          '@tanstack/react-devtools',
-          '@tanstack/preact-devtools',
-          '@tanstack/solid-devtools',
-          '@tanstack/vue-devtools',
-          '@tanstack/devtools',
-        ]
         if (
           id.includes('node_modules') ||
           id.includes('?raw') ||
-          !devtoolPackages.some((pkg) => code.includes(pkg))
+          !TANSTACK_DEVTOOLS_PACKAGES.some((pkg) => code.includes(pkg))
         )
           return
         const transform = removeDevtools(code, id)

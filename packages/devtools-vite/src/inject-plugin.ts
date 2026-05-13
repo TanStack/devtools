@@ -2,16 +2,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import MagicString from 'magic-string'
 import { parseSync } from 'oxc-parser'
 import { walk } from './ast-utils'
+import { isTanStackDevtoolsImport } from './devtools-packages'
 import type { Node } from 'oxc-parser'
 import type { PluginInjection } from '@tanstack/devtools-client'
-
-const devtoolsPackages = [
-  '@tanstack/react-devtools',
-  '@tanstack/solid-devtools',
-  '@tanstack/vue-devtools',
-  '@tanstack/svelte-devtools',
-  '@tanstack/angular-devtools',
-]
 
 /**
  * Detects if a file imports TanStack devtools packages
@@ -30,7 +23,7 @@ const detectDevtoolsImport = (code: string): boolean => {
       if (hasDevtoolsImport) return
       if (
         node.type === 'ImportDeclaration' &&
-        devtoolsPackages.includes(node.source.value)
+        isTanStackDevtoolsImport(node.source.value)
       ) {
         hasDevtoolsImport = true
       }
@@ -59,7 +52,7 @@ export const findDevtoolsComponentName = (code: string): string | null => {
     walk(result.program, (node) => {
       if (componentName) return
       if (node.type !== 'ImportDeclaration') return
-      if (!devtoolsPackages.includes(node.source.value)) return
+      if (!isTanStackDevtoolsImport(node.source.value)) return
 
       for (const spec of node.specifiers) {
         // import { TanStackDevtools } or import { TanStackDevtools as X }
@@ -135,7 +128,7 @@ function buildPluginString(
   if (pluginType === 'function') {
     return `${importName}()`
   }
-  return `{ name: "${displayName}", render: <${importName} /> }`
+  return `{ name: ${JSON.stringify(displayName)}, render: <${importName} /> }`
 }
 
 export const transformAndInject = (
@@ -232,14 +225,25 @@ export const transformAndInject = (
 
     // Add import at the top of the file if transform happened
     if (s.hasChanged()) {
-      const importStr = `\nimport { ${importName} } from "${injection.packageName}";`
-      let lastImportEnd = 0
+      const state = { lastImportEnd: 0, alreadyImported: false }
       walk(result.program, (n) => {
-        if (n.type === 'ImportDeclaration' && n.end > lastImportEnd) {
-          lastImportEnd = n.end
+        if (n.type !== 'ImportDeclaration') return
+        if (n.end > state.lastImportEnd) state.lastImportEnd = n.end
+        if (n.source.value !== injection.packageName) return
+        for (const spec of n.specifiers) {
+          if (
+            spec.type === 'ImportSpecifier' &&
+            spec.imported.type === 'Identifier' &&
+            spec.imported.name === importName
+          ) {
+            state.alreadyImported = true
+          }
         }
       })
-      s.appendRight(lastImportEnd, importStr)
+      if (!state.alreadyImported) {
+        const importStr = `\nimport { ${importName} } from ${JSON.stringify(injection.packageName)};`
+        s.appendRight(state.lastImportEnd, importStr)
+      }
     }
 
     return { code: s.toString(), transformed: s.hasChanged() }

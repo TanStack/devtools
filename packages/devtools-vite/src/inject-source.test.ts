@@ -888,4 +888,52 @@ function test({...props })  {
       expect(output).toBe(undefined)
     })
   })
+
+  describe('non-ASCII source positions', () => {
+    // oxc-parser napi bindings return UTF-16 code-unit indices (matching JS
+    // string indexing and magic-string's expectations). These tests lock that
+    // contract in: positions and inserted attributes must remain correct when
+    // the source contains multi-byte UTF-8 characters.
+
+    it('locates JSX correctly after an emoji string literal', () => {
+      const source = `
+const label = "🚀 launch"
+function Comp() {
+  return <div />
+}
+`
+      const output = addSourceToJsx(source, 'emoji.jsx')!.code
+      // line numbers are 1-based; the <div /> is on line 4
+      expect(output).toMatch(/<div\s+data-tsd-source="emoji\.jsx:4:10"/)
+    })
+
+    it('locates JSX correctly after CJK characters', () => {
+      const source = `
+// 中文注释
+function Comp() {
+  return <button />
+}
+`
+      const output = addSourceToJsx(source, 'cjk.jsx')!.code
+      expect(output).toMatch(/<button\s+data-tsd-source="cjk\.jsx:4:10"/)
+    })
+  })
+
+  describe('nested function boundaries', () => {
+    it('does not annotate inner-function JSX with the outer propsName', () => {
+      // The inner arrow forwards its own innerProps via spread. The outer
+      // function must NOT inject data-tsd-source onto that inner element,
+      // since it has no relation to the outer `props`.
+      const output = addSourceToJsx(
+        `
+const Outer = (props) => {
+  const Inner = (innerProps) => <span {...innerProps} />
+  return <Inner {...props} />
+}
+        `,
+        'nested.jsx',
+      )
+      expect(output).toBe(undefined)
+    })
+  })
 })

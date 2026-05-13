@@ -36,6 +36,9 @@ It uses oxc-parser to parse every source file, find imports from these packages,
 - `@tanstack/react-devtools`
 - `@tanstack/preact-devtools`
 - `@tanstack/solid-devtools`
+- `@tanstack/vue-devtools`
+- `@tanstack/svelte-devtools`
+- `@tanstack/angular-devtools`
 - `@tanstack/devtools`
 
 The stripping is AST-based. It removes the import declaration, then finds and removes any JSX elements whose tag name matches one of the imported identifiers. It also traces plugin references inside the `plugins` prop array and removes their imports if they become unused.

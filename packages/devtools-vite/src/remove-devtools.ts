@@ -1,12 +1,8 @@
 import MagicString from 'magic-string'
 import { parseSync } from 'oxc-parser'
 import { walk } from './ast-utils'
+import { isTanStackDevtoolsImport } from './devtools-packages'
 import type { JSXOpeningElement } from 'oxc-parser'
-
-const isTanStackDevtoolsImport = (source: string) =>
-  source === '@tanstack/react-devtools' ||
-  source === '@tanstack/devtools' ||
-  source === '@tanstack/solid-devtools'
 
 /**
  * Extract component names referenced in the `plugins` prop of a devtools element.

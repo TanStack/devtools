@@ -89,14 +89,25 @@ function shouldTransform(
   return true
 }
 
+function isFunctionLike(node: Node): boolean {
+  return (
+    node.type === 'FunctionDeclaration' ||
+    node.type === 'FunctionExpression' ||
+    node.type === 'ArrowFunctionExpression'
+  )
+}
+
 /**
- * Walk a subtree collecting every JSXOpeningElement (crosses into nested functions).
+ * Walk a subtree collecting JSXOpeningElements owned by the current function.
+ * Function-like nodes are traversal boundaries so inner components keep their
+ * own propsName context and aren't annotated with an outer function's props.
  */
 function collectJsx(node: Node, out: Array<JSXOpeningElement>) {
   if (node.type === 'JSXOpeningElement') {
     out.push(node)
     return
   }
+  if (isFunctionLike(node)) return
   forEachChild(node, (child) => collectJsx(child, out))
 }
 
@@ -141,7 +152,9 @@ function visitFunctions(
     }
   }
 
-  // Check if this node is a function-like node
+  // Check if this node is a function-like node. Variable-initialized
+  // functions (`const Foo = () => {}`) are handled when forEachChild reaches
+  // their init, so VariableDeclaration doesn't need a special case here.
   if (
     node.type === 'FunctionDeclaration' ||
     node.type === 'FunctionExpression'
@@ -149,15 +162,6 @@ function visitFunctions(
     if (node.body) processFunction(node.params, node.body)
   } else if (node.type === 'ArrowFunctionExpression') {
     processFunction(node.params, node.body)
-  } else if (node.type === 'VariableDeclaration') {
-    for (const decl of node.declarations) {
-      if (
-        decl.init?.type === 'ArrowFunctionExpression' ||
-        decl.init?.type === 'FunctionExpression'
-      ) {
-        if (decl.init.body) processFunction(decl.init.params, decl.init.body)
-      }
-    }
   }
 
   // Recurse into children to find nested functions

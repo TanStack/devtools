@@ -1084,4 +1084,58 @@ describe('inject-plugin', () => {
       expect(result.transformed).toBe(false)
     })
   })
+
+  describe('safe code generation', () => {
+    test('escapes quotes/backslashes in displayName when emitting JSX object', () => {
+      const code = `
+        import { TanStackDevtools } from '@tanstack/react-devtools'
+
+        function App() {
+          return <TanStackDevtools />
+        }
+      `
+      const result = testTransform(
+        code,
+        '@example/plugin',
+        'has "quotes" and \\backslash',
+        { importName: 'ExamplePlugin', type: 'jsx' },
+      )
+
+      expect(result.transformed).toBe(true)
+      // displayName must be serialized via JSON.stringify so embedded quotes
+      // and backslashes don't break the generated source.
+      expect(result.code).toContain(
+        'name: "has \\"quotes\\" and \\\\backslash"',
+      )
+      // and the package name in the appended import is also a JSON literal
+      expect(result.code).toContain(
+        'import { ExamplePlugin } from "@example/plugin"',
+      )
+    })
+
+    test('does not re-add an existing import when the plugin component is already imported', () => {
+      const code = `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+import { ExamplePlugin } from '@example/plugin'
+
+function App() {
+  return <TanStackDevtools />
+}
+      `
+      const result = testTransform(
+        code,
+        '@example/plugin',
+        'Example',
+        { importName: 'ExamplePlugin', type: 'jsx' },
+      )
+
+      expect(result.transformed).toBe(true)
+      // Exactly one import for ExamplePlugin from @example/plugin should remain.
+      const importMatches = result.code.match(
+        /import\s*\{\s*ExamplePlugin\s*\}\s*from\s*['"]@example\/plugin['"]/g,
+      )
+      expect(importMatches).not.toBeNull()
+      expect(importMatches!.length).toBe(1)
+    })
+  })
 })

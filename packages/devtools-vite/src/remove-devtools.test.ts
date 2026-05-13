@@ -553,4 +553,28 @@ export default function DevtoolsExample() {
       )
     })
   })
+
+  describe('framework devtools package coverage', () => {
+    test.each([
+      ['@tanstack/preact-devtools'],
+      ['@tanstack/vue-devtools'],
+      ['@tanstack/svelte-devtools'],
+      ['@tanstack/angular-devtools'],
+    ])('strips imports + JSX from %s', (pkg) => {
+      const output = removeDevtools(
+        `
+import { TanStackDevtools } from '${pkg}'
+
+export default function App() {
+  return <TanStackDevtools />
+}
+        `,
+        'test.jsx',
+      )
+
+      expect(output).toBeDefined()
+      expect(output!.code).not.toContain(pkg)
+      expect(output!.code).not.toContain('TanStackDevtools')
+    })
+  })
 })
