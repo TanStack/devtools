@@ -1,20 +1,6 @@
-# CODEOWNERS — required reviewers for security-sensitive paths.
-# Anything matching these globs requires approval from the listed owner(s)
-# before it can be merged when branch protection is set to require code-owner
-# review.
-#
-# Adjust the owners to your team handle (e.g. @TanStack/maintainers) once the
-# team exists. Until then, the project owner is listed as a fallback.
-
-# CI/CD configuration — workflows, composite actions, dependency manifests
-/.github/                @tannerlinsley
-/.github/workflows/      @tannerlinsley
-/.github/CODEOWNERS      @tannerlinsley
-/.github/renovate.json   @tannerlinsley
-
-# Package metadata — supply-chain sensitive (preinstall, packageManager,
-# overrides, scripts)
-/package.json            @tannerlinsley
-/pnpm-lock.yaml          @tannerlinsley
-/pnpm-workspace.yaml     @tannerlinsley
-/.npmrc                  @tannerlinsley
+.github/ @TanStack/tanstack-core
+.nx/ @TanStack/tanstack-core
+nx.json @TanStack/tanstack-core
+.changeset/config.json @TanStack/tanstack-core
+scripts/ @TanStack/tanstack-core
+.npmrc @TanStack/tanstack-core
