@@ -11,9 +11,11 @@ jobs:
       issues: write
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
 
       - name: Triage issue with Warp Agent
-        uses: warpdotdev/warp-agent-action@039f8de15fe60704b4308850e8cafb5cc0958bf2 # v1
+        uses: warpdotdev/warp-agent-action@fee7dc8441f64d14a4ae22596eb68167ced24a1a # v1.0.18
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

@@ -22,6 +22,9 @@ on:
       - 'docs/**'
       - 'packages/*/src/**'
 
+permissions:
+  contents: read
+
 jobs:
   notify:
     name: Notify TanStack Intent
@@ -31,6 +34,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 2
+          persist-credentials: false
 
       - name: Collect changed files
         id: changes
