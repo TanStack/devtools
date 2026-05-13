@@ -89,6 +89,151 @@ export function generateConsolePipeCode(
     }
   }
 
+  var MAX_DEPTH = 6;
+  var MAX_ARRAY_LEN = 100;
+  var MAX_OBJECT_KEYS = 100;
+  var MAX_STRING_LENGTH = 10000;
+
+  function truncateString(value) {
+    if (value.length <= MAX_STRING_LENGTH) return value;
+    return value.slice(0, MAX_STRING_LENGTH) + '... (' + (value.length - MAX_STRING_LENGTH) + ' more chars)';
+  }
+
+  function formatDomElement(element) {
+    var tagName = element.tagName ? element.tagName.toLowerCase() : 'element';
+    var output = '<' + tagName;
+    var attrs = ['id', 'class', 'name', 'type', 'role', 'aria-label', 'data-testid'];
+
+    for (var attrIndex = 0; attrIndex < attrs.length; attrIndex++) {
+      var attrName = attrs[attrIndex];
+      var attrValue = element.getAttribute && element.getAttribute(attrName);
+      if (attrValue) {
+        output += ' ' + attrName + '="' + truncateString(String(attrValue)).replace(/"/g, '&quot;') + '"';
+      }
+    }
+
+    return output + '>';
+  }
+
+  function getObjectTypeName(arg) {
+    return arg && arg.constructor && arg.constructor.name ? arg.constructor.name : 'Object';
+  }
+
+  function formatArrayBufferView(arg) {
+    var length = typeof arg.length === 'number' ? arg.length : arg.byteLength;
+    return '[' + getObjectTypeName(arg) + '(' + length + ')]';
+  }
+
+  function serializeConsoleArg(arg, seen, depth) {
+    if (depth === undefined) depth = 0;
+    if (arg === undefined) return 'undefined';
+    if (arg === null) return null;
+
+    var argType = typeof arg;
+
+    if (argType === 'function') return '[Function' + (arg.name ? ': ' + arg.name : '') + ']';
+    if (argType === 'symbol') return arg.toString();
+    if (argType === 'bigint') return arg.toString() + 'n';
+    if (argType === 'string') return truncateString(arg);
+    if (argType !== 'object') return arg;
+
+    if (!isServer) {
+      if (
+        arg.nodeType === 1 &&
+        typeof arg.tagName === 'string' &&
+        typeof arg.getAttribute === 'function'
+      ) {
+        return formatDomElement(arg);
+      }
+      if (arg.nodeType === 9) {
+        return '[Document]';
+      }
+      if (typeof Window !== 'undefined' && arg instanceof Window) {
+        return '[Window]';
+      }
+      if (typeof Event !== 'undefined' && arg instanceof Event) {
+        return {
+          type: arg.type,
+          target: serializeConsoleArg(arg.target, seen, depth + 1),
+          currentTarget: serializeConsoleArg(arg.currentTarget, seen, depth + 1),
+          defaultPrevented: arg.defaultPrevented,
+        };
+      }
+      if (typeof Node !== 'undefined' && arg instanceof Node) {
+        return '[Node: ' + arg.nodeName + ']';
+      }
+    }
+
+    if (arg instanceof Error) {
+      return {
+        name: arg.name,
+        message: truncateString(arg.message),
+        stack: arg.stack ? truncateString(arg.stack) : arg.stack,
+      };
+    }
+
+    if (arg instanceof Date) {
+      return arg.toISOString();
+    }
+
+    if (arg instanceof RegExp) {
+      return arg.toString();
+    }
+
+    if (typeof ArrayBuffer !== 'undefined') {
+      if (ArrayBuffer.isView && ArrayBuffer.isView(arg)) {
+        return formatArrayBufferView(arg);
+      }
+      if (arg instanceof ArrayBuffer) {
+        return '[ArrayBuffer(' + arg.byteLength + ')]';
+      }
+    }
+
+    if (typeof SharedArrayBuffer !== 'undefined' && arg instanceof SharedArrayBuffer) {
+      return '[SharedArrayBuffer(' + arg.byteLength + ')]';
+    }
+
+    if (depth >= MAX_DEPTH) {
+      return '[MaxDepth]';
+    }
+
+    if (seen.indexOf(arg) !== -1) {
+      return '[Circular]';
+    }
+
+    seen.push(arg);
+
+    if (Array.isArray(arg)) {
+      var arrayResult = [];
+      var arrayLength = Math.min(arg.length, MAX_ARRAY_LEN);
+      for (var arrayIndex = 0; arrayIndex < arrayLength; arrayIndex++) {
+        arrayResult.push(serializeConsoleArg(arg[arrayIndex], seen, depth + 1));
+      }
+      if (arg.length > MAX_ARRAY_LEN) {
+        arrayResult.push('... (' + (arg.length - MAX_ARRAY_LEN) + ' more)');
+      }
+      seen.pop();
+      return arrayResult;
+    }
+
+    var objectResult = {};
+    var keys = Object.keys(arg);
+    var keyLength = Math.min(keys.length, MAX_OBJECT_KEYS);
+    for (var keyIndex = 0; keyIndex < keyLength; keyIndex++) {
+      var key = keys[keyIndex];
+      try {
+        objectResult[key] = serializeConsoleArg(arg[key], seen, depth + 1);
+      } catch (error) {
+        objectResult[key] = '[Thrown: ' + String(error) + ']';
+      }
+    }
+    if (keys.length > MAX_OBJECT_KEYS) {
+      objectResult['...'] = '(' + (keys.length - MAX_OBJECT_KEYS) + ' more keys)';
+    }
+    seen.pop();
+    return objectResult;
+  }
+
   // Override global console methods
   for (var j = 0; j < CONSOLE_LEVELS.length; j++) {
     (function(level) {
@@ -106,15 +251,9 @@ export function generateConsolePipeCode(
           return;
         }
 
-        // Serialize args safely
         var safeArgs = args.map(function(arg) {
-          if (arg === undefined) return 'undefined';
-          if (arg === null) return null;
-          if (typeof arg === 'function') return '[Function]';
-          if (typeof arg === 'symbol') return arg.toString();
           try {
-            JSON.stringify(arg);
-            return arg;
+            return serializeConsoleArg(arg, [], 0);
           } catch (e) {
             return String(arg);
           }

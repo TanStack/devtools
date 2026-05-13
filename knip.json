@@ -4,7 +4,7 @@
   "ignoreWorkspaces": ["examples/**"],
   "workspaces": {
     "packages/devtools-a11y": {
-      "ignoreDependencies": ["solid-js"]
+      "ignoreDependencies": ["solid-js", "@angular/core"]
     },
 
     "packages/devtools-utils": {
@@ -17,6 +17,10 @@
     },
     "packages/solid-devtools": {
       "ignore": ["**/core.tsx"]
+    },
+    "packages/angular-devtools": {
+      "ignoreDependencies": ["tslib"],
+      "entry": ["provider/**/*.ts", "src/**/*.ts"]
     }
   }
 }

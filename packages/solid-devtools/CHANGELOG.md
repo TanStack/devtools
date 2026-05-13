@@ -1,5 +1,40 @@
 # @tanstack/solid-devtools
 
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.12.2
+
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [[`5ac65f8`](https://github.com/TanStack/devtools/commit/5ac65f80592c00c5d11605d86cef0576ea35db75)]:
+  - @tanstack/devtools@0.12.1
+
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [[`58e66f5`](https://github.com/TanStack/devtools/commit/58e66f5a2680537d0552d75c7e17d6ded62446f3)]:
+  - @tanstack/devtools@0.12.0
+
+## 0.8.2
+
+### Patch Changes
+
+- Updated dependencies [[`aa32769`](https://github.com/TanStack/devtools/commit/aa32769932b2443a91f123f3213d687f35810d4b)]:
+  - @tanstack/devtools@0.11.2
+
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies [[`e89cff4`](https://github.com/TanStack/devtools/commit/e89cff4b4e5953d66bac76567161dc7314d13850), [`e04bb11`](https://github.com/TanStack/devtools/commit/e04bb11becc87c1014d78fdda57eb810cdd16adf)]:
+  - @tanstack/devtools@0.11.1
+
 ## 0.8.0
 
 ### Minor Changes

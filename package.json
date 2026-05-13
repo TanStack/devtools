@@ -5,7 +5,7 @@
     "type": "git",
     "url": "git+https://github.com/TanStack/devtools.git"
   },
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@11.1.1",
   "type": "module",
   "scripts": {
     "build": "nx affected --targets=build --exclude=examples/** && size-limit",
@@ -22,7 +22,7 @@
     "generate-docs": "node scripts/generate-docs.ts",
     "lint:fix": "nx affected --target=lint:fix --exclude=examples/**",
     "lint:fix:all": "pnpm run format && nx run-many --targets=lint --fix",
-    "preinstall": "node -e \"if(process.env.CI == 'true') {console.log('Skipping preinstall...'); process.exit(1)}\" || npx -y only-allow pnpm",
+    "preinstall": "node -e \"if(process.env.CI === 'true') { console.log('Skipping preinstall...'); process.exit(0); } process.exit(1);\" || npx -y only-allow@1.2.2 pnpm",
     "size": "size-limit",
     "test": "pnpm run test:ci",
     "test:build": "nx affected --target=test:build --exclude=examples/**",
@@ -55,7 +55,7 @@
     }
   ],
   "devDependencies": {
-    "@changesets/cli": "^2.29.7",
+    "@changesets/cli": "^2.30.0",
     "@faker-js/faker": "^9.9.0",
     "@size-limit/preset-small-lib": "^11.2.0",
     "@svitejs/changesets-changelog-github-compact": "^1.2.0",
@@ -88,7 +88,8 @@
     "@tanstack/react-devtools": "workspace:*",
     "@tanstack/preact-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
-    "@tanstack/devtools-vite": "workspace:*"
+    "@tanstack/devtools-vite": "workspace:*",
+    "@tanstack/angular-devtools": "workspace:*"
   },
   "files": [
     "skills",

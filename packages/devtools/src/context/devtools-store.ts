@@ -75,6 +75,13 @@ export type DevtoolsStore = {
     theme: TanStackDevtoolsTheme
 
     /**
+     * The action to perform when clicking a source-inspected element
+     * - "ide-warp": open the file in the IDE via the Vite middleware
+     * - "copy-path": copy the file path to the clipboard
+     * @default "ide-warp"
+     */
+    sourceAction: 'ide-warp' | 'copy-path'
+    /**
      * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
      */
     triggerHidden?: boolean
@@ -110,6 +117,7 @@ export const initialState: DevtoolsStore = {
       window.matchMedia('(prefers-color-scheme: dark)').matches
         ? 'dark'
         : 'light',
+    sourceAction: 'ide-warp',
     triggerHidden: false,
     customTrigger: undefined,
   },

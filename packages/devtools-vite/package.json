@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-vite",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -66,6 +66,6 @@
   },
   "devDependencies": {
     "@types/picomatch": "^4.0.2",
-    "happy-dom": "^18.0.1"
+    "happy-dom": "^20.0.0"
   }
 }

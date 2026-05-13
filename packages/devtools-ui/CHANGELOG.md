@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.5.2
+
+### Patch Changes
+
+- Fix `NaN` rendering in `JsonTree`, previously rendered null, now correctly displays `NaN` ([#430](https://github.com/TanStack/devtools/pull/430))
+
 ## 0.5.1
 
 ### Patch Changes

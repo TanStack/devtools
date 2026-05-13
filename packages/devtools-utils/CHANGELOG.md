@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.5.0
+
+### Minor Changes
+
+- Adds Angular adapter and utility functions ([#431](https://github.com/TanStack/devtools/pull/431))
+
 ## 0.4.0
 
 ### Minor Changes
