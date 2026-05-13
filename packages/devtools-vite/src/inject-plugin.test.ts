@@ -1122,12 +1122,10 @@ function App() {
   return <TanStackDevtools />
 }
       `
-      const result = testTransform(
-        code,
-        '@example/plugin',
-        'Example',
-        { importName: 'ExamplePlugin', type: 'jsx' },
-      )
+      const result = testTransform(code, '@example/plugin', 'Example', {
+        importName: 'ExamplePlugin',
+        type: 'jsx',
+      })
 
       expect(result.transformed).toBe(true)
       // Exactly one import for ExamplePlugin from @example/plugin should remain.
