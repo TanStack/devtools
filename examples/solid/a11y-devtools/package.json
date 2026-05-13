@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@tanstack/devtools-a11y": "workspace:*",
-    "@tanstack/solid-devtools": "^0.8.4",
+    "@tanstack/solid-devtools": "^0.8.5",
     "solid-js": "^1.9.9"
   },
   "devDependencies": {
-    "@tanstack/devtools-vite": "0.6.0",
+    "@tanstack/devtools-vite": "0.6.1",
     "vite": "^8.0.0",
     "vite-plugin-inspect": "11.3.3",
     "vite-plugin-solid": "^2.11.11"

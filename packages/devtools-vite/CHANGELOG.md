@@ -1,5 +1,15 @@
 # @tanstack/devtools-event-client
 
+## 0.6.1
+
+### Patch Changes
+
+- Fix unnecessary condition ESLint error in console pipe log method lookup. ([#432](https://github.com/TanStack/devtools/pull/432))
+
+- Avoid piping raw DOM nodes through the console proxy. ([#424](https://github.com/TanStack/devtools/pull/424))
+
+- Fix console pipe feedback loop and solid-js duplication with Vite 8 ([#412](https://github.com/TanStack/devtools/pull/412))
+
 ## 0.6.0
 
 ### Minor Changes
