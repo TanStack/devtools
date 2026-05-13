@@ -428,7 +428,9 @@ describe('devtools plugin', () => {
       // user's file and "Go to Source" links would miss the actual source.
       const plugins = devtools()
       const names = plugins.map((p) => p.name)
-      const betterLogsIdx = names.indexOf('@tanstack/devtools:better-console-logs')
+      const betterLogsIdx = names.indexOf(
+        '@tanstack/devtools:better-console-logs',
+      )
       const pipeIdx = names.indexOf('@tanstack/devtools:console-pipe-transform')
       expect(betterLogsIdx).toBeGreaterThanOrEqual(0)
       expect(pipeIdx).toBeGreaterThanOrEqual(0)
