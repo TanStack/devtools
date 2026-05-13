@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.7.0
+
+### Minor Changes
+
+- migrate from Babel to oxc-parser + MagicString ([#397](https://github.com/TanStack/devtools/pull/397))
+
 ## 0.6.1
 
 ### Patch Changes
