@@ -65,4 +65,8 @@
   "peerDependencies": {
     "@angular/core": ">=21.0.0"
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }

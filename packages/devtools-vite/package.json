@@ -68,4 +68,8 @@
     "@types/picomatch": "^4.0.2",
     "happy-dom": "^20.0.0"
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }

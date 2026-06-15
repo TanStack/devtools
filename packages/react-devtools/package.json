@@ -64,4 +64,8 @@
     "react": ">=16.8",
     "react-dom": ">=16.8"
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }

@@ -126,4 +126,8 @@
       "optional": true
     }
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }

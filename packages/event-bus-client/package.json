@@ -60,4 +60,8 @@
   "devDependencies": {
     "@tanstack/devtools-event-bus": "workspace:*"
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }

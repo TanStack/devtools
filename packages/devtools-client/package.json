@@ -48,4 +48,8 @@
     "test:build": "publint --strict",
     "build": "vite build"
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }

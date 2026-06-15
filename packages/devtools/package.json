@@ -82,4 +82,8 @@
     "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.11"
   }
+,
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  }
 }
