@@ -54,7 +54,7 @@ yarn.lock
 .nx/workspace-data
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-
+.claude/worktrees
 .angular
 .nitro
 .sonda
