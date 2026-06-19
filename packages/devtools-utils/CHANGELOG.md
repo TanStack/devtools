@@ -1,5 +1,35 @@
 # @tanstack/devtools-utils
 
+## 0.5.1
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+## 0.5.0
+
+### Minor Changes
+
+- Adds Angular adapter and utility functions ([#431](https://github.com/TanStack/devtools/pull/431))
+
+## 0.4.0
+
+### Minor Changes
+
+- Extract devtools-ui from devtools-utils to avoid theme miss-match ([#386](https://github.com/TanStack/devtools/pull/386))
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
 ## 0.3.4
 
 ### Patch Changes

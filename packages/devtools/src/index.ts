@@ -6,3 +6,4 @@ export type {
   TanStackDevtoolsPluginProps,
   TanStackDevtoolsConfig,
 } from './context/devtools-context'
+export type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'

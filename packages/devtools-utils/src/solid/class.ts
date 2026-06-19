@@ -54,11 +54,13 @@ export function constructCoreClass(
       if (!this.#isMounted && !this.#isMounting) {
         throw new Error('Devtools is not mounted')
       }
+
       if (this.#isMounting) {
         this.#abortMount = true
         this.#isMounting = false
         return
       }
+
       this.#dispose?.()
       this.#isMounted = false
     }

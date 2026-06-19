@@ -1,5 +1,7 @@
 // import { Show, createUniqueId } from 'solid-js'
 
+import type { TanStackDevtoolsTheme } from './theme'
+
 /* export function Search() {
   return (
     <svg
@@ -39,7 +41,7 @@ export function Trash() {
     </svg>
   )
 } */
-/* 
+/*
 export function ChevronDown() {
   return (
     <svg
@@ -466,7 +468,7 @@ export function Link() {
     </svg>
   )
 }
-/* 
+/*
 
 export function Pencil() {
   return (
@@ -696,7 +698,7 @@ export function PiP() {
   )
 }
 
-export function CopiedCopier(props: { theme: 'light' | 'dark' }) {
+export function CopiedCopier(props: { theme: TanStackDevtoolsTheme }) {
   return (
     <svg
       width="24"
@@ -735,7 +737,7 @@ export function ErrorCopier() {
     </svg>
   )
 }
-/* 
+/*
 export function List() {
   return (
     <svg
@@ -755,7 +757,7 @@ export function List() {
   )
 }
 
-export function Check(props: { checked: boolean; theme: 'light' | 'dark' }) {
+export function Check(props: { checked: boolean; theme: TanStackDevtoolsTheme }) {
   return (
     <>
       <Show when={props.checked}>
@@ -884,7 +886,7 @@ export function PauseCircle() {
     </svg>
   )
 } */
-/* 
+/*
 export function TanstackLogo() {
   const id = createUniqueId()
   return (

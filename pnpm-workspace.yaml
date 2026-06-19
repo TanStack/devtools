@@ -1,7 +1,38 @@
 cleanupUnusedCatalogs: true
 linkWorkspacePackages: true
 preferWorkspacePackages: true
+blockExoticSubdeps: true
+trustPolicy: 'no-downgrade'
 
 packages:
   - examples/**/*
   - packages/*
+
+# Explicit allowlist of packages whose install scripts may run. pnpm 11
+# refuses to run any postinstall by default; declaring them here is the
+# secure-by-default way to acknowledge them. Keep this list minimal:
+# only packages that are strictly required for the production build.
+#
+# Allowed (strictly required):
+#   - esbuild: vite/tsup pull the platform binary in its postinstall
+#   - nx:      build orchestrator; postinstall sets up native bindings
+#
+# Denied (not required for `pnpm run build` / `pnpm run test:ci`):
+#   - @parcel/watcher: only used for `nx watch`, not for builds
+#   - lmdb / msgpackr-extract: nx cache optimization (JS fallback works)
+#   - protobufjs: postinstall is a perf-only optimization
+#   - sharp: not used by any package in this repo's build
+#   - unrs-resolver: native fast-path resolver (JS fallback works)
+#   - vue-demi: postinstall is a no-op outside Vue 2/3 projects
+#   - workerd: only used by the bundling-repro example (excluded from build)
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: true
+  lmdb: false
+  msgpackr-extract: false
+  nx: true
+  protobufjs: false
+  sharp: false
+  unrs-resolver: false
+  vue-demi: false
+  workerd: false

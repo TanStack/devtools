@@ -6,7 +6,6 @@
     "group:allNonMajor",
     "schedule:weekly",
     ":approveMajorUpdates",
-    ":automergeMinor",
     ":disablePeerDependencies",
     ":maintainLockFilesMonthly",
     ":semanticCommits",

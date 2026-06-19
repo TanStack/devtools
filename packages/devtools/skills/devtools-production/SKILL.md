@@ -31,11 +31,14 @@ TanStack Devtools has two independent mechanisms for keeping devtools out of pro
 
 The `@tanstack/devtools-vite` plugin includes a sub-plugin named `@tanstack/devtools:remove-devtools-on-build`. When `removeDevtoolsOnBuild` is `true` (the default), this plugin runs during `vite build` and any non-`serve` command where the mode is `production`.
 
-It uses Babel to parse every source file, find imports from these packages, and remove them along with any JSX elements they produce:
+It uses oxc-parser to parse every source file, find imports from these packages, and remove them along with any JSX elements they produce:
 
 - `@tanstack/react-devtools`
 - `@tanstack/preact-devtools`
 - `@tanstack/solid-devtools`
+- `@tanstack/vue-devtools`
+- `@tanstack/svelte-devtools`
+- `@tanstack/angular-devtools`
 - `@tanstack/devtools`
 
 The stripping is AST-based. It removes the import declaration, then finds and removes any JSX elements whose tag name matches one of the imported identifiers. It also traces plugin references inside the `plugins` prop array and removes their imports if they become unused.
@@ -452,7 +455,7 @@ For staging/preview environments where you want devtools but not in the final pr
 ## Key Source Files
 
 - `packages/devtools-vite/src/plugin.ts` -- Vite plugin entry, `removeDevtoolsOnBuild` option, sub-plugin registration
-- `packages/devtools-vite/src/remove-devtools.ts` -- AST-based stripping logic (Babel parse, traverse, codegen)
+- `packages/devtools-vite/src/remove-devtools.ts` -- AST-based stripping logic (oxc-parser + MagicString)
 - `packages/devtools/package.json` -- Conditional exports (`browser.development` -> `dev.js`, `browser` -> `index.js`, `node`/`workerd` -> `server.js`)
 - `packages/devtools/tsup.config.ts` -- Build config producing `dev.js`, `index.js`, `server.js` via `tsup-preset-solid`
 - `packages/devtools-utils/src/react/plugin.tsx` -- `createReactPlugin` returning `[Plugin, NoOpPlugin]`

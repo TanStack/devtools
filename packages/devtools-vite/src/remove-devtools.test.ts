@@ -57,23 +57,22 @@ export default function DevtoolsExample() {
     )
     expect(output).toBe(
       removeEmptySpace(`
-               import {
+          import {
             Link,
             Outlet,
             RouterProvider,
             createRootRoute,
             createRoute,
-            createRouter
-          } from '@tanstack/react-router';    
+            createRouter,
+          } from '@tanstack/react-router'
 
-          
           export default function DevtoolsExample() {
-            return  (<> 
+            return (
+              <>
                 <RouterProvider router={router} />
-              </>);
-            
+              </>
+            )
           }
-
         `),
     )
   })
@@ -93,9 +92,9 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools as Devtools } from '@tanstack/react-devtools'
- 
 
- 
+
+
 export default function DevtoolsExample() {
   return (
     <>
@@ -129,23 +128,22 @@ export default function DevtoolsExample() {
     )
     expect(output).toBe(
       removeEmptySpace(`
-              import {
+          import {
             Link,
             Outlet,
             RouterProvider,
             createRootRoute,
             createRoute,
-            createRouter
-          } from '@tanstack/react-router';  
+            createRouter,
+          } from '@tanstack/react-router'
 
-          
           export default function DevtoolsExample() {
-            return ( <> 
+            return (
+              <>
                 <RouterProvider router={router} />
-              </>);
-            
+              </>
+            )
           }
-
         `),
     )
   })
@@ -165,9 +163,9 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import * as Tools from '@tanstack/react-devtools'
- 
 
- 
+
+
 export default function DevtoolsExample() {
   return (
     <>
@@ -201,23 +199,22 @@ export default function DevtoolsExample() {
     )
     expect(output).toBe(
       removeEmptySpace(`
-            import {
+          import {
             Link,
             Outlet,
             RouterProvider,
             createRootRoute,
             createRoute,
-            createRouter
-          } from '@tanstack/react-router';  
+            createRouter,
+          } from '@tanstack/react-router'
 
-          
           export default function DevtoolsExample() {
-            return  (<> 
+            return (
+              <>
                 <RouterProvider router={router} />
-              </>);
-            
+              </>
+            )
           }
-
         `),
     )
   })
@@ -272,24 +269,22 @@ export default function DevtoolsExample() {
     )
 
     expect(output).toBe(
-      removeEmptySpace(` 
+      removeEmptySpace(`
 import {
   Link,
   Outlet,
   RouterProvider,
   createRootRoute,
   createRoute,
-  createRouter
-} from '@tanstack/react-router' ;
- 
+  createRouter,
+} from '@tanstack/react-router'
 
- 
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
     )
@@ -329,15 +324,15 @@ export default function DevtoolsExample() {
       )
 
       expect(output).toBe(
-        removeEmptySpace(`   
-   import { test } from '@tanstack/react-query-devtools';
- 
+        removeEmptySpace(`
+   import { test } from '@tanstack/react-query-devtools'
+
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -376,15 +371,15 @@ export default function DevtoolsExample() {
       )
 
       expect(output).toBe(
-        removeEmptySpace(`   
-   import * as Stuff from '@tanstack/react-query-devtools';
- 
+        removeEmptySpace(`
+   import * as Stuff from '@tanstack/react-query-devtools'
+
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -420,13 +415,13 @@ export default function DevtoolsExample() {
       )
 
       expect(output).toBe(
-        removeEmptySpace(`    
+        removeEmptySpace(`
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -462,13 +457,13 @@ export default function DevtoolsExample() {
       )
 
       expect(output).toBe(
-        removeEmptySpace(`    
+        removeEmptySpace(`
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -504,13 +499,13 @@ export default function DevtoolsExample() {
       )
 
       expect(output).toBe(
-        removeEmptySpace(`    
+        removeEmptySpace(`
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
@@ -546,16 +541,67 @@ export default function DevtoolsExample() {
       )
 
       expect(output).toBe(
-        removeEmptySpace(`    
+        removeEmptySpace(`
 export default function DevtoolsExample() {
   return (
-    <> 
+    <>
       <RouterProvider router={router} />
     </>
-  );
+  )
 }
           `),
       )
     })
+  })
+
+  describe('framework devtools package coverage', () => {
+    test.each([
+      ['@tanstack/preact-devtools'],
+      ['@tanstack/vue-devtools'],
+      ['@tanstack/svelte-devtools'],
+      ['@tanstack/angular-devtools'],
+    ])('strips imports + JSX from %s', (pkg) => {
+      const output = removeDevtools(
+        `
+import { TanStackDevtools } from '${pkg}'
+
+export default function App() {
+  return <TanStackDevtools />
+}
+        `,
+        'test.jsx',
+      )
+
+      expect(output).toBeDefined()
+      expect(output!.code).not.toContain(pkg)
+      expect(output!.code).not.toContain('TanStackDevtools')
+    })
+  })
+
+  test('preserves valid syntax when removing parenthesized devtools return', () => {
+    const output = removeEmptySpace(
+      removeDevtools(
+        `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+
+export function DevtoolsProvider() {
+  return (
+    <TanStackDevtools />
+  )
+}
+`,
+        'test.tsx',
+      )!.code,
+    )
+
+    expect(output).toBe(
+      removeEmptySpace(`
+export function DevtoolsProvider() {
+  return (
+    null
+  )
+}
+`),
+    )
   })
 })

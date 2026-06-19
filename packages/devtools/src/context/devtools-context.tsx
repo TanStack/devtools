@@ -11,9 +11,10 @@ import {
 import { initialState } from './devtools-store'
 import type { DevtoolsStore } from './devtools-store'
 import type { JSX, Setter } from 'solid-js'
+import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 
 export interface TanStackDevtoolsPluginProps {
-  theme: DevtoolsStore['settings']['theme']
+  theme: TanStackDevtoolsTheme
   devtoolsOpen: boolean
 }
 export interface TanStackDevtoolsPlugin {

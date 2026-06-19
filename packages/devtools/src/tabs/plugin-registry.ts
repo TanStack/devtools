@@ -208,6 +208,47 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     tags: ['TanStack'],
   },
 
+  // TanStack A11y Devtools
+  '@tanstack/devtools-a11y': {
+    packageName: '@tanstack/devtools-a11y',
+    title: 'Accessibility Devtools',
+    description:
+      'Audit accessibility issues in real-time with axe-core. Supports WCAG 2.1/2.2, live monitoring, and visual overlays.',
+    pluginImport: {
+      importName: 'createA11yPlugin',
+      type: 'function',
+    },
+    pluginId: 'devtools-a11y',
+    docsUrl: 'https://tanstack.com/devtools/latest/docs/plugins/a11y',
+    author: 'TanStack',
+    framework: 'react',
+    isNew: true,
+    tags: ['TanStack', 'a11y'],
+  },
+
+  // TanStack AI
+  '@tanstack/react-ai-devtools': {
+    packageName: '@tanstack/react-ai-devtools',
+    title: 'TanStack AI Devtools',
+    description:
+      'Debug TanStack AI - inspect messages, token usage, streaming chunks, tool calls, and reasoning.',
+    requires: {
+      packageName: '@tanstack/ai-react',
+      minVersion: '0.8.0',
+    },
+    pluginImport: {
+      importName: 'aiDevtoolsPlugin',
+      type: 'function',
+    },
+    pluginId: 'tanstack-ai',
+    docsUrl: 'https://tanstack.com/ai',
+    repoUrl: 'https://github.com/TanStack/ai',
+    author: 'TanStack',
+    framework: 'react',
+    isNew: true,
+    tags: ['TanStack', 'AI', 'streaming'],
+  },
+
   // ==========================================
   // THIRD-PARTY PLUGINS - Examples
   // ==========================================
@@ -240,6 +281,27 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     framework: 'react',
     isNew: true,
     tags: ['Router', 'Prefetch', 'Analytics', 'Overlay', 'TanStack'],
+  },
+
+  // Santos Vilanculos — Inertia 3 Devtools for React
+  '@santosvilanculos/bevor-react': {
+    packageName: '@santosvilanculos/bevor-react',
+    title: 'Inertia 3 Devtools',
+    description: 'Inertia 3 devtools built on top of TanStack DevTools',
+    pluginImport: {
+      importName: 'inertiaDevtoolsPlugin',
+      type: 'function',
+    },
+    pluginId: 'inertia-devtools',
+    logoUrl:
+      'https://raw.githubusercontent.com/santosvilanculos/bevor/main/logo.png',
+    docsUrl:
+      'https://github.com/SantosVilanculos/bevor/tree/main/packages/react',
+    repoUrl: 'https://github.com/SantosVilanculos/bevor',
+    author: 'Santos Vilanculos (santosvilanculos@yahoo.com)',
+    framework: 'react',
+    isNew: true,
+    tags: ['TanStack', 'React', 'Inertia', 'Laravel'],
   },
 }
 

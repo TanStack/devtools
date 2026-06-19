@@ -1,1 +1,1 @@
-export { EventClient, createNetworkTransportClient } from './plugin'
+export { EventClient } from './plugin'

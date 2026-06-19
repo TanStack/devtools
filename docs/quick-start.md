@@ -3,14 +3,14 @@ title: Quick Start
 id: quick-start
 ---
 
-TanStack Devtools is a framework-agnostic devtool for managing and debugging devtools plugins across React, Preact, Solid, and Vue. Pick your framework below to get started.
+TanStack Devtools is a framework-agnostic devtool for managing and debugging devtools plugins across React, Preact, Solid, Vue, and Angular. Pick your framework below to get started.
 
 ## React
 
 Install the devtools and the Vite plugin:
 
 ```bash
-npm install @tanstack/react-devtools @tanstack/devtools-vite
+npm install -D @tanstack/react-devtools @tanstack/devtools-vite
 ```
 
 Add the `TanStackDevtools` component to the root of your application:
@@ -65,7 +65,7 @@ createRoot(document.getElementById('root')!).render(
 Install the devtools and the Vite plugin:
 
 ```bash
-npm install @tanstack/preact-devtools @tanstack/devtools-vite
+npm install -D @tanstack/preact-devtools @tanstack/devtools-vite
 ```
 
 Add the `TanStackDevtools` component using Preact's `render()` function:
@@ -114,7 +114,7 @@ render(
 Install the devtools and the Vite plugin:
 
 ```bash
-npm install @tanstack/solid-devtools @tanstack/devtools-vite
+npm install -D @tanstack/solid-devtools @tanstack/devtools-vite
 ```
 
 Add the `TanStackDevtools` component using Solid's `render(() => ...)` pattern:
@@ -167,7 +167,7 @@ render(() => (
 Install the Vue devtools adapter:
 
 ```bash
-npm install @tanstack/vue-devtools
+npm install -D @tanstack/vue-devtools
 ```
 
 > The Vite plugin (`@tanstack/devtools-vite`) is optional for Vue but recommended if you want features like enhanced console logs and go-to-source.
@@ -202,6 +202,56 @@ const plugins: TanStackDevtoolsVuePlugin[] = [
   <App />
   <TanStackDevtools :plugins="plugins" />
 </template>
+```
+
+## Angular
+
+Install the devtools:
+
+```bash
+npm install @tanstack/angular-devtools
+```
+
+Add the `TanStackDevtoolsComponent` to the root of your application:
+
+```typescript
+import { Component } from '@angular/core'
+import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools'
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [TanStackDevtoolsComponent],
+  template: `
+    <app-content />
+    <tanstack-devtools />
+  `,
+})
+export class AppComponent {}
+```
+
+To add plugins, define them as an array and pass them via the `[plugins]` input. Angular uses `component` instead of `render` in plugin definitions:
+
+```typescript
+import { Component } from '@angular/core'
+import { TanStackDevtoolsComponent } from '@tanstack/angular-devtools'
+import type { TanStackDevtoolsAngularPlugin } from '@tanstack/angular-devtools'
+import { AngularQueryDevtoolsPanel } from '@tanstack/angular-query-devtools'
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [TanStackDevtoolsComponent],
+  template: `
+    <app-content />
+    <tanstack-devtools [plugins]="plugins" />
+  `,
+})
+export class AppComponent {
+  plugins: Array<TanStackDevtoolsAngularPlugin> = [
+    { name: 'Angular Query', component: AngularQueryDevtoolsPanel },
+  ]
+}
 ```
 
 ## Vite Plugin

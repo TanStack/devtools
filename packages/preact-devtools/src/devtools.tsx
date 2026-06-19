@@ -7,6 +7,7 @@ import type {
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
   TanStackDevtoolsPluginProps,
+  TanStackDevtoolsTheme,
 } from '@tanstack/devtools'
 
 type PluginRender =
@@ -14,7 +15,7 @@ type PluginRender =
   | ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => JSX.Element)
 
 type TriggerProps = {
-  theme: 'dark' | 'light'
+  theme: TanStackDevtoolsTheme
 }
 
 type TriggerRender =
