@@ -63,3 +63,44 @@ export function injectRuntimeBridge(
   if (!isEventClientModule(id, code)) return undefined
   return `${code}\n${generateRuntimeBridgeCode()}`
 }
+
+interface BridgeHotChannel {
+  on?: (event: string, cb: (data: any) => void) => void
+  send?: (event: string, data: any) => void
+}
+interface BridgeServerLike {
+  environments: Record<string, { hot?: BridgeHotChannel | null } | undefined>
+}
+
+export function wireRuntimeBridgeChannels(
+  server: BridgeServerLike,
+  getTarget: () => EventTarget | null | undefined,
+): () => void {
+  const forwarders: Array<() => void> = []
+
+  for (const [name, env] of Object.entries(server.environments)) {
+    if (name === 'client') continue
+    const hot = env?.hot
+    if (!hot || typeof hot.on !== 'function' || typeof hot.send !== 'function') {
+      continue
+    }
+
+    // Worker -> ServerEventBus (broadcasts to browser + in-process listeners).
+    hot.on('tsd:to-server', (event: any) => {
+      getTarget()?.dispatchEvent(
+        new CustomEvent('tanstack-dispatch-event', { detail: event }),
+      )
+    })
+
+    // ServerEventBus output -> worker listeners.
+    const forward = (e: Event) =>
+      hot.send!('tsd:to-client', (e as CustomEvent).detail)
+    const target = getTarget()
+    target?.addEventListener('tanstack-devtools-global', forward)
+    forwarders.push(() =>
+      getTarget()?.removeEventListener('tanstack-devtools-global', forward),
+    )
+  }
+
+  return () => forwarders.forEach((off) => off())
+}

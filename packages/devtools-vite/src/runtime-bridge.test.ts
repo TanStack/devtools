@@ -1,5 +1,9 @@
 import { describe, expect, test } from 'vitest'
-import { generateRuntimeBridgeCode, injectRuntimeBridge } from './runtime-bridge'
+import {
+  generateRuntimeBridgeCode,
+  injectRuntimeBridge,
+  wireRuntimeBridgeChannels,
+} from './runtime-bridge'
 
 describe('generateRuntimeBridgeCode', () => {
   test('guards on import.meta.hot and an unset global target', () => {
@@ -70,5 +74,67 @@ describe('injectRuntimeBridge', () => {
   test('skips event-client-pathed modules that lack the EventClient class', () => {
     const id = '/repo/node_modules/@tanstack/devtools-event-client/dist/esm/foo.js'
     expect(injectRuntimeBridge('export const y = 2', id, 'ssr')).toBeUndefined()
+  })
+})
+
+describe('wireRuntimeBridgeChannels', () => {
+  function makeEnv() {
+    const handlers: Record<string, Function> = {}
+    const sent: Array<{ event: string; data: any }> = []
+    return {
+      hot: {
+        on: (event: string, cb: Function) => (handlers[event] = cb),
+        send: (event: string, data: any) => sent.push({ event, data }),
+      },
+      __handlers: handlers,
+      __sent: sent,
+    }
+  }
+
+  test('worker event -> dispatches tanstack-dispatch-event on the target', () => {
+    const target = new EventTarget()
+    const ssr = makeEnv()
+    const server = { environments: { client: { hot: null }, ssr } }
+    const received: Array<any> = []
+    target.addEventListener('tanstack-dispatch-event', (e) =>
+      received.push((e as CustomEvent).detail),
+    )
+
+    wireRuntimeBridgeChannels(server as any, () => target)
+    const evt = { type: 'q:foo', payload: 1 }
+    ssr.__handlers['tsd:to-server'](evt)
+
+    expect(received).toEqual([evt])
+  })
+
+  test('target global event -> forwarded to the env via tsd:to-client', () => {
+    const target = new EventTarget()
+    const ssr = makeEnv()
+    const server = { environments: { ssr } }
+
+    wireRuntimeBridgeChannels(server as any, () => target)
+    const evt = { type: 'q:bar', payload: 2 }
+    target.dispatchEvent(new CustomEvent('tanstack-devtools-global', { detail: evt }))
+
+    expect(ssr.__sent).toEqual([{ event: 'tsd:to-client', data: evt }])
+  })
+
+  test('skips the client environment', () => {
+    const client = makeEnv()
+    const server = { environments: { client } }
+    wireRuntimeBridgeChannels(server as any, () => new EventTarget())
+    expect(client.__handlers['tsd:to-server']).toBeUndefined()
+  })
+
+  test('teardown stops forwarding', () => {
+    const target = new EventTarget()
+    const ssr = makeEnv()
+    const server = { environments: { ssr } }
+    const teardown = wireRuntimeBridgeChannels(server as any, () => target)
+    teardown()
+    target.dispatchEvent(
+      new CustomEvent('tanstack-devtools-global', { detail: { type: 'x' } }),
+    )
+    expect(ssr.__sent).toEqual([])
   })
 })
