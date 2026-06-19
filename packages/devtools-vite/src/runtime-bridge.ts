@@ -66,6 +66,7 @@ export function injectRuntimeBridge(
 
 interface BridgeHotChannel {
   on?: (event: string, cb: (data: any) => void) => void
+  off?: (event: string, cb: (data: any) => void) => void
   send?: (event: string, data: any) => void
 }
 interface BridgeServerLike {
@@ -76,7 +77,7 @@ export function wireRuntimeBridgeChannels(
   server: BridgeServerLike,
   getTarget: () => EventTarget | null | undefined,
 ): () => void {
-  const forwarders: Array<() => void> = []
+  const teardowns: Array<() => void> = []
 
   for (const [name, env] of Object.entries(server.environments)) {
     if (name === 'client') continue
@@ -86,21 +87,23 @@ export function wireRuntimeBridgeChannels(
     }
 
     // Worker -> ServerEventBus (broadcasts to browser + in-process listeners).
-    hot.on('tsd:to-server', (event: any) => {
+    const onToServer = (event: any) => {
       getTarget()?.dispatchEvent(
         new CustomEvent('tanstack-dispatch-event', { detail: event }),
       )
-    })
+    }
+    hot.on('tsd:to-server', onToServer)
+    teardowns.push(() => hot.off?.('tsd:to-server', onToServer))
 
     // ServerEventBus output -> worker listeners.
+    const target = getTarget()
     const forward = (e: Event) =>
       hot.send!('tsd:to-client', (e as CustomEvent).detail)
-    const target = getTarget()
     target?.addEventListener('tanstack-devtools-global', forward)
-    forwarders.push(() =>
-      getTarget()?.removeEventListener('tanstack-devtools-global', forward),
+    teardowns.push(() =>
+      target?.removeEventListener('tanstack-devtools-global', forward),
     )
   }
 
-  return () => forwarders.forEach((off) => off())
+  return () => teardowns.forEach((off) => off())
 }

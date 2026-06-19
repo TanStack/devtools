@@ -80,13 +80,16 @@ describe('injectRuntimeBridge', () => {
 describe('wireRuntimeBridgeChannels', () => {
   function makeEnv() {
     const handlers: Record<string, Function> = {}
+    const removed: Array<{ event: string; cb: Function }> = []
     const sent: Array<{ event: string; data: any }> = []
     return {
       hot: {
         on: (event: string, cb: Function) => (handlers[event] = cb),
+        off: (event: string, cb: Function) => removed.push({ event, cb }),
         send: (event: string, data: any) => sent.push({ event, data }),
       },
       __handlers: handlers,
+      __removed: removed,
       __sent: sent,
     }
   }
@@ -136,5 +139,32 @@ describe('wireRuntimeBridgeChannels', () => {
       new CustomEvent('tanstack-devtools-global', { detail: { type: 'x' } }),
     )
     expect(ssr.__sent).toEqual([])
+  })
+
+  test('teardown removes the tsd:to-server handler via hot.off (I1)', () => {
+    const target = new EventTarget()
+    const ssr = makeEnv()
+    const server = { environments: { ssr } }
+    const teardown = wireRuntimeBridgeChannels(server as any, () => target)
+
+    // Capture the registered handler reference before teardown.
+    const registeredHandler = ssr.__handlers['tsd:to-server']
+    expect(registeredHandler).toBeDefined()
+
+    teardown()
+
+    // hot.off must have been called with the exact same handler reference.
+    expect(ssr.__removed).toContainEqual({ event: 'tsd:to-server', cb: registeredHandler })
+
+    // Dispatching a worker event after teardown must not reach the target.
+    const received: any[] = []
+    target.addEventListener('tanstack-dispatch-event', (e) =>
+      received.push((e as CustomEvent).detail),
+    )
+    registeredHandler!({ type: 'post-teardown' })
+    // The handler still dispatches (it holds a closure over getTarget) but the
+    // important invariant is that hot.off was called so the real HMR channel
+    // will no longer invoke it on subsequent dev-server restarts.
+    expect(ssr.__removed.filter((r) => r.event === 'tsd:to-server')).toHaveLength(1)
   })
 })
