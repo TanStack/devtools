@@ -59,6 +59,9 @@ export default function DevtoolsExample() {
   return (
     <>
       <TanStackDevtools
+        eventBusConfig={{
+          connectToServerBus: true,
+        }}
         config={{ sourceAction: 'copy-path' }}
         plugins={[
           {
