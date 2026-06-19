@@ -48,7 +48,11 @@ export function forEachChild(node: Node, callback: (child: Node) => void) {
 /**
  * Recursively walk AST nodes, calling `visitor` for each node with a `type`.
  */
-export function walk(node: Node, visitor: (node: Node) => void) {
-  visitor(node)
-  forEachChild(node, (child) => walk(child, visitor))
+export function walk(
+  node: Node,
+  visitor: (node: Node, parentNode?: Node) => void,
+  parentNode?: Node,
+) {
+  visitor(node, parentNode)
+  forEachChild(node, (child) => walk(child, visitor, node))
 }

@@ -105,7 +105,7 @@ export function removeDevtools(code: string, id: string) {
     if (devtoolsNames.size === 0) return
 
     // Pass 2: Find and remove devtools JSX elements, collect plugin references
-    walk(result.program, (node) => {
+    walk(result.program, (node, parentNode) => {
       if (node.type !== 'JSXElement') return
 
       const opening = node.openingElement
@@ -130,7 +130,11 @@ export function removeDevtools(code: string, id: string) {
 
       let end = node.end
       if (code[end] === '\n') end++
-      s.remove(node.start, end)
+      if (parentNode?.type === 'ParenthesizedExpression') {
+        s.overwrite(node.start, end, 'null')
+      } else {
+        s.remove(node.start, end)
+      }
     })
 
     // Pass 3: Remove plugin imports that are no longer referenced

@@ -226,6 +226,29 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     tags: ['TanStack', 'a11y'],
   },
 
+  // TanStack AI
+  '@tanstack/react-ai-devtools': {
+    packageName: '@tanstack/react-ai-devtools',
+    title: 'TanStack AI Devtools',
+    description:
+      'Debug TanStack AI - inspect messages, token usage, streaming chunks, tool calls, and reasoning.',
+    requires: {
+      packageName: '@tanstack/ai-react',
+      minVersion: '0.8.0',
+    },
+    pluginImport: {
+      importName: 'aiDevtoolsPlugin',
+      type: 'function',
+    },
+    pluginId: 'tanstack-ai',
+    docsUrl: 'https://tanstack.com/ai',
+    repoUrl: 'https://github.com/TanStack/ai',
+    author: 'TanStack',
+    framework: 'react',
+    isNew: true,
+    tags: ['TanStack', 'AI', 'streaming'],
+  },
+
   // ==========================================
   // THIRD-PARTY PLUGINS - Examples
   // ==========================================

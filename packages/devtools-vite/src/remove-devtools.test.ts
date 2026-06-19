@@ -577,4 +577,31 @@ export default function App() {
       expect(output!.code).not.toContain('TanStackDevtools')
     })
   })
+
+  test('preserves valid syntax when removing parenthesized devtools return', () => {
+    const output = removeEmptySpace(
+      removeDevtools(
+        `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+
+export function DevtoolsProvider() {
+  return (
+    <TanStackDevtools />
+  )
+}
+`,
+        'test.tsx',
+      )!.code,
+    )
+
+    expect(output).toBe(
+      removeEmptySpace(`
+export function DevtoolsProvider() {
+  return (
+    null
+  )
+}
+`),
+    )
+  })
 })
