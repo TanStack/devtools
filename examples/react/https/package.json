@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@tanstack/devtools-ui": "0.5.3",
-    "@tanstack/devtools-vite": "0.7.2",
+    "@tanstack/devtools-vite": "0.8.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "@vitejs/plugin-react": "^6.0.1",
