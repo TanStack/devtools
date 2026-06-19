@@ -102,7 +102,7 @@ describe('wireRuntimeBridgeChannels', () => {
 
     wireRuntimeBridgeChannels(server as any, () => target)
     const evt = { type: 'q:foo', payload: 1 }
-    ssr.__handlers['tsd:to-server'](evt)
+    ssr.__handlers['tsd:to-server']!(evt)
 
     expect(received).toEqual([evt])
   })

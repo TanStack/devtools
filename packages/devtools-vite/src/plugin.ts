@@ -19,6 +19,10 @@ import {
   installPackage,
 } from './package-manager'
 import { generateConsolePipeCode } from './virtual-console'
+import {
+  injectRuntimeBridge,
+  wireRuntimeBridgeChannels,
+} from './runtime-bridge'
 import type { ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
 import type { EditorConfig } from './editor'
@@ -196,6 +200,13 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           })
           // start() now handles EADDRINUSE and returns the actual port
           devtoolsPort = await bus.start()
+          if ((server as any).environments) {
+            const teardownBridge = wireRuntimeBridgeChannels(
+              server as unknown as Parameters<typeof wireRuntimeBridgeChannels>[0],
+              () => globalThis.__TANSTACK_EVENT_TARGET__,
+            )
+            server.httpServer?.on('close', teardownBridge)
+          }
         }
 
         server.middlewares.use((req, _res, next) => {
@@ -665,6 +676,20 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           JSON.stringify(protocolValue),
         )
         return result
+      },
+    },
+    {
+      name: '@tanstack/devtools:runtime-bridge',
+      apply(config, { command }) {
+        return config.mode === 'development' && command === 'serve'
+      },
+      transform(code, id) {
+        if (id.includes('?')) return
+        return injectRuntimeBridge(
+          code,
+          id,
+          (this as any).environment?.name as string | undefined,
+        )
       },
     },
   ]
