@@ -82,7 +82,11 @@ export function wireRuntimeBridgeChannels(
   for (const [name, env] of Object.entries(server.environments)) {
     if (name === 'client') continue
     const hot = env?.hot
-    if (!hot || typeof hot.on !== 'function' || typeof hot.send !== 'function') {
+    if (
+      !hot ||
+      typeof hot.on !== 'function' ||
+      typeof hot.send !== 'function'
+    ) {
       continue
     }
 

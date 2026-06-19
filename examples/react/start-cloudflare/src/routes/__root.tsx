@@ -23,8 +23,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         {children}
         <TanStackDevtools
           eventBusConfig={{
-          connectToServerBus: true
-        }}
+            connectToServerBus: true,
+          }}
           config={{ position: 'bottom-right' }}
           plugins={[
             {

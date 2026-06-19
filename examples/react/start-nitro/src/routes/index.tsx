@@ -40,7 +40,9 @@ function App() {
   const [results, setResults] = useState<Array<string>>([])
 
   const addResult = (text: string) => {
-    setResults((prev) => [`[${new Date().toLocaleTimeString()}] ${text}`, ...prev].slice(0, 20))
+    setResults((prev) =>
+      [`[${new Date().toLocaleTimeString()}] ${text}`, ...prev].slice(0, 20),
+    )
   }
 
   return (
@@ -54,7 +56,14 @@ function App() {
         the "Server Events" tab to see events arriving from the server.
       </p>
 
-      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          marginBottom: '24px',
+          flexWrap: 'wrap',
+        }}
+      >
         <button
           onClick={async () => {
             const msg = await greet()
@@ -120,12 +129,12 @@ function App() {
           marginBottom: '24px',
         }}
       >
-        <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}>
+        <div
+          style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '4px' }}
+        >
           Loader data (also emits server event on navigation):
         </div>
-        <code style={{ fontSize: '13px' }}>
-          {JSON.stringify(loaderData)}
-        </code>
+        <code style={{ fontSize: '13px' }}>{JSON.stringify(loaderData)}</code>
       </div>
 
       {results.length > 0 && (

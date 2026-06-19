@@ -72,7 +72,8 @@ describe('injectRuntimeBridge', () => {
   })
 
   test('skips event-client-pathed modules that lack the EventClient class', () => {
-    const id = '/repo/node_modules/@tanstack/devtools-event-client/dist/esm/foo.js'
+    const id =
+      '/repo/node_modules/@tanstack/devtools-event-client/dist/esm/foo.js'
     expect(injectRuntimeBridge('export const y = 2', id, 'ssr')).toBeUndefined()
   })
 })
@@ -117,7 +118,9 @@ describe('wireRuntimeBridgeChannels', () => {
 
     wireRuntimeBridgeChannels(server as any, () => target)
     const evt = { type: 'q:bar', payload: 2 }
-    target.dispatchEvent(new CustomEvent('tanstack-devtools-global', { detail: evt }))
+    target.dispatchEvent(
+      new CustomEvent('tanstack-devtools-global', { detail: evt }),
+    )
 
     expect(ssr.__sent).toEqual([{ event: 'tsd:to-client', data: evt }])
   })
@@ -154,7 +157,10 @@ describe('wireRuntimeBridgeChannels', () => {
     teardown()
 
     // hot.off must have been called with the exact same handler reference.
-    expect(ssr.__removed).toContainEqual({ event: 'tsd:to-server', cb: registeredHandler })
+    expect(ssr.__removed).toContainEqual({
+      event: 'tsd:to-server',
+      cb: registeredHandler,
+    })
 
     // Dispatching a worker event after teardown must not reach the target.
     const received: any[] = []
@@ -165,6 +171,8 @@ describe('wireRuntimeBridgeChannels', () => {
     // The handler still dispatches (it holds a closure over getTarget) but the
     // important invariant is that hot.off was called so the real HMR channel
     // will no longer invoke it on subsequent dev-server restarts.
-    expect(ssr.__removed.filter((r) => r.event === 'tsd:to-server')).toHaveLength(1)
+    expect(
+      ssr.__removed.filter((r) => r.event === 'tsd:to-server'),
+    ).toHaveLength(1)
   })
 })

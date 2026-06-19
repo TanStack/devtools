@@ -202,7 +202,9 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           devtoolsPort = await bus.start()
           if ((server as any).environments) {
             const teardownBridge = wireRuntimeBridgeChannels(
-              server as unknown as Parameters<typeof wireRuntimeBridgeChannels>[0],
+              server as unknown as Parameters<
+                typeof wireRuntimeBridgeChannels
+              >[0],
               () => globalThis.__TANSTACK_EVENT_TARGET__,
             )
             server.httpServer?.on('close', teardownBridge)
