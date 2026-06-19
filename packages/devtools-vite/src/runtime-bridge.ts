@@ -42,3 +42,24 @@ export function generateRuntimeBridgeCode(): string {
 })();
 `
 }
+
+function isEventClientModule(id: string, code: string): boolean {
+  const isEventClientPath =
+    id.includes('devtools-event-client') || id.includes('event-bus-client')
+  // Only the module that actually defines the class — avoids re-export shims
+  // and unrelated files inside the package.
+  return isEventClientPath && code.includes('EventClient')
+}
+
+export function injectRuntimeBridge(
+  code: string,
+  id: string,
+  environmentName: string | undefined,
+): string | undefined {
+  // Only isolated server environments need the bridge. The client environment
+  // has `window`; the in-process RunnableDevEnvironment is handled by the
+  // runtime global guard inside the injected code.
+  if (!environmentName || environmentName === 'client') return undefined
+  if (!isEventClientModule(id, code)) return undefined
+  return `${code}\n${generateRuntimeBridgeCode()}`
+}

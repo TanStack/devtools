@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { generateRuntimeBridgeCode } from './runtime-bridge'
+import { generateRuntimeBridgeCode, injectRuntimeBridge } from './runtime-bridge'
 
 describe('generateRuntimeBridgeCode', () => {
   test('guards on import.meta.hot and an unset global target', () => {
@@ -29,5 +29,46 @@ describe('generateRuntimeBridgeCode', () => {
 
   test('has no external imports', () => {
     expect(generateRuntimeBridgeCode()).not.toContain('import ')
+  })
+})
+
+describe('injectRuntimeBridge', () => {
+  const EVENT_CLIENT_ID =
+    '/repo/node_modules/@tanstack/devtools-event-client/dist/esm/index.js'
+  const EVENT_CLIENT_CODE = 'class EventClient { emit() {} }'
+
+  test('injects into the event-client module in a server environment', () => {
+    const out = injectRuntimeBridge(EVENT_CLIENT_CODE, EVENT_CLIENT_ID, 'ssr')
+    expect(out).toBeDefined()
+    expect(out).toContain(EVENT_CLIENT_CODE)
+    expect(out).toContain('__tsdRuntimeBridge')
+  })
+
+  test('matches the workspace source path too', () => {
+    const id = '/repo/packages/event-bus-client/src/plugin.ts'
+    expect(injectRuntimeBridge(EVENT_CLIENT_CODE, id, 'ssr')).toBeDefined()
+  })
+
+  test('skips the client environment', () => {
+    expect(
+      injectRuntimeBridge(EVENT_CLIENT_CODE, EVENT_CLIENT_ID, 'client'),
+    ).toBeUndefined()
+  })
+
+  test('skips when environment name is unknown (pre-Environment-API)', () => {
+    expect(
+      injectRuntimeBridge(EVENT_CLIENT_CODE, EVENT_CLIENT_ID, undefined),
+    ).toBeUndefined()
+  })
+
+  test('skips modules that are not the event-client', () => {
+    expect(
+      injectRuntimeBridge('export const x = 1', '/repo/src/app.ts', 'ssr'),
+    ).toBeUndefined()
+  })
+
+  test('skips event-client-pathed modules that lack the EventClient class', () => {
+    const id = '/repo/node_modules/@tanstack/devtools-event-client/dist/esm/foo.js'
+    expect(injectRuntimeBridge('export const y = 2', id, 'ssr')).toBeUndefined()
   })
 })
