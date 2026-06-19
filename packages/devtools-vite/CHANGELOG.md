@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.7.1
+
+### Patch Changes
+
+- [#450](https://github.com/TanStack/devtools/pull/450) [`cf89dcd`](https://github.com/TanStack/devtools/commit/cf89dcd9e0906d89c1b40bd2ddb83d5cd3499514) - fix go to source file whose path contains $ symbol
+
 ## 0.7.0
 
 ### Minor Changes
