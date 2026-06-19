@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.12.4
+
+### Patch Changes
+
+- [#456](https://github.com/TanStack/devtools/pull/456) [`cc8c81b`](https://github.com/TanStack/devtools/commit/cc8c81b9e2e26596dc27a87bba6954b3821145a7) - Allow direct-mounted plugin panels to inherit full height for embedded scrolling.
+
 ## 0.12.3
 
 ### Patch Changes
