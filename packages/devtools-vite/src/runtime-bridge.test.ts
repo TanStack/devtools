@@ -80,13 +80,14 @@ describe('injectRuntimeBridge', () => {
 
 describe('wireRuntimeBridgeChannels', () => {
   function makeEnv() {
-    const handlers: Record<string, Function> = {}
-    const removed: Array<{ event: string; cb: Function }> = []
+    type Handler = (data: any) => void
+    const handlers: Record<string, Handler> = {}
+    const removed: Array<{ event: string; cb: Handler }> = []
     const sent: Array<{ event: string; data: any }> = []
     return {
       hot: {
-        on: (event: string, cb: Function) => (handlers[event] = cb),
-        off: (event: string, cb: Function) => removed.push({ event, cb }),
+        on: (event: string, cb: Handler) => (handlers[event] = cb),
+        off: (event: string, cb: Handler) => removed.push({ event, cb }),
         send: (event: string, data: any) => sent.push({ event, data }),
       },
       __handlers: handlers,
@@ -163,7 +164,7 @@ describe('wireRuntimeBridgeChannels', () => {
     })
 
     // Dispatching a worker event after teardown must not reach the target.
-    const received: any[] = []
+    const received: Array<any> = []
     target.addEventListener('tanstack-dispatch-event', (e) =>
       received.push((e as CustomEvent).detail),
     )
