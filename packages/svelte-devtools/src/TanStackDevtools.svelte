@@ -13,7 +13,10 @@
   // (and tear down + rebuild the entire devtools core) whenever a prop changes
   // — prop changes are handled reactively by the `update` effect below.
   $effect(() => {
-    adapter.mount(hostEl, untrack(() => ({ plugins, config, eventBusConfig })))
+    adapter.mount(
+      hostEl,
+      untrack(() => ({ plugins, config, eventBusConfig })),
+    )
 
     return () => {
       adapter.destroy()
