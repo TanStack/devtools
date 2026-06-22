@@ -30,17 +30,15 @@ test('nitro server-emitted event reaches the client devtools via the runtime bri
   // Activate the Event Probe plugin so its panel (and its server-ping listener) mounts.
   await page.getByText('Event Probe', { exact: true }).click()
 
-  // Give the client bus a moment to open its WebSocket to the ServerEventBus so the
-  // broadcast has a live subscriber when the server emit lands.
-  await page.waitForTimeout(2000)
-
-  // Trigger the server route handler, which emits 'server-ping' from the isolated
-  // server runtime.
-  await page.request.get('/emit-server-ping')
-
-  // The bridged event arrives over the bus; the panel's `on('server-ping')` renders
-  // the server row.
-  await expect(page.getByTestId(SELECTORS.probeServerRow)).toBeVisible({
-    timeout: 15000,
-  })
+  // The ServerEventBus does not replay to late joiners, so the client WebSocket must
+  // already be connected when the emit lands. CI opens the socket slower than a local
+  // run, so re-emit until the bridged server row appears rather than relying on a fixed
+  // delay — deterministic and flake-free. Re-emitting yields multiple identical rows
+  // once connected, hence `.first()`.
+  await expect(async () => {
+    await page.request.get('/emit-server-ping')
+    await expect(
+      page.getByTestId(SELECTORS.probeServerRow).first(),
+    ).toBeVisible({ timeout: 1000 })
+  }).toPass({ timeout: 20000 })
 })
