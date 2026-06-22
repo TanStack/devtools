@@ -34,6 +34,21 @@ jobs:
           main-branch-name: main
       - name: Run Checks
         run: pnpm run test:pr
+  e2e:
+    name: E2e
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Tools
+        uses: TanStack/config/.github/setup@main
+      - name: Install Playwright Chromium
+        run: pnpm --filter @tanstack/devtools-e2e-react-vite exec playwright install --with-deps chromium
+      - name: Run e2e
+        run: pnpm run test:e2e
   preview:
     name: Preview
     runs-on: ubuntu-latest

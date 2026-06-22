@@ -28,6 +28,7 @@ export const Tabs = (props: TabsProps) => {
         {(tab) => (
           <button
             type="button"
+            data-testid={`tsd-tab-${tab.id}`}
             onClick={() => setState({ activeTab: tab.id })}
             class={clsx(styles().tab, { active: state().activeTab === tab.id })}
             onMouseEnter={() => {
@@ -50,6 +51,7 @@ export const Tabs = (props: TabsProps) => {
         >
           <button
             type="button"
+            data-testid="tsd-pip-button"
             class={clsx(styles().tab, 'detach')}
             onClick={handleDetachment}
           >
@@ -57,6 +59,7 @@ export const Tabs = (props: TabsProps) => {
           </button>
           <button
             type="button"
+            data-testid="tsd-close-button"
             class={clsx(styles().tab, 'close')}
             onClick={() => props.toggleOpen()}
           >

@@ -7,6 +7,8 @@ trustPolicy: 'no-downgrade'
 packages:
   - examples/**/*
   - packages/*
+  - e2e/apps/*
+  - e2e/helpers
 
 # Explicit allowlist of packages whose install scripts may run. pnpm 11
 # refuses to run any postinstall by default; declaring them here is the

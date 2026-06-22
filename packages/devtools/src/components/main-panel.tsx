@@ -19,6 +19,8 @@ export const MainPanel = (props: {
   return (
     <div
       id={TANSTACK_DEVTOOLS}
+      data-testid="tsd-main-panel"
+      data-open={props.isOpen() ? 'true' : 'false'}
       style={{
         height: pip().pipWindow ? '100vh' : height() + 'px',
         '--tsd-main-panel-height': pip().pipWindow ? '100vh' : height() + 'px',

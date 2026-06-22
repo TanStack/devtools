@@ -1,0 +1,23 @@
+{
+  "name": "@tanstack/devtools-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./event-probe": "./src/event-probe/plugin.tsx"
+  },
+  "dependencies": {
+    "@tanstack/devtools-event-client": "workspace:*"
+  },
+  "peerDependencies": {
+    "@playwright/test": "*",
+    "react": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/react": "^19.2.0",
+    "react": "^19.2.0",
+    "typescript": "~5.9.2"
+  }
+}

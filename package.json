@@ -11,8 +11,8 @@
   },
   "type": "module",
   "scripts": {
-    "build": "nx affected --targets=build --exclude=examples/** && size-limit",
-    "build:all": "nx run-many --targets=build --exclude=examples/** && size-limit",
+    "build": "nx affected --targets=build --exclude=examples/**,e2e/** && size-limit",
+    "build:all": "nx run-many --targets=build --exclude=examples/**,e2e/** && size-limit",
     "build:core": "nx build @tanstack/devtools && size-limit",
     "changeset": "changeset",
     "changeset:publish": "changeset publish",
@@ -36,6 +36,7 @@
     "test:lib": "nx affected --targets=test:lib --exclude=examples/**",
     "test:lib:dev": "pnpm test:lib && nx watch --all -- pnpm test:lib",
     "test:pr": "nx affected --targets=test:eslint,test:sherif,test:knip,test:lib,test:types,test:build,build",
+    "test:e2e": "nx run-many --target=test:e2e --projects=devtools-e2e-react-vite",
     "test:sherif": "sherif",
     "test:types": "nx affected --targets=test:types --exclude=examples/**",
     "watch": "pnpm run build:all && nx watch --all -- pnpm run build:all"
