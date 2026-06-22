@@ -12,9 +12,9 @@ type PublicSurface<T> = { [K in keyof T]: T[K] }
  * Authors who want devtools events in production should import the real client
  * from `@tanstack/devtools-event-client/production` instead.
  */
-export class EventClientNoOp<TEventMap extends Record<string, any>>
-  implements PublicSurface<EventClient<TEventMap>>
-{
+export class EventClientNoOp<
+  TEventMap extends Record<string, any>,
+> implements PublicSurface<EventClient<TEventMap>> {
   #pluginId: string
 
   constructor({
