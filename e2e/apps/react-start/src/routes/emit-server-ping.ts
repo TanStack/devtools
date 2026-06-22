@@ -2,12 +2,12 @@ import { createFileRoute } from '@tanstack/react-router'
 import { json } from '@tanstack/react-start'
 import { emitServerPing } from '@tanstack/devtools-e2e/event-probe/server'
 
-// NOTE: In Start dev this handler runs in a separate Vite SSR module-runner
-// environment that does NOT share `globalThis.__TANSTACK_EVENT_TARGET__` with the
-// main Vite node process that hosts the devtools ServerEventBus. The emit therefore
-// resolves to an isolated fallback EventTarget and never reaches connected clients.
-// See the `// ponytail:` note in tests/start.spec.ts. The route is kept so the same
-// wiring can be re-tested if Start later shares the global across environments.
+// In Start dev this handler runs in Nitro's isolated Vite SSR module-runner
+// environment. PR #384's runtime bridge (packages/devtools-vite/src/runtime-bridge.ts)
+// installs a `globalThis.__TANSTACK_EVENT_TARGET__` in that runtime and bridges it to
+// the main Vite process (which hosts the devtools ServerEventBus) over the framework
+// plugin's HMR HotChannel, so this emit reaches all connected browser clients.
+// Exercised by the server->client test in tests/start.spec.ts.
 export const Route = createFileRoute('/emit-server-ping')({
   server: {
     handlers: {

@@ -8,23 +8,14 @@ test('devtools mount under SSR and demo plugin renders', async ({ page }) => {
   await expect(page.getByTestId('demo-plugin')).toBeVisible()
 })
 
-// ponytail: This was intended to assert server->client delivery (GET /emit-server-ping
-// -> probeServerRow visible), matching the react-vite proof. It is DOWNGRADED to a
-// client-probe assertion because real server->client does NOT work in TanStack Start dev:
-// the Start server route handler runs in a SEPARATE Vite SSR module-runner environment
-// whose `globalThis` is distinct from the main Vite node process that hosts the devtools
-// ServerEventBus (and owns `globalThis.__TANSTACK_EVENT_TARGET__`). Verified empirically:
-// inside the GET handler `globalThis.__TANSTACK_EVENT_TARGET__` is undefined, so the
-// server-side EventClient.emit() falls back to a fresh isolated EventTarget, the connect
-// handshake gets no reply, and the event never reaches any connected WS client — no
-// server row ever renders. The client bus itself is healthy (the client-emit round-trip
-// below proves the page's WS to the bus is open and functional), so the ONLY broken link
-// is the server route's process isolation. This is the same shape as the workerd case in
-// the spike (docs/superpowers/specs/2026-06-22-server-probe-spike.md), but caused by
-// Vite environment/module-runner isolation rather than a worker isolate. The /emit-server-ping
-// route is left in place so this can be re-promoted if Start later shares the global target
-// across environments.
-test('client-emitted event round-trips through the bus to the client devtools', async ({
+// Server->client delivery: a GET to /emit-server-ping runs a TanStack Start server
+// route handler inside Nitro's isolated Vite SSR module-runner. PR #384's runtime
+// bridge (packages/devtools-vite/src/runtime-bridge.ts) gives that isolated runtime a
+// real `globalThis.__TANSTACK_EVENT_TARGET__` and bridges it to the Vite dev process
+// over the framework plugin's HMR HotChannel, so the server-side EventClient.emit()
+// reaches the ServerEventBus and is broadcast to all connected browser clients. A
+// visible server row therefore proves the server->client path works end-to-end.
+test('server-emitted event reaches the client devtools via the runtime bridge', async ({
   page,
 }) => {
   const dt = new DevtoolsPage(page)
@@ -34,15 +25,20 @@ test('client-emitted event round-trips through the bus to the client devtools', 
   // Hover the plugins tab to expand the plugin sidebar so the names are visible.
   await dt.tab('plugins').hover()
 
-  // Activate the Event Probe plugin so its panel mounts.
+  // Activate the Event Probe plugin so its panel (and its server-ping listener) mounts.
   await page.getByText('Event Probe', { exact: true }).click()
 
-  // Emitting from the page dispatches through the client bus -> WS -> server bus and
-  // back to all connected clients; the panel's `on('ping')` then renders a row. A
-  // visible row therefore proves the client<->bus WebSocket link is live end-to-end.
-  await page.getByTestId(SELECTORS.probeEmitButton).click()
+  // Give the client bus a moment to open its WebSocket to the ServerEventBus so the
+  // broadcast has a live subscriber when the server emit lands.
+  await page.waitForTimeout(2000)
 
-  await expect(page.getByTestId(SELECTORS.probeEventRow)).toHaveText('ping 1', {
+  // Trigger the server route handler, which emits 'server-ping' from the isolated
+  // server runtime.
+  await page.request.get('/emit-server-ping')
+
+  // The bridged event arrives over the bus; the panel's `on('server-ping')` renders
+  // the server row.
+  await expect(page.getByTestId(SELECTORS.probeServerRow)).toBeVisible({
     timeout: 15000,
   })
 })
