@@ -189,14 +189,35 @@ export const PluginMarketplace = () => {
       },
     )
 
+    // Request the current package.json every time the marketplace opens.
+    // The `mounted` -> `package-json-read` round-trip is only triggered here,
+    // but the event can be dropped if the event bus WebSocket isn't connected
+    // yet when we emit (it is sent without queueing). When that happens the
+    // marketplace stays stuck on the empty "all installed" state. Retry until
+    // the package.json actually arrives so re-opening always re-fetches.
+    const requestPackageJson = () =>
+      devtoolsEventClient.emit('mounted', undefined)
+
+    let refetchAttempts = 0
+    const refetchInterval = setInterval(() => {
+      if (currentPackageJson() || refetchAttempts >= 10) {
+        clearInterval(refetchInterval)
+        return
+      }
+      refetchAttempts++
+      requestPackageJson()
+    }, 400)
+
     onCleanup(() => {
       cleanupJsonRead()
       cleanupJsonUpdated()
       cleanupDevtoolsInstalled()
       cleanupPluginAdded()
+      clearInterval(refetchInterval)
     })
-    // Emit mounted event to trigger package.json read
-    devtoolsEventClient.emit('mounted', undefined)
+
+    // Kick off the initial request immediately on open.
+    requestPackageJson()
   })
 
   const updatePluginCards = (pkg: PackageJson | null) => {

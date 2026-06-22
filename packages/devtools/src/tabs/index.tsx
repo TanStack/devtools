@@ -7,7 +7,7 @@ export const tabs = [
   {
     name: 'Plugins',
     id: 'plugins',
-    component: () => <PluginsTab />,
+    component: (props: { isOpen: boolean }) => <PluginsTab {...props} />,
     icon: () => <List />,
   },
   {

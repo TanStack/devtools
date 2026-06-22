@@ -40,6 +40,9 @@ import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/vue'
 
 // Svelte
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/svelte'
+
+// Angular
+import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/angular'
 ```
 
 ## React
@@ -297,6 +300,49 @@ const [MyPanel, NoOpPanel] = createSveltePanel(MyDevtoolsCore)
 ```
 
 The panel accepts `theme` and `devtoolsProps` props. It creates a `div` element, mounts the core instance into it, and calls `unmount()` on cleanup.
+
+## Angular
+
+### createAngularPlugin
+
+The Angular factory takes a `name` string and an Angular component class as separate arguments, similar to the Vue API.
+
+**Signature:**
+
+```ts
+function createAngularPlugin(
+  name: string,
+  component: Type<any>,
+): readonly [Plugin, NoOpPlugin]
+```
+
+**Usage:**
+
+```ts
+import { createAngularPlugin } from '@tanstack/devtools-utils/angular'
+import { MyStorePanelComponent } from './my-store-panel.component'
+
+const [MyPlugin, NoOpPlugin] = createAngularPlugin('My Store', MyStorePanelComponent)
+```
+
+The returned functions:
+
+- **`Plugin(inputs?)`** -- returns `{ name, component, inputs }` where `component` is your Angular component class.
+- **`NoOpPlugin(inputs?)`** -- returns `{ name, component: NoOpComponent, inputs }` where the component is an empty standalone component (renders nothing visible).
+
+Both accept an optional `inputs` object that gets forwarded to the component via `setInput()`.
+
+### createAngularPanel
+
+For class-based devtools cores, Angular provides `createAngularPanel`. It creates a standalone Angular component that handles mounting and unmounting the core class:
+
+```ts
+import { createAngularPanel } from '@tanstack/devtools-utils/angular'
+
+const [MyPanel, NoOpPanel] = createAngularPanel(MyDevtoolsCore)
+```
+
+The panel component accepts `theme` and `devtoolsProps` as signal inputs. It mounts the core instance into a `div` element using `afterNextRender` and calls `unmount()` via `DestroyRef.onDestroy`.
 
 ## When to Use Factories vs Manual Plugin Objects
 

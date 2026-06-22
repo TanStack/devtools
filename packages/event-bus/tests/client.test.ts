@@ -48,6 +48,27 @@ function createMockEventSourceClass() {
   }
 }
 
+function createConnectingWebSocketClass() {
+  // Starts in CONNECTING state; tests flip readyState and fire onopen manually.
+  return class ConnectingWebSocket {
+    static CONNECTING = 0
+    static OPEN = 1
+    static CLOSED = 3
+    url: string
+    readyState = 0 // CONNECTING
+    onopen: any = null
+    onmessage: any = null
+    onclose: any = null
+    onerror: any = null
+    send = vi.fn()
+    close = vi.fn()
+    constructor(url: string) {
+      this.url = url
+      mockWebSocketInstances.push(this)
+    }
+  }
+}
+
 function createThrowingWebSocketClass() {
   return class ThrowingWebSocket {
     static OPEN = 1
@@ -258,6 +279,83 @@ describe('ClientEventBus', () => {
           method: 'POST',
         }),
       )
+      bus.stop()
+    })
+  })
+
+  describe('emitToServer while WebSocket is connecting', () => {
+    it('should queue events while connecting and flush them once the socket opens', () => {
+      vi.stubGlobal('WebSocket', createConnectingWebSocketClass())
+
+      const bus = new ClientEventBus({ connectToServerBus: true })
+      bus.start()
+
+      const socket = mockWebSocketInstances[0]
+      expect(socket.readyState).toBe(0) // CONNECTING
+
+      // Events emitted while connecting must not be sent yet...
+      window.dispatchEvent(
+        new CustomEvent('tanstack-dispatch-event', {
+          detail: { type: 'queued:event', payload: { n: 1 } },
+        }),
+      )
+      window.dispatchEvent(
+        new CustomEvent('tanstack-dispatch-event', {
+          detail: { type: 'queued:event', payload: { n: 2 } },
+        }),
+      )
+      expect(socket.send).not.toHaveBeenCalled()
+
+      // ...but flushed in order as soon as the connection opens.
+      socket.readyState = 1 // OPEN
+      socket.onopen?.()
+
+      expect(socket.send).toHaveBeenCalledTimes(2)
+      expect(socket.send.mock.calls[0][0]).toContain('"n":1')
+      expect(socket.send.mock.calls[1][0]).toContain('"n":2')
+      bus.stop()
+    })
+
+    it('should send immediately once the socket is open', () => {
+      vi.stubGlobal('WebSocket', createConnectingWebSocketClass())
+
+      const bus = new ClientEventBus({ connectToServerBus: true })
+      bus.start()
+
+      const socket = mockWebSocketInstances[0]
+      socket.readyState = 1 // OPEN
+      socket.onopen?.()
+
+      window.dispatchEvent(
+        new CustomEvent('tanstack-dispatch-event', {
+          detail: { type: 'live:event', payload: {} },
+        }),
+      )
+
+      expect(socket.send).toHaveBeenCalledTimes(1)
+      bus.stop()
+    })
+
+    it('should drop queued events if the socket closes before opening', () => {
+      vi.stubGlobal('WebSocket', createConnectingWebSocketClass())
+
+      const bus = new ClientEventBus({ connectToServerBus: true })
+      bus.start()
+
+      const socket = mockWebSocketInstances[0]
+      window.dispatchEvent(
+        new CustomEvent('tanstack-dispatch-event', {
+          detail: { type: 'queued:event', payload: {} },
+        }),
+      )
+
+      // Connection fails before ever opening.
+      socket.readyState = 3 // CLOSED
+      socket.onclose?.()
+
+      // Re-flushing (e.g. a late open) must not send the dropped events.
+      socket.onopen?.()
+      expect(socket.send).not.toHaveBeenCalled()
       bus.stop()
     })
   })

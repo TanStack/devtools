@@ -71,7 +71,9 @@ function JsonValue(props: {
         }
 
         if (typeof props.value === 'number') {
-          return <span class={styles().tree.valueNumber}>{props.value}</span>
+          return (
+            <span class={styles().tree.valueNumber}>{String(props.value)}</span>
+          )
         }
 
         if (typeof props.value === 'boolean') {

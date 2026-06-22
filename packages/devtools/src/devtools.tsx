@@ -191,6 +191,14 @@ export default function DevTools() {
 
   const { theme } = useTheme()
 
+  createEffect(() => {
+    if (typeof document === 'undefined') {
+      return
+    }
+
+    document.documentElement.dataset.tanstackDevtoolsTheme = theme()
+  })
+
   return (
     <ThemeContextProvider theme={theme()}>
       <Portal mount={(pip().pipWindow ?? window).document.body}>
@@ -211,7 +219,7 @@ export default function DevTools() {
                 handleDragStart={(e) => handleDragStart(panelRef, e)}
               >
                 <Tabs toggleOpen={toggleOpen} />
-                <TabContent />
+                <TabContent isOpen={isOpen()} />
               </ContentPanel>
             </MainPanel>
           </Show>

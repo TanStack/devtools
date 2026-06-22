@@ -73,6 +73,10 @@ export class ClientEventBus {
   #debug: boolean
   #connectToServerBus: boolean
   #broadcastChannel: BroadcastChannel | null
+  // Events emitted while the WebSocket is still establishing its connection.
+  // They are buffered here and flushed once the socket opens so early events
+  // (e.g. the marketplace's `mounted` request) are never silently dropped.
+  #pendingServerEvents: Array<string> = []
   #dispatcher = (e: Event) => {
     const event = (e as CustomEvent).detail
     this.emitToServer(event)
@@ -126,14 +130,36 @@ export class ClientEventBus {
     this.#eventTarget.dispatchEvent(globalEvent)
   }
 
+  private flushPendingServerEvents() {
+    if (!this.#socket || this.#socket.readyState !== WebSocket.OPEN) {
+      return
+    }
+    const pending = this.#pendingServerEvents
+    this.#pendingServerEvents = []
+    for (const json of pending) {
+      this.debugLog('Flushing queued event to server via WS')
+      this.#socket.send(json)
+    }
+  }
+
   private emitToServer(event: TanStackDevtoolsEvent<string, any>) {
     const json = stringifyWithBigInt(event)
     // try to emit it to the event bus first
-    if (this.#socket && this.#socket.readyState === WebSocket.OPEN) {
-      this.debugLog('Emitting event to server via WS', event)
-      this.#socket.send(json)
-      // try to emit to SSE if WebSocket is not available (this will only happen on the client side)
-    } else if (this.#eventSource) {
+    if (this.#socket) {
+      if (this.#socket.readyState === WebSocket.OPEN) {
+        this.debugLog('Emitting event to server via WS', event)
+        this.#socket.send(json)
+      } else if (this.#socket.readyState === WebSocket.CONNECTING) {
+        // The socket handshake is still in flight. Buffer the event instead of
+        // dropping it; it will be sent once the connection opens.
+        this.debugLog('WebSocket still connecting, queueing event', event)
+        this.#pendingServerEvents.push(json)
+      }
+      // CLOSING/CLOSED sockets cannot deliver; the event is dropped.
+      return
+    }
+    // try to emit to SSE if WebSocket is not available (this will only happen on the client side)
+    if (this.#eventSource) {
       this.debugLog('Emitting event to server via SSE', event)
 
       fetch(`${this.#protocol}://${this.#host}:${this.#port}/__devtools/send`, {
@@ -178,6 +204,7 @@ export class ClientEventBus {
     this.#socket?.close()
     this.#socket = null
     this.#eventSource = null
+    this.#pendingServerEvents = []
   }
   private getGlobalTarget() {
     if (typeof window !== 'undefined') {
@@ -209,6 +236,10 @@ export class ClientEventBus {
     this.#socket = new WebSocket(
       `${wsProtocol}://${this.#host}:${this.#port}/__devtools/ws`,
     )
+    this.#socket.onopen = () => {
+      this.debugLog('WebSocket connection opened')
+      this.flushPendingServerEvents()
+    }
     this.#socket.onmessage = (e) => {
       this.debugLog('Received message from server', e.data)
       this.handleEventReceived(e.data)
@@ -216,6 +247,8 @@ export class ClientEventBus {
     this.#socket.onclose = () => {
       this.debugLog('WebSocket connection closed')
       this.#socket = null
+      // Drop any still-queued events — there is no open socket to deliver them.
+      this.#pendingServerEvents = []
     }
     this.#socket.onerror = () => {
       this.debugLog('WebSocket connection error')

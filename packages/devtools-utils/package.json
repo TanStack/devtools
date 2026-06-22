@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.3.0",
+  "version": "0.5.1",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -32,6 +32,10 @@
       }
     },
     "./solid": {
+      "workerd": {
+        "types": "./dist/solid/esm/index.d.ts",
+        "import": "./dist/solid/esm/server.js"
+      },
       "browser": {
         "development": {
           "types": "./dist/solid/esm/index.d.ts",
@@ -47,6 +51,12 @@
       "types": "./dist/solid/esm/index.d.ts",
       "import": "./dist/solid/esm/index.js"
     },
+    "./solid/class": {
+      "import": {
+        "types": "./dist/solid-class/esm/class.d.ts",
+        "default": "./dist/solid-class/esm/class.js"
+      }
+    },
     "./vue": {
       "import": {
         "types": "./dist/vue/esm/index.d.ts",
@@ -59,16 +69,29 @@
         "default": "./dist/svelte/esm/index.js"
       }
     },
+    "./angular": {
+      "import": {
+        "types": "./dist/angular/esm/index.d.ts",
+        "default": "./dist/angular/esm/index.js"
+      }
+    },
     "./package.json": "./package.json"
+  },
+  "bin": {
+    "intent": "./bin/intent.js"
   },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@tanstack/devtools-ui": "workspace:^"
+  "devDependencies": {
+    "@tanstack/devtools": "workspace:^",
+    "tsup": "^8.5.0",
+    "tsup-preset-solid": "^2.2.0",
+    "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
+    "@angular/core": ">=19.0.0",
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
@@ -77,6 +100,9 @@
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
+    "@angular/core": {
+      "optional": true
+    },
     "@types/react": {
       "optional": true
     },
@@ -98,7 +124,9 @@
   },
   "files": [
     "dist/",
-    "src"
+    "src",
+    "skills",
+    "bin"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
@@ -108,11 +136,6 @@
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
     "test:build": "publint --strict",
-    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.svelte.ts && tsup "
-  },
-  "devDependencies": {
-    "tsup": "^8.5.0",
-    "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.8"
+    "build": "vite build && vite build --config vite.config.preact.ts && vite build --config vite.config.vue.ts && vite build --config vite.config.solid-class.ts && vite build --config vite.config.angular.ts && vite build --config vite.config.svelte.ts && tsup"
   }
 }

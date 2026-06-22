@@ -1,5 +1,114 @@
 # @tanstack/solid-devtools
 
+## 0.8.7
+
+### Patch Changes
+
+- Updated dependencies [[`cc8c81b`](https://github.com/TanStack/devtools/commit/cc8c81b9e2e26596dc27a87bba6954b3821145a7)]:
+  - @tanstack/devtools@0.12.4
+
+## 0.8.6
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+- Updated dependencies [[`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685)]:
+  - @tanstack/devtools@0.12.3
+
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.12.2
+
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [[`5ac65f8`](https://github.com/TanStack/devtools/commit/5ac65f80592c00c5d11605d86cef0576ea35db75)]:
+  - @tanstack/devtools@0.12.1
+
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [[`58e66f5`](https://github.com/TanStack/devtools/commit/58e66f5a2680537d0552d75c7e17d6ded62446f3)]:
+  - @tanstack/devtools@0.12.0
+
+## 0.8.2
+
+### Patch Changes
+
+- Updated dependencies [[`aa32769`](https://github.com/TanStack/devtools/commit/aa32769932b2443a91f123f3213d687f35810d4b)]:
+  - @tanstack/devtools@0.11.2
+
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies [[`e89cff4`](https://github.com/TanStack/devtools/commit/e89cff4b4e5953d66bac76567161dc7314d13850), [`e04bb11`](https://github.com/TanStack/devtools/commit/e04bb11becc87c1014d78fdda57eb810cdd16adf)]:
+  - @tanstack/devtools@0.11.1
+
+## 0.8.0
+
+### Minor Changes
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
+### Patch Changes
+
+- Adds tanstack Devtool plugin. PR also includes some minor patches ([#326](https://github.com/TanStack/devtools/pull/326))
+
+- Updated dependencies [[`7c33985`](https://github.com/TanStack/devtools/commit/7c339855988d03896cb42d00eeb555750a3a1aff), [`40db560`](https://github.com/TanStack/devtools/commit/40db560c00a3c5da9d5f98e138e8f59a2619f6ff)]:
+  - @tanstack/devtools@0.11.0
+
+## 0.7.33
+
+### Patch Changes
+
+- Updated dependencies [[`1451124`](https://github.com/TanStack/devtools/commit/1451124c079c0bd0fecf7bdf47b87a67f3780b23)]:
+  - @tanstack/devtools@0.10.14
+
+## 0.7.32
+
+### Patch Changes
+
+- Updated dependencies [[`644bcb3`](https://github.com/TanStack/devtools/commit/644bcb3ec5faa374f37882282eb01a37611ed0e2)]:
+  - @tanstack/devtools@0.10.13
+
+## 0.7.31
+
+### Patch Changes
+
+- Updated dependencies [[`0dfc04a`](https://github.com/TanStack/devtools/commit/0dfc04ab7ed3c770f7fbf7c7cb8f636403e1cf91)]:
+  - @tanstack/devtools@0.10.12
+
+## 0.7.30
+
+### Patch Changes
+
+- Updated dependencies [[`024ea7d`](https://github.com/TanStack/devtools/commit/024ea7d602728081fe465588fb5e10603b71ad72)]:
+  - @tanstack/devtools@0.10.11
+
+## 0.7.29
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.10.10
+
 ## 0.7.28
 
 ### Patch Changes

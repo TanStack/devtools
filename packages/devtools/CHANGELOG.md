@@ -1,5 +1,109 @@
 # @tanstack/devtools
 
+## 0.12.4
+
+### Patch Changes
+
+- [#456](https://github.com/TanStack/devtools/pull/456) [`cc8c81b`](https://github.com/TanStack/devtools/commit/cc8c81b9e2e26596dc27a87bba6954b3821145a7) - Allow direct-mounted plugin panels to inherit full height for embedded scrolling.
+
+## 0.12.3
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+- Updated dependencies [[`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685)]:
+  - @tanstack/devtools-client@0.0.7
+  - @tanstack/devtools-ui@0.5.3
+  - @tanstack/devtools-event-bus@0.4.2
+
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies [[`015b733`](https://github.com/TanStack/devtools/commit/015b7336860856daf33c59ce09b7a4585e190afd)]:
+  - @tanstack/devtools-ui@0.5.2
+
+## 0.12.1
+
+### Patch Changes
+
+- Add inertia 3 devtool to registry ([#420](https://github.com/TanStack/devtools/pull/420))
+
+## 0.12.0
+
+### Minor Changes
+
+- Adds copy path feature and config to devtools source inspector ([#419](https://github.com/TanStack/devtools/pull/419))
+
+## 0.11.2
+
+### Patch Changes
+
+- Fix duplicate Devtools UI rendering when React StrictMode is enabled. ([#404](https://github.com/TanStack/devtools/pull/404))
+
+## 0.11.1
+
+### Patch Changes
+
+- Restore plugin scroll ([#406](https://github.com/TanStack/devtools/pull/406))
+
+- Implemented a new SERP (Search Engine Results Page) section in the SEO tab. This update introduces desktop and mobile preview of search results. It displays the current site's favicon, title and description while displaying errors and issues when they are not found or they exceed the character limit. ([#373](https://github.com/TanStack/devtools/pull/373))
+
+## 0.11.0
+
+### Minor Changes
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
+### Patch Changes
+
+- Adds tanstack Devtool plugin. PR also includes some minor patches ([#326](https://github.com/TanStack/devtools/pull/326))
+
+- Updated dependencies [[`d11aaf9`](https://github.com/TanStack/devtools/commit/d11aaf99faa6f3db538f88e289baef3a7e487bf8), [`7c33985`](https://github.com/TanStack/devtools/commit/7c339855988d03896cb42d00eeb555750a3a1aff)]:
+  - @tanstack/devtools-ui@0.5.1
+
+## 0.10.14
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.10.13
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
+## 0.10.12
+
+### Patch Changes
+
+- Fix Rspack compatibility by avoiding direct `import.meta` access patterns and add a regression test to prevent reintroduction. ([#349](https://github.com/TanStack/devtools/pull/349))
+
+## 0.10.11
+
+### Patch Changes
+
+- Fix issues with bundling solid ([#367](https://github.com/TanStack/devtools/pull/367))
+
+## 0.10.10
+
+### Patch Changes
+
+- Updated dependencies [[`b3e375f`](https://github.com/TanStack/devtools/commit/b3e375f1b09f69f36bd7b8e6f10197af1aa7fd2a), [`a629bc3`](https://github.com/TanStack/devtools/commit/a629bc3927ddb035a5c5f1104a975e1d8ddeaaf9)]:
+  - @tanstack/devtools-ui@0.5.0
+
 ## 0.10.9
 
 ### Patch Changes

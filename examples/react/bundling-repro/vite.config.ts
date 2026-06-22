@@ -24,9 +24,7 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact({
-      babel: {
-        plugins: ['babel-plugin-react-compiler'],
-      },
+      babel: {},
     }),
   ],
 })

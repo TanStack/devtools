@@ -1,5 +1,33 @@
 # @tanstack/devtools-event-client
 
+## 0.4.4
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+## 0.4.3
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.4.2
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
 ## 0.4.1
 
 ### Patch Changes
