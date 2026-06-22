@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
-  isTanStackDevtoolsImport,
   TANSTACK_DEVTOOLS_PACKAGES,
+  isTanStackDevtoolsImport,
 } from './devtools-packages'
 
 describe('TANSTACK_DEVTOOLS_PACKAGES', () => {

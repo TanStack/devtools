@@ -66,13 +66,20 @@ describe('PluginCardComponent', () => {
     // The text appears in both a <p> (description) and the <button> (button label).
     // Assert at least one <p> element contains the expected text.
     const { getAllByText } = renderCard(makeCard())
-    const descEl = getAllByText('Requires @x/req').find((el) => el.tagName === 'P')
+    const descEl = getAllByText('Requires @x/req').find(
+      (el) => el.tagName === 'P',
+    )
     expect(descEl).toBeInTheDocument()
   })
 
   it('renders the "New" banner when metadata.isNew is true', () => {
     const card = makeCard({
-      metadata: { packageName: '@x/y', title: 'My Plugin', framework: 'react', isNew: true },
+      metadata: {
+        packageName: '@x/y',
+        title: 'My Plugin',
+        framework: 'react',
+        isNew: true,
+      },
     })
     const { getByText } = renderCard(card)
     expect(getByText('New')).toBeInTheDocument()
@@ -80,7 +87,12 @@ describe('PluginCardComponent', () => {
 
   it('does not render the "New" banner when metadata.isNew is false', () => {
     const card = makeCard({
-      metadata: { packageName: '@x/y', title: 'My Plugin', framework: 'react', isNew: false },
+      metadata: {
+        packageName: '@x/y',
+        title: 'My Plugin',
+        framework: 'react',
+        isNew: false,
+      },
     })
     const { queryByText } = renderCard(card)
     expect(queryByText('New')).not.toBeInTheDocument()
@@ -96,7 +108,11 @@ describe('PluginCardComponent', () => {
 
     const { getByText: getByText2 } = renderCard(
       makeCard({
-        metadata: { packageName: '@x/y', title: 'Updated Plugin', framework: 'react' },
+        metadata: {
+          packageName: '@x/y',
+          title: 'Updated Plugin',
+          framework: 'react',
+        },
       }),
     )
     expect(getByText2('Updated Plugin')).toBeInTheDocument()

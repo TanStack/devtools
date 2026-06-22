@@ -24,7 +24,7 @@ describe('tryParseJson', () => {
   })
 
   it('should parse a valid JSON array', () => {
-    const result = tryParseJson<number[]>('[1,2,3]')
+    const result = tryParseJson<Array<number>>('[1,2,3]')
     expect(result).toEqual([1, 2, 3])
   })
 })

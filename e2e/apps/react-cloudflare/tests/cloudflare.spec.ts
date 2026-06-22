@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test'
 import { DevtoolsPage, SELECTORS } from '@tanstack/devtools-e2e'
 
-test('cloudflare: devtools mount under SSR and demo plugin renders', async ({ page }) => {
+test('cloudflare: devtools mount under SSR and demo plugin renders', async ({
+  page,
+}) => {
   const dt = new DevtoolsPage(page)
   await dt.goto()
   await dt.openViaTrigger()

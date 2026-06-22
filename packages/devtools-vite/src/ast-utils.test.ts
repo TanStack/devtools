@@ -77,15 +77,23 @@ describe('walk', () => {
     ])
 
     // Correct parent for each node
-    expect(visits[0].parent).toBeUndefined()
-    expect(visits[1].parent).toBe(root)
-    expect(visits[2].parent).toBe(childA)
-    expect(visits[3].parent).toBe(root)
+    expect(visits[0]!.parent).toBeUndefined()
+    expect(visits[1]!.parent).toBe(root)
+    expect(visits[2]!.parent).toBe(childA)
+    expect(visits[3]!.parent).toBe(root)
   })
 
   it('passes the provided parentNode through to the root visit', () => {
-    const fakeParent = { type: 'WalkExternalParent', start: 0, end: 1 } as unknown as Node
-    const root = { type: 'WalkRootWithParent', start: 1, end: 2 } as unknown as Node
+    const fakeParent = {
+      type: 'WalkExternalParent',
+      start: 0,
+      end: 1,
+    } as unknown as Node
+    const root = {
+      type: 'WalkRootWithParent',
+      start: 1,
+      end: 2,
+    } as unknown as Node
 
     const visits: Array<{ node: Node; parent: Node | undefined }> = []
     walk(
@@ -95,7 +103,7 @@ describe('walk', () => {
     )
 
     expect(visits).toHaveLength(1)
-    expect(visits[0].node).toBe(root)
-    expect(visits[0].parent).toBe(fakeParent)
+    expect(visits[0]!.node).toBe(root)
+    expect(visits[0]!.parent).toBe(fakeParent)
   })
 })

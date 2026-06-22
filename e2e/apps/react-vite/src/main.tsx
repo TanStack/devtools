@@ -18,8 +18,17 @@ function App() {
           requireUrlFlag: new URLSearchParams(location.search).has('gated'),
         }}
         plugins={[
-          { id: 'demo', name: 'Demo', defaultOpen: true, render: <DemoPlugin /> },
-          { id: 'event-probe', name: 'Event Probe', render: <EventProbePanel /> },
+          {
+            id: 'demo',
+            name: 'Demo',
+            defaultOpen: true,
+            render: <DemoPlugin />,
+          },
+          {
+            id: 'event-probe',
+            name: 'Event Probe',
+            render: <EventProbePanel />,
+          },
         ]}
       />
     </>

@@ -28,7 +28,10 @@ const renderSettingsTab = (config?: Partial<TanStackDevtoolsConfig>) => {
     </ThemeContextProvider>
   ))
 
-  return { ...result, setSettings: (s: Partial<DevtoolsStore['settings']>) => setSettings(s) }
+  return {
+    ...result,
+    setSettings: (s: Partial<DevtoolsStore['settings']>) => setSettings(s),
+  }
 }
 
 describe('SettingsTab', () => {

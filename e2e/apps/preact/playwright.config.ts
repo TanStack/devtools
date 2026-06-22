@@ -10,7 +10,17 @@ export default defineConfig({
     baseURL: 'http://localhost:4179',
     trace: 'on-first-retry',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: { args: ['--enable-features=DocumentPictureInPictureAPI'] } } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--enable-features=DocumentPictureInPictureAPI'],
+        },
+      },
+    },
+  ],
   webServer: {
     command: 'pnpm run dev',
     url: 'http://localhost:4179',

@@ -17,29 +17,34 @@ test('dragging the resize handle below the minimum height collapses the panel', 
   // mousemove/mouseup) with an explicit downward `pageY`. This drives the real
   // `handleDragStart` collapse logic without being defeated by viewport
   // clamping.
-  await page.evaluate(([handleSel, panelSel]) => {
-    const handle = document.querySelector(handleSel) as HTMLElement
-    const box = handle.getBoundingClientRect()
-    const startX = box.x + box.width / 2
-    const startY = box.y + box.height / 2
-    const fire = (type: string, target: EventTarget, y: number) => {
-      target.dispatchEvent(
-        new MouseEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          button: 0,
-          clientX: startX,
-          clientY: y,
-        }),
-      )
-    }
-    fire('mousedown', handle, startY)
-    // Drag downward well past the panel's height to fall below the 70px minimum.
-    for (let i = 1; i <= 10; i++) {
-      fire('mousemove', document, startY + (500 * i) / 10)
-    }
-    fire('mouseup', document, startY + 500)
-  }, [SELECTORS.resizeHandle, SELECTORS.mainPanel].map((id) => `[data-testid="${id}"]`) as [string, string])
+  await page.evaluate(
+    ([handleSel, panelSel]) => {
+      const handle = document.querySelector(handleSel) as HTMLElement
+      const box = handle.getBoundingClientRect()
+      const startX = box.x + box.width / 2
+      const startY = box.y + box.height / 2
+      const fire = (type: string, target: EventTarget, y: number) => {
+        target.dispatchEvent(
+          new MouseEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            button: 0,
+            clientX: startX,
+            clientY: y,
+          }),
+        )
+      }
+      fire('mousedown', handle, startY)
+      // Drag downward well past the panel's height to fall below the 70px minimum.
+      for (let i = 1; i <= 10; i++) {
+        fire('mousemove', document, startY + (500 * i) / 10)
+      }
+      fire('mouseup', document, startY + 500)
+    },
+    [SELECTORS.resizeHandle, SELECTORS.mainPanel].map(
+      (id) => `[data-testid="${id}"]`,
+    ) as [string, string],
+  )
 
   await expect(dt.panel()).toHaveAttribute('data-open', 'false')
 })

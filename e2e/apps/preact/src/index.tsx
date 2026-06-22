@@ -9,7 +9,9 @@ function App() {
         plugins={[
           {
             name: 'Demo',
-            render: () => <div data-testid="demo-plugin">demo plugin content</div>,
+            render: () => (
+              <div data-testid="demo-plugin">demo plugin content</div>
+            ),
           },
         ]}
       />

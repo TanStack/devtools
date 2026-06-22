@@ -95,7 +95,7 @@ describe('SerpPreviewSection', () => {
     // The truncated form ends with the ellipsis and is shorter than the source.
     const truncatedNodes = getAll(/A+\.\.\.$/)
     expect(truncatedNodes.length).toBeGreaterThanOrEqual(2)
-    const truncatedText = truncatedNodes[0].textContent ?? ''
+    const truncatedText = truncatedNodes[0]!.textContent
     expect(truncatedText.endsWith('...')).toBe(true)
     expect(truncatedText.length).toBeLessThan(longTitle.length)
 
