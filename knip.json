@@ -2,7 +2,11 @@
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignoreDependencies": ["@faker-js/faker"],
   "ignoreWorkspaces": ["examples/**", "e2e/**"],
+  "ignore": ["**/bin/intent.js"],
   "workspaces": {
+    ".": {
+      "entry": ["scripts/generate-docs.ts", "scripts/verify-links.ts"]
+    },
     "packages/devtools-a11y": {
       "ignoreDependencies": ["solid-js", "@angular/core"]
     },
