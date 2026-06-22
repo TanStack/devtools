@@ -1,7 +1,9 @@
 import type { Component } from 'svelte'
 
-export function createSveltePlugin(name: string, component: Component<any>) {
-  function Plugin(props?: Record<string, any>) {
+export function createSveltePlugin<
+  TComponentProps extends Record<string, any>,
+>(name: string, component: Component<TComponentProps>) {
+  function Plugin(props?: TComponentProps) {
     return {
       name,
       component,
@@ -9,7 +11,7 @@ export function createSveltePlugin(name: string, component: Component<any>) {
     }
   }
 
-  function NoOpPlugin(props?: Record<string, any>) {
+  function NoOpPlugin(props?: TComponentProps) {
     return {
       name,
       component: (() => {}) as unknown as Component<any>,

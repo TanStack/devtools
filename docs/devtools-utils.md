@@ -267,9 +267,9 @@ The Svelte factory takes a `name` string and a Svelte component as separate argu
 **Signature:**
 
 ```ts
-function createSveltePlugin(
+function createSveltePlugin<TComponentProps extends Record<string, any>>(
   name: string,
-  component: Component<any>,
+  component: Component<TComponentProps>,
 ): readonly [Plugin, NoOpPlugin]
 ```
 
