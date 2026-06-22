@@ -30,6 +30,10 @@ export class TanStackDevtoolsSvelteAdapter {
 
   update(init: TanStackDevtoolsSvelteInit) {
     if (this.devtools) {
+      // Tear down the previously mounted plugin components before re-applying
+      // config. The core re-invokes `render`/`name` for the new plugin set, so
+      // without this the old Svelte instances are orphaned and leak.
+      this.destroyAllComponents()
       this.devtools.setConfig({
         config: init.config,
         eventBusConfig: init.eventBusConfig,
@@ -90,7 +94,7 @@ export class TanStackDevtoolsSvelteAdapter {
       props,
     })
 
-    const containerId = container.id || container.parentElement?.id || ''
+    const containerId = container.id
     this.mountedComponents.push({ instance, containerId })
   }
 

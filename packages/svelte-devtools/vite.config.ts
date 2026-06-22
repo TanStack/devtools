@@ -4,7 +4,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import packageJson from './package.json'
 
 const config = defineConfig({
-  plugins: [svelte()],
+  plugins: [svelte() as any],
   test: {
     name: packageJson.name,
     dir: './tests',
