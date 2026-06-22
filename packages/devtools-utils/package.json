@@ -86,6 +86,7 @@
   },
   "devDependencies": {
     "@tanstack/devtools": "workspace:^",
+    "svelte": "^5.0.0",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.11"

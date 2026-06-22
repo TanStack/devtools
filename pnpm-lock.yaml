@@ -1231,9 +1231,6 @@ importers:
       solid-js:
         specifier: '>=1.9.7'
         version: 1.9.12
-      svelte:
-        specifier: '>=5.0.0'
-        version: 5.55.1(@typescript-eslint/types@8.58.0)
       vue:
         specifier: '>=3.2.0'
         version: 3.5.34(typescript@5.9.3)
@@ -1241,6 +1238,9 @@ importers:
       '@tanstack/devtools':
         specifier: workspace:^
         version: link:../devtools
+      svelte:
+        specifier: ^5.0.0
+        version: 5.55.1(@typescript-eslint/types@8.58.0)
       tsup:
         specifier: ^8.5.0
         version: 8.5.1(@microsoft/api-extractor@7.47.7(@types/node@22.19.15))(jiti@2.7.0)(postcss@8.5.14)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3)
