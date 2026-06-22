@@ -10,6 +10,9 @@
     "directory": "packages/devtools-event-client"
   },
   "homepage": "https://tanstack.com/devtools",
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tannerlinsley"
