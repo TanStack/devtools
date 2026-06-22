@@ -13,9 +13,12 @@ function App() {
       <h1>devtools e2e host</h1>
       <input data-testid="text-input" placeholder="type here" />
       <TanStackDevtools
-        config={{ theme: 'dark' }}
+        config={{
+          theme: 'dark',
+          requireUrlFlag: new URLSearchParams(location.search).has('gated'),
+        }}
         plugins={[
-          { id: 'demo', name: 'Demo', render: <DemoPlugin /> },
+          { id: 'demo', name: 'Demo', defaultOpen: true, render: <DemoPlugin /> },
           { id: 'event-probe', name: 'Event Probe', render: <EventProbePanel /> },
         ]}
       />
