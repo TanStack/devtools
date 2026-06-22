@@ -12,4 +12,5 @@ export const SELECTORS = {
   probePanel: 'tsd-probe-panel',
   probeEmitButton: 'tsd-probe-emit',
   probeEventRow: 'tsd-probe-event-row',
+  probeServerRow: 'tsd-probe-server-row',
 } as const

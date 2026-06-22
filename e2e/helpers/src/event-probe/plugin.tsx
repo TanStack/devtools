@@ -3,6 +3,7 @@ import { EventClient } from '@tanstack/devtools-event-client'
 
 interface ProbeEventMap {
   ping: { id: number }
+  'server-ping': { id: number; from: string }
 }
 
 class EventProbeClient extends EventClient<ProbeEventMap> {
@@ -15,11 +16,19 @@ export const eventProbeClient = new EventProbeClient()
 
 export function EventProbePanel() {
   const [received, setReceived] = React.useState<Array<number>>([])
+  const [serverReceived, setServerReceived] = React.useState<Array<number>>([])
   const nextId = React.useRef(1)
 
   React.useEffect(() => {
     const off = eventProbeClient.on('ping', (event) => {
       setReceived((prev) => [...prev, event.payload.id])
+    })
+    return off
+  }, [])
+
+  React.useEffect(() => {
+    const off = eventProbeClient.on('server-ping', (event) => {
+      setServerReceived((prev) => [...prev, event.payload.id])
     })
     return off
   }, [])
@@ -37,6 +46,13 @@ export function EventProbePanel() {
         {received.map((id, i) => (
           <li key={i} data-testid="tsd-probe-event-row">
             ping {id}
+          </li>
+        ))}
+      </ul>
+      <ul>
+        {serverReceived.map((id, i) => (
+          <li key={i} data-testid="tsd-probe-server-row">
+            server ping {id}
           </li>
         ))}
       </ul>
