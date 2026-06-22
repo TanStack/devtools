@@ -45,6 +45,8 @@ jobs:
           persist-credentials: false
       - name: Setup Tools
         uses: TanStack/config/.github/setup@main
+      - name: Build packages
+        run: pnpm run build:all
       - name: Install Playwright Chromium
         run: pnpm --filter @tanstack/devtools-e2e-react-vite exec playwright install --with-deps chromium
       - name: Run e2e
