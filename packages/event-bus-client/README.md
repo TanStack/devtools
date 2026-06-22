@@ -61,3 +61,5 @@ import { EventClient } from '@tanstack/devtools-event-client/production'
 
 The public API is identical between the two imports — only the production
 runtime behavior differs.
+
+"Outside development" includes when `NODE_ENV` is unset — common in plain Node scripts, some SSR dev servers, and test runners — so the root import resolves to the no-op there too. Set `NODE_ENV=development`, or use the `/production` subpath, to get the real client in those contexts.

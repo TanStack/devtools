@@ -264,6 +264,8 @@ when `process.env.NODE_ENV !== 'development'`, and the real client is
 tree-shaken out of production bundles. This is the default and what you want for
 most libraries — your `emit()` calls cost nothing in production.
 
+"Outside development" includes when `NODE_ENV` is unset — common in plain Node scripts, some SSR dev servers, and test runners — so the root import resolves to the no-op there too. Set `NODE_ENV=development`, or use the `/production` subpath, to get the real client in those contexts.
+
 ```ts
 // dev: real client — production: no-op, removed from the bundle
 import { EventClient } from '@tanstack/devtools-event-client'
