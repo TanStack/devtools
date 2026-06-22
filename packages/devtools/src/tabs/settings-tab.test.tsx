@@ -70,4 +70,21 @@ describe('SettingsTab', () => {
     // The Show block reacts to the store change and mounts the Input.
     expect(queryByText('URL flag')).not.toBeNull()
   })
+
+  it('reflects controlled `checked` updates: toggling defaultOpen flips the "Default open" checkbox', () => {
+    const { setSettings, getByText } = renderSettingsTab({ defaultOpen: false })
+
+    const getDefaultOpenCheckbox = () =>
+      getByText('Default open')
+        .closest('label')!
+        .querySelector<HTMLInputElement>('input[type="checkbox"]')!
+
+    expect(getDefaultOpenCheckbox().checked).toBe(false)
+
+    // Mutating the store updates the Checkbox's `checked` prop; the control
+    // must reflect it (regression test for the controlled-prop fix).
+    setSettings({ defaultOpen: true })
+
+    expect(getDefaultOpenCheckbox().checked).toBe(true)
+  })
 })

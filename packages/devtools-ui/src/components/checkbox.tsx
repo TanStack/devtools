@@ -23,7 +23,7 @@ export function Checkbox(props: CheckboxProps) {
       <label class={styles().checkboxWrapper}>
         <input
           type="checkbox"
-          checked={isChecked()}
+          checked={props.checked ?? isChecked()}
           class={styles().checkbox}
           onInput={handleChange}
         />
