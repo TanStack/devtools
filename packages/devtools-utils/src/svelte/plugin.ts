@@ -1,8 +1,9 @@
 import type { Component } from 'svelte'
 
-export function createSveltePlugin<
-  TComponentProps extends Record<string, any>,
->(name: string, component: Component<TComponentProps>) {
+export function createSveltePlugin<TComponentProps extends Record<string, any>>(
+  name: string,
+  component: Component<TComponentProps>,
+) {
   function Plugin(props?: TComponentProps) {
     return {
       name,
