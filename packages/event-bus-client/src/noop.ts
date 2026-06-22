@@ -1,4 +1,8 @@
+import type { EventClient } from './plugin'
 import type { AllDevtoolsEvents, TanStackDevtoolsEvent } from './types'
+
+/** Maps a type to its public members only (drops `#private`/`private`). */
+type PublicSurface<T> = { [K in keyof T]: T[K] }
 
 /**
  * A no-op implementation of `EventClient` with an identical public API.
@@ -8,7 +12,9 @@ import type { AllDevtoolsEvents, TanStackDevtoolsEvent } from './types'
  * Authors who want devtools events in production should import the real client
  * from `@tanstack/devtools-event-client/production` instead.
  */
-export class EventClientNoOp<TEventMap extends Record<string, any>> {
+export class EventClientNoOp<TEventMap extends Record<string, any>>
+  implements PublicSurface<EventClient<TEventMap>>
+{
   #pluginId: string
 
   constructor({

@@ -23,6 +23,10 @@ describe('EventClientNoOp', () => {
     const offAll = client.onAll(cb)
     const offPlugin = client.onAllPluginEvents(cb)
 
+    expect(off).toBeTypeOf('function')
+    expect(offAll).toBeTypeOf('function')
+    expect(offPlugin).toBeTypeOf('function')
+
     client.emit('event', { foo: 'bar' })
 
     expect(cb).not.toHaveBeenCalled()
@@ -65,5 +69,24 @@ describe('root export (resolver)', () => {
     }
     const ext = new Extended()
     expect(ext.getPluginId()).toBe('extended')
+  })
+})
+
+describe('root export (resolver) in development', () => {
+  it('resolves to the real client in development (dispatches to the bus)', async () => {
+    vi.stubEnv('NODE_ENV', 'development')
+    vi.resetModules()
+    const { EventClient: DevEventClient } = await import('../src')
+
+    const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
+    const client = new DevEventClient<TestEvents>({ pluginId: 'test' })
+    client.emit('event', { foo: 'bar' })
+    // The real client lazily dispatches a 'tanstack-connect' CustomEvent on the
+    // first emit; the no-op never touches window.
+    expect(dispatchSpy).toHaveBeenCalled()
+
+    dispatchSpy.mockRestore()
+    vi.unstubAllEnvs()
+    vi.resetModules()
   })
 })
