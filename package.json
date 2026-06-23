@@ -92,6 +92,7 @@
     "@tanstack/preact-devtools": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
     "@tanstack/devtools-vite": "workspace:*",
+    "@tanstack/svelte-devtools": "workspace:*",
     "@tanstack/angular-devtools": "workspace:*"
   },
   "files": [
