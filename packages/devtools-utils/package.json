@@ -89,10 +89,10 @@
   },
   "devDependencies": {
     "@tanstack/devtools": "workspace:^",
-    "svelte": "^5.0.0",
-    "tsup": "^8.5.0",
+    "svelte": "^5.56.4",
+    "tsup": "^8.5.1",
     "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-solid": "^2.11.12"
   },
   "peerDependencies": {
     "@angular/core": ">=19.0.0",
