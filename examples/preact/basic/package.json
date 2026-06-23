@@ -12,16 +12,16 @@
     "@tanstack/devtools-client": "0.0.7",
     "@tanstack/devtools-event-client": "0.4.4",
     "@tanstack/preact-devtools": "workspace:*",
-    "preact": "^10.28.0",
-    "zod": "^4.3.5"
+    "preact": "^10.29.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.3",
+    "@preact/preset-vite": "^2.10.5",
     "@tanstack/devtools-ui": "0.5.3",
     "@tanstack/devtools-vite": "0.8.0",
-    "sonda": "0.9.0",
-    "vite": "^8.0.0",
-    "vite-plugin-inspect": "11.3.3"
+    "sonda": "0.13.1",
+    "vite": "^8.1.0",
+    "vite-plugin-inspect": "11.4.1"
   },
   "browserslist": {
     "production": [
