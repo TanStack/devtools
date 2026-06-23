@@ -1,5 +1,12 @@
 # @tanstack/devtools-a11y
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [[`d7c5a93`](https://github.com/TanStack/devtools/commit/d7c5a93710d61ed31dedccc627b74551ea97da7e)]:
+  - @tanstack/devtools-utils@0.6.0
+
 ## 0.1.4
 
 ### Patch Changes
