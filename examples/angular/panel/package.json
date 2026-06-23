@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-example-angular-panel",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -20,7 +20,7 @@
     "@tanstack/angular-devtools": "^0.0.6",
     "@tanstack/devtools": "^0.12.4",
     "@tanstack/devtools-event-client": "0.4.4",
-    "@tanstack/devtools-utils": "^0.5.1",
+    "@tanstack/devtools-utils": "^0.6.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
