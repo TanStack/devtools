@@ -13,6 +13,7 @@ export const ContentPanel = (props: {
     <div ref={props.ref} class={styles().devtoolsPanel}>
       {props.handleDragStart ? (
         <div
+          data-testid="tsd-resize-handle"
           class={styles().dragHandle(settings().panelLocation)}
           onMouseDown={props.handleDragStart}
         ></div>
