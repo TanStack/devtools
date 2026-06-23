@@ -111,7 +111,7 @@ importers:
         specifier: ^0.0.6
         version: link:../../../packages/angular-devtools
       '@tanstack/devtools-a11y':
-        specifier: ^0.1.4
+        specifier: ^0.1.5
         version: link:../../../packages/devtools-a11y
       '@tanstack/devtools-event-client':
         specifier: 0.4.4
