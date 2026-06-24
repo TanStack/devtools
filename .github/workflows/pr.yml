@@ -9,6 +9,12 @@ concurrency:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # nx.json sets parallel: 5 for local dev machines. GitHub-hosted runners have
+  # far fewer cores/RAM, and each test:lib (vitest) / test:types (tsc) task
+  # spawns its own worker pool. Running 5 such heavy tasks at once oversubscribes
+  # the runner and intermittently OOM-kills or stalls tasks, producing flaky
+  # failures that pass on re-run. Cap CI parallelism to keep tasks within budget.
+  NX_PARALLEL: 3
 
 permissions:
   contents: read
