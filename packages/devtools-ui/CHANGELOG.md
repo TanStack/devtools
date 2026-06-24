@@ -1,5 +1,21 @@
 # @tanstack/devtools-ui
 
+## 0.6.0
+
+### Minor Changes
+
+- [#477](https://github.com/TanStack/devtools/pull/477) [`ea3c674`](https://github.com/TanStack/devtools/commit/ea3c6749b07f4328f1c9cb352c05135aa773a22f) - fix: rename Solid `use*` primitives to `create*` so React Compiler doesn't transform them
+
+  The devtools packages are written in Solid but used React-style naming (`useStyles`, `useTheme`, `useDevtoolsState`, …) for their custom primitives. When an app enables React Compiler, the compiler matches the `use*` naming convention and transforms/optimizes this Solid code as if it were React, breaking the panel (it is Solid JSX, not React).
+
+  All custom Solid primitives in `@tanstack/devtools`, `@tanstack/devtools-ui`, and `@tanstack/devtools-a11y` are renamed from `use*` to `create*`, and Solid's own `useContext` / `@solid-primitives` `useKeyDownList` are imported under non-`use` aliases (`getContext`, `getKeyDownList`).
+
+  Breaking for `@tanstack/devtools-ui`: the exported `useTheme` is renamed to `createTheme`.
+
+### Patch Changes
+
+- [#472](https://github.com/TanStack/devtools/pull/472) [`7114ecd`](https://github.com/TanStack/devtools/commit/7114ecd285d9df776fb63595b82cf979adafd51c) - Fix `Checkbox` ignoring controlled `checked` prop updates. It previously read `checked` into internal state only once at mount, so it never reflected later prop changes when used as a controlled input (e.g. the devtools settings panel). It now reflects the `checked` prop whenever it is provided and falls back to internal state only when uncontrolled.
+
 ## 0.5.3
 
 ### Patch Changes
