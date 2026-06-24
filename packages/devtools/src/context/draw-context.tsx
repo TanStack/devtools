@@ -2,12 +2,12 @@ import {
   createContext,
   createMemo,
   createSignal,
+  useContext as getContext,
   onCleanup,
-  useContext,
 } from 'solid-js'
 import type { ParentComponent } from 'solid-js'
 
-const useDraw = (props: { animationMs: number }) => {
+const createDraw = (props: { animationMs: number }) => {
   const [activeHover, setActiveHover] = createSignal<boolean>(false)
   const [forceExpand, setForceExpand] = createSignal<boolean>(false)
 
@@ -42,25 +42,27 @@ const useDraw = (props: { animationMs: number }) => {
   }
 }
 
-type ContextType = ReturnType<typeof useDraw>
+type ContextType = ReturnType<typeof createDraw>
 
 const DrawContext = createContext<ContextType | undefined>(undefined)
 
 export const DrawClientProvider: ParentComponent<{
   animationMs: number
 }> = (props) => {
-  const value = useDraw({ animationMs: props.animationMs })
+  const value = createDraw({ animationMs: props.animationMs })
 
   return (
     <DrawContext.Provider value={value}>{props.children}</DrawContext.Provider>
   )
 }
 
-export function useDrawContext() {
-  const context = useContext(DrawContext)
+export function createDrawContext() {
+  const context = getContext(DrawContext)
 
   if (context === undefined) {
-    throw new Error(`useDrawContext must be used within a DrawClientProvider`)
+    throw new Error(
+      `createDrawContext must be used within a DrawClientProvider`,
+    )
   }
 
   return context

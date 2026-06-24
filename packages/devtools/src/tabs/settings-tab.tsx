@@ -16,14 +16,14 @@ import {
   SettingsCog,
 } from '@tanstack/devtools-ui/icons'
 
-import { useDevtoolsSettings } from '../context/use-devtools-context'
-import { useStyles } from '../styles/use-styles'
+import { createDevtoolsSettings } from '../context/use-devtools-context'
+import { createStyles } from '../styles/use-styles'
 import { HotkeyConfig } from './hotkey-config'
 import type { KeyboardKey } from '../context/devtools-store'
 
 export const SettingsTab = () => {
-  const { setSettings, settings } = useDevtoolsSettings()
-  const styles = useStyles()
+  const { setSettings, settings } = createDevtoolsSettings()
+  const styles = createStyles()
 
   const modifiers: Array<KeyboardKey> = ['CtrlOrMeta', 'Alt', 'Shift']
 

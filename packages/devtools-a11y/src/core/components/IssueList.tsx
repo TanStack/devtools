@@ -1,7 +1,7 @@
 /** @jsxImportSource solid-js */
 
 import { For, Show } from 'solid-js'
-import { useAllyContext } from '../contexts/allyContext'
+import { createAllyContext } from '../contexts/allyContext'
 import {
   SEVERITY_LABELS,
   clearHighlights,
@@ -10,7 +10,7 @@ import {
   scrollToElement,
 } from '../utils/ui.utils'
 import { IMPACTS } from '../utils/ally-audit.utils'
-import { useStyles } from '../styles/styles'
+import { createStyles } from '../styles/styles'
 import { A11yIssueCard } from './IssueCard'
 
 // types
@@ -24,8 +24,8 @@ export function A11yIssueList(props: A11yIssueListProps) {
   const [selectedIssueId, setSelectedIssueId] = props.selectedIssueSignal
 
   // hooks
-  const styles = useStyles()
-  const ally = useAllyContext()
+  const styles = createStyles()
+  const ally = createAllyContext()
 
   // handlers
   const handleIssueClick = (issueId: string) => {

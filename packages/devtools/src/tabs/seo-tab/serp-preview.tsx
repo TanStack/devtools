@@ -1,7 +1,7 @@
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
 import { For, createMemo, createSignal } from 'solid-js'
-import { useHeadChanges } from '../../hooks/use-head-changes'
-import { useStyles } from '../../styles/use-styles'
+import { createHeadChanges } from '../../hooks/use-head-changes'
+import { createStyles } from '../../styles/use-styles'
 
 /** Google typically truncates titles at ~60 characters. */
 const TITLE_MAX_CHARS = 60
@@ -138,7 +138,7 @@ function SerpSnippetPreview(props: {
   label: string
   issues: Array<string>
 }) {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <div class={styles().serpPreviewBlock}>
@@ -200,7 +200,7 @@ function SerpSnippetPreview(props: {
 export function SerpPreviewSection() {
   const [serp, setSerp] = createSignal<SerpData>(getSerpFromHead())
 
-  useHeadChanges(() => {
+  createHeadChanges(() => {
     setSerp(getSerpFromHead())
   })
 

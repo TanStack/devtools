@@ -2,7 +2,7 @@
 
 import { For, Show } from 'solid-js'
 import { Button } from '@tanstack/devtools-ui'
-import { useStyles } from '../styles/styles'
+import { createStyles } from '../styles/styles'
 
 // types
 import type { A11yIssue, SeverityThreshold } from '../types/types'
@@ -17,7 +17,7 @@ interface A11yIssueCardProps {
 
 export function A11yIssueCard(props: A11yIssueCardProps) {
   const selector = () => props.issue.nodes[0]?.selector || 'unknown'
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <div

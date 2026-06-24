@@ -3,8 +3,8 @@
 import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Button, Input, Select } from '@tanstack/devtools-ui'
 import { getAvailableRules } from '../utils/ally-audit.utils'
-import { useAllyContext } from '../contexts/allyContext'
-import { CATEGORIES, CATEGORY_LABELS, useStyles } from '../styles/styles'
+import { createAllyContext } from '../contexts/allyContext'
+import { CATEGORIES, CATEGORY_LABELS, createStyles } from '../styles/styles'
 
 // types
 import type {
@@ -18,8 +18,8 @@ interface A11ySettingsOverlayProps {
 }
 
 export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
-  const { config, setConfig } = useAllyContext()
-  const styles = useStyles()
+  const { config, setConfig } = createAllyContext()
+  const styles = createStyles()
 
   const disabledRulesSet = createMemo(() => new Set(config.disabledRules))
   const availableRules = createMemo(() => getAvailableRules())

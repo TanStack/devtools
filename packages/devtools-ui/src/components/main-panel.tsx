@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
 type PanelProps = JSX.IntrinsicElements['div'] & {
@@ -14,7 +14,7 @@ export const MainPanel = ({
   class: classStyles,
   withPadding,
 }: PanelProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <div

@@ -1,5 +1,5 @@
 import { Show } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 import type { tokens } from '../styles/tokens'
 
 export const Tag = (props: {
@@ -8,7 +8,7 @@ export const Tag = (props: {
   count?: number
   disabled?: boolean
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <button disabled={props.disabled} class={styles().tag.base}>
       <span class={styles().tag.dot(props.color)} />

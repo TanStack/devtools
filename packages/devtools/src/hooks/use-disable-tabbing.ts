@@ -19,7 +19,7 @@ const recursivelyChangeTabIndex = (
  * This is used to disable tabbing over the main devtools container while
  * the devtools are closed.
  */
-export const useDisableTabbing = (isOpen: () => boolean) => {
+export const createDisableTabbing = (isOpen: () => boolean) => {
   createEffect(() => {
     const el = document.getElementById(TANSTACK_DEVTOOLS)
     if (!el) return

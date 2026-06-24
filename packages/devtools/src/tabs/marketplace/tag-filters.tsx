@@ -1,5 +1,5 @@
 import { For, Show } from 'solid-js'
-import { useStyles } from '../../styles/use-styles'
+import { createStyles } from '../../styles/use-styles'
 import type { Accessor } from 'solid-js'
 
 interface TagFiltersProps {
@@ -9,7 +9,7 @@ interface TagFiltersProps {
 }
 
 export const TagFilters = (props: TagFiltersProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <Show when={props.tags().length > 0}>

@@ -1,4 +1,9 @@
-import { createContext, createEffect, createSignal, useContext } from 'solid-js'
+import {
+  createContext,
+  createEffect,
+  createSignal,
+  useContext as getContext,
+} from 'solid-js'
 import type { Accessor, JSX } from 'solid-js'
 
 export type TanStackDevtoolsTheme = 'light' | 'dark'
@@ -24,10 +29,10 @@ export const ThemeContextProvider = (props: {
   )
 }
 
-export function useTheme() {
-  const context = useContext(ThemeContext)
+export function createTheme() {
+  const context = getContext(ThemeContext)
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeContextProvider')
+    throw new Error('createTheme must be used within a ThemeContextProvider')
   }
 
   return context
