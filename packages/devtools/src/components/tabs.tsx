@@ -1,26 +1,26 @@
 import clsx from 'clsx'
 import { For } from 'solid-js'
 import { PiP, X } from '@tanstack/devtools-ui/icons'
-import { useStyles } from '../styles/use-styles'
-import { useDevtoolsState } from '../context/use-devtools-context'
-import { useDrawContext } from '../context/draw-context'
+import { createStyles } from '../styles/use-styles'
+import { createDevtoolsState } from '../context/use-devtools-context'
+import { createDrawContext } from '../context/draw-context'
 import { tabs } from '../tabs'
-import { usePiPWindow } from '../context/pip-context'
+import { createPiPWindow } from '../context/pip-context'
 
 interface TabsProps {
   toggleOpen: () => void
 }
 
 export const Tabs = (props: TabsProps) => {
-  const styles = useStyles()
-  const { state, setState } = useDevtoolsState()
-  const pipWindow = usePiPWindow()
+  const styles = createStyles()
+  const { state, setState } = createDevtoolsState()
+  const pipWindow = createPiPWindow()
   const handleDetachment = () => {
     pipWindow().requestPipWindow(
       `width=${window.innerWidth},height=${state().height},top=${window.screen.height},left=${window.screenLeft}}`,
     )
   }
-  const { hoverUtils } = useDrawContext()
+  const { hoverUtils } = createDrawContext()
 
   return (
     <div class={styles().tabContainer}>

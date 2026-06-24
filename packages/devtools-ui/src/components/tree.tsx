@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 
 // css
-import { css, useStyles } from '../styles/use-styles'
+import { createStyles, css } from '../styles/use-styles'
 
 // icons
 import { CopiedCopier, Copier, ErrorCopier } from './icons'
@@ -49,7 +49,7 @@ function JsonValue(props: {
 
   config?: { dateFormat?: string }
 }) {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <span class={styles().tree.valueContainer(props.isRoot ?? false)}>
@@ -152,7 +152,7 @@ const ArrayValue = (props: {
   path: string
   config?: { dateFormat?: string }
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   const [expanded, setExpanded] = createSignal(
     props.depth <= props.defaultExpansionDepth &&
@@ -244,7 +244,7 @@ const ObjectValue = (props: {
   path: string
   config?: { dateFormat?: string }
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   const [expanded, setExpanded] = createSignal(
     props.depth <= props.defaultExpansionDepth &&
@@ -354,7 +354,7 @@ const ObjectValue = (props: {
 type CopyState = 'NoCopy' | 'SuccessCopy' | 'ErrorCopy'
 
 const CopyButton = (props: { value: unknown }) => {
-  const styles = useStyles()
+  const styles = createStyles()
   const [copyState, setCopyState] = createSignal<CopyState>('NoCopy')
 
   return (
@@ -408,7 +408,7 @@ const CopyButton = (props: { value: unknown }) => {
 }
 
 const Expander = (props: { expanded: boolean; onClick: () => void }) => {
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <span
       onClick={props.onClick}

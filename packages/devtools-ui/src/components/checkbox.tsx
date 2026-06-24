@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 
 interface CheckboxProps {
   label?: string
@@ -9,7 +9,7 @@ interface CheckboxProps {
 }
 
 export function Checkbox(props: CheckboxProps) {
-  const styles = useStyles()
+  const styles = createStyles()
   const [isChecked, setIsChecked] = createSignal(props.checked || false)
 
   const handleChange = (e: Event) => {

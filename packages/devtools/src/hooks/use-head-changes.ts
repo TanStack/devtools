@@ -34,7 +34,7 @@ type UseHeadChangesOptions = {
   observeTitle?: boolean
 }
 
-export function useHeadChanges(
+export function createHeadChanges(
   onChange: (change: HeadChange, raw?: MutationRecord) => void,
   opts: UseHeadChangesOptions = {},
 ) {

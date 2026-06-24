@@ -92,12 +92,12 @@ import {
   JsonTree,
   Button,
   Tag,
-  useTheme,
+  createTheme,
 } from '@tanstack/devtools-ui'
 import { storeInspector } from './event-client'
 
 export default function StoreInspectorPanel() {
-  const { theme } = useTheme()
+  const { theme } = createTheme()
   const [state, setState] = createSignal<Record<string, unknown>>({})
   const [actions, setActions] = createSignal<
     Array<{ action: string; payload: unknown }>
@@ -382,7 +382,7 @@ function MyPanel({ theme }: { theme?: 'light' | 'dark' }) {
 }
 ```
 
-In Solid panels using devtools-ui, use `useTheme()` instead of prop drilling.
+In Solid panels using devtools-ui, use `createTheme()` instead of prop drilling.
 
 Source: docs/plugin-lifecycle.md
 

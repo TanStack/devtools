@@ -1,6 +1,6 @@
 import { createMemo } from 'solid-js'
 import clsx from 'clsx'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 
 // types
 import type { JSX } from 'solid-js'
@@ -20,7 +20,7 @@ type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string
 }
 export function Button(props: ButtonProps) {
-  const styles = useStyles()
+  const styles = createStyles()
 
   const classes = createMemo(() => {
     const variant = props.variant || 'primary'

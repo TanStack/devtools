@@ -3,8 +3,8 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  useContext as getContext,
   onCleanup,
-  useContext,
 } from 'solid-js'
 import { delegateEvents } from 'solid-js/web'
 import type { Accessor, JSX } from 'solid-js'
@@ -164,11 +164,11 @@ export const PiPProvider = (props: PiPProviderProps) => {
   )
 }
 
-export const usePiPWindow = () => {
+export const createPiPWindow = () => {
   const context = createMemo(() => {
-    const ctx = useContext(PiPContext)
+    const ctx = getContext(PiPContext)
     if (!ctx) {
-      throw new Error('usePiPWindow must be used within a PiPProvider')
+      throw new Error('createPiPWindow must be used within a PiPProvider')
     }
     return ctx()
   })

@@ -2,18 +2,18 @@
 
 import { Match, Show, Switch, createMemo, createSignal } from 'solid-js'
 import { Button, Header, MainPanel } from '@tanstack/devtools-ui'
-import { useAllyContext } from '../contexts/allyContext'
+import { createAllyContext } from '../contexts/allyContext'
 import { RULE_SET_LABELS, SEVERITY_LABELS } from '../utils/ui.utils'
-import { useStyles } from '../styles/styles'
+import { createStyles } from '../styles/styles'
 import { A11yIssueList } from './IssueList'
 import { A11ySettingsOverlay } from './Settings'
 
 export function Shell() {
-  const styles = useStyles()
+  const styles = createStyles()
 
   // ally context
   const { filteredIssues, allyResult, config, setConfig, triggerAllyScan } =
-    useAllyContext()
+    createAllyContext()
 
   // ui state
   const selectedIssueSignal = createSignal<string>('')

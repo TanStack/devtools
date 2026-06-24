@@ -1,9 +1,9 @@
 import { createUniqueId } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 
 export function TanStackLogo() {
   const id = createUniqueId()
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <svg
       class={styles().logo}

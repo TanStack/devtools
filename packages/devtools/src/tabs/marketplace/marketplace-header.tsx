@@ -1,5 +1,5 @@
 import { SearchIcon, SettingsIcon } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { createStyles } from '../../styles/use-styles'
 import { TagFilters } from './tag-filters'
 import type { Accessor } from 'solid-js'
 
@@ -13,7 +13,7 @@ interface MarketplaceHeaderProps {
 }
 
 export const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <div class={styles().pluginMarketplaceHeader}>

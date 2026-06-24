@@ -1,7 +1,7 @@
 import { For, createSignal } from 'solid-js'
 import { Section, SectionDescription } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
-import { useHeadChanges } from '../../hooks/use-head-changes'
+import { createStyles } from '../../styles/use-styles'
+import { createHeadChanges } from '../../hooks/use-head-changes'
 
 const SOCIALS = [
   {
@@ -95,7 +95,7 @@ function SocialPreview(props: {
   color: string
   network: string
 }) {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <div
@@ -142,7 +142,7 @@ function SocialPreview(props: {
 
 export function SocialPreviewsSection() {
   const [reports, setReports] = createSignal<Array<SocialReport>>(analyzeHead())
-  const styles = useStyles()
+  const styles = createStyles()
 
   function analyzeHead(): Array<SocialReport> {
     const metaTags = Array.from(document.head.querySelectorAll('meta'))
@@ -172,7 +172,7 @@ export function SocialPreviewsSection() {
     return reports
   }
 
-  useHeadChanges(() => {
+  createHeadChanges(() => {
     setReports(analyzeHead())
   })
 

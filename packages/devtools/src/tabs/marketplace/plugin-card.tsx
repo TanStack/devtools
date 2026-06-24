@@ -6,7 +6,7 @@ import {
   PackageIcon,
   XCircleIcon,
 } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { createStyles } from '../../styles/use-styles'
 import {
   getBadgeClass,
   getBadgeText,
@@ -21,7 +21,7 @@ interface PluginCardComponentProps {
 }
 
 export const PluginCardComponent = (props: PluginCardComponentProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
   const { card } = props
 
   return (

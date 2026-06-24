@@ -1,22 +1,23 @@
 import { For, Show, createEffect, createMemo, createSignal } from 'solid-js'
 import clsx from 'clsx'
-import { useDrawContext } from '../context/draw-context'
-import { usePlugins, useTheme } from '../context/use-devtools-context'
-import { useStyles } from '../styles/use-styles'
+import { createDrawContext } from '../context/draw-context'
+import { createPlugins, createTheme } from '../context/use-devtools-context'
+import { createStyles } from '../styles/use-styles'
 import { PLUGIN_CONTAINER_ID, PLUGIN_TITLE_CONTAINER_ID } from '../constants'
 import { PluginMarketplace } from './plugin-marketplace'
 
 export const PluginsTab = (props: { isOpen: boolean }) => {
-  const { plugins, activePlugins, toggleActivePlugins } = usePlugins()
-  const { expanded, hoverUtils, animationMs, setForceExpand } = useDrawContext()
+  const { plugins, activePlugins, toggleActivePlugins } = createPlugins()
+  const { expanded, hoverUtils, animationMs, setForceExpand } =
+    createDrawContext()
   const [pluginRefs, setPluginRefs] = createSignal(
     new Map<string, HTMLDivElement>(),
   )
   const [showMarketplace, setShowMarketplace] = createSignal(false)
 
-  const styles = useStyles()
+  const styles = createStyles()
 
-  const { theme } = useTheme()
+  const { theme } = createTheme()
 
   const hasPlugins = createMemo(
     () => plugins()?.length && plugins()!.length > 0,

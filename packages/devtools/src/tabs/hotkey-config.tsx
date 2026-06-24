@@ -2,7 +2,7 @@ import { Show } from 'solid-js'
 import { Button, Input } from '@tanstack/devtools-ui'
 
 import { uppercaseFirstLetter } from '../utils/sanitize'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 import type { KeyboardKey } from '../context/devtools-store'
 
 interface HotkeyConfigProps {
@@ -22,7 +22,7 @@ const MODIFIER_DISPLAY_NAMES: Record<KeyboardKey, string> = {
 }
 
 export const HotkeyConfig = (props: HotkeyConfigProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   const toggleModifier = (modifier: KeyboardKey) => {
     if (props.hotkey.includes(modifier)) {

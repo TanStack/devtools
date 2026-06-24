@@ -13,7 +13,7 @@ export {
   SectionIcon,
 } from './components/section'
 export { Header, HeaderLogo } from './components/header'
-export { useTheme, ThemeContextProvider } from './components/theme'
+export { createTheme, ThemeContextProvider } from './components/theme'
 export type { TanStackDevtoolsTheme } from './components/theme'
 export {
   CheckCircleIcon,

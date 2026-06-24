@@ -1,5 +1,5 @@
 import * as goober from 'goober'
-import { useTheme } from '@tanstack/devtools-ui'
+import { createTheme } from '@tanstack/devtools-ui'
 import { createMemo } from 'solid-js'
 
 import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
@@ -548,8 +548,8 @@ function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
   }
 }
 
-export function useStyles() {
-  const { theme } = useTheme()
+export function createStyles() {
+  const { theme } = createTheme()
   const styles = createMemo(() => createA11yPanelStyles(theme()))
 
   return styles

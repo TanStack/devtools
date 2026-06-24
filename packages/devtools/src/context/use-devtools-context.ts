@@ -1,7 +1,7 @@
-import { createEffect, createMemo, useContext } from 'solid-js'
+import { createEffect, createMemo, useContext as getContext } from 'solid-js'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants.js'
 import { DevtoolsContext } from './devtools-context.jsx'
-import { useDrawContext } from './draw-context.jsx'
+import { createDrawContext } from './draw-context.jsx'
 
 import type { DevtoolsStore } from './devtools-store.js'
 
@@ -9,18 +9,18 @@ import type { DevtoolsStore } from './devtools-store.js'
  * Returns an object containing the current state and setState function of the ShellContext.
  * Throws an error if used outside of a ShellContextProvider.
  */
-const useDevtoolsContext = () => {
-  const context = useContext(DevtoolsContext)
+const createDevtoolsContext = () => {
+  const context = getContext(DevtoolsContext)
   if (context === undefined) {
     throw new Error(
-      'useDevtoolsShellContext must be used within a ShellContextProvider',
+      'createDevtoolsContext must be used within a ShellContextProvider',
     )
   }
   return context
 }
 
-export function useTheme() {
-  const { settings, setSettings } = useDevtoolsSettings()
+export function createTheme() {
+  const { settings, setSettings } = createDevtoolsSettings()
   const theme = createMemo(() => settings().theme)
   return {
     theme,
@@ -29,9 +29,9 @@ export function useTheme() {
   }
 }
 
-export const usePlugins = () => {
-  const { store, setStore } = useDevtoolsContext()
-  const { setForceExpand } = useDrawContext()
+export const createPlugins = () => {
+  const { store, setStore } = createDevtoolsContext()
+  const { setForceExpand } = createDrawContext()
 
   const plugins = createMemo(() => store.plugins)
   const activePlugins = createMemo(() => store.state.activePlugins)
@@ -73,8 +73,8 @@ export const usePlugins = () => {
   return { plugins, toggleActivePlugins, activePlugins }
 }
 
-export const useDevtoolsState = () => {
-  const { store, setStore } = useDevtoolsContext()
+export const createDevtoolsState = () => {
+  const { store, setStore } = createDevtoolsContext()
   const state = createMemo(() => store.state)
   const setState = (newState: Partial<DevtoolsStore['state']>) => {
     setStore((prev) => ({
@@ -88,8 +88,8 @@ export const useDevtoolsState = () => {
   return { state, setState }
 }
 
-export const useDevtoolsSettings = () => {
-  const { store, setStore } = useDevtoolsContext()
+export const createDevtoolsSettings = () => {
+  const { store, setStore } = createDevtoolsContext()
 
   const settings = createMemo(() => store.settings)
 
@@ -106,8 +106,8 @@ export const useDevtoolsSettings = () => {
   return { setSettings, settings }
 }
 
-export const usePersistOpen = () => {
-  const { state, setState } = useDevtoolsState()
+export const createPersistOpen = () => {
+  const { state, setState } = createDevtoolsState()
 
   const persistOpen = createMemo(() => state().persistOpen)
 
@@ -118,8 +118,8 @@ export const usePersistOpen = () => {
   return { persistOpen, setPersistOpen }
 }
 
-export const useHeight = () => {
-  const { state, setState } = useDevtoolsState()
+export const createHeight = () => {
+  const { state, setState } = createDevtoolsState()
 
   const height = createMemo(() => state().height)
 
