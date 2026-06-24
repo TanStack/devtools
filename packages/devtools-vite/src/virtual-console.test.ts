@@ -2,6 +2,9 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { generateConsolePipeCode } from './virtual-console'
 
 const TEST_VITE_URL = 'http://localhost:5173'
+const SERVER_PREFIX = '%c[Server]%c'
+const SERVER_PREFIX_STYLE = 'color: #9333ea; font-weight: bold;'
+const SERVER_RESET_STYLE = 'color: inherit;'
 
 afterEach(() => {
   vi.useRealTimers()
@@ -9,11 +12,17 @@ afterEach(() => {
   delete (window as any).__TSD_CONSOLE_PIPE_INITIALIZED__
 })
 
-function setupWarnConsolePipe() {
-  const originalWarn = console.warn
-  const originalWarnMock = vi.fn()
+function setupConsolePipe(
+  levels: Parameters<typeof generateConsolePipeCode>[0],
+) {
+  const originalConsoleMethods: Partial<Record<string, typeof console.log>> = {}
+  const consoleMocks: Record<string, ReturnType<typeof vi.fn>> = {}
   const fetchMock = vi.fn().mockResolvedValue(undefined)
   const eventSourceUrls: Array<string> = []
+  const eventSources: Array<{
+    onmessage: ((event: MessageEvent) => void) | null
+    onerror: (() => void) | null
+  }> = []
 
   class MockEventSource {
     onmessage: ((event: MessageEvent) => void) | null = null
@@ -21,29 +30,61 @@ function setupWarnConsolePipe() {
 
     constructor(url: string) {
       eventSourceUrls.push(url)
+      eventSources.push(this)
     }
   }
 
-  console.warn = originalWarnMock
+  for (const level of levels) {
+    originalConsoleMethods[level] = console[level]
+    consoleMocks[level] = vi.fn()
+    console[level] = consoleMocks[level] as typeof console.log
+  }
+
   vi.stubGlobal('fetch', fetchMock)
   vi.stubGlobal('EventSource', MockEventSource)
 
-  const code = generateConsolePipeCode(['warn'], TEST_VITE_URL)
+  const code = generateConsolePipeCode(levels, TEST_VITE_URL)
   new Function(code)()
 
   return {
+    consoleMocks,
+    eventSources,
     eventSourceUrls,
     fetchMock,
-    originalWarnMock,
     restore: () => {
-      console.warn = originalWarn
+      for (const level of levels) {
+        const original = originalConsoleMethods[level]
+        if (original) {
+          console[level] = original
+        }
+      }
     },
+  }
+}
+
+function setupWarnConsolePipe() {
+  const setup = setupConsolePipe(['warn'])
+
+  return {
+    ...setup,
+    originalWarnMock: setup.consoleMocks.warn,
   }
 }
 
 function getFirstFetchBody(fetchMock: ReturnType<typeof vi.fn>) {
   const [, init] = fetchMock.mock.calls[0]!
   return JSON.parse(init.body)
+}
+
+function dispatchServerEntries(
+  eventSource: { onmessage: ((event: MessageEvent) => void) | null },
+  entries: Array<{ level: string; args: Array<unknown> }>,
+) {
+  eventSource.onmessage?.(
+    new MessageEvent('message', {
+      data: JSON.stringify({ entries }),
+    }),
+  )
 }
 
 describe('virtual-console', () => {
@@ -66,6 +107,120 @@ describe('virtual-console', () => {
     const code = generateConsolePipeCode(['log'], TEST_VITE_URL)
 
     expect(code).toContain("new EventSource('/__tsd/console-pipe/sse')")
+  })
+
+  test('preserves server log format substitutions', () => {
+    const { consoleMocks, eventSources, restore } = setupConsolePipe(['log'])
+
+    try {
+      dispatchServerEntries(eventSources[0]!, [
+        {
+          level: 'log',
+          args: ['%s info GET %s %d', 'ts', '/route', 200],
+        },
+      ])
+
+      expect(consoleMocks.log).toHaveBeenCalledWith(
+        SERVER_PREFIX + ' %s info GET %s %d',
+        SERVER_PREFIX_STYLE,
+        SERVER_RESET_STYLE,
+        'ts',
+        '/route',
+        200,
+      )
+    } finally {
+      restore()
+    }
+  })
+
+  test('preserves server log css format substitutions', () => {
+    const { consoleMocks, eventSources, restore } = setupConsolePipe(['log'])
+
+    try {
+      dispatchServerEntries(eventSources[0]!, [
+        {
+          level: 'log',
+          args: ['%cstarted', 'color: green'],
+        },
+      ])
+
+      expect(consoleMocks.log).toHaveBeenCalledWith(
+        SERVER_PREFIX + ' %cstarted',
+        SERVER_PREFIX_STYLE,
+        SERVER_RESET_STYLE,
+        'color: green',
+      )
+    } finally {
+      restore()
+    }
+  })
+
+  test('preserves empty server log format substitutions', () => {
+    const { consoleMocks, eventSources, restore } = setupConsolePipe(['log'])
+
+    try {
+      dispatchServerEntries(eventSources[0]!, [
+        {
+          level: 'log',
+          args: ['%s%s%s', '', ' ', 'ok'],
+        },
+      ])
+
+      expect(consoleMocks.log).toHaveBeenCalledWith(
+        SERVER_PREFIX + ' %s%s%s',
+        SERVER_PREFIX_STYLE,
+        SERVER_RESET_STYLE,
+        '',
+        ' ',
+        'ok',
+      )
+    } finally {
+      restore()
+    }
+  })
+
+  test('keeps plain server log prefix arguments unchanged', () => {
+    const { consoleMocks, eventSources, restore } = setupConsolePipe(['warn'])
+
+    try {
+      dispatchServerEntries(eventSources[0]!, [
+        {
+          level: 'warn',
+          args: ['plain message'],
+        },
+      ])
+
+      expect(consoleMocks.warn).toHaveBeenCalledWith(
+        SERVER_PREFIX,
+        SERVER_PREFIX_STYLE,
+        SERVER_RESET_STYLE,
+        'plain message',
+      )
+    } finally {
+      restore()
+    }
+  })
+
+  test('does not treat non-string first server log args as format strings', () => {
+    const { consoleMocks, eventSources, restore } = setupConsolePipe(['log'])
+
+    try {
+      dispatchServerEntries(eventSources[0]!, [
+        {
+          level: 'log',
+          args: [{ a: 1 }],
+        },
+      ])
+
+      expect(consoleMocks.log).toHaveBeenCalledWith(
+        SERVER_PREFIX,
+        SERVER_PREFIX_STYLE,
+        SERVER_RESET_STYLE,
+        { a: 1 },
+      )
+    } finally {
+      restore()
+    }
   })
 
   test('includes environment detection', () => {
