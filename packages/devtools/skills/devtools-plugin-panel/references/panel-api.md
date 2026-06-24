@@ -70,7 +70,7 @@ All components are Solid.js. Use in Path 1 (Solid core) panels only.
 | `Checkbox`             | Checkbox input                                                                               |
 | `TanStackLogo`         | TanStack logo SVG                                                                            |
 | `ThemeContextProvider` | Wraps children with theme context                                                            |
-| `useTheme`             | Returns `{ theme: Accessor<Theme>, setTheme }` -- must be inside ThemeContextProvider        |
+| `createTheme`          | Returns `{ theme: Accessor<Theme>, setTheme }` -- must be inside ThemeContextProvider        |
 
 ### JsonTree Props
 
@@ -133,4 +133,4 @@ class EventClient<TEventMap extends Record<string, any>> {
 | `packages/event-bus-client/src/plugin.ts`                   | `EventClient` class                                      |
 | `packages/devtools-utils/src/solid/class.ts`                | `constructCoreClass`                                     |
 | `packages/devtools-ui/src/index.ts`                         | All UI component exports                                 |
-| `packages/devtools-ui/src/components/theme.tsx`             | `ThemeContextProvider`, `useTheme`                       |
+| `packages/devtools-ui/src/components/theme.tsx`             | `ThemeContextProvider`, `createTheme`                    |

@@ -2,7 +2,7 @@ import { render } from '@solidjs/testing-library'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from '../context/devtools-context'
-import { useDevtoolsSettings } from '../context/use-devtools-context'
+import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { SettingsTab } from './settings-tab'
 import type { DevtoolsStore } from '../context/devtools-store'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
@@ -16,7 +16,7 @@ const renderSettingsTab = (config?: Partial<TanStackDevtoolsConfig>) => {
   let setSettings!: (s: Partial<DevtoolsStore['settings']>) => void
 
   const Capture = () => {
-    setSettings = useDevtoolsSettings().setSettings
+    setSettings = createDevtoolsSettings().setSettings
     return <SettingsTab />
   }
 

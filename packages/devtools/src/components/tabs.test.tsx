@@ -3,7 +3,7 @@ import { render } from '@solidjs/testing-library'
 import { DevtoolsProvider } from '../context/devtools-context'
 import { DrawClientProvider } from '../context/draw-context'
 import { PiPProvider } from '../context/pip-context'
-import { useDevtoolsState } from '../context/use-devtools-context'
+import { createDevtoolsState } from '../context/use-devtools-context'
 import { Tabs } from './tabs'
 
 describe('Tabs', () => {
@@ -32,9 +32,9 @@ describe('Tabs', () => {
 
   it('marks the default active tab and moves the active class on store mutation', () => {
     // Capture the state setter from inside the provider tree.
-    let setState!: ReturnType<typeof useDevtoolsState>['setState']
+    let setState!: ReturnType<typeof createDevtoolsState>['setState']
     const StateProbe = () => {
-      setState = useDevtoolsState().setState
+      setState = createDevtoolsState().setState
       return null
     }
 
