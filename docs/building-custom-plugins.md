@@ -209,3 +209,27 @@ For usage details, see the [Using devtools-utils](./devtools-utils) guide.
 Once your plugin is working, you can share it with the community by publishing it to npm and submitting it to the TanStack Devtools Marketplace. The marketplace is a registry of third-party plugins that users can discover and install directly from the devtools UI.
 
 For submission instructions and the registry format, see [Third-party Plugins](./third-party-plugins).
+
+## Production builds
+
+By default the **root import** of `@tanstack/devtools-event-client` no-ops
+outside development. When your bundler sets `process.env.NODE_ENV` to anything
+other than `'development'`, the real client is replaced by a no-op and
+tree-shaken out of your production bundle:
+
+```ts
+// dev: real client — production: no-op (tree-shaken away)
+import { EventClient } from '@tanstack/devtools-event-client'
+```
+
+If you are an open-source author who deliberately wants devtools events in
+production, import the real client from the `/production` subpath instead. It is
+never stripped:
+
+```ts
+// always the real client, in every environment
+import { EventClient } from '@tanstack/devtools-event-client/production'
+```
+
+The public API is identical between the two imports — only the production
+runtime behavior differs.

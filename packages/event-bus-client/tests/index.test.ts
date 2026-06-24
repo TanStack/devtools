@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
-import { EventClient } from '../src'
+import { EventClient } from '../src/production'
 
 // client bus uses window to dispatch events
 const clientBusEmitTarget = window

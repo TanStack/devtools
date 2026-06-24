@@ -22,7 +22,7 @@ Install the package:
 npm i @tanstack/devtools-event-client
 ```
 
-The package exports a single class:
+The package has two entry points — the root export (the real client in development, a no-op tree-shaken out of production), and the `/production` subpath (always the real client, for libraries that want devtools events in production):
 
 ```ts
 import { EventClient } from '@tanstack/devtools-event-client'
@@ -257,30 +257,31 @@ storeInspector.emit('state-changed', {
 })
 ```
 
-### 7. Not stripping EventClient emit calls for production (HIGH)
+### 7. Forgetting the root export no-ops in production (HIGH)
 
-The Vite plugin strips adapter imports (e.g., `@tanstack/react-devtools`) from production builds, but it does NOT strip `@tanstack/devtools-event-client` imports or `emit()` calls. Library authors must guard emit calls themselves.
+The **root import** of `@tanstack/devtools-event-client` resolves to a no-op
+when `process.env.NODE_ENV !== 'development'`, and the real client is
+tree-shaken out of production bundles. This is the default and what you want for
+most libraries — your `emit()` calls cost nothing in production.
 
-Options:
-
-**Option A:** Use the `enabled` constructor option:
-
-```ts
-super({
-  pluginId: 'store-inspector',
-  enabled: process.env.NODE_ENV !== 'production',
-})
-```
-
-**Option B:** Conditional guard at the call site:
+"Outside development" includes when `NODE_ENV` is unset — common in plain Node scripts, some SSR dev servers, and test runners — so the root import resolves to the no-op there too. Set `NODE_ENV=development`, or use the `/production` subpath, to get the real client in those contexts.
 
 ```ts
-if (process.env.NODE_ENV !== 'production') {
-  storeInspector.emit('state-changed', data)
-}
+// dev: real client — production: no-op, removed from the bundle
+import { EventClient } from '@tanstack/devtools-event-client'
 ```
 
-When `enabled` is `false`, `emit()` returns immediately (no event creation, no queuing, no connection attempt). This is the preferred approach.
+If you are publishing an open-source library and deliberately want devtools
+events to keep working in production, import from the `/production` subpath,
+which always ships the real client:
+
+```ts
+import { EventClient } from '@tanstack/devtools-event-client/production'
+```
+
+The `enabled` constructor option still works for fine-grained runtime control,
+but you no longer need to guard `emit()` calls manually for bundle size — the
+root export handles that for you.
 
 ## See Also
 

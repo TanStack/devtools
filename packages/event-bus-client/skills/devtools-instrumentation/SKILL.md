@@ -277,7 +277,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 ```
 
-**Important:** The Vite plugin strips `@tanstack/react-devtools` from production but does NOT strip `@tanstack/devtools-event-client`. You must guard yourself.
+**Important:** The Vite plugin strips `@tanstack/react-devtools` from production. The root import of `@tanstack/devtools-event-client` also no-ops and is tree-shaken out when `process.env.NODE_ENV !== 'development'`, so `emit()` calls cost nothing in production by default. Import from `@tanstack/devtools-event-client/production` if you deliberately want events in production. The `enabled` option remains available for runtime control.
 
 ### 6. Server/Client Transparent Bridging
 

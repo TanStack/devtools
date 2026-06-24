@@ -57,6 +57,32 @@ function App() {
 }
 ```
 
+## Event client in production
+
+By default the **root import** of `@tanstack/devtools-event-client` no-ops
+outside development. When your bundler sets `process.env.NODE_ENV` to anything
+other than `'development'`, the real client is replaced by a no-op and
+tree-shaken out of your production bundle:
+
+```ts
+// dev: real client — production: no-op (tree-shaken away)
+import { EventClient } from '@tanstack/devtools-event-client'
+```
+
+If you are an open-source author who deliberately wants devtools events in
+production, import the real client from the `/production` subpath instead. It is
+never stripped:
+
+```ts
+// always the real client, in every environment
+import { EventClient } from '@tanstack/devtools-event-client/production'
+```
+
+The public API is identical between the two imports — only the production
+runtime behavior differs.
+
+This is independent of the Vite plugin's `removeDevtoolsOnBuild` option — the event client strips itself based on `NODE_ENV`, whether or not you use the Vite plugin.
+
 ## Where to install the Devtools
 
 If you are using the devtools in development only, you can install them as a development dependency and only import them in development builds. This is the default recommended way to use the devtools.
