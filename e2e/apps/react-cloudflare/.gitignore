@@ -1,0 +1,8 @@
+test-results
+playwright-report
+playwright/.cache
+.nitro
+.tanstack
+.output
+.vite
+.wrangler
