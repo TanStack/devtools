@@ -1,6 +1,6 @@
 import { Show, createSignal } from 'solid-js'
 import { MainPanel } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { createStyles } from '../../styles/use-styles'
 import { SocialPreviewsSection } from './social-previews'
 import { SerpPreviewSection } from './serp-preview'
 
@@ -9,7 +9,7 @@ type SeoSubView = 'social-previews' | 'serp-preview'
 export const SeoTab = () => {
   const [activeView, setActiveView] =
     createSignal<SeoSubView>('social-previews')
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <MainPanel withPadding>

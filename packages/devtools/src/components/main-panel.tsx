@@ -1,9 +1,12 @@
 import clsx from 'clsx'
 import { DrawClientProvider } from '../context/draw-context'
-import { useDevtoolsSettings, useHeight } from '../context/use-devtools-context'
-import { useStyles } from '../styles/use-styles'
+import {
+  createDevtoolsSettings,
+  createHeight,
+} from '../context/use-devtools-context'
+import { createStyles } from '../styles/use-styles'
 import { TANSTACK_DEVTOOLS } from '../utils/storage'
-import { usePiPWindow } from '../context/pip-context'
+import { createPiPWindow } from '../context/pip-context'
 
 import type { Accessor, JSX } from 'solid-js'
 
@@ -12,13 +15,15 @@ export const MainPanel = (props: {
   children: JSX.Element
   isResizing: Accessor<boolean>
 }) => {
-  const styles = useStyles()
-  const { height } = useHeight()
-  const { settings } = useDevtoolsSettings()
-  const pip = usePiPWindow()
+  const styles = createStyles()
+  const { height } = createHeight()
+  const { settings } = createDevtoolsSettings()
+  const pip = createPiPWindow()
   return (
     <div
       id={TANSTACK_DEVTOOLS}
+      data-testid="tsd-main-panel"
+      data-open={props.isOpen() ? 'true' : 'false'}
       style={{
         height: pip().pipWindow ? '100vh' : height() + 'px',
         '--tsd-main-panel-height': pip().pipWindow ? '100vh' : height() + 'px',

@@ -5,7 +5,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
-  useContext,
+  useContext as getContext,
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { filterIssuesAboveThreshold, runAudit } from '../utils/ally-audit.utils'
@@ -24,7 +24,7 @@ import type { ParentComponent } from 'solid-js'
 // context state
 //
 
-function useAllyValue() {
+function createAllyValue() {
   const [config, setConfig] =
     createStore<Required<A11yPluginOptions>>(mergeConfig())
 
@@ -89,7 +89,7 @@ function useAllyValue() {
   }
 }
 
-type ContextType = ReturnType<typeof useAllyValue>
+type ContextType = ReturnType<typeof createAllyValue>
 
 //
 // context
@@ -100,18 +100,18 @@ const AllyContext = createContext<ContextType | null>(null)
 type AllyProviderProps = {}
 
 export const AllyProvider: ParentComponent<AllyProviderProps> = (props) => {
-  const value = useAllyValue()
+  const value = createAllyValue()
 
   return (
     <AllyContext.Provider value={value}>{props.children}</AllyContext.Provider>
   )
 }
 
-export function useAllyContext() {
-  const context = useContext(AllyContext)
+export function createAllyContext() {
+  const context = getContext(AllyContext)
 
   if (context === null) {
-    throw new Error('useAllyContext must be used within an AllyProvider')
+    throw new Error('createAllyContext must be used within an AllyProvider')
   }
 
   return context

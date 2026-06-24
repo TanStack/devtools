@@ -1,7 +1,7 @@
 import { For, Show, createSignal, onCleanup, onMount } from 'solid-js'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
-import { usePlugins } from '../context/use-devtools-context'
-import { useStyles } from '../styles/use-styles'
+import { createPlugins } from '../context/use-devtools-context'
+import { createStyles } from '../styles/use-styles'
 import { PluginSectionComponent } from './marketplace/plugin-section'
 import { SettingsPanel } from './marketplace/settings-panel'
 import { MarketplaceHeader } from './marketplace/marketplace-header'
@@ -15,8 +15,8 @@ import type { PackageJson } from '@tanstack/devtools-client'
 import type { PluginCard, PluginSection } from './marketplace/types'
 
 export const PluginMarketplace = () => {
-  const styles = useStyles()
-  const { plugins } = usePlugins()
+  const styles = createStyles()
+  const { plugins } = createPlugins()
   const [pluginSections, setPluginSections] = createSignal<
     Array<PluginSection>
   >([])

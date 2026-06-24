@@ -5,12 +5,12 @@ import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 
 import {
-  useDevtoolsSettings,
-  useHeight,
-  usePersistOpen,
-  useTheme,
+  createDevtoolsSettings,
+  createHeight,
+  createPersistOpen,
+  createTheme,
 } from './context/use-devtools-context'
-import { useDisableTabbing } from './hooks/use-disable-tabbing'
+import { createDisableTabbing } from './hooks/use-disable-tabbing'
 import { TANSTACK_DEVTOOLS } from './utils/storage'
 import { getHotkeyPermutations } from './utils/hotkey'
 import { Trigger } from './components/trigger'
@@ -18,18 +18,18 @@ import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
 import { Tabs } from './components/tabs'
 import { TabContent } from './components/tab-content'
-import { usePiPWindow } from './context/pip-context'
+import { createPiPWindow } from './context/pip-context'
 import { SourceInspector } from './components/source-inspector'
 
 export default function DevTools() {
-  const { settings } = useDevtoolsSettings()
-  const { setHeight } = useHeight()
-  const { persistOpen, setPersistOpen } = usePersistOpen()
+  const { settings } = createDevtoolsSettings()
+  const { setHeight } = createHeight()
+  const { persistOpen, setPersistOpen } = createPersistOpen()
   const [rootEl, setRootEl] = createSignal<HTMLDivElement>()
   const [isOpen, setIsOpen] = createSignal(
     settings().defaultOpen || persistOpen(),
   )
-  const pip = usePiPWindow()
+  const pip = createPiPWindow()
   let panelRef: HTMLDivElement | undefined = undefined
   const [isResizing, setIsResizing] = createSignal(false)
 
@@ -156,7 +156,7 @@ export default function DevTools() {
       }
     })
   })
-  useDisableTabbing(isOpen)
+  createDisableTabbing(isOpen)
   createEffect(() => {
     if (rootEl()) {
       const el = rootEl()
@@ -189,7 +189,7 @@ export default function DevTools() {
     }
   })
 
-  const { theme } = useTheme()
+  const { theme } = createTheme()
 
   createEffect(() => {
     if (typeof document === 'undefined') {

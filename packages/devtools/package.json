@@ -10,6 +10,9 @@
     "directory": "packages/devtools"
   },
   "homepage": "https://tanstack.com/devtools",
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tannerlinsley"
@@ -78,6 +81,7 @@
     "solid-js": ">=1.9.7"
   },
   "devDependencies": {
+    "@solidjs/testing-library": "^0.8.10",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
     "vite-plugin-solid": "^2.11.11"

@@ -1,14 +1,14 @@
 import { createEffect, createMemo, createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { createElementSize } from '@solid-primitives/resize-observer'
-import { useKeyDownList } from '@solid-primitives/keyboard'
+import { useKeyDownList as getKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
 
-import { useDevtoolsSettings } from '../context/use-devtools-context'
+import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { isHotkeyCombinationPressed } from '../utils/hotkey'
 
 export const SourceInspector = () => {
-  const { settings } = useDevtoolsSettings()
+  const { settings } = createDevtoolsSettings()
   const highlightStateInit = () => ({
     element: null as HTMLElement | null,
     bounding: { width: 0, height: 0, left: 0, top: 0 },
@@ -28,7 +28,7 @@ export const SourceInspector = () => {
     setMousePosition({ x: e.clientX, y: e.clientY })
   })
 
-  const downList = useKeyDownList()
+  const downList = getKeyDownList()
 
   const [disabledAfterClick, setDisabledAfterClick] = createSignal(false)
 

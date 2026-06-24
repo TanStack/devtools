@@ -1,7 +1,7 @@
 import { Show, createEffect, createMemo, createSignal } from 'solid-js'
 import clsx from 'clsx'
-import { useDevtoolsSettings } from '../context/use-devtools-context'
-import { useStyles } from '../styles/use-styles'
+import { createDevtoolsSettings } from '../context/use-devtools-context'
+import { createStyles } from '../styles/use-styles'
 import TanStackLogo from './tanstack-logo.png'
 import type { Accessor } from 'solid-js'
 
@@ -9,9 +9,9 @@ export const Trigger = (props: {
   isOpen: Accessor<boolean>
   setIsOpen: (isOpen: boolean) => void
 }) => {
-  const { settings } = useDevtoolsSettings()
+  const { settings } = createDevtoolsSettings()
   const [containerRef, setContainerRef] = createSignal<HTMLElement>()
-  const styles = useStyles()
+  const styles = createStyles()
   const buttonStyle = createMemo(() => {
     return clsx(
       styles().mainCloseBtn,

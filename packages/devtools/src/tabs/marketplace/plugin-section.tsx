@@ -1,6 +1,6 @@
 import { For, Show } from 'solid-js'
 import { ChevronDownIcon } from '@tanstack/devtools-ui'
-import { useStyles } from '../../styles/use-styles'
+import { createStyles } from '../../styles/use-styles'
 import { PluginCardComponent } from './plugin-card'
 import type { Accessor } from 'solid-js'
 import type { PluginCard, PluginSection } from './types'
@@ -38,7 +38,7 @@ const MailIcon = () => (
 )
 
 export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <div class={styles().pluginMarketplaceSection}>

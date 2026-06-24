@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 
 interface InputProps {
   label?: string
@@ -11,7 +11,7 @@ interface InputProps {
 }
 
 export function Input(props: InputProps) {
-  const styles = useStyles()
+  const styles = createStyles()
   const [val, setVal] = createSignal(props.value || '')
 
   const handleChange = (e: Event) => {

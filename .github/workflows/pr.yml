@@ -27,13 +27,32 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@99d23c6212f36eff17d30a21e58da77f55a4cfe9 # main
+        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
       - name: Get base and head commits for `nx affected`
         uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4.4.0
         with:
           main-branch-name: main
       - name: Run Checks
         run: pnpm run test:pr
+  e2e:
+    name: E2e
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Tools
+        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
+      - name: Build packages
+        run: pnpm run build:all
+      - name: Install Playwright Chromium
+        run: pnpm --filter @tanstack/devtools-e2e-react-vite exec playwright install --with-deps chromium
+      - name: Run e2e
+        run: pnpm run test:e2e
   preview:
     name: Preview
     runs-on: ubuntu-latest
@@ -43,7 +62,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@99d23c6212f36eff17d30a21e58da77f55a4cfe9 # main
+        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
       - name: Build Packages
         run: pnpm run build:all
       - name: Publish Previews
@@ -57,6 +76,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@99d23c6212f36eff17d30a21e58da77f55a4cfe9 # main
+        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
       - name: Changeset Preview
-        uses: TanStack/config/.github/changeset-preview@99d23c6212f36eff17d30a21e58da77f55a4cfe9 # main
+        uses: TanStack/config/.github/changeset-preview@190f659075ff0845850e330883eb26d7ffd0671f # main

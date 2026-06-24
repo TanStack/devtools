@@ -437,4 +437,48 @@ describe('devtools plugin', () => {
       expect(betterLogsIdx).toBeLessThan(pipeIdx)
     })
   })
+
+  describe('runtime-bridge plugin', () => {
+    it('devtools() includes the runtime-bridge plugin', () => {
+      const plugins = devtools()
+      const names = plugins.map((p) => p.name)
+      expect(names).toContain('@tanstack/devtools:runtime-bridge')
+    })
+
+    it('runtime-bridge transform injects in a server environment', () => {
+      const plugin = devtools().find(
+        (p) => p.name === '@tanstack/devtools:runtime-bridge',
+      )!
+      // emulate Vite's per-environment plugin context
+      const ctx = { environment: { name: 'ssr' } }
+      const handler =
+        typeof plugin.transform === 'function'
+          ? plugin.transform
+          : (plugin.transform as any).handler
+      const out = handler.call(
+        ctx,
+        'class EventClient {}',
+        '/x/node_modules/@tanstack/devtools-event-client/dist/esm/index.js',
+      )
+      expect(out).toBeDefined()
+      expect(String(out)).toContain('__tsdRuntimeBridge')
+    })
+
+    it('runtime-bridge transform skips the client environment', () => {
+      const plugin = devtools().find(
+        (p) => p.name === '@tanstack/devtools:runtime-bridge',
+      )!
+      const ctx = { environment: { name: 'client' } }
+      const handler =
+        typeof plugin.transform === 'function'
+          ? plugin.transform
+          : (plugin.transform as any).handler
+      const out = handler.call(
+        ctx,
+        'class EventClient {}',
+        '/x/node_modules/@tanstack/devtools-event-client/dist/esm/index.js',
+      )
+      expect(out).toBeUndefined()
+    })
+  })
 })

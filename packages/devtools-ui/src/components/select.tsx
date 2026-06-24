@@ -1,5 +1,5 @@
 import { createSignal } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 
 interface SelectOption<T extends string | number> {
   value: T
@@ -15,7 +15,7 @@ interface SelectProps<T extends string | number> {
 }
 
 export function Select<T extends string | number>(props: SelectProps<T>) {
-  const styles = useStyles()
+  const styles = createStyles()
   const [selected, setSelected] = createSignal(
     props.value || props.options[0]?.value,
   )
