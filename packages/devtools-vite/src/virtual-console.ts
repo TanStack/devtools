@@ -274,7 +274,7 @@ export function generateConsolePipeCode(
   // CLIENT ONLY: Listen for server console logs via SSE
   if (!isServer) {
     // Transform server log args - strip ANSI codes and convert source paths to clickable URLs
-    function transformServerLogArgs(args) {
+    function transformServerLogArgs(args, preserveEmptyStrings) {
       var escChar = String.fromCharCode(27);
       var transformed = [];
       
@@ -297,7 +297,7 @@ export function generateConsolePipeCode(
             return window.location.origin + '/__tsd/open-source?source=' + encodeURIComponent(match);
           });
           
-          if (cleaned.trim()) {
+          if (preserveEmptyStrings || cleaned.trim()) {
             transformed.push(cleaned);
           }
         } else {
@@ -308,6 +308,21 @@ export function generateConsolePipeCode(
       return transformed;
     }
 
+    function hasConsoleFormatSubstitution(arg) {
+      return typeof arg === 'string' && /(^|[^%])%[sdifocOj]/.test(arg);
+    }
+
+    function isEnhancedLogPrefix(arg) {
+      return typeof arg === 'string' &&
+        arg.indexOf('LOG') !== -1 &&
+        arg.indexOf(String.fromCharCode(10) + ' ' + String.fromCharCode(8594) + ' ') !== -1;
+    }
+
+    function getConsoleFormatIndex(args) {
+      if (hasConsoleFormatSubstitution(args[0])) return 0;
+      return isEnhancedLogPrefix(args[0]) && hasConsoleFormatSubstitution(args[1]) ? 1 : -1;
+    }
+
     var eventSource = new EventSource('/__tsd/console-pipe/sse');
     
     eventSource.onmessage = function(event) {
@@ -316,12 +331,21 @@ export function generateConsolePipeCode(
         if (data.entries) {
           for (var m = 0; m < data.entries.length; m++) {
             var entry = data.entries[m];
-            var transformedArgs = transformServerLogArgs(entry.args);
+            var formatIndex = getConsoleFormatIndex(entry.args);
+            var shouldPreserveFormat = formatIndex !== -1;
+            var transformedArgs = transformServerLogArgs(entry.args, shouldPreserveFormat);
             var prefix = '%c[Server]%c';
             var prefixStyle = 'color: #9333ea; font-weight: bold;';
             var resetStyle = 'color: inherit;';
             var logMethod = originalConsole[entry.level] || originalConsole.log;
-            logMethod.apply(console, [prefix, prefixStyle, resetStyle].concat(transformedArgs));
+            if (shouldPreserveFormat) {
+              logMethod.apply(
+                console,
+                [prefix + ' ' + transformedArgs.slice(0, formatIndex + 1).join(''), prefixStyle, resetStyle].concat(transformedArgs.slice(formatIndex + 1))
+              );
+            } else {
+              logMethod.apply(console, [prefix, prefixStyle, resetStyle].concat(transformedArgs));
+            }
           }
         }
       } catch (err) {
