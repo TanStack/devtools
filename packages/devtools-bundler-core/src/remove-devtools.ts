@@ -130,10 +130,17 @@ export function removeDevtools(code: string, id: string) {
 
       let end = node.end
       if (code[end] === '\n') end++
-      if (parentNode?.type === 'ParenthesizedExpression') {
-        s.overwrite(node.start, end, 'null')
-      } else {
+      /**
+       * Devtools nodes can be removed safely when nested in JSX. 
+       * In all other contexts, replace them with `null` to avoid leaving invalid syntax.
+       */
+      if (
+        parentNode?.type === 'JSXElement' ||
+        parentNode?.type === 'JSXFragment'
+      ) {
         s.remove(node.start, end)
+      } else {
+        s.overwrite(node.start, end, 'null')
       }
     })
 
