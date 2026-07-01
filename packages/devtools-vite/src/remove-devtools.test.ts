@@ -604,4 +604,92 @@ export function DevtoolsProvider() {
 `),
     )
   })
+
+  test('replaces removed devtools expressions with null', () => {
+    const output = removeEmptySpace(
+      removeDevtools(
+        `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+
+function functionCall(value: unknown) {
+  return value
+}
+
+export function DevtoolsProvider() {
+  const devtools1 = <TanStackDevtools />
+  const devtools2 = functionCall(<TanStackDevtools />)
+  const devtools3 = true ? <TanStackDevtools /> : <>fallback</>
+  const devtools4 = {
+    devtools: <TanStackDevtools />
+  }
+  const devtools5 = (<div>
+      {<TanStackDevtools plugins={[]} />}
+  </div>)
+  return { devtools1, devtools2, devtools3, devtools4, devtools5 }
+}
+`,
+        'test.tsx',
+      )!.code,
+    )
+
+    expect(output).toBe(
+      removeEmptySpace(`
+function functionCall(value: unknown) {
+  return value
+}
+
+export function DevtoolsProvider() {
+  const devtools1 = null
+  const devtools2 = functionCall(null)
+  const devtools3 = true ? null : <>fallback</>
+  const devtools4 = {
+    devtools: null
+  }
+  const devtools5 = (<div>
+      {null}
+  </div>)
+  return { devtools1, devtools2, devtools3, devtools4, devtools5 }
+}
+`),
+    )
+  })
+
+  test('removes devtools jsx children entirely', () => {
+    const output = removeEmptySpace(
+      removeDevtools(
+        `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+
+export function DevtoolsProvider() {
+  return (
+    <>
+      <div>
+        <div>before</div>
+        <TanStackDevtools />
+        <div>after</div>
+      </div>
+      <TanStackDevtools />
+    </>
+  )
+}
+`,
+        'test.tsx',
+      )!.code,
+    )
+
+    expect(output).toBe(
+      removeEmptySpace(`
+export function DevtoolsProvider() {
+  return (
+  <>
+    <div>
+      <div>before</div>
+      <div>after</div>
+    </div>
+  </>
+  )
+}
+`),
+    )
+  })
 })
