@@ -33,6 +33,43 @@ describe('TanStackDevtoolsRspackPlugin', () => {
     expect(String(rule.use?.[0]?.loader ?? rule.loader)).toContain('loader')
   })
 
+  it('also injects a node_modules-scoped rule for @tanstack/devtools|event-bus packages', () => {
+    const c = mockCompiler('development')
+    new TanStackDevtoolsRspackPlugin().apply(c as any)
+
+    expect(c.options.module.rules).toHaveLength(2)
+
+    // Exactly one rule has no `exclude` and a narrow `include` matching only
+    // @tanstack/devtools*/@tanstack/event-bus* packages under node_modules
+    // (covering both a flat node_modules layout and pnpm's nested
+    // `.pnpm/<pkg>/node_modules/<pkg>` virtual-store layout).
+    const scopedRules = c.options.module.rules.filter(
+      (r: any) => r.exclude === undefined && r.include instanceof RegExp,
+    )
+    expect(scopedRules).toHaveLength(1)
+    const scopedRule = scopedRules[0]
+
+    const nodeModulesSample =
+      '/repo/node_modules/@tanstack/devtools-event-bus/dist/client/client.js'
+    const pnpmNestedSample =
+      '/repo/node_modules/.pnpm/@tanstack+devtools-event-bus@1.0.0/node_modules/@tanstack/devtools-event-bus/dist/client/client.js'
+    expect(scopedRule.include.test(nodeModulesSample)).toBe(true)
+    expect(scopedRule.include.test(pnpmNestedSample)).toBe(true)
+    expect(
+      String(scopedRule.use?.[0]?.loader ?? scopedRule.loader),
+    ).toContain('loader')
+
+    // The general rule (the other one) still excludes ordinary node_modules
+    // code and processes ordinary app source.
+    const generalRule = c.options.module.rules.find(
+      (r: any) => r !== scopedRule,
+    )
+    expect(generalRule.exclude.test('/repo/node_modules/react/index.js')).toBe(
+      true,
+    )
+    expect(generalRule.exclude.test('/repo/src/app.tsx')).toBe(false)
+  })
+
   it('wraps devServer.setupMiddlewares in development', () => {
     const c = mockCompiler('development')
     new TanStackDevtoolsRspackPlugin().apply(c as any)

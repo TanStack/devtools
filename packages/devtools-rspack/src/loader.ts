@@ -108,11 +108,16 @@ export function runPipeline(
   }
 
   // 4. connection placeholder replacement (@tanstack/devtools|event-bus modules)
+  // `id` is the loader's `resourcePath`, which on Windows uses native `\`
+  // separators (rspack/webpack do not normalize it) -- normalize before the
+  // substring check below so this gate isn't silently skipped on Windows.
+  const posixId = id.replace(/\\/g, '/')
   if (
     (result.includes('__TANSTACK_DEVTOOLS_PORT__') ||
       result.includes('__TANSTACK_DEVTOOLS_HOST__') ||
       result.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')) &&
-    (id.includes('@tanstack/devtools') || id.includes('@tanstack/event-bus'))
+    (posixId.includes('@tanstack/devtools') ||
+      posixId.includes('@tanstack/event-bus'))
   ) {
     result = result
       .replace(/__TANSTACK_DEVTOOLS_PORT__/g, String(connection.port))

@@ -80,6 +80,28 @@ export class TanStackDevtoolsRspackPlugin {
       use: [{ loader: loaderPath, options: { config: args } }],
     })
 
+    // 1b. ALSO process the `@tanstack/devtools*` / `@tanstack/event-bus*`
+    //     packages when THEY resolve under `node_modules` (the common case for
+    //     real consumers, as opposed to this repo's own workspace symlinks).
+    //     The general rule above excludes all of `node_modules`, so without
+    //     this second, narrowly-scoped rule the `__TANSTACK_DEVTOOLS_*`
+    //     connection placeholders (step 4 of `runPipeline`) and the
+    //     runtime-bridge injection (step 5) would never run on that code,
+    //     breaking a custom `eventBusConfig.port` / host / protocol for any
+    //     consumer whose install resolves these packages under
+    //     `node_modules` (flat npm/yarn installs, or pnpm's nested
+    //     `.pnpm/<pkg>/node_modules/<pkg>` virtual-store layout). Note this
+    //     rule has NO `exclude`; `runPipeline`'s per-step gating already
+    //     no-ops the JSX/source/console-pipe steps for these built files, so
+    //     only steps 4 and 5 actually fire here.
+    compiler.options.module.rules.push({
+      test: /\.[cm]?jsx?$/,
+      include:
+        /node_modules[\\/](\.pnpm[\\/][^\\/]+[\\/]node_modules[\\/])?@tanstack[\\/](devtools|event-bus)/,
+      enforce: 'pre',
+      use: [{ loader: loaderPath, options: { config: args } }],
+    })
+
     // Server features are dev-only.
     if (!isDev) return
 
