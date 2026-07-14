@@ -4,6 +4,7 @@ import {
   detectDevtoolsFile,
   enhanceConsoleLog,
   generateConsolePipeCode,
+  getDevServerOrigin,
   getDevtoolsConnection,
   injectRuntimeBridge,
   removeDevtools,
@@ -11,6 +12,7 @@ import {
 } from '@tanstack/devtools-bundler-core'
 import type {
   ConsoleLevel,
+  DevServerOrigin,
   DevtoolsConnection,
   TanStackDevtoolsConfig,
 } from '@tanstack/devtools-bundler-core'
@@ -29,7 +31,18 @@ const DEFAULT_LEVELS: Array<ConsoleLevel> = [
 export interface PipelineCtx {
   mode: 'development' | 'production' | 'none'
   config: TanStackDevtoolsConfig
+  /**
+   * The event-bus connection (devtools client <-> event bus, default port 4206).
+   * Used ONLY for `__TANSTACK_DEVTOOLS_*` placeholder replacement.
+   */
   connection: DevtoolsConnection
+  /**
+   * The dev-server origin where the `__tsd/*` middleware endpoints are mounted.
+   * Used for the `/__tsd/open-source` URL baked into enhanced logs and the
+   * SSR-side `/__tsd/console-pipe/server` POST target. Falls back to
+   * `connection` when absent (e.g. in unit tests).
+   */
+  devServer?: DevServerOrigin
   target: string
 }
 
@@ -38,7 +51,7 @@ export function runPipeline(
   id: string,
   ctx: PipelineCtx,
 ): string {
-  const { mode, config, connection, target } = ctx
+  const { mode, config, connection, devServer, target } = ctx
   const isDev = mode === 'development'
   const filePath = id.split('?')[0] ?? id
   const excluded = EXCLUDE.test(id)
@@ -59,8 +72,14 @@ export function runPipeline(
 
   // 2. enhanced console logs (dev, contains console., not excluded)
   // enhanceConsoleLog returns `{ code, map } | undefined` (verified against core).
+  // The port here builds the absolute `/__tsd/open-source` URL, which is served
+  // by the DEV SERVER middleware — use the dev-server port, not the event bus.
   if (isDev && logsEnabled && !excluded && result.includes('console.')) {
-    const enhanced = enhanceConsoleLog(result, id, connection.port)
+    const enhanced = enhanceConsoleLog(
+      result,
+      id,
+      devServer?.port ?? connection.port,
+    )
     if (enhanced) result = enhanced.code
   }
 
@@ -79,7 +98,11 @@ export function runPipeline(
       result.includes('createRoot') ||
       (result.includes('solid-js/web') && result.includes('render('))
     if (isRootEntry) {
-      const serverUrl = `${connection.protocol}://${connection.host}:${connection.port}`
+      // The SSR runtime POSTs to `${serverUrl}/__tsd/console-pipe/server`, an
+      // endpoint mounted on the DEV SERVER — use the dev-server origin, not the
+      // event bus. Falls back to the connection origin when absent (unit tests).
+      const origin = devServer ?? connection
+      const serverUrl = `${origin.protocol}://${origin.host}:${origin.port}`
       result = `${generateConsolePipeCode(levels, serverUrl)}\n${result}`
     }
   }
@@ -141,6 +164,7 @@ export default function tanstackDevtoolsLoader(
     mode: this.mode ?? 'development',
     config: opts.config ?? {},
     connection: getDevtoolsConnection(),
+    devServer: getDevServerOrigin() ?? undefined,
     target,
   })
 }
