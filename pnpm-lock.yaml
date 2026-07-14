@@ -1628,6 +1628,9 @@ importers:
 
   packages/devtools-rspack:
     dependencies:
+      '@rspack/core':
+        specifier: ^1.0.0
+        version: 1.7.12
       '@tanstack/devtools-bundler-core':
         specifier: workspace:*
         version: link:../devtools-bundler-core
@@ -1641,9 +1644,6 @@ importers:
         specifier: ^5.6.2
         version: 5.6.2
     devDependencies:
-      '@rspack/core':
-        specifier: ^1.0.0
-        version: 1.7.12
       happy-dom:
         specifier: ^20.0.0
         version: 20.9.0
