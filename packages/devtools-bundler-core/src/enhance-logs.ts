@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { normalizePath } from './normalize-path'
 import MagicString from 'magic-string'
 import { parseSync } from 'oxc-parser'
+import { normalizePath } from './normalize-path'
 import { createLocMapper } from './offset-to-loc'
 import { walk } from './ast-utils'
 

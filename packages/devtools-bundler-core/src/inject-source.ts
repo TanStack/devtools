@@ -1,6 +1,6 @@
-import { normalizePath } from './normalize-path'
 import MagicString from 'magic-string'
 import { parseSync } from 'oxc-parser'
+import { normalizePath } from './normalize-path'
 import { createLocMapper } from './offset-to-loc'
 import { matcher } from './matcher'
 import { forEachChild } from './ast-utils'

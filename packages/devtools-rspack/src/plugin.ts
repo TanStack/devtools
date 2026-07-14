@@ -98,8 +98,12 @@ export class TanStackDevtoolsRspackPlugin {
     const levels = args.consolePiping?.levels ?? DEFAULT_LEVELS
     const editor: EditorConfig = args.editor ?? DEFAULT_EDITOR_CONFIG
 
-    // 2. wire package-manager + package.json events (Vite event-client-setup analog)
-    this.wirePackageManager(compiler, logging)
+    // 2. wire package-manager + package.json events (Vite event-client-setup analog).
+    //    Guarded like Vite's `event-client-setup` sub-plugin so CI runs don't
+    //    trigger `emitOutdatedDeps()` (which may spawn a package-manager subprocess).
+    if (!process.env.CI && process.env.NODE_ENV === 'development') {
+      this.wirePackageManager(compiler, logging)
+    }
 
     // 3. mount __tsd/* endpoints on the dev server (Vite custom-server analog).
     //    The event bus is started lazily here (rather than in `apply`) so unit

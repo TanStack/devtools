@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
-  getDevtoolsConnection, setDevtoolsConnection,
-  getDevtoolsFileId, setDevtoolsFileId,
+  getDevtoolsConnection, getDevtoolsFileId,
+  setDevtoolsConnection, setDevtoolsFileId,
 } from './connection'
 
 describe('connection singleton', () => {
