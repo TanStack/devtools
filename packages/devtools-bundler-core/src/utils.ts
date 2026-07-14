@@ -1,10 +1,11 @@
 import fs from 'node:fs/promises'
-import { normalizePath } from 'vite'
-import type { Connect } from 'vite'
+import { normalizePath } from './normalize-path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { PackageJson } from '@tanstack/devtools-client'
 
 type DevToolsRequestHandler = (data: any) => void
+
+type NextFunction = (err?: unknown) => void
 
 type DevToolsViteRequestOptions = {
   onOpenSource?: DevToolsRequestHandler
@@ -12,14 +13,14 @@ type DevToolsViteRequestOptions = {
   onServerConsolePipe?: (entries: Array<any>) => void
   onConsolePipeSSE?: (
     res: ServerResponse<IncomingMessage>,
-    req: Connect.IncomingMessage,
+    req: IncomingMessage,
   ) => void
 }
 
-export const handleDevToolsViteRequest = (
-  req: Connect.IncomingMessage,
+export const handleDevToolsRequest = (
+  req: IncomingMessage & { url?: string },
   res: ServerResponse<IncomingMessage>,
-  next: Connect.NextFunction,
+  next: NextFunction,
   cbOrOptions: DevToolsRequestHandler | DevToolsViteRequestOptions,
 ) => {
   // Normalize to options object for backward compatibility

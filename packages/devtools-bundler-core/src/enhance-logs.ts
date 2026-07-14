@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { normalizePath } from 'vite'
+import { normalizePath } from './normalize-path'
 import MagicString from 'magic-string'
 import { parseSync } from 'oxc-parser'
 import { createLocMapper } from './offset-to-loc'
