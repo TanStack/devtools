@@ -42,4 +42,47 @@ describe('runPipeline', () => {
     const out = runPipeline(code, '/proj/node_modules/pkg/a.tsx', dev())
     expect(out).not.toContain('data-tsd-source')
   })
+
+  // Port-routing regression tests: the `/__tsd/*` endpoints are mounted on the
+  // DEV SERVER, so enhanced-log / console-pipe URLs must target the dev-server
+  // origin, while the `__TANSTACK_DEVTOOLS_*` placeholders must use the
+  // event-bus connection. These must fail if the two ports were ever crossed.
+  it('enhanced-log URL uses the dev-server port, not the event-bus port', () => {
+    const out = runPipeline(
+      'console.log("x")',
+      '/proj/src/b.ts',
+      dev({
+        devServer: { port: 8080, host: 'localhost', protocol: 'http' },
+        connection: { port: 4206, host: 'localhost', protocol: 'http' },
+      }),
+    )
+    expect(out).toContain('localhost:8080')
+    expect(out).not.toContain('localhost:4206')
+  })
+
+  it('console-pipe SSR target uses the dev-server origin, not the event bus', () => {
+    const out = runPipeline(
+      'createRoot(document.getElementById("root"))',
+      '/proj/src/main.tsx',
+      dev({
+        devServer: { port: 8080, host: 'localhost', protocol: 'http' },
+        connection: { port: 4206, host: 'localhost', protocol: 'http' },
+      }),
+    )
+    expect(out).toContain('localhost:8080')
+    expect(out).not.toContain(':4206')
+  })
+
+  it('connection placeholders use the event-bus connection, not the dev-server origin', () => {
+    const out = runPipeline(
+      'const p = __TANSTACK_DEVTOOLS_PORT__',
+      '/proj/node_modules/@tanstack/devtools/x.js',
+      dev({
+        devServer: { port: 8080, host: 'localhost', protocol: 'http' },
+        connection: { port: 4206, host: 'localhost', protocol: 'http' },
+      }),
+    )
+    expect(out).toContain('4206')
+    expect(out).not.toContain('8080')
+  })
 })

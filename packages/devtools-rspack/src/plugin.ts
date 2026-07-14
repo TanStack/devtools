@@ -91,9 +91,12 @@ export class TanStackDevtoolsRspackPlugin {
     //     consumer whose install resolves these packages under
     //     `node_modules` (flat npm/yarn installs, or pnpm's nested
     //     `.pnpm/<pkg>/node_modules/<pkg>` virtual-store layout). Note this
-    //     rule has NO `exclude`; `runPipeline`'s per-step gating already
-    //     no-ops the JSX/source/console-pipe steps for these built files, so
-    //     only steps 4 and 5 actually fire here.
+    //     rule has NO `exclude`. Within `runPipeline`, steps 4 (connection
+    //     placeholders) and 5 (runtime-bridge injection) are the only ones that
+    //     produce an effect here; step 6 (`detectDevtoolsFile`) also runs but
+    //     no-ops on these built package files, while steps 1-3 are
+    //     excluded-gated (skipped for `node_modules`) and step 7 is
+    //     production-only.
     compiler.options.module.rules.push({
       test: /\.[cm]?jsx?$/,
       include:
@@ -119,6 +122,28 @@ export class TanStackDevtoolsRspackPlugin {
     const consolePipeEnabled = args.consolePiping?.enabled ?? true
     const levels = args.consolePiping?.levels ?? DEFAULT_LEVELS
     const editor: EditorConfig = args.editor ?? DEFAULT_EDITOR_CONFIG
+
+    // Resolve the event-bus connection (devtools client <-> event bus).
+    // `host` honors a user-supplied `eventBusConfig.host` and is NOT hardcoded.
+    // Protocol is always 'http': unlike Vite (which can piggyback its own https
+    // server), the rspack event bus is a standalone plain-http server on
+    // localhost, so 'http' is correct here — this is not a hardcoding bug.
+    const preferredPort = args.eventBusConfig?.port ?? 4206
+    const busHost = args.eventBusConfig?.host ?? 'localhost'
+
+    // Vite `await`s the bound port before any transform runs; rspack's `apply`
+    // is synchronous and cannot await, so record the connection EAGERLY (before
+    // any compilation transform reads it via `getDevtoolsConnection`) with the
+    // preferred port/host. This bakes a custom `eventBusConfig.port`/host into
+    // the loader's placeholder replacement for the common case. The actual
+    // bound port is refined once `bus.start()` resolves (covers EADDRINUSE).
+    if (serverBusEnabled) {
+      setDevtoolsConnection({
+        port: preferredPort,
+        host: busHost,
+        protocol: 'http',
+      })
+    }
 
     // 2. wire package-manager + package.json events (Vite event-client-setup analog).
     //    Guarded like Vite's `event-client-setup` sub-plugin so CI runs don't
@@ -165,19 +190,31 @@ export class TanStackDevtoolsRspackPlugin {
         protocol: 'http',
       })
 
-      // Start the event bus once and record the resolved connection for the
-      // loader's placeholder replacement (devtools client <-> event bus).
+      // Start the event bus once (deferred here rather than in `apply` so unit
+      // tests that never boot a dev server don't open real sockets). The
+      // connection was already set eagerly in the dev block above; here we
+      // refine it to the actual bound port and surface any start failure.
       if (serverBusEnabled && !busStarted) {
         busStarted = true
         const bus = new ServerEventBus({
           ...args.eventBusConfig,
-          port: args.eventBusConfig?.port ?? 4206,
-          host: 'localhost',
+          port: preferredPort,
+          host: busHost,
         })
         // start() handles EADDRINUSE and returns the actual bound port.
-        void bus.start().then((port) => {
-          setDevtoolsConnection({ port, host: 'localhost', protocol: 'http' })
-        })
+        bus
+          .start()
+          .then((port) =>
+            setDevtoolsConnection({ port, host: busHost, protocol: 'http' }),
+          )
+          .catch((err) =>
+            console.error(
+              chalk.red(
+                '[@tanstack/devtools-rspack] event bus failed to start:',
+              ),
+              err,
+            ),
+          )
       }
 
       const base = prev ? prev(middlewares, server) : middlewares
@@ -270,9 +307,27 @@ export class TanStackDevtoolsRspackPlugin {
       if (!packageJson) void refresh()
     })
 
-    // Re-read package.json on rebuilds (Vite handleHotUpdate analog).
+    // Re-read package.json on rebuilds, but ONLY when package.json actually
+    // changed (Vite's handleHotUpdate analog gates on
+    // `file.endsWith('package.json')`). `refresh()` runs `emitOutdatedDeps()`,
+    // which spawns a `pnpm/npm outdated` subprocess, so running it on every
+    // rebuild would be wasteful. In rspack/webpack the changed paths for a
+    // rebuild are on `compiler.modifiedFiles` (a Set of absolute paths).
     compiler.hooks.watchRun?.tapPromise?.(PLUGIN, async () => {
-      await refresh()
+      const modified: Set<string> | undefined = compiler.modifiedFiles
+      // `modifiedFiles` is undefined on the first watch run — prime deps once.
+      if (!modified) {
+        if (!packageJson) await refresh()
+        return
+      }
+      // Normalize `\` -> `/` so the basename check is separator-agnostic.
+      const packageJsonChanged = [...modified].some((file) => {
+        const normalized = file.replace(/\\/g, '/')
+        return (
+          normalized.endsWith('/package.json') || normalized === 'package.json'
+        )
+      })
+      if (packageJsonChanged) await refresh()
     })
 
     // Whenever a client mounts, send it the current package info.
