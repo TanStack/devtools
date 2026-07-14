@@ -55,9 +55,9 @@ describe('TanStackDevtoolsRspackPlugin', () => {
       '/repo/node_modules/.pnpm/@tanstack+devtools-event-bus@1.0.0/node_modules/@tanstack/devtools-event-bus/dist/client/client.js'
     expect(scopedRule.include.test(nodeModulesSample)).toBe(true)
     expect(scopedRule.include.test(pnpmNestedSample)).toBe(true)
-    expect(
-      String(scopedRule.use?.[0]?.loader ?? scopedRule.loader),
-    ).toContain('loader')
+    expect(String(scopedRule.use?.[0]?.loader ?? scopedRule.loader)).toContain(
+      'loader',
+    )
 
     // The general rule (the other one) still excludes ordinary node_modules
     // code and processes ordinary app source.

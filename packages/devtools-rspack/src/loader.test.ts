@@ -3,8 +3,12 @@ import { runPipeline } from './loader'
 
 const dev = (over = {}) => ({
   mode: 'development' as const,
-  config: { injectSource: { enabled: true }, enhancedLogs: { enabled: true },
-    consolePiping: { enabled: true }, removeDevtoolsOnBuild: true },
+  config: {
+    injectSource: { enabled: true },
+    enhancedLogs: { enabled: true },
+    consolePiping: { enabled: true },
+    removeDevtoolsOnBuild: true,
+  },
   connection: { port: 4206, host: 'localhost', protocol: 'http' as const },
   target: 'web',
   ...over,
@@ -12,7 +16,11 @@ const dev = (over = {}) => ({
 
 describe('runPipeline', () => {
   it('injects data-tsd-source into JSX in dev', () => {
-    const out = runPipeline('const A = () => <div>hi</div>', '/proj/src/a.tsx', dev())
+    const out = runPipeline(
+      'const A = () => <div>hi</div>',
+      '/proj/src/a.tsx',
+      dev(),
+    )
     expect(out).toContain('data-tsd-source')
   })
 
@@ -22,17 +30,24 @@ describe('runPipeline', () => {
   })
 
   it('replaces connection placeholders', () => {
-    const code = 'const p = __TANSTACK_DEVTOOLS_PORT__; const h = __TANSTACK_DEVTOOLS_HOST__'
-    const out = runPipeline(code, '/proj/node_modules/@tanstack/devtools/x.js',
-      dev({ connection: { port: 9000, host: 'localhost', protocol: 'http' } }))
+    const code =
+      'const p = __TANSTACK_DEVTOOLS_PORT__; const h = __TANSTACK_DEVTOOLS_HOST__'
+    const out = runPipeline(
+      code,
+      '/proj/node_modules/@tanstack/devtools/x.js',
+      dev({ connection: { port: 9000, host: 'localhost', protocol: 'http' } }),
+    )
     expect(out).toContain('9000')
     expect(out).toContain('"localhost"')
   })
 
   it('strips devtools code in production builds', () => {
-    const code = 'import { TanStackDevtools } from "@tanstack/react-devtools"\nconst App = () => <TanStackDevtools />'
-    const out = runPipeline(code, '/proj/src/main.tsx',
-      { ...dev(), mode: 'production' })
+    const code =
+      'import { TanStackDevtools } from "@tanstack/react-devtools"\nconst App = () => <TanStackDevtools />'
+    const out = runPipeline(code, '/proj/src/main.tsx', {
+      ...dev(),
+      mode: 'production',
+    })
     expect(out).not.toContain('TanStackDevtools')
     expect(out).not.toContain('@tanstack/react-devtools')
   })

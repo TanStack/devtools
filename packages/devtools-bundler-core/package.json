@@ -4,21 +4,42 @@
   "description": "Framework-agnostic core shared by TanStack devtools bundler plugins",
   "author": "Tanner Linsley",
   "license": "MIT",
-  "repository": { "type": "git", "url": "git+https://github.com/TanStack/devtools.git", "directory": "packages/devtools-bundler-core" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TanStack/devtools.git",
+    "directory": "packages/devtools-bundler-core"
+  },
   "homepage": "https://tanstack.com/devtools",
-  "bugs": { "url": "https://github.com/TanStack/devtools/issues" },
-  "funding": { "type": "github", "url": "https://github.com/sponsors/tannerlinsley" },
-  "keywords": ["devtools"],
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "devtools"
+  ],
   "type": "module",
   "types": "dist/esm/index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
-    ".": { "import": { "types": "./dist/esm/index.d.ts", "default": "./dist/esm/index.js" } },
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
-  "engines": { "node": ">=18" },
-  "files": ["dist/", "src"],
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist/",
+    "src"
+  ],
   "scripts": {
     "clean": "premove ./build ./dist",
     "lint:fix": "eslint ./src --fix",

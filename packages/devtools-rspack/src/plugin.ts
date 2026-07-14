@@ -251,7 +251,10 @@ export class TanStackDevtoolsRspackPlugin {
                       logMethod(prefix, ...cleanedArgs)
                     }
                   },
-                  onConsolePipeSSE: (res: ServerResponse, req: IncomingMessage) => {
+                  onConsolePipeSSE: (
+                    res: ServerResponse,
+                    req: IncomingMessage,
+                  ) => {
                     res.setHeader('Content-Type', 'text/event-stream')
                     res.setHeader('Cache-Control', 'no-cache')
                     res.setHeader('Connection', 'keep-alive')
@@ -295,7 +298,8 @@ export class TanStackDevtoolsRspackPlugin {
 
   private wirePackageManager(compiler: any, logging: boolean) {
     let packageJson: PackageJson | null = null
-    let outdatedDeps: ReturnType<typeof emitOutdatedDeps> = Promise.resolve(null)
+    let outdatedDeps: ReturnType<typeof emitOutdatedDeps> =
+      Promise.resolve(null)
 
     const refresh = async () => {
       packageJson = await readPackageJson()
@@ -401,8 +405,13 @@ export class TanStackDevtoolsRspackPlugin {
     })
 
     devtoolsEventClient.on('bump-package-version', async (event) => {
-      const { packageName, devtoolsPackage, pluginName, minVersion, pluginImport } =
-        event.payload
+      const {
+        packageName,
+        devtoolsPackage,
+        pluginName,
+        minVersion,
+        pluginImport,
+      } = event.payload
       if (logging) {
         console.log(
           chalk.blueBright(
