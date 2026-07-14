@@ -327,7 +327,12 @@ export class TanStackDevtoolsRspackPlugin {
           normalized.endsWith('/package.json') || normalized === 'package.json'
         )
       })
-      if (packageJsonChanged) await refresh()
+      if (packageJsonChanged) {
+        await refresh()
+        // Push the fresh package.json to connected clients (Vite's
+        // handleHotUpdate emits `package-json-read` on a package.json change).
+        devtoolsEventClient.emit('package-json-read', { packageJson })
+      }
     })
 
     // Whenever a client mounts, send it the current package info.
