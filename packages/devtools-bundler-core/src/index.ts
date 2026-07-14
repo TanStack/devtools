@@ -1,6 +1,7 @@
 export * from './normalize-path'
 export * from './types'
 export * from './ast-utils'
+export * from './connection'
 export * from './devtools-packages'
 export * from './editor'
 export * from './enhance-logs'
