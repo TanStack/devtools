@@ -1,7 +1,9 @@
 import { EventEmitter } from 'node:events'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { normalizePath } from 'vite'
-import { handleDevToolsViteRequest, parseOpenSourceParam } from '../src/utils'
+import {
+  handleDevToolsRequest,
+  normalizePath,
+} from '@tanstack/devtools-bundler-core'
 
 function createMockReq(url?: string) {
   const emitter = new EventEmitter() as unknown as EventEmitter & {
@@ -20,7 +22,7 @@ function createMockRes() {
   }
 }
 
-describe('handleDevToolsViteRequest', () => {
+describe('handleDevToolsRequest', () => {
   let next: ReturnType<typeof vi.fn>
   let cb: ReturnType<typeof vi.fn>
 
@@ -33,7 +35,7 @@ describe('handleDevToolsViteRequest', () => {
     const req = createMockReq('/some/other/path')
     const res = createMockRes()
 
-    handleDevToolsViteRequest(req, res as any, next as any, cb as any)
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     expect(next).toHaveBeenCalledTimes(1)
     expect(cb).not.toHaveBeenCalled()
@@ -51,7 +53,7 @@ describe('handleDevToolsViteRequest', () => {
     const req = createMockReq(url)
     const res = createMockRes()
 
-    handleDevToolsViteRequest(req, res as any, next as any, cb as any)
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     // callback payload
     expect(cb).toHaveBeenCalledTimes(1)
@@ -79,7 +81,7 @@ describe('handleDevToolsViteRequest', () => {
     const req = createMockReq('/__tsd/open-source')
     const res = createMockRes()
 
-    handleDevToolsViteRequest(req, res as any, next as any, cb as any)
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     expect(cb).not.toHaveBeenCalled()
     expect(res.setHeader).not.toHaveBeenCalled()
@@ -93,7 +95,7 @@ describe('handleDevToolsViteRequest', () => {
     const req = createMockReq(`/__tsd/open-source?source=${malformed}`)
     const res = createMockRes()
 
-    handleDevToolsViteRequest(req, res as any, next as any, cb as any)
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     expect(cb).not.toHaveBeenCalled()
     expect(res.setHeader).not.toHaveBeenCalled()
@@ -106,7 +108,7 @@ describe('handleDevToolsViteRequest', () => {
     const req = createMockReq('/__tsd/some-endpoint')
     const res = createMockRes()
 
-    handleDevToolsViteRequest(req, res as any, next as any, cb as any)
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     // simulate streaming body
     const chunks = [Buffer.from('{"foo":'), Buffer.from('1}')]
@@ -128,26 +130,12 @@ describe('handleDevToolsViteRequest', () => {
     const req = createMockReq('/__tsd/another')
     const res = createMockRes()
 
-    handleDevToolsViteRequest(req, res as any, next as any, cb as any)
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
     req.emit('data', Buffer.from('{ invalid json'))
     req.emit('end')
 
     expect(cb).not.toHaveBeenCalled()
     expect(res.write).toHaveBeenCalledWith('OK')
     expect(res.end).toHaveBeenCalled()
-  })
-})
-
-describe('parseOpenSourceParam', () => {
-  it('parses simple filename foo.tsx with line/column', () => {
-    const input = 'foo.tsx:10:20'
-    const parsed = parseOpenSourceParam(input)
-    expect(parsed).toEqual({ file: 'foo.tsx', line: '10', column: '20' })
-  })
-
-  it('parses filename containing colon bar:baz.tsx with line/column', () => {
-    const input = 'bar:baz.tsx:3:7'
-    const parsed = parseOpenSourceParam(input)
-    expect(parsed).toEqual({ file: 'bar:baz.tsx', line: '3', column: '7' })
   })
 })

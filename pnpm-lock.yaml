@@ -1650,6 +1650,9 @@ importers:
 
   packages/devtools-vite:
     dependencies:
+      '@tanstack/devtools-bundler-core':
+        specifier: workspace:*
+        version: link:../devtools-bundler-core
       '@tanstack/devtools-client':
         specifier: workspace:*
         version: link:../devtools-client
@@ -1659,25 +1662,10 @@ importers:
       chalk:
         specifier: ^5.6.2
         version: 5.6.2
-      launch-editor:
-        specifier: ^2.11.1
-        version: 2.13.2
-      magic-string:
-        specifier: ^0.30.0
-        version: 0.30.21
-      oxc-parser:
-        specifier: ^0.120.0
-        version: 0.120.0(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
-      picomatch:
-        specifier: ^4.0.3
-        version: 4.0.4
       vite:
         specifier: ^6.0.0 || ^7.0.0 || ^8.0.0
         version: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
     devDependencies:
-      '@types/picomatch':
-        specifier: ^4.0.2
-        version: 4.0.3
       happy-dom:
         specifier: ^20.0.0
         version: 20.9.0

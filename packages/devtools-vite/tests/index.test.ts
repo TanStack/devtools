@@ -1,15 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { devtools } from '../src/plugin'
 import type { Plugin } from 'vite'
-import type * as Utils from '../src/utils'
+import type * as Core from '@tanstack/devtools-bundler-core'
 
 let capturedOnConsolePipe: ((entries: Array<any>) => void) | undefined
 
-vi.mock('../src/utils', async (importOriginal) => {
-  const actual = await importOriginal<typeof Utils>()
+vi.mock('@tanstack/devtools-bundler-core', async (importOriginal) => {
+  const actual = await importOriginal<typeof Core>()
   return {
     ...actual,
-    handleDevToolsViteRequest: vi.fn(
+    handleDevToolsRequest: vi.fn(
       (_req: any, _res: any, _next: any, handlers: any) => {
         if (typeof handlers === 'object' && handlers?.onConsolePipe) {
           capturedOnConsolePipe = handlers.onConsolePipe
