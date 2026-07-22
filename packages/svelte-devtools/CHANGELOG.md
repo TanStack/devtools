@@ -1,5 +1,12 @@
 # @tanstack/svelte-devtools
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [[`d061f0c`](https://github.com/TanStack/devtools/commit/d061f0cc3cd64101edd176ac097e2f0048035ac5)]:
+  - @tanstack/devtools@0.13.0
+
 ## 0.1.1
 
 ### Patch Changes
