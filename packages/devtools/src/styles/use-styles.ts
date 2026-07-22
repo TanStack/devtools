@@ -476,6 +476,17 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         outline: 2px solid ${t(colors.black, colors.black)};
       }
     `,
+    mainCloseBtnFloating: css`
+      /* Floating placement is driven by inline left/top, so don't animate
+         position (would fight the drag/throw rAF loop) — only opacity. */
+      transition: opacity 0.25s ease-out;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      &:active {
+        cursor: grabbing;
+      }
+    `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
       const base = css`
         ${position === 'top-left' ? `top: ${size[2]}; left: ${size[2]};` : ''}

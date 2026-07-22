@@ -161,24 +161,36 @@ export const SettingsTab = () => {
           Adjust the position of the trigger button and devtools panel.
         </SectionDescription>
         <div class={styles().settingsGroup}>
+          <Select
+            label="Trigger Mode"
+            description="Fixed anchors the trigger to a corner; Floating lets you drag it anywhere (and throw it)"
+            value={settings().triggerMode}
+            options={[
+              { label: 'Fixed', value: 'fixed' },
+              { label: 'Floating', value: 'floating' },
+            ]}
+            onChange={(value) => setSettings({ triggerMode: value })}
+          />
           <div class={styles().settingRow}>
-            <Select
-              label="Trigger Position"
-              options={[
-                { label: 'Bottom Right', value: 'bottom-right' },
-                { label: 'Bottom Left', value: 'bottom-left' },
-                { label: 'Top Right', value: 'top-right' },
-                { label: 'Top Left', value: 'top-left' },
-                { label: 'Middle Right', value: 'middle-right' },
-                { label: 'Middle Left', value: 'middle-left' },
-              ]}
-              value={settings().position}
-              onChange={(value) =>
-                setSettings({
-                  position: value,
-                })
-              }
-            />
+            <Show when={settings().triggerMode === 'fixed'}>
+              <Select
+                label="Trigger Position"
+                options={[
+                  { label: 'Bottom Right', value: 'bottom-right' },
+                  { label: 'Bottom Left', value: 'bottom-left' },
+                  { label: 'Top Right', value: 'top-right' },
+                  { label: 'Top Left', value: 'top-left' },
+                  { label: 'Middle Right', value: 'middle-right' },
+                  { label: 'Middle Left', value: 'middle-left' },
+                ]}
+                value={settings().position}
+                onChange={(value) =>
+                  setSettings({
+                    position: value,
+                  })
+                }
+              />
+            </Show>
             <Select
               label="Panel Position"
               value={settings().panelLocation}

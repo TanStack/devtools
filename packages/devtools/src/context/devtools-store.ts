@@ -21,6 +21,10 @@ type TriggerPosition =
   | 'middle-left'
   | 'middle-right'
 
+type TriggerMode = 'fixed' | 'floating'
+type TriggerCoords = { x: number; y: number }
+export type { TriggerPosition, TriggerMode, TriggerCoords }
+
 type TriggerProps = {
   theme: TanStackDevtoolsTheme
 }
@@ -38,10 +42,24 @@ export type DevtoolsStore = {
      */
     hideUntilHover: boolean
     /**
-     * The position of the trigger button
+     * The position of the trigger button (used when `triggerMode` is "fixed")
      * @default "bottom-right"
      */
     position: TriggerPosition
+
+    /**
+     * How the trigger is placed on screen.
+     * - "fixed": anchored to one of the `position` corners/edges
+     * - "floating": freely draggable, position persisted in local storage
+     * @default "fixed"
+     */
+    triggerMode: TriggerMode
+    /**
+     * The persisted top-left coordinates (in px) of the floating trigger.
+     * Only used when `triggerMode` is "floating".
+     * @default undefined
+     */
+    triggerCoords?: TriggerCoords
 
     /**
      * The location of the panel once it is open
@@ -106,6 +124,8 @@ export const initialState: DevtoolsStore = {
     defaultOpen: false,
     hideUntilHover: false,
     position: 'bottom-right',
+    triggerMode: 'fixed',
+    triggerCoords: undefined,
     panelLocation: 'bottom',
     openHotkey: ['Control', '~'],
     inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
