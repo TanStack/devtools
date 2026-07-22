@@ -131,7 +131,7 @@ export function removeDevtools(code: string, id: string) {
       let end = node.end
       if (code[end] === '\n') end++
       /**
-       * Devtools nodes can be removed safely when nested in JSX. 
+       * Devtools nodes can be removed safely when nested in JSX.
        * In all other contexts, replace them with `null` to avoid leaving invalid syntax.
        */
       if (
