@@ -187,7 +187,8 @@ export const Trigger = (props: {
     if (!dragging) return
     dragging = false
     const el = buttonRef()
-    if (el?.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId)
+    if (el?.hasPointerCapture(e.pointerId))
+      el.releasePointerCapture(e.pointerId)
     // If the pointer sat still before release, the last flick velocity is
     // stale — don't launch a throw the user didn't actually make.
     if (e.timeStamp - lastT > 50) {
