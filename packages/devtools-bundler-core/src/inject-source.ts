@@ -196,7 +196,10 @@ export function addSourceToJsx(
   // Normalize filePath before stripping cwd: under Rspack on Windows the module
   // id has backslashes, so comparing against the forward-slashed cwd would fail
   // to strip and leak an absolute path into the injected data-tsd-source attr.
-  const location = normalizePath(filePath).replace(normalizePath(process.cwd()), '')
+  const location = normalizePath(filePath).replace(
+    normalizePath(process.cwd()),
+    '',
+  )
 
   const fileIgnored = matcher(ignore.files || [], location)
   if (fileIgnored) return

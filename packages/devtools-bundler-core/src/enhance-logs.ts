@@ -14,7 +14,10 @@ export function enhanceConsoleLog(code: string, id: string, port: number) {
   // Normalize filePath before stripping cwd: under Rspack on Windows the module
   // id has backslashes, so comparing against the forward-slashed cwd would fail
   // to strip and leak an absolute path into the "Go to Source" link.
-  const location = normalizePath(filePath).replace(normalizePath(process.cwd()), '')
+  const location = normalizePath(filePath).replace(
+    normalizePath(process.cwd()),
+    '',
+  )
 
   try {
     const result = parseSync(filePath, code, {
