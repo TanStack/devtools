@@ -6,7 +6,7 @@ function Root() {
   return (
     <>
       <App />
-      <TanStackDevtools />
+      <TanStackDevtools eventBusConfig={{ connectToServerBus: true }} />
     </>
   )
 }

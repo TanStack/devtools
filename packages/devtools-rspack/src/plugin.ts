@@ -145,10 +145,26 @@ export class TanStackDevtoolsRspackPlugin {
       })
     }
 
+    // Seed the shared in-process event target BEFORE any `devtoolsEventClient`
+    // listeners are registered. In Node there is no `window`, so the client
+    // falls back to `globalThis.__TANSTACK_EVENT_TARGET__`; if that is still
+    // unset when `wirePackageManager` runs, each `.on()` binds to a throwaway
+    // `EventTarget` and never receives the events the (later-constructed)
+    // `ServerEventBus` dispatches — which is why the marketplace never gets a
+    // `package-json-read` reply. The bus constructor reuses an existing global
+    // target, so seeding it here makes client + bus share one target.
+    if (serverBusEnabled && !globalThis.__TANSTACK_EVENT_TARGET__) {
+      globalThis.__TANSTACK_EVENT_TARGET__ = new EventTarget()
+    }
+
     // 2. wire package-manager + package.json events (Vite event-client-setup analog).
+    //    We're already past the `if (!isDev) return` guard above, so only the CI
+    //    check is needed here — gating on `process.env.NODE_ENV` instead was the
+    //    bug: it isn't set to 'development' yet at `apply()` time under
+    //    `rspack serve`, so the marketplace wiring was silently skipped.
     //    Guarded like Vite's `event-client-setup` sub-plugin so CI runs don't
     //    trigger `emitOutdatedDeps()` (which may spawn a package-manager subprocess).
-    if (!process.env.CI && process.env.NODE_ENV === 'development') {
+    if (!process.env.CI) {
       this.wirePackageManager(compiler, logging)
     }
 
