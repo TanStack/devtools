@@ -1,5 +1,12 @@
 # @tanstack/devtools-rspack
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [[`f4c35d2`](https://github.com/TanStack/devtools/commit/f4c35d29be14c88ff741a7104bf57900fae2299d)]:
+  - @tanstack/devtools-bundler-core@0.1.1
+
 ## 0.1.0
 
 ### Minor Changes

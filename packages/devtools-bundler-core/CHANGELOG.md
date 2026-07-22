@@ -1,5 +1,11 @@
 # @tanstack/devtools-bundler-core
 
+## 0.1.1
+
+### Patch Changes
+
+- [#480](https://github.com/TanStack/devtools/pull/480) [`f4c35d2`](https://github.com/TanStack/devtools/commit/f4c35d29be14c88ff741a7104bf57900fae2299d) - Fix devtools JSX removal logic.
+
 ## 0.1.0
 
 ### Minor Changes

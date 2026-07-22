@@ -685,7 +685,7 @@ importers:
         specifier: 0.6.0
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       sonda:
         specifier: 0.9.0
@@ -766,7 +766,7 @@ importers:
         version: 19.2.6(react@19.2.6)
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       '@types/react':
         specifier: ^19.2.0
@@ -821,7 +821,7 @@ importers:
         specifier: 0.6.0
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       '@tanstack/react-form-devtools':
         specifier: ^0.1.7
@@ -951,7 +951,7 @@ importers:
         specifier: latest
         version: link:../../../packages/event-bus-client
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -1043,7 +1043,7 @@ importers:
         version: 19.2.6(react@19.2.6)
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       '@types/node':
         specifier: ^22.15.2
@@ -1107,7 +1107,7 @@ importers:
         specifier: 0.6.0
         version: link:../../../packages/devtools-ui
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       '@types/react':
         specifier: ^19.2.0
@@ -1174,7 +1174,7 @@ importers:
         version: 6.1.1(typescript@5.9.3)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.0
@@ -1376,7 +1376,7 @@ importers:
         version: 1.9.12
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       vite:
         specifier: ^8.0.0
@@ -1410,7 +1410,7 @@ importers:
         version: 1.9.12
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       vite:
         specifier: ^8.0.0
@@ -1435,7 +1435,7 @@ importers:
         version: 1.9.12
     devDependencies:
       '@tanstack/devtools-vite':
-        specifier: 0.8.2
+        specifier: 0.8.3
         version: link:../../../packages/devtools-vite
       vite:
         specifier: ^8.0.0
