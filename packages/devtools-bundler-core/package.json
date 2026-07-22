@@ -1,13 +1,13 @@
 {
-  "name": "@tanstack/devtools-vite",
-  "version": "0.8.1",
-  "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
+  "name": "@tanstack/devtools-bundler-core",
+  "version": "0.0.1",
+  "description": "Framework-agnostic core shared by TanStack devtools bundler plugins",
   "author": "Tanner Linsley",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TanStack/devtools.git",
-    "directory": "packages/devtools-vite"
+    "directory": "packages/devtools-bundler-core"
   },
   "homepage": "https://tanstack.com/devtools",
   "bugs": {
@@ -21,7 +21,7 @@
     "devtools"
   ],
   "type": "module",
-  "types": "dist/esm//index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
@@ -32,18 +32,13 @@
     },
     "./package.json": "./package.json"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
   "files": [
     "dist/",
-    "src",
-    "skills",
-    "bin"
+    "src"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
@@ -55,16 +50,17 @@
     "test:build": "publint --strict",
     "build": "vite build"
   },
-  "peerDependencies": {
-    "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
-  },
   "dependencies": {
-    "@tanstack/devtools-bundler-core": "workspace:*",
     "@tanstack/devtools-client": "workspace:*",
     "@tanstack/devtools-event-bus": "workspace:*",
-    "chalk": "^5.6.2"
+    "chalk": "^5.6.2",
+    "launch-editor": "^2.11.1",
+    "magic-string": "^0.30.0",
+    "oxc-parser": "^0.120.0",
+    "picomatch": "^4.0.3"
   },
   "devDependencies": {
+    "@types/picomatch": "^4.0.2",
     "happy-dom": "^20.0.0"
   }
 }

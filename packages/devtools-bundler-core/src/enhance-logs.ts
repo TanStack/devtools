@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { normalizePath } from 'vite'
 import MagicString from 'magic-string'
 import { parseSync } from 'oxc-parser'
+import { normalizePath } from './normalize-path'
 import { createLocMapper } from './offset-to-loc'
 import { walk } from './ast-utils'
 
@@ -11,7 +11,13 @@ function escapeForStringLiteral(str: string): string {
 
 export function enhanceConsoleLog(code: string, id: string, port: number) {
   const filePath = id.split('?')[0]!
-  const location = filePath.replace(normalizePath(process.cwd()), '')
+  // Normalize filePath before stripping cwd: under Rspack on Windows the module
+  // id has backslashes, so comparing against the forward-slashed cwd would fail
+  // to strip and leak an absolute path into the "Go to Source" link.
+  const location = normalizePath(filePath).replace(
+    normalizePath(process.cwd()),
+    '',
+  )
 
   try {
     const result = parseSync(filePath, code, {

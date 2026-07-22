@@ -1,13 +1,13 @@
 {
-  "name": "@tanstack/devtools-vite",
-  "version": "0.8.1",
-  "description": "TanStack Vite plugin used to enhance the core devtools with additional functionalities",
+  "name": "@tanstack/devtools-rspack",
+  "version": "0.0.1",
+  "description": "TanStack Rspack plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TanStack/devtools.git",
-    "directory": "packages/devtools-vite"
+    "directory": "packages/devtools-rspack"
   },
   "homepage": "https://tanstack.com/devtools",
   "bugs": {
@@ -18,10 +18,11 @@
     "url": "https://github.com/sponsors/tannerlinsley"
   },
   "keywords": [
-    "devtools"
+    "devtools",
+    "rspack"
   ],
   "type": "module",
-  "types": "dist/esm//index.d.ts",
+  "types": "dist/esm/index.d.ts",
   "module": "dist/esm/index.js",
   "exports": {
     ".": {
@@ -32,18 +33,13 @@
     },
     "./package.json": "./package.json"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
   },
   "files": [
     "dist/",
-    "src",
-    "skills",
-    "bin"
+    "src"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
@@ -56,7 +52,7 @@
     "build": "vite build"
   },
   "peerDependencies": {
-    "vite": "^6.0.0 || ^7.0.0 || ^8.0.0"
+    "@rspack/core": "^1.0.0"
   },
   "dependencies": {
     "@tanstack/devtools-bundler-core": "workspace:*",
