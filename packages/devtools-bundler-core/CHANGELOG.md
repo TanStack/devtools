@@ -1,10 +1,10 @@
-# @tanstack/devtools-rspack
+# @tanstack/devtools-bundler-core
 
 ## 0.1.0
 
 ### Minor Changes
 
-- [#484](https://github.com/TanStack/devtools/pull/484) [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b) - Add `@tanstack/devtools-rspack` — Rspack plugin with 1:1 feature parity to `@tanstack/devtools-vite` (source injection, enhanced logs, console piping, devtools removal on build, editor integration, event bus, package manager).
+- [#484](https://github.com/TanStack/devtools/pull/484) [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b) - Introduce `@tanstack/devtools-bundler-core`, the framework-agnostic core (transforms, editor integration, package-manager, dev-state) shared by the TanStack devtools bundler plugins.
 
 ### Patch Changes
 
@@ -18,6 +18,3 @@
     `package-json-read`. Without this the plugin marketplace never populated under
     Rspack. Also gate the wiring on the compiler's `mode` (`isDev`) rather than
     `process.env.NODE_ENV`, which isn't set at `apply()` time under `rspack serve`.
-
-- Updated dependencies [[`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b), [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b)]:
-  - @tanstack/devtools-bundler-core@0.1.0

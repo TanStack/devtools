@@ -1,5 +1,14 @@
 # @tanstack/devtools-event-client
 
+## 0.8.2
+
+### Patch Changes
+
+- [#484](https://github.com/TanStack/devtools/pull/484) [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b) - Internal refactor: consume `@tanstack/devtools-bundler-core` for shared logic. No public API or behavior change.
+
+- Updated dependencies [[`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b), [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b)]:
+  - @tanstack/devtools-bundler-core@0.1.0
+
 ## 0.8.1
 
 ### Patch Changes
