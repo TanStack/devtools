@@ -29,10 +29,16 @@ The `config` object is mainly focused around user interaction with the devtools 
 { hideUntilHover: boolean }
 ```
 
-- `position` - The position of the TanStack devtools trigger
+- `position` - The position of the TanStack devtools trigger (used when `triggerMode` is `'fixed'`)
 
 ```ts
 { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right' }
+```
+
+- `triggerMode` - How the trigger is placed. `'fixed'` anchors it to `position`; `'floating'` lets you drag the trigger anywhere on screen (and throw it — it glides with momentum and springs back off the edges). The floating spot is persisted in local storage.
+
+```ts
+{ triggerMode: 'fixed' | 'floating' }
 ```
 
 - `panelLocation` - The location of the devtools panel
