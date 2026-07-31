@@ -67,6 +67,7 @@ export const Trigger = (props: {
       // static-flow position) and the hand-off to inline left/top is seamless.
       (!isFloating() || !coords()) &&
         styles().mainCloseBtnPosition(settings().position),
+      !settings().customTrigger && styles().mainCloseBtnDefault,
       styles().mainCloseBtnAnimation(props.isOpen(), settings().hideUntilHover),
       isFloating() && styles().mainCloseBtnFloating,
     )

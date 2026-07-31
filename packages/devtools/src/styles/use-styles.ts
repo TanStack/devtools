@@ -80,7 +80,7 @@ const sparkle = goober.keyframes`
 `
 
 const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
-  const { colors, font, size, border } = tokens
+  const { colors, font, size } = tokens
   const { fontFamily, size: fontSize } = font
   const css = goober.css
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
@@ -452,15 +452,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 0;
       font-size: ${font.size.xs};
       cursor: pointer;
-      transition: all 0.25s ease-out;
-      & > img {
-        width: 56px;
-        height: 56px;
-        transition: all 0.3s ease;
-        outline-offset: 2px;
-        border-radius: ${border.radius.full};
-        outline: 2px solid transparent;
-      }
+      transition: opacity 0.25s ease-out;
       &:hide-until-hover {
         opacity: 0;
         pointer-events: none;
@@ -471,8 +463,33 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         pointer-events: auto;
         visibility: visible;
       }
+    `,
+    mainCloseBtnDefault: css`
+      background: #eeebd4;
+      width: 56px;
+      height: 56px;
+      justify-content: center;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(17, 17, 17, 0.14);
+      transition:
+        opacity 0.25s ease-out,
+        background-color 0.2s ease-out,
+        box-shadow 0.2s ease-out;
+      & > img {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+        transition: all 0.3s ease;
+        outline-offset: 2px;
+        border-radius: 8px;
+        outline: 2px solid transparent;
+      }
+      &:hover {
+        background: #e5e0c5;
+        box-shadow: 0 3px 10px rgba(17, 17, 17, 0.18);
+      }
       & > img:focus-visible,
-      img:hover {
+      & > img:hover {
         outline: 2px solid ${t(colors.black, colors.black)};
       }
     `,
