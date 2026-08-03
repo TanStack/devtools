@@ -1,156 +1,81 @@
-import { For, Show, createEffect, createMemo, createSignal } from 'solid-js'
-import clsx from 'clsx'
-import { createDrawContext } from '../context/draw-context'
+import { For, Show, createEffect, createSignal } from 'solid-js'
 import { createPlugins, createTheme } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
-import { PLUGIN_CONTAINER_ID, PLUGIN_TITLE_CONTAINER_ID } from '../constants'
+import { PLUGIN_CONTAINER_ID } from '../constants'
 import { PluginMarketplace } from './plugin-marketplace'
 
 export const PluginsTab = (props: { isOpen: boolean }) => {
-  const { plugins, activePlugins, toggleActivePlugins } = createPlugins()
-  const { expanded, hoverUtils, animationMs, setForceExpand } =
-    createDrawContext()
+  const { plugins, activePlugins } = createPlugins()
   const [pluginRefs, setPluginRefs] = createSignal(
     new Map<string, HTMLDivElement>(),
   )
-  const [showMarketplace, setShowMarketplace] = createSignal(false)
-
-  const styles = createStyles()
-
   const { theme } = createTheme()
-
-  const hasPlugins = createMemo(
-    () => plugins()?.length && plugins()!.length > 0,
-  )
-
-  // Keep sidebar expanded when marketplace is shown
+  const styles = createStyles()
   createEffect(() => {
-    setForceExpand(showMarketplace())
-  })
-
-  createEffect(() => {
-    const currentActivePlugins = plugins()?.filter((plugin) =>
-      activePlugins().includes(plugin.id!),
-    )
-
-    currentActivePlugins?.forEach((plugin) => {
-      const ref = pluginRefs().get(plugin.id!)
-
-      if (ref) {
+    for (const pluginId of activePlugins()) {
+      const plugin = plugins()?.find((entry) => entry.id === pluginId)
+      const ref = pluginRefs().get(pluginId)
+      if (plugin && ref) {
         plugin.render(ref, {
           theme: theme(),
           devtoolsOpen: props.isOpen,
         })
       }
-    })
+    }
   })
 
-  const handleMarketplaceClick = () => setShowMarketplace(!showMarketplace())
-
-  const handlePluginClick = (pluginId: string) => {
-    // Close marketplace when switching to a plugin
-    if (showMarketplace()) {
-      setShowMarketplace(false)
-    }
-    toggleActivePlugins(pluginId)
-  }
-
   return (
-    <Show when={hasPlugins()} fallback={<PluginMarketplace />}>
-      <div class={styles().pluginsTabPanel}>
-        <div
-          class={clsx(
-            styles().pluginsTabDraw(expanded()),
-            {
-              [styles().pluginsTabDraw(expanded())]: expanded(),
-            },
-            styles().pluginsTabDrawTransition(animationMs),
-          )}
-          onMouseEnter={() => hoverUtils.enter()}
-          onMouseLeave={() => {
-            // Don't collapse on mouse leave if marketplace is open
-            if (!showMarketplace()) {
-              hoverUtils.leave()
-            }
-          }}
-        >
-          <div
-            class={clsx(
-              styles().pluginsTabSidebar(expanded()),
-              styles().pluginsTabSidebarTransition(animationMs),
-            )}
-          >
-            <div class={styles().pluginsList}>
-              <For each={plugins()}>
-                {(plugin) => {
-                  let pluginHeading: HTMLHeadingElement | undefined
-
-                  createEffect(() => {
-                    if (pluginHeading) {
-                      typeof plugin.name === 'string'
-                        ? (pluginHeading.textContent = plugin.name)
-                        : plugin.name(pluginHeading, {
-                            theme: theme(),
-                            devtoolsOpen: props.isOpen,
-                          })
-                    }
-                  })
-
-                  const isActive = createMemo(() =>
-                    activePlugins().includes(plugin.id!),
-                  )
-
-                  return (
-                    <div
-                      onClick={() => handlePluginClick(plugin.id!)}
-                      class={clsx(styles().pluginName, {
-                        active: isActive(),
-                      })}
-                    >
-                      <h3
-                        id={`${PLUGIN_TITLE_CONTAINER_ID}-${plugin.id}`}
-                        ref={pluginHeading}
-                      />
-                    </div>
-                  )
-                }}
-              </For>
-            </div>
-
-            {/* Add More Tab - visually distinct */}
-            <div
-              onClick={handleMarketplaceClick}
-              class={clsx(styles().pluginNameAddMore, {
-                active: showMarketplace(),
-              })}
-            >
-              <h3>Add More</h3>
-            </div>
-          </div>
+    <Show
+      when={(plugins()?.length ?? 0) > 0}
+      fallback={
+        <div data-tsd-surface>
+          <p>Browse Marketplace to discover available plugins.</p>
+          <PluginMarketplace />
         </div>
-
-        {/* Show marketplace if active, otherwise show plugin panels */}
+      }
+    >
+      <div
+        data-testid="plugins-workspace"
+        data-tsd-surface
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          'min-width': '0',
+          'min-height': '0px',
+          overflow: 'hidden',
+        }}
+      >
         <Show
-          when={showMarketplace()}
-          fallback={
-            <For each={activePlugins()}>
-              {(pluginId) => (
+          when={activePlugins().length > 0}
+          fallback={<div data-tsd-surface>Select a plugin to open it</div>}
+        >
+          <For each={activePlugins()}>
+            {(pluginId, index) => (
+              <>
+                <Show when={index() > 0}>
+                  <div
+                    data-tsd-separator="plugin-pane"
+                    class={styles().pluginPaneSeparator}
+                  />
+                </Show>
                 <div
                   id={`${PLUGIN_CONTAINER_ID}-${pluginId}`}
+                  data-plugin-mount
+                  data-tsd-surface
                   ref={(el) => {
-                    setPluginRefs((prev) => {
-                      const updated = new Map(prev)
-                      updated.set(pluginId, el)
-                      return updated
+                    setPluginRefs((previous) => {
+                      const next = new Map(previous)
+                      next.set(pluginId, el)
+                      return next
                     })
                   }}
                   class={styles().pluginsTabContent}
+                  style={{ flex: '1 1 0px', 'min-width': '0px' }}
                 />
-              )}
-            </For>
-          }
-        >
-          <PluginMarketplace />
+              </>
+            )}
+          </For>
         </Show>
       </div>
     </Show>

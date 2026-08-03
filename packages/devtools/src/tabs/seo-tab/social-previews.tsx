@@ -12,7 +12,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#4267B2',
+    color: '#4267B2', // semantic-color-exempt: vendor-mark
   },
   {
     network: 'X/Twitter',
@@ -22,7 +22,7 @@ const SOCIALS = [
       { key: 'twitter:image', prop: 'image' },
       { key: 'twitter:url', prop: 'url' },
     ],
-    color: '#1DA1F2',
+    color: '#1DA1F2', // semantic-color-exempt: vendor-mark
   },
   {
     network: 'LinkedIn',
@@ -32,7 +32,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#0077B5',
+    color: '#0077B5', // semantic-color-exempt: vendor-mark
   },
   {
     network: 'Discord',
@@ -42,7 +42,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#5865F2',
+    color: '#5865F2', // semantic-color-exempt: vendor-mark
   },
   {
     network: 'Slack',
@@ -52,7 +52,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#4A154B',
+    color: '#4A154B', // semantic-color-exempt: vendor-mark
   },
   {
     network: 'Mastodon',
@@ -62,7 +62,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#6364FF',
+    color: '#6364FF', // semantic-color-exempt: vendor-mark
   },
   {
     network: 'Bluesky',
@@ -72,7 +72,7 @@ const SOCIALS = [
       { key: 'og:image', prop: 'image' },
       { key: 'og:url', prop: 'url' },
     ],
-    color: '#1185FE',
+    color: '#1185FE', // semantic-color-exempt: vendor-mark
   },
   // Add more networks as needed
 ]
@@ -102,7 +102,10 @@ function SocialPreview(props: {
       class={styles().seoPreviewCard}
       style={{ 'border-color': props.color }}
     >
-      <div class={styles().seoPreviewHeader} style={{ color: props.color }}>
+      <div
+        class={styles().seoPreviewHeader}
+        data-testid="social-preview-heading"
+      >
         {props.network} Preview
       </div>
       {props.meta.image ? (
@@ -115,8 +118,8 @@ function SocialPreview(props: {
         <div
           class={styles().seoPreviewImage}
           style={{
-            background: '#222',
-            color: '#888',
+            background: '#222', // semantic-color-exempt: simulated-seo
+            color: '#888', // semantic-color-exempt: simulated-seo
             display: 'flex',
             'align-items': 'center',
             'justify-content': 'center',
@@ -127,7 +130,7 @@ function SocialPreview(props: {
           No Image
         </div>
       )}
-      <div class={styles().seoPreviewTitle}>
+      <div class={styles().seoPreviewTitle} data-testid="social-preview-title">
         {props.meta.title || 'No Title'}
       </div>
       <div class={styles().seoPreviewDesc}>

@@ -32,7 +32,7 @@ export function Button(props: ButtonProps) {
   })
 
   return (
-    <button {...props} class={classes()}>
+    <button data-tsd-control {...props} class={classes()}>
       {props.children}
     </button>
   )

@@ -10,6 +10,8 @@ export function Header({
   const styles = createStyles()
   return (
     <header
+      data-tsd-surface
+      data-tsd-separator
       class={clsx(styles().header.row, 'tsqd-header', className)}
       {...rest}
     >
@@ -33,7 +35,11 @@ export function HeaderLogo({
   const styles = createStyles()
   return (
     <div class={styles().header.logoAndToggleContainer}>
-      <button class={clsx(styles().header.logo)} onClick={onClick}>
+      <button
+        data-tsd-control
+        class={clsx(styles().header.logo)}
+        onClick={onClick}
+      >
         <span class={clsx(styles().header.tanstackLogo)}>TANSTACK</span>
         <span
           class={clsx(styles().header.flavorLogo(flavor.light, flavor.dark))}

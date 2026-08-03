@@ -322,7 +322,11 @@ export const PluginMarketplace = () => {
   }
 
   return (
-    <div class={styles().pluginMarketplace}>
+    <div
+      class={styles().pluginMarketplace}
+      data-testid="plugin-marketplace"
+      data-tsd-surface
+    >
       {/* Settings Panel */}
       <SettingsPanel
         isOpen={isSettingsOpen}

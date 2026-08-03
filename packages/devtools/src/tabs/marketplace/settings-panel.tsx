@@ -15,12 +15,20 @@ export const SettingsPanel = (props: SettingsPanelProps) => {
 
   return (
     <Show when={props.isOpen()}>
-      <div class={styles().pluginMarketplaceSettingsPanel}>
+      <div
+        class={styles().pluginMarketplaceSettingsPanel}
+        data-tsd-surface
+        role="dialog"
+        aria-label="Marketplace settings"
+      >
         <div class={styles().pluginMarketplaceSettingsPanelHeader}>
           <h3 class={styles().pluginMarketplaceSettingsPanelTitle}>
             Marketplace Settings
           </h3>
           <button
+            type="button"
+            aria-label="Close marketplace settings"
+            data-tsd-control
             class={styles().pluginMarketplaceSettingsPanelClose}
             onClick={props.onClose}
           >

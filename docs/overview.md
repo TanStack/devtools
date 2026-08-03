@@ -83,12 +83,15 @@ Your application loads a **Framework Adapter**, which mounts the **Core Shell**.
 
 ## Key Features
 
+- **Compact TanStack Workbench**: The trigger reveals a branded light/dark panel with a 36px banner and explicit Plugins, SEO, and Settings navigation. The whole panel keeps its existing hide-and-reveal lifecycle.
 - **Framework Agnostic**: Works with React, Vue, Solid, and Preact out of the box.
-- **Plugin System & Marketplace**: Build, share, and install devtools plugins with a simple API.
+- **Plugin System & Marketplace**: Build, share, discover, and install devtools plugins with a simple API. The horizontal Plugins strip expands on hover or keyboard focus.
+- **Simultaneous Plugin Panes**: Open up to three plugins at once in equal-width panes while each plugin retains ownership of its own UI.
+- **Accessibility Auditing**: Add the accessibility plugin during development to surface issues alongside the other plugin panes; the basic React example includes an intentional audit fixture.
 - **Type-Safe Event System**: Communicate between plugins and the shell using fully typed events.
 - **Source Inspector**: Click any element in your app to jump straight to its source code (go-to-source).
 - **Console Piping**: Route devtools output to your browser console for a familiar debugging workflow.
-- **Picture-in-Picture Mode**: Pop the devtools panel out into its own window so it never covers your app.
+- **Picture-in-Picture Mode**: Pop the Workbench into a fixed-`100vh` window; reattaching restores its stored docked height.
 - **Customizable Hotkeys**: Rebind keyboard shortcuts to match your workflow.
 
 ## Next Steps

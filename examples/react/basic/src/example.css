@@ -1,0 +1,248 @@
+:root {
+  color: #3e3529;
+  background: #f7f5ef;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 20rem;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top right, #eeebd4, transparent 36rem), #f7f5ef;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.example-shell {
+  width: min(100% - 2rem, 48rem);
+  margin: 0 auto;
+  padding: clamp(2rem, 7vw, 5rem) 0 7rem;
+}
+
+.example-header {
+  max-width: 40rem;
+  margin-bottom: 2rem;
+}
+
+.example-eyebrow {
+  margin: 0 0 0.5rem;
+  color: #624a00;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.example-header h1,
+.example-content h2,
+.example-content h1 {
+  color: #111111;
+  letter-spacing: -0.035em;
+}
+
+.example-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  line-height: 1.05;
+}
+
+.example-header p:not(.example-eyebrow) {
+  max-width: 36rem;
+  margin: 1rem 0 0;
+  color: #756c5b;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.example-card {
+  margin-top: 1rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid #eeebd4;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgb(17 17 17 / 0.03),
+    0 10px 24px rgb(62 53 41 / 0.05);
+}
+
+.example-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.example-actions p {
+  margin: 0;
+  color: #756c5b;
+}
+
+.example-actions strong {
+  color: #111111;
+  font-variant-numeric: tabular-nums;
+}
+
+.example-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.example-shell button:not([data-testid^='a11y-']) {
+  min-height: 2.5rem;
+  padding: 0.55rem 0.875rem;
+  border: 1px solid #3e3529;
+  border-radius: 0.5rem;
+  background: #3e3529;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 650;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+
+.example-shell button:not([data-testid^='a11y-']):hover {
+  border-color: #624a00;
+  background: #624a00;
+}
+
+.example-shell button:not([data-testid^='a11y-']):active {
+  transform: scale(0.96);
+}
+
+.example-shell :focus-visible {
+  outline: 3px solid #61adbf;
+  outline-offset: 3px;
+}
+
+.example-content {
+  color: #3e3529;
+  line-height: 1.65;
+}
+
+.example-content h2,
+.example-content h1 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.example-content p {
+  max-width: 66ch;
+}
+
+.example-content a {
+  color: #003e53;
+  font-weight: 650;
+  text-decoration-thickness: 0.1em;
+  text-underline-offset: 0.18em;
+}
+
+.a11y-audit-fixture {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px dashed #756c5b;
+  border-radius: 0.5rem;
+  background: #ffffff;
+}
+
+.a11y-audit-fixture button,
+.a11y-audit-fixture input {
+  min-height: 2rem;
+}
+
+@media (max-width: 36rem) {
+  .example-shell {
+    width: min(100% - 1.5rem, 48rem);
+    padding-top: 1.5rem;
+  }
+
+  .example-actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .example-button-row {
+    width: 100%;
+  }
+
+  .example-button-row button {
+    flex: 1 1 12rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #c5c3bf;
+    background: #111111;
+  }
+
+  body {
+    background:
+      radial-gradient(circle at top right, #003e53, transparent 36rem), #111111;
+  }
+
+  .example-eyebrow {
+    color: #fae884;
+  }
+
+  .example-header h1,
+  .example-content h2,
+  .example-content h1,
+  .example-actions strong {
+    color: #ffffff;
+  }
+
+  .example-header p:not(.example-eyebrow),
+  .example-actions p {
+    color: #aea691;
+  }
+
+  .example-card,
+  .a11y-audit-fixture {
+    border-color: #2d2d2d;
+    background: #1f1f1f;
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.2),
+      0 10px 24px rgb(0 0 0 / 0.3);
+  }
+
+  .example-content {
+    color: #c5c3bf;
+  }
+
+  .example-content a {
+    color: #9cd5e2;
+  }
+
+  .example-shell button:not([data-testid^='a11y-']) {
+    border-color: #aea691;
+    background: #aea691;
+    color: #111111;
+  }
+
+  .example-shell button:not([data-testid^='a11y-']):hover {
+    border-color: #ffffff;
+    background: #ffffff;
+  }
+}

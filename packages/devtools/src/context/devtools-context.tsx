@@ -1,4 +1,4 @@
-import { createContext, createEffect } from 'solid-js'
+import { createComponent, createContext, createEffect } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
 import { tryParseJson } from '../utils/sanitize'
@@ -184,6 +184,8 @@ export const DevtoolsProvider = (props: ContextProps) => {
     getExistingStateFromStorage(props.config, props.plugins),
   )
 
+  setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(store.state))
+
   // Provide a way for the core to update plugins reactively
   const updatePlugins = (newPlugins: Array<TanStackDevtoolsPlugin>) => {
     const pluginsWithIds = newPlugins.map((plugin, i) => {
@@ -222,9 +224,10 @@ export const DevtoolsProvider = (props: ContextProps) => {
     },
   }
 
-  return (
-    <DevtoolsContext.Provider value={value}>
-      {props.children}
-    </DevtoolsContext.Provider>
-  )
+  return createComponent(DevtoolsContext.Provider, {
+    value,
+    get children() {
+      return props.children
+    },
+  })
 }

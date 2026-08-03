@@ -6,9 +6,11 @@
     "dev": "vite --port=3005",
     "build": "vite build",
     "preview": "vite preview",
+    "test:fixture": "node ./scripts/check-a11y-fixture.mjs",
     "test:types": "tsc"
   },
   "dependencies": {
+    "@tanstack/devtools-a11y": "workspace:*",
     "@tanstack/devtools-client": "0.0.8",
     "@tanstack/devtools-event-client": "0.5.0",
     "@tanstack/react-devtools": "^0.10.9",

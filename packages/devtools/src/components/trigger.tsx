@@ -274,6 +274,7 @@ export const Trigger = (props: {
       <button
         ref={setButtonRef}
         type="button"
+        data-tsd-control
         aria-label="Open TanStack Devtools"
         class={buttonStyle()}
         style={

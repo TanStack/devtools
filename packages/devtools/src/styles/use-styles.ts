@@ -1,13 +1,39 @@
 import * as goober from 'goober'
+import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 import { createEffect, createSignal } from 'solid-js'
 import { createTheme } from '../context/use-devtools-context'
-import { tokens } from './tokens'
+import {
+  PLUGINS_STRIP_HEIGHT,
+  WORKBENCH_HEADER_HEIGHT,
+} from '../utils/constants'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 import type { Accessor } from 'solid-js'
 import type { DevtoolsStore } from '../context/devtools-store'
 
+type SemanticRamp = Record<
+  50 | 100 | 200 | 300 | 400 | 500 | 600 | 700 | 800 | 900,
+  string
+>
+
 const mSecondsToCssSeconds = (mSeconds: number) =>
   `${(mSeconds / 1000).toFixed(2)}s`
+
+const WORKBENCH_GEOMETRY_STYLE_ID = 'tanstack-devtools-workbench-geometry'
+
+export const ensureWorkbenchGeometryStyles = (targetDocument: Document) => {
+  if (targetDocument.getElementById(WORKBENCH_GEOMETRY_STYLE_ID)) return
+  const style = targetDocument.createElement('style')
+  style.id = WORKBENCH_GEOMETRY_STYLE_ID
+  style.textContent = `
+@media (max-width: 360px) {
+  .tsd-workbench-wordmark { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tsd-workbench-secondary-tabs, .tsd-workbench-secondary-tabs > * { transition: none !important; }
+  .tsd-motion-safe { animation: none !important; transition: none !important; transform: none !important; }
+}`
+  targetDocument.head.appendChild(style)
+}
 
 const fadeIn = goober.keyframes`
   from {
@@ -49,18 +75,6 @@ const statusFadeIn = goober.keyframes`
   }
 `
 
-const iconPop = goober.keyframes`
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-`
-
 const spin = goober.keyframes`
   to {
     transform: rotate(360deg);
@@ -80,13 +94,77 @@ const sparkle = goober.keyframes`
 `
 
 const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
-  const { colors, font, size } = tokens
-  const { fontFamily, size: fontSize } = font
+  const semantic = resolveSemanticTheme(theme)
+  const size = {
+    2: semantic.space[2],
+    3: semantic.space[3],
+    10: '40px',
+    48: '192px',
+  } as const
+  const colors = {
+    black: semantic.color.text.primary,
+    white: semantic.color.surface.elevated,
+    darkGray: {
+      600: semantic.color.surface.elevated,
+      700: semantic.color.surface.workspace,
+      800: semantic.color.surface.subtle,
+      900: semantic.color.surface.app,
+    } as SemanticRamp,
+    gray: {
+      50: semantic.color.surface.subtle,
+      100: semantic.color.surface.subtle,
+      200: semantic.color.border.decorative,
+      300: semantic.color.border.control,
+      400: semantic.color.text.muted,
+      500: semantic.color.text.muted,
+      600: semantic.color.text.secondary,
+      700: semantic.color.text.secondary,
+      800: semantic.color.text.primary,
+      900: semantic.color.text.primary,
+    } as SemanticRamp,
+    blue: Object.fromEntries(
+      [100, 300, 400, 500, 600, 700, 800, 900].map((step) => [
+        step,
+        step === 100
+          ? semantic.color.status.info.subtleFill
+          : step >= 700
+            ? semantic.color.status.info.text
+            : semantic.color.status.info.border,
+      ]),
+    ) as SemanticRamp,
+    green: Object.fromEntries(
+      [100, 300, 400, 500, 600, 700, 900].map((step) => [
+        step,
+        step === 100
+          ? semantic.color.status.success.subtleFill
+          : semantic.color.status.success.text,
+      ]),
+    ) as SemanticRamp,
+    red: Object.fromEntries(
+      [100, 400, 500, 600, 700].map((step) => [
+        step,
+        step === 100
+          ? semantic.color.status.error.subtleFill
+          : semantic.color.status.error.text,
+      ]),
+    ) as SemanticRamp,
+    purple: {
+      200: semantic.color.status.neutral.subtleFill,
+      800: semantic.color.status.neutral.text,
+    } as SemanticRamp,
+  }
+  const fontFamily = { sans: semantic.font.body, mono: semantic.font.mono }
+  const fontSize = {
+    xs: semantic.type.bodyXs.size,
+    sm: semantic.type.bodySm.size,
+  }
   const css = goober.css
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
   return {
     seoTabContainer: css`
+      font-family: ${semantic.font.body};
+      font-weight: ${semantic.type.bodySm.weight};
       padding: 0;
       margin: 0 auto;
       background: ${t(colors.white, colors.darkGray[700])};
@@ -101,6 +179,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       overflow-y: auto;
     `,
     seoTabTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.25rem;
       font-weight: 600;
       color: ${t(colors.gray[900], colors.gray[100])};
@@ -119,31 +198,20 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin-bottom: 2rem;
       border-radius: 0.75rem;
     `,
-    seoSubNav: css`
+    seoWorkspace: css`
       display: flex;
-      flex-direction: row;
-      gap: 0;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
     `,
-    seoSubNavLabel: css`
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: ${t(colors.gray[600], colors.gray[400])};
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      cursor: pointer;
-      font-family: inherit;
-      &:hover {
-        color: ${t(colors.gray[800], colors.gray[200])};
-      }
-    `,
-    seoSubNavLabelActive: css`
-      color: ${t(colors.gray[900], colors.gray[100])};
-      border-bottom-color: ${t(colors.gray[900], colors.gray[100])};
+    seoContent: css`
+      flex: 1 1 auto;
+      height: auto;
+      min-height: 0;
+      overflow-y: auto;
     `,
     seoPreviewSection: css`
       display: flex;
@@ -162,7 +230,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 12px 10px;
       background: ${t(colors.white, colors.darkGray[900])};
       margin-bottom: 0;
-      box-shadow: 0 1px 3px ${t('rgba(0,0,0,0.05)', 'rgba(0,0,0,0.1)')};
+      box-shadow: ${semantic.shadow.sm};
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -175,13 +243,13 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.875rem;
       font-weight: 600;
       margin-bottom: 0;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.primary};
     `,
     seoPreviewImage: css`
       max-width: 100%;
       border-radius: 6px;
       margin-bottom: 6px;
-      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.03)', 'rgba(0,0,0,0.06)')};
+      box-shadow: ${semantic.shadow.xs};
       height: 160px;
       object-fit: cover;
     `,
@@ -189,7 +257,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.9rem;
       font-weight: 600;
       margin-bottom: 4px;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
     `,
     seoPreviewDesc: css`
       color: ${t(colors.gray[600], colors.gray[400])};
@@ -241,7 +309,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.875rem;
       font-weight: 600;
       margin-bottom: 0.5rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.primary};
     `,
     serpSnippet: css`
       border: 1px solid ${t(colors.gray[100], colors.gray[800])};
@@ -250,7 +318,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       background: ${t(colors.white, colors.darkGray[900])};
       max-width: 600px;
       font-family: ${fontFamily.sans};
-      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+      box-shadow: ${semantic.shadow.xs};
     `,
     serpSnippetMobile: css`
       border: 1px solid ${t(colors.gray[100], colors.gray[800])};
@@ -259,7 +327,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       background: ${t(colors.white, colors.darkGray[900])};
       max-width: 380px;
       font-family: ${fontFamily.sans};
-      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+      box-shadow: ${semantic.shadow.xs};
     `,
     serpSnippetDescMobile: css`
       font-size: 0.875rem;
@@ -308,7 +376,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     serpSnippetSiteName: css`
       font-size: 0.875rem;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       line-height: 1.4;
       margin: 0;
     `,
@@ -321,7 +389,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     serpSnippetTitle: css`
       font-size: 1.25rem;
       font-weight: 400;
-      color: ${t('#1a0dab', '#8ab4f8')};
+      color: ${semantic.color.text.link};
       margin: 0 0 4px 0;
       line-height: 1.3;
     `,
@@ -370,15 +438,20 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     ) => css`
       direction: ltr;
       position: fixed;
-      overflow-y: hidden;
-      overflow-x: hidden;
+      overflow: visible;
       ${panelLocation}: 0;
-      right: 0;
+      inset-inline: 0;
       z-index: 99999;
-      width: 100%;
+      inline-size: 100%;
+      max-inline-size: 100%;
+      box-sizing: border-box;
       ${isDetached ? '' : 'max-height: 90%;'}
-      border-top: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      transform-origin: top;
+      border: 0;
+      box-shadow: none;
+      transition: transform 160ms ease-out;
+      @media (prefers-reduced-motion: reduce) {
+        transition-duration: 0ms;
+      }
     `,
     devtoolsPanelContainerVisibility: (isOpen: boolean) => {
       return css`
@@ -394,48 +467,292 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
 
       return css`
-        transition: all 0.4s ease;
+        transition: transform 160ms ease-out;
+        @media (prefers-reduced-motion: reduce) {
+          transition-duration: 0ms;
+        }
       `
     },
-    devtoolsPanelContainerAnimation: (
-      isOpen: boolean,
-      height: number,
-      panelLocation: TanStackDevtoolsConfig['panelLocation'],
-    ) => {
-      if (isOpen) {
-        return css`
-          pointer-events: auto;
-          transform: translateY(0);
-        `
-      }
-      return css`
-        pointer-events: none;
-        transform: translateY(${panelLocation === 'top' ? -height : height}px);
-      `
-    },
+    devtoolsDrawerContent: css`
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    `,
     devtoolsPanel: css`
-      display: flex;
+      display: grid;
       font-size: ${fontSize.sm};
       font-family: ${fontFamily.sans};
       background-color: ${t(colors.white, colors.darkGray[700])};
       color: ${t(colors.gray[900], colors.gray[300])};
-      width: w-screen;
-      flex-direction: row;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      grid-template-rows: ${WORKBENCH_HEADER_HEIGHT}px minmax(0, 1fr);
+      &:has([data-testid='plugins-strip']) {
+        grid-template-rows:
+          ${WORKBENCH_HEADER_HEIGHT}px ${PLUGINS_STRIP_HEIGHT}px
+          minmax(0, 1fr);
+      }
       overflow-x: hidden;
       overflow-y: hidden;
       height: 100%;
     `,
+    workbenchHeader: css`
+      display: flex;
+      align-items: center;
+      gap: ${semantic.gap.control};
+      min-width: 0;
+      height: ${WORKBENCH_HEADER_HEIGHT}px;
+      padding: 0 ${semantic.space[2]};
+      box-sizing: border-box;
+      background: ${semantic.color.surface.brand};
+      color: ${semantic.color.text.mutedOnBrand};
+      & button {
+        min-width: 28px;
+        height: 100%;
+        box-sizing: border-box;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      & button:hover:not([data-tsd-selected='true']) {
+        background: ${semantic.color.state.hover};
+      }
+      & button:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+      @media (max-width: 430px) {
+        gap: ${semantic.gap.tight};
+        padding-inline: ${semantic.space[2]};
+        & button {
+          min-width: 24px;
+        }
+      }
+      @media (max-width: 360px) {
+        gap: 2px;
+        padding-inline: 4px;
+        & button {
+          padding-inline: 3px;
+          font-size: 11px;
+        }
+      }
+    `,
+    workbenchLogo: css`
+      display: inline-flex;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      & > img {
+        width: 24px;
+        height: 24px;
+        object-fit: contain;
+        filter: ${theme === 'dark' ? 'brightness(2.5) contrast(1.1)' : 'none'};
+      }
+      @media (max-width: 360px) {
+        width: 20px;
+        height: 20px;
+        flex-basis: 20px;
+        & > img {
+          width: 20px;
+          height: 20px;
+        }
+      }
+    `,
+    workbenchDestinations: css`
+      display: inline-flex;
+      align-items: stretch;
+      align-self: stretch;
+      gap: 0;
+      min-width: 0;
+      margin: 0;
+      padding: 0;
+    `,
+    workbenchNavButton: css`
+      margin: 0;
+      padding-inline: 12px;
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.surface.workspace};
+        color: ${semantic.color.text.primary};
+      }
+      @media (max-width: 361px) {
+        padding-inline: 4px;
+      }
+    `,
+    workbenchActions: css`
+      display: inline-flex;
+      align-items: center;
+      gap: ${semantic.gap.tight};
+      height: 100%;
+      margin-left: auto;
+      @media (max-width: 360px) {
+        gap: 0;
+      }
+    `,
+    workbenchActionButton: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: ${WORKBENCH_HEADER_HEIGHT}px;
+      min-width: ${WORKBENCH_HEADER_HEIGHT}px;
+      height: ${WORKBENCH_HEADER_HEIGHT}px;
+      flex: 0 0 ${WORKBENCH_HEADER_HEIGHT}px;
+      padding: 0;
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.surface.workspace};
+        color: ${semantic.color.text.primary};
+      }
+      @media (max-width: 360px) {
+        width: 32px;
+        min-width: 32px;
+        flex-basis: 32px;
+      }
+    `,
+    workbenchWordmark: css`
+      white-space: nowrap;
+      @media (max-width: 430px) {
+        display: none;
+      }
+    `,
+    workbenchSecondaryTabs: css`
+      display: flex;
+      align-items: center;
+      gap: 0;
+      min-width: 0;
+      box-sizing: border-box;
+      padding-block: 6px;
+      padding-inline-start: ${semantic.space[2]};
+      padding-inline-end: ${semantic.space[2]};
+      scroll-padding-inline-start: ${semantic.space[2]};
+      scroll-padding-inline-end: ${semantic.space[2]};
+      height: ${PLUGINS_STRIP_HEIGHT}px;
+      min-height: ${PLUGINS_STRIP_HEIGHT}px;
+      flex: 0 0 ${PLUGINS_STRIP_HEIGHT}px;
+      background: ${semantic.color.surface.workspace};
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      & > * {
+        transform: none;
+        transition: none;
+      }
+      & > :last-child {
+        scroll-margin-inline-end: ${semantic.space[2]};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition-duration: 0ms;
+      }
+    `,
+    workbenchSecondaryTab: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: ${semantic.padding.controlBlock}
+        ${semantic.padding.controlInline};
+      border: 1px solid transparent;
+      border-radius: ${semantic.radius.control};
+      background: transparent;
+      color: ${semantic.color.text.secondary};
+      font-family: ${semantic.font.body};
+      font-size: ${semantic.type.labelSm.size};
+      font-weight: ${semantic.type.labelSm.weight};
+      line-height: ${semantic.type.labelSm.lineHeight};
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      cursor: pointer;
+      flex: 0 0 auto;
+      appearance: none;
+      &:hover {
+        background: ${semantic.color.state.hover};
+        color: ${semantic.color.text.primary};
+      }
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.state.selectionFill};
+        border-color: ${semantic.color.state.selectionFill};
+        color: ${semantic.color.state.selectionText};
+      }
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+    `,
+    pluginTitleText: css`
+      margin: 0;
+      color: inherit;
+      font-family: ${semantic.font.body};
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+    `,
     dragHandle: (panelLocation: TanStackDevtoolsConfig['panelLocation']) => css`
       position: absolute;
       left: 0;
-      ${panelLocation === 'bottom' ? 'top' : 'bottom'}: 0;
+      ${panelLocation === 'bottom' ? 'top' : 'bottom'}: -10px;
       width: 100%;
-      height: 4px;
+      height: 24px;
       cursor: row-resize;
       user-select: none;
       z-index: 100000;
+      background-color: transparent;
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        width: 100%;
+        top: 10px;
+        height: 4px;
+        background-color: transparent;
+      }
+      &:hover::after,
+      &:focus-visible::after {
+        background-color: ${semantic.color.border.control};
+      }
+    `,
+    drawerToggle: (
+      panelLocation: TanStackDevtoolsConfig['panelLocation'],
+    ) => css`
+      position: absolute;
+      ${panelLocation === 'bottom' ? 'top' : 'bottom'}: -28px;
+      inset-inline-end: 7%;
+      z-index: 100001;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 28px;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: ${semantic.radius.control};
+      background: ${semantic.color.surface.brand};
+      box-shadow: none;
+      color: ${semantic.color.text.mutedOnBrand};
+      cursor: pointer;
       &:hover {
-        background-color: ${t(colors.gray[400], colors.gray[500])};
+        background: ${semantic.color.state.hover};
+      }
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+    `,
+    drawerToggleIcon: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      transition: transform 160ms ease-out;
+      @media (prefers-reduced-motion: reduce) {
+        transition-duration: 0ms;
       }
     `,
 
@@ -450,7 +767,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border: 0;
       align-items: center;
       padding: 0;
-      font-size: ${font.size.xs};
+      font-size: ${fontSize.xs};
       cursor: pointer;
       transition: opacity 0.25s ease-out;
       &:hide-until-hover {
@@ -465,12 +782,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
     `,
     mainCloseBtnDefault: css`
-      background: #eeebd4;
+      background: ${semantic.color.surface.brand};
       width: 56px;
       height: 56px;
       justify-content: center;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(17, 17, 17, 0.14);
+      box-shadow: ${semantic.shadow.sm};
       transition:
         opacity 0.25s ease-out,
         background-color 0.2s ease-out,
@@ -480,17 +797,16 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         height: 48px;
         object-fit: contain;
         transition: all 0.3s ease;
-        outline-offset: 2px;
         border-radius: 8px;
-        outline: 2px solid transparent;
+        outline: none;
       }
       &:hover {
-        background: #e5e0c5;
-        box-shadow: 0 3px 10px rgba(17, 17, 17, 0.18);
+        background: ${semantic.color.state.hover};
+        box-shadow: ${semantic.shadow.overlay};
       }
-      & > img:focus-visible,
-      & > img:hover {
-        outline: 2px solid ${t(colors.black, colors.black)};
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
       }
     `,
     mainCloseBtnFloating: css`
@@ -617,7 +933,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     tabContent: css`
       transition: all 0.2s ease-in-out;
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       height: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
     `,
     pluginsTabPanel: css`
       display: flex;
@@ -694,23 +1014,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       height: 100%;
       min-width: 0;
       min-height: 0;
-
-      & > * {
-        min-width: 0;
-        min-height: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      & > * > * {
-        min-width: 0;
-        min-height: 0;
-        width: 100%;
-        height: 100%;
-      }
-
-      &:not(:last-child) {
-        border-right: 5px solid ${t(colors.purple[200], colors.purple[800])};
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    `,
+    pluginPaneSeparator: css`
+      flex: 0 0 1px;
+      align-self: stretch;
+      background: ${semantic.color.border.decorative};
+      @media (forced-colors: active) {
+        background: CanvasText;
       }
     `,
 
@@ -778,6 +1090,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
     `,
     noPluginsFallbackTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.5rem;
       font-weight: 600;
       color: ${t(colors.gray[900], colors.gray[100])};
@@ -798,6 +1111,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border-radius: 0.5rem;
     `,
     noPluginsSuggestionsTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.125rem;
       font-weight: 600;
       color: ${t(colors.gray[900], colors.gray[100])};
@@ -840,7 +1154,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-weight: 600;
       color: ${t(colors.gray[900], colors.gray[100])};
       margin: 0;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-family: ${semantic.font.mono};
     `,
     noPluginsSuggestionSource: css`
       font-size: 0.8rem;
@@ -903,19 +1217,29 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
 
     // Plugin Marketplace Styles (for "Add More" tab)
     pluginMarketplace: css`
+      font-family: ${semantic.font.body};
+      color: ${semantic.color.text.primary};
       width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      height: 100%;
+      min-height: 0;
       overflow-y: auto;
       padding: 2rem;
-      background: ${t(
-        'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        'linear-gradient(135deg, #1a1d23 0%, #13161a 100%)',
-      )};
+      background: ${semantic.color.surface.workspace};
       animation: ${fadeIn} 0.3s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+      @media (max-width: 430px) {
+        padding: ${semantic.space[3]};
+      }
     `,
     pluginMarketplaceHeader: css`
       margin-bottom: 2rem;
       padding-bottom: 1rem;
-      border-bottom: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      border-bottom: 2px solid ${semantic.color.border.decorative};
     `,
     pluginMarketplaceTitleRow: css`
       display: flex;
@@ -923,17 +1247,28 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       justify-content: space-between;
       gap: 2rem;
       margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    `,
+    pluginMarketplaceControls: css`
+      display: flex;
+      align-items: center;
+      flex: 1 1 320px;
+      width: 100%;
+      max-width: 448px;
+      min-width: 0;
+      margin-left: auto;
     `,
     pluginMarketplaceTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.5rem;
       font-weight: 700;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       margin: 0;
       letter-spacing: -0.02em;
     `,
     pluginMarketplaceDescription: css`
       font-size: 0.95rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       margin: 0 0 1rem 0;
       line-height: 1.5;
     `,
@@ -941,37 +1276,42 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       position: relative;
       display: flex;
       align-items: center;
+      flex: 1 1 0%;
+      width: auto;
       max-width: 400px;
-      flex-shrink: 0;
+      min-width: 0;
+      @media (max-width: 430px) {
+        width: 100%;
+        max-width: none;
+      }
 
       svg {
         position: absolute;
         left: 1rem;
-        color: ${t(colors.gray[400], colors.gray[500])};
+        color: ${semantic.color.text.muted};
         pointer-events: none;
       }
     `,
     pluginMarketplaceSearch: css`
       width: 100%;
       padding: 0.75rem 1rem 0.75rem 2.75rem;
-      background: ${t(colors.gray[50], colors.darkGray[900])};
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      background: ${semantic.color.surface.app};
+      border: 2px solid ${semantic.color.border.control};
       border-radius: 0.5rem;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       font-size: 0.875rem;
       font-family: ${fontFamily.sans};
       transition: all 0.2s ease;
 
       &::placeholder {
-        color: ${t(colors.gray[400], colors.gray[500])};
+        color: ${semantic.color.text.muted};
       }
 
       &:focus {
         outline: none;
-        border-color: ${t(colors.blue[500], colors.blue[400])};
-        background: ${t(colors.white, colors.darkGray[800])};
-        box-shadow: 0 0 0 3px
-          ${t('rgba(59, 130, 246, 0.1)', 'rgba(96, 165, 250, 0.1)')};
+        border-color: ${semantic.color.border.focus};
+        background: ${semantic.color.surface.elevated};
+        box-shadow: 0 0 0 3px ${semantic.color.state.pressed};
       }
     `,
     pluginMarketplaceFilters: css`
@@ -984,41 +1324,35 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       gap: 0.5rem;
       margin-top: 1.5rem;
       padding: 1rem;
-      background: ${t(colors.gray[50], colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.decorative};
       border-radius: 0.5rem;
     `,
     pluginMarketplaceTagButton: css`
       padding: 0.5rem 1rem;
       font-size: 0.875rem;
       font-weight: 500;
-      background: ${t(colors.white, colors.darkGray[700])};
-      border: 2px solid ${t(colors.gray[300], colors.gray[600])};
+      background: ${semantic.color.surface.elevated};
+      border: 2px solid ${semantic.color.border.control};
       border-radius: 0.375rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
       cursor: pointer;
       transition: all 0.15s ease;
 
       &:hover {
-        background: ${t(colors.gray[100], colors.darkGray[600])};
-        border-color: ${t(colors.gray[400], colors.gray[500])};
-        color: ${t(colors.gray[900], colors.gray[100])};
+        background: ${semantic.color.state.hover};
+        border-color: ${semantic.color.border.control};
+        color: ${semantic.color.text.primary};
       }
     `,
     pluginMarketplaceTagButtonActive: css`
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-      )} !important;
-      border-color: ${t('#2563eb', '#3b82f6')} !important;
-      color: white !important;
+      background: ${semantic.color.state.selectionFill} !important;
+      border-color: ${semantic.color.state.selectionFill} !important;
+      color: ${semantic.color.state.selectionText} !important;
 
       &:hover {
-        background: ${t(
-          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        )} !important;
-        border-color: ${t('#1d4ed8', '#2563eb')} !important;
+        background: ${semantic.color.state.selectionFill} !important;
+        border-color: ${semantic.color.border.focus} !important;
       }
     `,
     pluginMarketplaceSettingsButton: css`
@@ -1026,18 +1360,18 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       align-items: center;
       justify-content: center;
       padding: 0.75rem;
-      background: ${t(colors.gray[100], colors.darkGray[800])};
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      background: ${semantic.color.surface.subtle};
+      border: 2px solid ${semantic.color.border.control};
       border-radius: 0.5rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
       cursor: pointer;
       transition: all 0.2s ease;
       margin-left: 0.5rem;
 
       &:hover {
-        background: ${t(colors.gray[200], colors.darkGray[700])};
-        border-color: ${t(colors.gray[300], colors.gray[600])};
-        color: ${t(colors.gray[900], colors.gray[100])};
+        background: ${semantic.color.state.hover};
+        border-color: ${semantic.color.border.control};
+        color: ${semantic.color.text.primary};
       }
 
       &:active {
@@ -1050,25 +1384,31 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       right: 0;
       bottom: 0;
       width: 350px;
-      background: ${t(colors.white, colors.darkGray[800])};
-      border-left: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      box-shadow: -4px 0 12px ${t('rgba(0, 0, 0, 0.1)', 'rgba(0, 0, 0, 0.4)')};
+      max-width: 100%;
+      box-sizing: border-box;
+      background: ${semantic.color.surface.elevated};
+      border-left: 1px solid ${semantic.color.border.decorative};
+      box-shadow: ${semantic.shadow.overlay};
       z-index: 1000;
       display: flex;
       flex-direction: column;
       animation: ${slideInRight} 0.3s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     `,
     pluginMarketplaceSettingsPanelHeader: css`
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 1.5rem;
-      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      border-bottom: 1px solid ${semantic.color.border.decorative};
     `,
     pluginMarketplaceSettingsPanelTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.125rem;
       font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       margin: 0;
     `,
     pluginMarketplaceSettingsPanelClose: css`
@@ -1078,14 +1418,14 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 0.5rem;
       background: transparent;
       border: none;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       cursor: pointer;
       border-radius: 0.375rem;
       transition: all 0.15s ease;
 
       &:hover {
-        background: ${t(colors.gray[100], colors.darkGray[700])};
-        color: ${t(colors.gray[900], colors.gray[100])};
+        background: ${semantic.color.state.hover};
+        color: ${semantic.color.text.primary};
       }
     `,
     pluginMarketplaceSettingsPanelContent: css`
@@ -1095,19 +1435,25 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     pluginMarketplaceGrid: css`
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
       gap: 1.25rem;
       animation: ${slideUp} 0.4s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     `,
     pluginMarketplaceCard: css`
-      background: ${t(colors.white, colors.darkGray[800])};
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      background: ${semantic.color.surface.elevated};
+      border: 2px solid ${semantic.color.border.decorative};
       border-radius: 0.75rem;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition:
+        border-color 120ms ease-out,
+        box-shadow 120ms ease-out,
+        transform 120ms ease-out;
       position: relative;
       overflow: hidden;
 
@@ -1118,19 +1464,16 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         left: 0;
         right: 0;
         height: 3px;
-        background: ${t(
-          'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
-          'linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%)',
-        )};
+        background: ${semantic.color.state.selectionFill};
         transform: scaleX(0);
         transform-origin: left;
         transition: transform 0.25s ease;
       }
 
       &:hover {
-        border-color: ${t(colors.gray[400], colors.gray[500])};
-        box-shadow: 0 8px 24px ${t('rgba(0,0,0,0.1)', 'rgba(0,0,0,0.4)')};
-        transform: translateY(-4px);
+        border-color: ${semantic.color.border.control};
+        box-shadow: ${semantic.shadow.overlay};
+        transform: translateY(-2px);
 
         &::before {
           transform: scaleX(1);
@@ -1143,10 +1486,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-        'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
-      )};
+      background: ${semantic.color.state.selectionFill};
       border-radius: 0.5rem;
       color: white;
       transition: transform 0.25s ease;
@@ -1165,13 +1505,13 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginMarketplaceCardTitle: css`
       font-size: 0.95rem;
       font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       margin: 0 0 0.5rem 0;
       line-height: 1.4;
     `,
     pluginMarketplaceCardDescription: css`
       font-size: 0.8rem;
-      color: ${t(colors.gray[500], colors.gray[500])};
+      color: ${semantic.color.text.muted};
       margin: 0;
       padding: 0;
       background: transparent;
@@ -1183,7 +1523,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       margin-top: 4px;
       margin-bottom: 8px;
       font-size: 0.6875rem;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-family: ${semantic.font.mono};
       opacity: 0.6;
       padding: 4px 8px;
       padding-left: 0;
@@ -1199,26 +1539,26 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginMarketplaceCardVersionInfo: css`
       margin-top: 8px;
       font-size: 0.6875rem;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-family: ${semantic.font.mono};
     `,
     pluginMarketplaceCardVersionSatisfied: css`
-      color: ${t(colors.green[600], colors.green[400])};
+      color: ${semantic.color.status.success.text};
     `,
     pluginMarketplaceCardVersionUnsatisfied: css`
-      color: ${t(colors.red[600], colors.red[400])};
+      color: ${semantic.color.status.error.text};
     `,
     pluginMarketplaceCardDocsLink: css`
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
       font-size: 0.75rem;
-      color: ${t(colors.blue[600], colors.blue[400])};
+      color: ${semantic.color.text.link};
       text-decoration: none;
       margin-top: 0.5rem;
       transition: color 0.15s ease;
 
       &:hover {
-        color: ${t(colors.blue[700], colors.blue[300])};
+        color: ${semantic.color.text.link};
         text-decoration: underline;
       }
 
@@ -1237,10 +1577,10 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.6875rem;
       font-weight: 500;
       padding: 0.25rem 0.5rem;
-      background: ${t(colors.gray[100], colors.darkGray[700])};
-      border: 1px solid ${t(colors.gray[300], colors.gray[600])};
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.control};
       border-radius: 0.25rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
     `,
     pluginMarketplaceCardImage: css`
       width: 28px;
@@ -1251,27 +1591,27 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       position: absolute;
       top: 12px;
       right: -35px;
-      background-color: ${t(colors.green[500], colors.green[500])};
+      background-color: ${semantic.color.status.success.solidFill};
       color: white;
       padding: 4px 40px;
       font-size: 0.6875rem;
       font-weight: bold;
       text-transform: uppercase;
       transform: rotate(45deg);
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+      box-shadow: ${semantic.shadow.sm};
       z-index: 10;
       letter-spacing: 0.5px;
     `,
     pluginMarketplaceCardFeatured: css`
-      border-color: ${t(colors.blue[500], colors.blue[400])};
+      border-color: ${semantic.color.status.info.border};
       border-width: 2px;
     `,
     pluginMarketplaceCardActive: css`
-      border-color: ${t(colors.green[500], colors.green[600])};
+      border-color: ${semantic.color.status.success.border};
       border-width: 2px;
 
       &:hover {
-        border-color: ${t(colors.green[500], colors.green[600])};
+        border-color: ${semantic.color.status.success.border};
         box-shadow: none;
         transform: none;
 
@@ -1284,20 +1624,20 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: ${t(colors.green[600], colors.green[400])};
+      color: ${semantic.color.status.success.text};
       animation: ${statusFadeIn} 0.3s ease;
 
       svg {
         width: 18px;
         height: 18px;
-        animation: ${iconPop} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: ${statusFadeIn} 120ms ease-out;
       }
     `,
     pluginMarketplaceCardSpinner: css`
       width: 18px;
       height: 18px;
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
-      border-top-color: ${t(colors.blue[600], colors.blue[400])};
+      border: 2px solid ${semantic.color.border.decorative};
+      border-top-color: ${semantic.color.status.info.border};
       border-radius: 50%;
       animation: ${spin} 0.8s linear infinite;
     `,
@@ -1308,19 +1648,19 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginMarketplaceCardStatusTextError: css`
       font-size: 0.875rem;
       font-weight: 600;
-      color: ${t(colors.red[600], colors.red[400])};
+      color: ${semantic.color.status.error.text};
     `,
     pluginMarketplaceEmpty: css`
       padding: 3rem 2rem;
       text-align: center;
-      background: ${t(colors.white, colors.darkGray[800])};
-      border: 2px dashed ${t(colors.gray[300], colors.gray[700])};
+      background: ${semantic.color.surface.elevated};
+      border: 2px dashed ${semantic.color.border.control};
       border-radius: 0.75rem;
       animation: ${fadeIn} 0.3s ease;
     `,
     pluginMarketplaceEmptyText: css`
       font-size: 0.95rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       margin: 0;
       line-height: 1.6;
     `,
@@ -1334,22 +1674,27 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
     `,
     pluginMarketplaceSectionHeader: css`
-      margin-bottom: 1rem;
+      margin-bottom: ${semantic.gap.sectionLarge};
       padding: 1rem 1.25rem;
       display: flex;
       align-items: center;
       gap: 0.75rem;
       cursor: pointer;
       user-select: none;
-      background: ${t(colors.gray[50], colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.decorative};
       border-radius: 0.5rem;
       transition: all 0.15s ease;
 
       &:hover {
-        background: ${t(colors.gray[100], colors.darkGray[700])};
-        border-color: ${t(colors.gray[300], colors.gray[600])};
+        background: ${semantic.color.state.hover};
+        border-color: ${semantic.color.border.control};
       }
+    `,
+    pluginMarketplaceSectionContent: css`
+      display: flex;
+      flex-direction: column;
+      gap: ${semantic.gap.sectionLarge};
     `,
     pluginMarketplaceSectionHeaderLeft: css`
       display: flex;
@@ -1362,16 +1707,17 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       display: flex;
       align-items: center;
       justify-content: center;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
       transition: transform 0.2s ease;
     `,
     pluginMarketplaceSectionChevronCollapsed: css`
       transform: rotate(-90deg);
     `,
     pluginMarketplaceSectionTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.25rem;
       font-weight: 700;
-      color: ${t(colors.gray[900], colors.gray[50])};
+      color: ${semantic.color.text.primary};
       margin: 0;
       display: flex;
       align-items: center;
@@ -1381,27 +1727,19 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.75rem;
       font-weight: 600;
       padding: 0.25rem 0.5rem;
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-      )};
+      background: ${semantic.color.state.selectionFill};
       color: white;
       border-radius: 0.25rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
     `,
     pluginMarketplaceFeatureBanner: css`
-      margin-top: 1rem;
+      margin-top: 0;
       padding: 1.25rem 1.5rem;
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
-      )};
+      background: ${semantic.color.status.info.solidFill};
       border-radius: 0.75rem;
-      border: 1px solid ${t(colors.blue[400], colors.blue[800])};
-      box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      border: 1px solid ${semantic.color.status.info.border};
+      box-shadow: ${semantic.shadow.sm};
     `,
     pluginMarketplaceFeatureBannerContent: css`
       display: flex;
@@ -1409,6 +1747,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       gap: 0.75rem;
     `,
     pluginMarketplaceFeatureBannerTitle: css`
+      font-family: ${semantic.font.display};
       font-size: 1.125rem;
       font-weight: 700;
       color: white;
@@ -1424,7 +1763,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     pluginMarketplaceFeatureBannerText: css`
       font-size: 0.95rem;
-      color: ${t('rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.9)')};
+      color: ${semantic.color.status.info.onFill};
       line-height: 1.5;
       margin: 0;
     `,
@@ -1443,12 +1782,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       transition: all 0.2s ease;
       text-decoration: none;
       align-self: flex-start;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: ${semantic.shadow.xs};
 
       &:hover {
-        background: ${t(colors.gray[50], colors.gray[100])};
+        background: ${semantic.color.state.hover};
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        box-shadow: ${semantic.shadow.sm};
       }
 
       &:active {
@@ -1483,16 +1822,16 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       letter-spacing: 0.05em;
     `,
     pluginMarketplaceCardBadgeInstall: css`
-      background: ${t(colors.green[100], colors.green[900])};
-      color: ${t(colors.green[700], colors.green[300])};
+      background: ${semantic.color.status.success.subtleFill};
+      color: ${semantic.color.status.success.text};
     `,
     pluginMarketplaceCardBadgeAdd: css`
-      background: ${t(colors.blue[100], colors.blue[900])};
-      color: ${t(colors.blue[700], colors.blue[300])};
+      background: ${semantic.color.status.info.subtleFill};
+      color: ${semantic.color.status.info.text};
     `,
     pluginMarketplaceCardBadgeRequires: css`
-      background: ${t(colors.gray[100], colors.gray[800])};
-      color: ${t(colors.gray[600], colors.gray[400])};
+      background: ${semantic.color.status.neutral.subtleFill};
+      color: ${semantic.color.status.neutral.text};
     `,
 
     // Button style for already installed plugins
@@ -1504,16 +1843,13 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginNameAddMore: css`
       font-size: ${fontSize.xs};
       font-family: ${fontFamily.sans};
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       padding: ${size[3]} ${size[2]};
       cursor: pointer;
       text-align: center;
       transition: all 0.15s ease;
       border-left: 2px solid transparent;
-      background: ${t(
-        'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
-      )};
+      background: ${semantic.color.surface.subtle};
       font-weight: 600;
       position: relative;
       margin-top: auto;
@@ -1533,12 +1869,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
 
       &:hover {
-        background: ${t(
-          'linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)',
-          'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
-        )};
-        color: ${t(colors.gray[900], colors.gray[100])};
-        border-left-color: ${t(colors.blue[500], colors.blue[400])};
+        background: ${semantic.color.state.hover};
+        color: ${semantic.color.text.primary};
+        border-left-color: ${semantic.color.border.focus};
 
         h3::before {
           animation: ${sparkle} 0.5s ease-in-out infinite;
@@ -1546,14 +1879,10 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
 
       &.active {
-        background: ${t(
-          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-          'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-        )};
-        color: ${t(colors.white, colors.white)};
-        border-left: 2px solid ${t(colors.blue[600], colors.blue[300])};
-        box-shadow: 0 4px 12px
-          ${t('rgba(59, 130, 246, 0.3)', 'rgba(96, 165, 250, 0.3)')};
+        background: ${semantic.color.state.selectionFill};
+        color: ${semantic.color.state.selectionText};
+        border-left: 2px solid ${semantic.color.border.focus};
+        box-shadow: ${semantic.shadow.sm};
 
         h3::before {
           filter: brightness(0) invert(1);
@@ -1561,10 +1890,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
 
       &.active:hover {
-        background: ${t(
-          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        )};
+        background: ${semantic.color.state.selectionFill};
       }
     `,
   }

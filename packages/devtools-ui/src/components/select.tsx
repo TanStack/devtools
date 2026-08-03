@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js'
+import { createSignal, createUniqueId } from 'solid-js'
 import { createStyles } from '../styles/use-styles'
 
 interface SelectOption<T extends string | number> {
@@ -19,6 +19,8 @@ export function Select<T extends string | number>(props: SelectProps<T>) {
   const [selected, setSelected] = createSignal(
     props.value || props.options[0]?.value,
   )
+  const id = createUniqueId()
+  const descriptionId = `${id}-description`
 
   const handleChange = (e: Event) => {
     const value = (e.target as HTMLSelectElement).value as T
@@ -30,12 +32,19 @@ export function Select<T extends string | number>(props: SelectProps<T>) {
     <div class={styles().selectContainer}>
       <div class={styles().selectWrapper}>
         {props.label && (
-          <label class={styles().selectLabel}>{props.label}</label>
+          <label for={id} class={styles().selectLabel}>
+            {props.label}
+          </label>
         )}
         {props.description && (
-          <p class={styles().selectDescription}>{props.description}</p>
+          <p id={descriptionId} class={styles().selectDescription}>
+            {props.description}
+          </p>
         )}
         <select
+          id={id}
+          data-tsd-control
+          aria-describedby={props.description ? descriptionId : undefined}
           class={styles().select}
           value={selected()}
           onInput={handleChange}

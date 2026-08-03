@@ -1,138 +1,32 @@
 import * as goober from 'goober'
 import { createEffect, createSignal } from 'solid-js'
 import { createTheme } from '../components/theme'
-import { tokens } from './tokens'
+import { resolveSemanticTheme } from './semantic-theme'
+import type { tokens } from './tokens'
 
 import type { TanStackDevtoolsTheme } from '../components/theme'
 import type { ButtonVariant } from '../components/button'
 
-const buttonVariantColors: Record<
-  ButtonVariant,
-  {
-    bg: { light: string; dark: string }
-    hover: { light: string; dark: string }
-    active: { light: string; dark: string }
-    text: { light: string; dark: string }
-    border: { light: string; dark: string }
-    outline: { light: string; dark: string }
-    outlineHover: { light: string; dark: string }
-  }
-> = {
-  primary: {
-    bg: { light: tokens.colors.gray[900], dark: tokens.colors.gray[100] },
-    hover: { light: tokens.colors.gray[800], dark: tokens.colors.gray[200] },
-    active: { light: tokens.colors.gray[700], dark: tokens.colors.gray[300] },
-    text: { light: '#fff', dark: tokens.colors.gray[900] },
-    border: { light: tokens.colors.gray[800], dark: tokens.colors.gray[200] },
-    outline: {
-      light: tokens.colors.gray[900],
-      dark: tokens.colors.gray[100],
-    },
-    outlineHover: {
-      light: tokens.colors.gray[800],
-      dark: tokens.colors.gray[200],
-    },
-  },
-  secondary: {
-    bg: { light: tokens.colors.gray[100], dark: tokens.colors.gray[100] },
-    hover: { light: tokens.colors.gray[200], dark: tokens.colors.gray[200] },
-    active: { light: tokens.colors.gray[300], dark: tokens.colors.gray[300] },
-    text: { light: tokens.colors.gray[900], dark: tokens.colors.gray[900] },
-    border: { light: tokens.colors.gray[300], dark: tokens.colors.gray[300] },
-    outline: {
-      light: tokens.colors.gray[700],
-      dark: tokens.colors.gray[300],
-    },
-    outlineHover: {
-      light: tokens.colors.gray[800],
-      dark: tokens.colors.gray[200],
-    },
-  },
-  info: {
-    bg: { light: tokens.colors.blue[500], dark: tokens.colors.blue[500] },
-    hover: { light: tokens.colors.blue[600], dark: tokens.colors.blue[600] },
-    active: { light: tokens.colors.blue[700], dark: tokens.colors.blue[700] },
-    text: { light: '#fff', dark: '#fff' },
-    border: { light: tokens.colors.blue[500], dark: tokens.colors.blue[500] },
-    outline: {
-      light: tokens.colors.blue[700],
-      dark: tokens.colors.blue[300],
-    },
-    outlineHover: {
-      light: tokens.colors.blue[600],
-      dark: tokens.colors.blue[200],
-    },
-  },
-  warning: {
-    bg: { light: tokens.colors.yellow[500], dark: tokens.colors.yellow[500] },
-    hover: {
-      light: tokens.colors.yellow[600],
-      dark: tokens.colors.yellow[600],
-    },
-    active: {
-      light: tokens.colors.yellow[700],
-      dark: tokens.colors.yellow[700],
-    },
-    text: { light: '#fff', dark: '#fff' },
-    border: {
-      light: tokens.colors.yellow[500],
-      dark: tokens.colors.yellow[500],
-    },
-    outline: {
-      light: tokens.colors.yellow[700],
-      dark: tokens.colors.yellow[300],
-    },
-    outlineHover: {
-      light: tokens.colors.yellow[600],
-      dark: tokens.colors.yellow[200],
-    },
-  },
-  danger: {
-    bg: { light: tokens.colors.red[500], dark: tokens.colors.red[500] },
-    hover: { light: tokens.colors.red[600], dark: tokens.colors.red[600] },
-    active: { light: tokens.colors.red[700], dark: tokens.colors.red[700] },
-    text: { light: '#fff', dark: '#fff' },
-    border: { light: tokens.colors.red[500], dark: tokens.colors.red[500] },
-    outline: {
-      light: tokens.colors.red[700],
-      dark: tokens.colors.red[300],
-    },
-    outlineHover: {
-      light: tokens.colors.red[600],
-      dark: tokens.colors.red[200],
-    },
-  },
-  success: {
-    bg: { light: tokens.colors.green[500], dark: tokens.colors.green[500] },
-    hover: { light: tokens.colors.green[600], dark: tokens.colors.green[600] },
-    active: { light: tokens.colors.green[700], dark: tokens.colors.green[700] },
-    text: { light: '#fff', dark: '#fff' },
-    border: { light: tokens.colors.green[500], dark: tokens.colors.green[500] },
-    outline: {
-      light: tokens.colors.green[700],
-      dark: tokens.colors.green[300],
-    },
-    outlineHover: {
-      light: tokens.colors.green[600],
-      dark: tokens.colors.green[200],
-    },
-  },
-}
 export const css = goober.css
 const stylesFactory = (theme: TanStackDevtoolsTheme) => {
-  const { colors, font, size, border } = tokens
-  const { fontFamily } = font
+  const semantic = resolveSemanticTheme(theme)
 
   const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
   const buildButtonVariant = (variant: ButtonVariant) => {
-    const v = buttonVariantColors[variant]
-    const outlineColor = t(v.outline.light, v.outline.dark)
-    const outlineHoverColor = t(v.outlineHover.light, v.outlineHover.dark)
-    const solidBg = t(v.bg.light, v.bg.dark)
-    const solidHover = t(v.hover.light, v.hover.dark)
-    const solidActive = t(v.active.light, v.active.dark)
-    const solidText = t(v.text.light, v.text.dark)
-    const solidBorder = t(v.border.light, v.border.dark)
+    const statusRole =
+      variant === 'danger'
+        ? 'error'
+        : variant === 'primary' || variant === 'secondary'
+          ? 'neutral'
+          : variant
+    const status = semantic.color.status[statusRole]
+    const outlineColor = status.text
+    const outlineHoverColor = status.text
+    const solidBg = status.solidFill
+    const solidHover = status.border
+    const solidActive = status.solidFill
+    const solidText = status.onFill
+    const solidBorder = status.border
 
     return {
       ghost: css`
@@ -140,11 +34,11 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         color: ${outlineColor};
         border-color: transparent;
         &:hover {
-          background: ${t(colors.gray[100], colors.darkGray[800])};
+          background: ${semantic.color.state.hover};
           color: ${outlineHoverColor};
         }
         &:active {
-          background: ${t(colors.gray[200], colors.darkGray[700])};
+          background: ${semantic.color.state.pressed};
           color: ${outlineHoverColor};
         }
       `,
@@ -153,12 +47,12 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         color: ${outlineColor};
         border-color: ${outlineColor};
         &:hover {
-          background: ${t(colors.gray[50], colors.darkGray[800])};
+          background: ${semantic.color.state.hover};
           color: ${outlineHoverColor};
           border-color: ${outlineHoverColor};
         }
         &:active {
-          background: ${t(colors.gray[100], colors.darkGray[700])};
+          background: ${semantic.color.state.pressed};
           color: ${outlineHoverColor};
           border-color: ${outlineHoverColor};
         }
@@ -170,18 +64,12 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         &:hover {
           background: ${solidHover};
           border-color: ${solidHover};
-          box-shadow: ${t(
-            tokens.shadow.xs('rgb(0 0 0 / 0.12)'),
-            tokens.shadow.xs('rgb(0 0 0 / 0.5)'),
-          )};
+          box-shadow: ${semantic.shadow.xs};
         }
         &:active {
           background: ${solidActive};
           border-color: ${solidActive};
-          box-shadow: ${t(
-            tokens.shadow.inner('rgb(0 0 0 / 0.2)'),
-            tokens.shadow.inner('rgb(0 0 0 / 0.6)'),
-          )};
+          box-shadow: ${semantic.shadow.sm};
         }
       `,
     }
@@ -199,6 +87,19 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
   }
 
   const wrapperSize = 320
+  const legacyTagColor = (color: keyof typeof tokens.colors) => {
+    const semanticRole =
+      color === 'red'
+        ? 'error'
+        : color === 'yellow'
+          ? 'warning'
+          : color === 'green'
+            ? 'success'
+            : color === 'blue' || color === 'cyan' || color === 'teal'
+              ? 'info'
+              : 'neutral'
+    return semantic.color.status[semanticRole].solidFill
+  }
 
   return {
     logo: css`
@@ -207,10 +108,10 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
       flex-direction: column;
       background-color: transparent;
       border: none;
-      width: ${size[12]};
-      height: ${size[12]};
-      font-family: ${fontFamily.sans};
-      gap: ${tokens.size[0.5]};
+      width: 48px;
+      height: 48px;
+      font-family: ${semantic.font.body};
+      gap: ${semantic.gap.tight};
       padding: 0;
       &:hover {
         opacity: 0.7;
@@ -222,50 +123,51 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
       max-width: ${wrapperSize}px;
       display: flex;
       flex-direction: column;
-      gap: 0.375rem;
+      gap: ${semantic.gap.tight};
     `,
     selectContainer: css`
       width: 100%;
+      &::selection,
+      & *::selection {
+        background: ${semantic.color.state.selectionFill};
+        color: ${semantic.color.state.selectionText};
+      }
     `,
     selectLabel: css`
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      font: ${semantic.type.labelSm.weight} ${semantic.type.labelSm.size} /
+        ${semantic.type.labelSm.lineHeight} ${semantic.font.body};
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      color: ${semantic.color.text.primary};
       text-align: left;
     `,
     selectDescription: css`
-      font-size: 0.8rem;
-      color: ${t(colors.gray[500], colors.gray[400])};
+      font: ${semantic.type.bodyXs.weight} ${semantic.type.bodyXs.size} /
+        ${semantic.type.bodyXs.lineHeight} ${semantic.font.body};
+      color: ${semantic.color.text.secondary};
       margin: 0;
-      line-height: 1.3;
       text-align: left;
     `,
     select: css`
-      appearance: none;
+      appearance: auto;
       width: 100%;
-      padding: 0.5rem 3rem 0.5rem 0.75rem;
-      border-radius: 0.375rem;
-      background-color: ${t(colors.gray[50], colors.darkGray[800])};
-      color: ${t(colors.gray[900], colors.gray[100])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      font-size: 0.875rem;
+      padding: ${semantic.padding.controlBlock}
+        ${semantic.padding.controlInline};
+      border-radius: ${semantic.radius.control};
+      background-color: ${semantic.color.surface.elevated};
+      color: ${semantic.color.text.primary};
+      border: 1px solid ${semantic.color.border.control};
+      font: ${semantic.type.bodySm.weight} ${semantic.type.bodySm.size} /
+        ${semantic.type.bodySm.lineHeight} ${semantic.font.body};
       transition: all 0.15s ease;
       cursor: pointer;
 
-      /* Custom arrow */
-      background-image: url("data:image/svg+xml;utf8,<svg fill='%236b7280' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-      background-repeat: no-repeat;
-      background-position: right 0.75rem center;
-      background-size: 1.25rem;
-
       &:hover {
-        border-color: ${t(colors.gray[300], colors.gray[700])};
+        border-color: ${semantic.color.border.focus};
       }
 
       &:focus {
-        outline: none;
-        border-color: ${colors.gray[400]};
-        box-shadow: 0 0 0 3px ${t(colors.gray[200], colors.gray[800])};
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
       }
     `,
     inputWrapper: css`
@@ -273,117 +175,134 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
       max-width: ${wrapperSize}px;
       display: flex;
       flex-direction: column;
-      gap: 0.375rem;
+      gap: ${semantic.gap.tight};
     `,
     inputContainer: css`
       width: 100%;
+      &::selection,
+      & *::selection {
+        background: ${semantic.color.state.selectionFill};
+        color: ${semantic.color.state.selectionText};
+      }
     `,
     inputLabel: css`
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      font: ${semantic.type.labelSm.weight} ${semantic.type.labelSm.size} /
+        ${semantic.type.labelSm.lineHeight} ${semantic.font.body};
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      color: ${semantic.color.text.primary};
       text-align: left;
     `,
     inputDescription: css`
-      font-size: 0.8rem;
-      color: ${t(colors.gray[500], colors.gray[400])};
+      font: ${semantic.type.bodyXs.weight} ${semantic.type.bodyXs.size} /
+        ${semantic.type.bodyXs.lineHeight} ${semantic.font.body};
+      color: ${semantic.color.text.secondary};
       margin: 0;
-      line-height: 1.3;
       text-align: left;
     `,
     input: css`
       appearance: none;
       box-sizing: border-box;
       width: 100%;
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.375rem;
-      background-color: ${t(colors.gray[50], colors.darkGray[800])};
-      color: ${t(colors.gray[900], colors.gray[100])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      font-size: 0.875rem;
-      font-family: ${fontFamily.mono};
+      padding: ${semantic.padding.controlBlock}
+        ${semantic.padding.controlInline};
+      border-radius: ${semantic.radius.control};
+      background-color: ${semantic.color.surface.elevated};
+      color: ${semantic.color.text.primary};
+      border: 1px solid ${semantic.color.border.control};
+      font: ${semantic.type.bodySm.weight} ${semantic.type.bodySm.size} /
+        ${semantic.type.bodySm.lineHeight} ${semantic.font.body};
       transition: all 0.15s ease;
 
       &::placeholder {
-        color: ${t(colors.gray[400], colors.gray[500])};
+        color: ${semantic.color.text.secondary};
       }
 
       &:hover {
-        border-color: ${t(colors.gray[300], colors.gray[700])};
+        border-color: ${semantic.color.border.focus};
       }
 
       &:focus {
-        outline: none;
-        border-color: ${t(colors.gray[400], colors.gray[600])};
-        box-shadow: 0 0 0 3px ${t(colors.gray[200], colors.gray[800])};
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
       }
     `,
     checkboxWrapper: css`
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
+      gap: ${semantic.gap.control};
       cursor: pointer;
       user-select: none;
-      padding: 0.375rem;
-      border-radius: 0.375rem;
+      padding: ${semantic.padding.controlBlock}
+        ${semantic.padding.controlInline};
+      border-radius: ${semantic.radius.control};
       transition: background-color 0.15s ease;
 
       &:hover {
-        background-color: ${t(colors.gray[50], colors.darkGray[900])};
+        background-color: ${semantic.color.state.hover};
       }
     `,
     checkboxContainer: css`
       width: 100%;
+      &::selection,
+      & *::selection {
+        background: ${semantic.color.state.selectionFill};
+        color: ${semantic.color.state.selectionText};
+      }
     `,
     checkboxLabelContainer: css`
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: ${semantic.gap.tight};
       flex: 1;
     `,
     checkbox: css`
       appearance: none;
-      width: 1.25rem;
-      height: 1.25rem;
-      border: 2px solid ${t(colors.gray[300], colors.gray[700])};
-      border-radius: 0.25rem;
-      background-color: ${t(colors.gray[50], colors.darkGray[800])};
+      width: ${semantic.space[4]};
+      height: ${semantic.space[4]};
+      border: 2px solid ${semantic.color.border.control};
+      border-radius: ${semantic.radius.control};
+      background-color: ${semantic.color.surface.elevated};
       display: grid;
       place-items: center;
       transition: all 0.15s ease;
       flex-shrink: 0;
-      margin-top: 0.125rem;
+      margin-top: ${semantic.space[1]};
 
       &:hover {
-        border-color: ${t(colors.gray[400], colors.gray[600])};
+        border-color: ${semantic.color.border.focus};
+      }
+
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
       }
 
       &:checked {
-        background-color: ${t(colors.gray[900], colors.gray[100])};
-        border-color: ${t(colors.gray[900], colors.gray[100])};
+        background-color: ${semantic.color.state.selectionFill};
+        border-color: ${semantic.color.state.selectionFill};
       }
 
       &:checked::after {
         content: '';
-        width: 0.4rem;
-        height: 0.6rem;
-        border: solid ${t('#fff', colors.gray[900])};
+        width: ${semantic.space[1]};
+        height: ${semantic.space[2]};
+        border: solid ${semantic.color.state.selectionText};
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
         margin-top: -3px;
       }
     `,
     checkboxLabel: css`
-      color: ${t(colors.gray[900], colors.gray[100])};
-      font-size: 0.875rem;
-      font-weight: 500;
-      line-height: 1.4;
+      color: ${semantic.color.text.primary};
+      font: ${semantic.type.labelSm.weight} ${semantic.type.labelSm.size} /
+        ${semantic.type.labelSm.lineHeight} ${semantic.font.body};
+      letter-spacing: ${semantic.type.labelSm.tracking};
       text-align: left;
     `,
     checkboxDescription: css`
-      color: ${t(colors.gray[500], colors.gray[400])};
-      font-size: 0.8rem;
-      line-height: 1.3;
+      color: ${semantic.color.text.secondary};
+      font: ${semantic.type.bodyXs.weight} ${semantic.type.bodyXs.size} /
+        ${semantic.type.bodyXs.lineHeight} ${semantic.font.body};
       text-align: left;
     `,
     button: {
@@ -391,20 +310,29 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-family: ${tokens.font.fontFamily.sans};
-        font-size: 0.8rem;
-        font-weight: 500;
-        border-radius: 0.375rem;
-        padding: 0.375rem 0.75rem;
+        font-family: ${semantic.font.body};
+        font-size: ${semantic.type.bodyXs.size};
+        line-height: ${semantic.type.bodyXs.lineHeight};
+        font-weight: ${semantic.type.labelSm.weight};
+        border-radius: ${semantic.radius.control};
+        padding: ${semantic.padding.controlBlock}
+          ${semantic.padding.controlInline};
         cursor: pointer;
         transition:
           background 0.15s,
           color 0.15s,
           border 0.15s,
           box-shadow 0.15s;
-        outline: none;
+        &:focus-visible {
+          outline: 2px solid ${semantic.color.border.focus};
+          outline-offset: 2px;
+        }
         border-width: 1px;
         border-style: solid;
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
       `,
       variant(variant: ButtonVariant, outline?: boolean, ghost?: boolean) {
         const v = buttonVariants[variant]
@@ -419,80 +347,94 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
     },
     tag: {
       dot: (color: keyof typeof tokens.colors) => css`
-        width: ${tokens.size[1.5]};
-        height: ${tokens.size[1.5]};
-        border-radius: ${tokens.border.radius.full};
-        background-color: ${t(
-          tokens.colors[color][500],
-          tokens.colors[color][500],
-        )};
+        width: ${semantic.space[1]};
+        height: ${semantic.space[1]};
+        border-radius: 9999px;
+        background-color: ${legacyTagColor(color)};
       `,
       base: css`
         display: flex;
-        gap: ${tokens.size[1.5]};
+        gap: ${semantic.gap.tight};
         box-sizing: border-box;
-        height: ${tokens.size[6.5]};
-        background: ${t(colors.gray[50], colors.darkGray[500])};
-        color: ${t(colors.gray[700], colors.gray[300])};
-        border-radius: ${tokens.border.radius.sm};
-        font-size: ${font.size.sm};
-        padding: ${tokens.size[1]};
-        padding-left: ${tokens.size[1.5]};
+        background: ${semantic.color.surface.subtle};
+        color: ${semantic.color.text.primary};
+        border-radius: ${semantic.radius.control};
+        font-size: ${semantic.type.bodyXs.size};
+        line-height: ${semantic.type.bodyXs.lineHeight};
+        font-family: ${semantic.font.body};
+        padding: ${semantic.padding.controlBlock}
+          ${semantic.padding.controlInline};
         align-items: center;
-        font-weight: ${font.weight.medium};
-        border: ${t('1px solid ' + colors.gray[300], '1px solid transparent')};
+        font-weight: ${semantic.type.labelSm.weight};
+        border: 1px solid ${semantic.color.border.control};
         user-select: none;
         position: relative;
+        &::selection,
+        & *::selection {
+          background: ${semantic.color.state.selectionFill};
+          color: ${semantic.color.state.selectionText};
+        }
         &:focus-visible {
           outline-offset: 2px;
-          outline: 2px solid ${t(colors.blue[700], colors.blue[800])};
+          outline: 2px solid ${semantic.color.border.focus};
         }
       `,
       label: css`
-        font-size: ${font.size.xs};
+        font-size: ${semantic.type.bodyXs.size};
+        line-height: ${semantic.type.bodyXs.lineHeight};
+        font-family: ${semantic.font.body};
+        letter-spacing: ${semantic.type.labelSm.tracking};
       `,
       count: css`
-        font-size: ${font.size.xs};
-        padding: 0 5px;
+        font-size: ${semantic.type.bodyXs.size};
+        padding: 0 ${semantic.space[1]};
         display: flex;
         align-items: center;
         justify-content: center;
-        color: ${t(colors.gray[500], colors.gray[400])};
-        background-color: ${t(colors.gray[200], colors.darkGray[300])};
-        border-radius: 2px;
+        color: ${semantic.color.text.secondary};
+        background-color: ${semantic.color.state.hover};
+        border-radius: ${semantic.radius.control};
+        line-height: ${semantic.type.bodyXs.lineHeight};
+        font-family: ${semantic.font.body};
         font-variant-numeric: tabular-nums;
-        height: ${tokens.size[4.5]};
+        min-height: ${semantic.space[4]};
       `,
     },
     tree: {
       info: css`
-        color: ${t(colors.gray[500], colors.gray[500])};
-        font-size: ${font.size.xs};
-        margin-right: ${size[1]};
+        color: ${semantic.color.text.secondary};
+        font-size: ${semantic.type.bodyXs.size};
+        margin-right: ${semantic.space[1]};
       `,
       actionButton: css`
         background-color: transparent;
-        color: ${t(colors.gray[500], colors.gray[500])};
+        color: ${semantic.color.text.secondary};
         border: none;
         display: inline-flex;
         padding: 0;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        width: ${size[3]};
-        height: ${size[3]};
+        width: ${semantic.space[3]};
+        height: ${semantic.space[3]};
         position: relative;
         z-index: 1;
 
         &:hover svg {
-          color: ${t(colors.gray[600], colors.gray[400])};
+          color: ${semantic.color.text.primary};
         }
 
         &:focus-visible {
-          border-radius: ${border.radius.xs};
-          outline: 2px solid ${t(colors.blue[700], colors.blue[800])};
+          border-radius: ${semantic.radius.control};
+          outline: 2px solid ${semantic.color.border.focus};
           outline-offset: 2px;
         }
+      `,
+      actionSuccess: css`
+        color: ${semantic.color.status.success.text};
+      `,
+      actionError: css`
+        color: ${semantic.color.status.error.text};
       `,
       expanderContainer: css`
         position: relative;
@@ -503,38 +445,43 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         left: -16px;
         top: 3px;
         & path {
-          stroke: ${t(colors.blue[400], colors.blue[300])};
+          stroke: ${semantic.color.text.link};
         }
         & svg {
-          width: ${size[3]};
-          height: ${size[3]};
+          width: ${semantic.space[3]};
+          height: ${semantic.space[3]};
         }
 
         display: inline-flex;
         align-items: center;
         transition: all 0.1s ease;
+        &:focus-visible {
+          border-radius: ${semantic.radius.control};
+          outline: 2px solid ${semantic.color.border.focus};
+          outline-offset: 2px;
+        }
       `,
       expandedLine: (hasBorder: boolean) => css`
         display: block;
-        padding-left: 0.75rem;
-        margin-left: -0.7rem;
+        padding-left: ${semantic.space[3]};
+        margin-left: -${semantic.space[3]};
         ${hasBorder
-          ? `border-left: 1px solid ${t(colors.blue[400], colors.blue[300])};`
+          ? `border-left: 1px solid ${semantic.color.border.decorative};`
           : ''}
       `,
       collapsible: css`
         cursor: pointer;
         transition: all 0.2s ease;
         &:hover {
-          background-color: ${t(colors.gray[100], colors.darkGray[700])};
-          border-radius: ${tokens.border.radius.sm};
-          padding: 0 ${tokens.size[1]};
+          background-color: ${semantic.color.state.hover};
+          border-radius: ${semantic.radius.control};
+          padding: 0 ${semantic.space[1]};
         }
       `,
       actions: css`
         display: inline-flex;
-        margin-left: ${size[2]};
-        gap: ${size[2]};
+        margin-left: ${semantic.space[2]};
+        gap: ${semantic.gap.control};
         align-items: center;
         & svg {
           height: 12px;
@@ -542,33 +489,43 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         }
       `,
       valueCollapsed: css`
-        color: ${t(colors.gray[500], colors.gray[400])};
+        color: ${semantic.color.text.secondary};
       `,
       valueFunction: css`
-        color: ${t(colors.cyan[500], colors.cyan[400])};
+        color: ${semantic.color.syntax.keyword};
       `,
       valueString: css`
-        color: ${t(colors.green[500], colors.green[400])};
+        color: ${semantic.color.syntax.string};
       `,
       valueNumber: css`
-        color: ${t(colors.yellow[500], colors.yellow[400])};
+        color: ${semantic.color.syntax.number};
       `,
       valueBoolean: css`
-        color: ${t(colors.pink[500], colors.pink[400])};
+        color: ${semantic.color.syntax.keyword};
       `,
       valueNull: css`
-        color: ${t(colors.gray[500], colors.gray[400])};
+        color: ${semantic.color.syntax.comment};
         font-style: italic;
       `,
       valueKey: css`
-        color: ${t(colors.blue[400], colors.blue[300])};
+        color: ${semantic.color.syntax.property};
       `,
       valueBraces: css`
-        color: ${colors.gray[500]};
+        color: ${semantic.color.syntax.punctuation};
       `,
       valueContainer: (isRoot: boolean) => css`
         display: block;
-        margin-left: ${isRoot ? '0' : '1rem'};
+        font-family: ${semantic.font.mono};
+        &::selection,
+        & *::selection {
+          background: ${semantic.color.state.selectionFill};
+          color: ${semantic.color.state.selectionText};
+        }
+        & [data-tsd-syntax]::selection {
+          background: ${semantic.color.syntax.selectionFill};
+          color: ${semantic.color.syntax.selectionText};
+        }
+        margin-left: ${isRoot ? '0' : semantic.space[4]};
 
         &:not(:hover) .actions {
           display: none;
@@ -584,21 +541,28 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: ${tokens.size[2]} ${tokens.size[2.5]};
-        gap: ${tokens.size[2.5]};
-        border-bottom: ${t(colors.gray[300], colors.darkGray[500])} 1px solid;
+        &::selection,
+        & *::selection {
+          background: ${semantic.color.state.selectionFill};
+          color: ${semantic.color.state.selectionText};
+        }
+        padding: ${semantic.space[2]} ${semantic.space[3]};
+        gap: ${semantic.gap.control};
+        background: ${semantic.color.surface.elevated};
+        color: ${semantic.color.text.primary};
+        border-bottom: ${semantic.color.border.decorative} 1px solid;
         align-items: center;
       `,
       logoAndToggleContainer: css`
         display: flex;
-        gap: ${tokens.size[3]};
+        gap: ${semantic.gap.section};
         align-items: center;
         & > button {
           padding: 0;
           background: transparent;
           border: none;
           display: flex;
-          gap: ${size[0.5]};
+          gap: ${semantic.gap.tight};
           flex-direction: column;
         }
       `,
@@ -608,54 +572,61 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         flex-direction: column;
         background-color: transparent;
         border: none;
-        gap: ${tokens.size[0.5]};
+        gap: ${semantic.gap.tight};
         padding: 0;
         &:hover {
           opacity: 0.7;
         }
         &:focus-visible {
-          outline-offset: 4px;
-          border-radius: ${border.radius.xs};
-          outline: 2px solid ${colors.blue[800]};
+          outline-offset: 2px;
+          border-radius: ${semantic.radius.control};
+          outline: 2px solid ${semantic.color.border.focus};
         }
       `,
       tanstackLogo: css`
-        font-size: ${font.size.md};
-        font-weight: ${font.weight.bold};
-        line-height: ${font.lineHeight.xs};
+        font-size: ${semantic.type.headingPane.size};
+        line-height: ${semantic.type.headingPane.lineHeight};
+        font-family: ${semantic.font.display};
+        font-weight: ${semantic.type.headingPane.weight};
         white-space: nowrap;
-        color: ${t(colors.gray[700], colors.gray[300])};
+        color: ${semantic.color.text.primary};
       `,
       flavorLogo: (flavorLight: string, flavorDark: string) => css`
-        font-weight: ${font.weight.semibold};
-        font-size: ${font.size.xs};
-        background: linear-gradient(to right, ${t(flavorLight, flavorDark)});
-        background-clip: text;
-        -webkit-background-clip: text;
-        line-height: 1;
-        -webkit-text-fill-color: transparent;
+        font-weight: ${semantic.type.labelSm.weight};
+        font-size: ${semantic.type.labelSm.size};
+        line-height: ${semantic.type.labelSm.lineHeight};
+        font-family: ${semantic.font.body};
+        letter-spacing: ${semantic.type.labelSm.tracking};
+        color: ${t(flavorLight, flavorDark)};
         white-space: nowrap;
       `,
     },
     section: {
       main: css`
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        background-color: ${t(colors.gray[50], colors.darkGray[800])};
-        border: 1px solid ${t(colors.gray[200], colors.gray[800])};
-        border-radius: 0.5rem;
-        box-shadow: none;
+        margin-bottom: ${semantic.space[4]};
+        padding: ${semantic.space[4]};
+        background-color: ${semantic.color.surface.subtle};
+        border: 1px solid ${semantic.color.border.decorative};
+        border-radius: ${semantic.radius.overlay};
+        box-shadow: ${semantic.shadow.xs};
+        &::selection,
+        & *::selection {
+          background: ${semantic.color.state.selectionFill};
+          color: ${semantic.color.state.selectionText};
+        }
       `,
       title: css`
-        font-size: 1rem;
-        font-weight: 600;
-        color: ${t(colors.gray[900], colors.gray[100])};
-        margin: 0 0 0.75rem 0;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
+        font-size: ${semantic.type.headingPane.size};
+        line-height: ${semantic.type.headingPane.lineHeight};
+        font-weight: ${semantic.type.headingPane.weight};
+        color: ${semantic.color.text.primary};
+        font-family: ${semantic.font.display};
+        margin: 0 0 ${semantic.space[3]} 0;
+        padding-bottom: ${semantic.space[2]};
+        border-bottom: 1px solid ${semantic.color.border.decorative};
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: ${semantic.gap.control};
         text-align: left;
       `,
       icon: css`
@@ -665,22 +636,28 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
           height: 100%;
           width: 100%;
         }
-        color: ${t(colors.gray[700], colors.gray[400])};
+        color: ${semantic.color.text.secondary};
       `,
       description: css`
-        color: ${t(colors.gray[500], colors.gray[400])};
-        font-size: 0.8rem;
-        margin: 0 0 1rem 0;
-        line-height: 1.4;
+        color: ${semantic.color.text.secondary};
+        font: ${semantic.type.bodyXs.weight} ${semantic.type.bodyXs.size} /
+          ${semantic.type.bodyXs.lineHeight} ${semantic.font.body};
+        margin: 0 0 ${semantic.space[4]} 0;
         text-align: left;
       `,
     },
     mainPanel: {
       panel: (withPadding: boolean) => css`
-        padding: ${withPadding ? tokens.size[3] : 0};
-        background: ${t(colors.gray[50], colors.darkGray[700])};
+        padding: ${withPadding ? semantic.space[3] : 0};
+        background: ${semantic.color.surface.workspace};
+        color: ${semantic.color.text.primary};
         overflow-y: auto;
         height: 100%;
+        &::selection,
+        & *::selection {
+          background: ${semantic.color.state.selectionFill};
+          color: ${semantic.color.state.selectionText};
+        }
       `,
     },
   }

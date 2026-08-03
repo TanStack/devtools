@@ -14,7 +14,7 @@ block-beta
     end
     block:core["Core Layer"]
         columns 3
-        Shell["Devtools Shell"] UI["UI Components"] Client["Event Client"]
+        Workbench["Devtools Workbench"] UI["UI components + private semantic theme"] Client["Event Client"]
     end
     block:transport["Transport Layer"]
         columns 3
@@ -37,10 +37,10 @@ graph TD
     end
 
     subgraph Core["Core Layer"]
-        shell["@tanstack/devtools<br/><i>Core shell (Solid.js)</i>"]
+        shell["@tanstack/devtools<br/><i>Core Workbench (Solid.js)</i>"]
         client["@tanstack/devtools-client<br/><i>Core devtools events</i>"]
         eventClient["@tanstack/devtools-event-client<br/><i>Generic EventClient</i>"]
-        ui["@tanstack/devtools-ui<br/><i>Shared UI components</i>"]
+        ui["@tanstack/devtools-ui<br/><i>Shared UI + private semantic-theme owner</i>"]
         clientBus["@tanstack/devtools-event-bus/client<br/><i>ClientEventBus</i>"]
     end
 
@@ -147,16 +147,22 @@ The devtools shell is a Solid.js application that renders the entire devtools UI
 
 The shell renders:
 - A **trigger button** (the floating devtools toggle, customizable or replaceable)
-- A **resizable panel** (docked to the bottom of the viewport, resizable via drag)
-- **Tab navigation** for switching between plugins, settings, SEO inspector, and the plugin marketplace
+- A **resizable Workbench panel** (docked to the top or bottom of the viewport, resizable via pointer or keyboard)
+- A compact **36px TanStack Devtools header** with explicit Plugins, SEO, and Settings destinations
+- A horizontal **Plugins strip** that expands vertically on hover or focus while keeping the panel footprint compact
+- The **Plugin Marketplace**, reached from the Plugins destination without disturbing mounted plugin panes
 - A **settings panel** for theme, hotkeys, position, and other preferences
-- **Plugin containers** -- DOM elements where each plugin's UI is mounted
+- Up to three simultaneous **plugin mount frames**, divided into equal widths by static separators
 
 Settings and UI state (panel size, position, active tab, theme) are persisted in `localStorage` so they survive page reloads.
+
+The core shell owns the Workbench header, navigation, mount-frame geometry, separators, and surrounding light/dark surfaces. Each external plugin owns everything inside its mount target; core styling deliberately does not reach into plugin descendants. Detaching the Workbench uses a fixed `100vh` Picture-in-Picture layout and restores the stored docked height when reattached.
 
 ### @tanstack/devtools-ui -- Component Library
 
 A shared Solid.js component library used by the core shell and available for use in Solid.js plugins. Provides buttons, inputs, checkboxes, a JSON tree viewer, section layouts, and other UI primitives. The `@tanstack/devtools-utils` package also depends on it to provide framework-specific plugin helpers.
+
+Core packages share a private semantic resolver through `@tanstack/devtools-ui/internal`. It supplies TanStack light/dark colors, typography, spacing, status roles, and focus treatment to core-owned UI and the accessibility plugin. This internal subpath is an implementation boundary, not a public theming API for application plugins.
 
 ### @tanstack/devtools-client -- Core Event Client
 

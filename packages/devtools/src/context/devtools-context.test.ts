@@ -1,10 +1,15 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { createComponent, createEffect, createRoot, useContext } from 'solid-js'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TANSTACK_DEVTOOLS_STATE } from '../utils/storage'
 import {
+  DevtoolsContext,
+  DevtoolsProvider,
   getExistingStateFromStorage,
   getStateFromLocalStorage,
 } from './devtools-context'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('getStateFromLocalStorage', () => {
   beforeEach(() => {
@@ -322,5 +327,71 @@ describe('getExistingStateFromStorage - integration tests', () => {
     const state = getExistingStateFromStorage(config as any, plugins)
     expect(state.settings.theme).toBe('light')
     expect(state.state.activePlugins).toEqual(['plugin1'])
+  })
+})
+
+describe('provider resilience', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('fails loudly for storage access errors while retaining malformed JSON fallback', () => {
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementationOnce(() => {
+      throw new Error('read blocked')
+    })
+    expect(() => getStateFromLocalStorage(undefined)).toThrow('read blocked')
+    localStorage.setItem(
+      TANSTACK_DEVTOOLS_STATE,
+      JSON.stringify({
+        activePlugins: ['missing'],
+        settings: { theme: 'dark' },
+      }),
+    )
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementationOnce(() => {
+      throw new Error('quota')
+    })
+    expect(() =>
+      getStateFromLocalStorage([
+        { id: 'kept', name: 'Kept', render: () => {} },
+      ]),
+    ).toThrow('quota')
+  })
+
+  it('generates stable unique IDs while preserving explicit duplicate IDs', () => {
+    const generated = getExistingStateFromStorage(undefined, [
+      { name: 'Same Name', render: () => {} },
+      { name: 'Same Name', render: () => {} },
+      { name: () => {}, render: () => {} },
+    ]).plugins!.map((entry) => entry.id)
+    expect(generated).toEqual(['same-name-0', 'same-name-1', '2'])
+    const explicit = getExistingStateFromStorage(undefined, [
+      { id: 'duplicate', name: 'A', render: () => {} },
+      { id: 'duplicate', name: 'B', render: () => {} },
+    ]).plugins!.map((entry) => entry.id)
+    expect(explicit).toEqual(['duplicate', 'duplicate'])
+  })
+
+  it('reactively replaces plugins through the existing onSetPlugins callback', async () => {
+    let replace!: (plugins: Array<TanStackDevtoolsPlugin>) => void
+    let ids: Array<string> = []
+    const dispose = createRoot((disposeRoot) => {
+      createComponent(DevtoolsProvider, {
+        plugins: [{ name: 'Old', render: () => {} }],
+        onSetPlugins: (setter) => {
+          replace = setter
+        },
+        get children() {
+          const context = useContext(DevtoolsContext)!
+          createEffect(() => {
+            ids = context.store.plugins?.map((entry) => entry.id!) ?? []
+          })
+          return null
+        },
+      })
+      return disposeRoot
+    })
+    await Promise.resolve()
+    expect(ids).toEqual(['old-0'])
+    replace([{ name: 'New', render: () => {} }])
+    expect(ids).toEqual(['new-0'])
+    dispose()
   })
 })

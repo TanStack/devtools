@@ -10,7 +10,11 @@ export const Tag = (props: {
 }) => {
   const styles = createStyles()
   return (
-    <button disabled={props.disabled} class={styles().tag.base}>
+    <button
+      data-tsd-control
+      disabled={props.disabled}
+      class={styles().tag.base}
+    >
       <span class={styles().tag.dot(props.color)} />
       <span class={styles().tag.label}>{props.label}</span>
 

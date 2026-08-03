@@ -26,6 +26,7 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
 
   return (
     <div
+      data-tsd-surface
       class={styles().pluginMarketplaceCard}
       classList={{
         [styles().pluginMarketplaceCardDisabled]:
@@ -119,7 +120,7 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
       <Show
         when={card.status === 'idle'}
         fallback={
-          <div class={styles().pluginMarketplaceCardStatus}>
+          <div class={styles().pluginMarketplaceCardStatus} role="status">
             <Show when={card.status === 'installing'}>
               <div class={styles().pluginMarketplaceCardSpinner} />
               <span class={styles().pluginMarketplaceCardStatusText}>
