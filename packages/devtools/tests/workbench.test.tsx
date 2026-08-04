@@ -11,6 +11,7 @@ import {
   DEVTOOLS_FORCED_COLORS_STYLE_ID,
   resolveSemanticTheme,
 } from '@tanstack/devtools-ui/internal'
+import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import {
   PANEL_CLOSE_THRESHOLD,
   PANEL_MAX_VIEWPORT_RATIO,
@@ -136,6 +137,7 @@ const mountWorkbench = (
 beforeEach(() => {
   events.length = 0
   localStorage.clear()
+  delete document.documentElement.dataset.tanstackDevtoolsTheme
   history.replaceState({}, '', '/')
   vi.stubGlobal(
     'ResizeObserver',
@@ -168,6 +170,7 @@ afterEach(() => {
     document.body.replaceChildren()
   } finally {
     vi.useRealTimers()
+    vi.unstubAllEnvs()
     vi.unstubAllGlobals()
     vi.restoreAllMocks()
     Object.defineProperty(window, 'innerWidth', {
@@ -383,6 +386,106 @@ describe('workbench', { timeout: 30_000 }, () => {
   )
 
   it.each([
+    [
+      'the trigger',
+      () => {
+        click('Close TanStack Devtools')
+        click('Open TanStack Devtools')
+      },
+    ],
+    [
+      'the open hotkey',
+      () => {
+        click('Close TanStack Devtools')
+        document.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: '~',
+            ctrlKey: true,
+            bubbles: true,
+          }),
+        )
+      },
+    ],
+  ] as const)(
+    'expands a collapsed drawer when Devtools opens through %s',
+    async (_, openDevtools) => {
+      mountWorkbench([plugin('one')])
+      await Promise.resolve()
+      const outerPanel = document.querySelector<HTMLElement>(
+        '[data-testid="tanstack-devtools-panel"]',
+      )!
+      const collapse = document.querySelector<HTMLButtonElement>(
+        'button[aria-label="Collapse TanStack Devtools drawer"]',
+      )!
+
+      collapse.click()
+      expect(outerPanel).toHaveAttribute('data-collapsed', 'true')
+
+      openDevtools()
+      expect(outerPanel).toHaveAttribute('data-open', 'true')
+      expect(outerPanel).toHaveAttribute('data-collapsed', 'false')
+    },
+  )
+
+  it('expands a collapsed drawer when an external event opens Devtools', async () => {
+    vi.stubEnv('NODE_ENV', 'development')
+    vi.resetModules()
+    const [
+      { default: EventDrivenDevTools },
+      { DevtoolsProvider: EventDrivenDevtoolsProvider },
+      { PiPProvider: EventDrivenPiPProvider },
+    ] = await Promise.all([
+      import('../src/devtools'),
+      import('../src/context/devtools-context'),
+      import('../src/context/pip-context'),
+    ])
+    const eventBus = new ClientEventBus()
+    eventBus.start()
+    try {
+      const host = document.body.appendChild(document.createElement('div'))
+      const dispose = render(
+        () =>
+          createComponent(EventDrivenDevtoolsProvider, {
+            plugins: [plugin('one')],
+            config: { defaultOpen: true } as TanStackDevtoolsConfig,
+            get children() {
+              return createComponent(EventDrivenPiPProvider, {
+                get children() {
+                  return createComponent(EventDrivenDevTools, {})
+                },
+              })
+            },
+          }),
+        host,
+      )
+      disposers.push(dispose)
+      const outerPanel = document.querySelector<HTMLElement>(
+        '[data-testid="tanstack-devtools-panel"]',
+      )!
+      const collapse = document.querySelector<HTMLButtonElement>(
+        'button[aria-label="Collapse TanStack Devtools drawer"]',
+      )!
+
+      collapse.click()
+      expect(outerPanel).toHaveAttribute('data-collapsed', 'true')
+
+      window.dispatchEvent(
+        new CustomEvent('tanstack-dispatch-event', {
+          detail: {
+            type: 'tanstack-devtools-core:trigger-toggled',
+            payload: { isOpen: true },
+            pluginId: 'tanstack-devtools-core',
+          },
+        }),
+      )
+
+      expect(outerPanel).toHaveAttribute('data-collapsed', 'false')
+    } finally {
+      eventBus.stop()
+    }
+  })
+
+  it.each([
     ['bottom', 'ArrowUp', 410],
     ['bottom', 'ArrowDown', 390],
     ['top', 'ArrowDown', 410],
@@ -434,6 +537,34 @@ describe('workbench', { timeout: 30_000 }, () => {
     expect(
       JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).height,
     ).toBe(attachedHeight)
+  })
+
+  it('moves the theme attribute into PiP and restores the main document on close', () => {
+    document.documentElement.dataset.tanstackDevtoolsTheme = 'host'
+    mountWorkbench([plugin('one')], { theme: 'dark' })
+    expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('dark')
+
+    click('Detach TanStack Devtools')
+    expect(popup.document.documentElement.dataset.tanstackDevtoolsTheme).toBe(
+      'dark',
+    )
+    expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('host')
+
+    popup.dispatchEvent(new Event('pagehide'))
+    expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('dark')
+  })
+
+  it('keeps the active theme when another Devtools instance unmounts', () => {
+    document.documentElement.dataset.tanstackDevtoolsTheme = 'host'
+    mountWorkbench([plugin('one')], { theme: 'light' })
+    mountWorkbench([plugin('two')], { theme: 'dark' })
+    expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('dark')
+
+    disposers.pop()!()
+    expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('light')
+
+    disposers.pop()!()
+    expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('host')
   })
 
   it('authors the 360px wordmark and reduced-motion CSS without JS state flags', () => {
@@ -1066,7 +1197,7 @@ describe('workbench', { timeout: 30_000 }, () => {
       themeLabel.htmlFor,
     ) as HTMLSelectElement
     theme.value = 'dark'
-    theme.dispatchEvent(new InputEvent('input', { bubbles: true }))
+    theme.dispatchEvent(new Event('change', { bubbles: true }))
     click('Plugins')
     expect(events).toContain('render:one:dark:true')
     document.dispatchEvent(

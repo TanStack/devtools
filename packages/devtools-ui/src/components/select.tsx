@@ -1,4 +1,4 @@
-import { createSignal, createUniqueId } from 'solid-js'
+import { createEffect, createSignal, createUniqueId } from 'solid-js'
 import { createStyles } from '../styles/use-styles'
 
 interface SelectOption<T extends string | number> {
@@ -17,15 +17,25 @@ interface SelectProps<T extends string | number> {
 export function Select<T extends string | number>(props: SelectProps<T>) {
   const styles = createStyles()
   const [selected, setSelected] = createSignal(
-    props.value || props.options[0]?.value,
+    props.value ?? props.options[0]?.value,
   )
   const id = createUniqueId()
   const descriptionId = `${id}-description`
 
+  createEffect(() => {
+    if (props.value !== undefined) {
+      setSelected(() => props.value)
+    }
+  })
+
   const handleChange = (e: Event) => {
-    const value = (e.target as HTMLSelectElement).value as T
-    setSelected((prev) => (prev !== value ? value : prev))
-    props.onChange?.(value)
+    const value = (e.target as HTMLSelectElement).value
+    const option = props.options.find(
+      (candidate) => String(candidate.value) === value,
+    )
+    if (!option) return
+    setSelected(() => option.value)
+    props.onChange?.(option.value)
   }
 
   return (
@@ -47,7 +57,7 @@ export function Select<T extends string | number>(props: SelectProps<T>) {
           aria-describedby={props.description ? descriptionId : undefined}
           class={styles().select}
           value={selected()}
-          onInput={handleChange}
+          onChange={handleChange}
         >
           {props.options.map((opt) => (
             <option value={opt.value}>{opt.label}</option>

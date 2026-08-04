@@ -1,11 +1,11 @@
 import { For, createEffect, createMemo } from 'solid-js'
 import {
-  useDevtoolsState,
-  usePlugins,
-  useTheme,
+  createDevtoolsState,
+  createPlugins,
+  createTheme,
 } from '../context/use-devtools-context'
 import { PLUGIN_TITLE_CONTAINER_ID } from '../constants'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 import {
   WorkbenchSecondaryTab,
   WorkbenchSecondaryTabs,
@@ -13,10 +13,10 @@ import {
 import type { Accessor } from 'solid-js'
 
 export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
-  const { plugins, activePlugins, toggleActivePlugins } = usePlugins()
-  const { setState } = useDevtoolsState()
-  const { theme } = useTheme()
-  const styles = useStyles()
+  const { plugins, activePlugins, toggleActivePlugins } = createPlugins()
+  const { setState } = createDevtoolsState()
+  const { theme } = createTheme()
+  const styles = createStyles()
 
   const selectPlugin = (pluginId: string) => {
     setState({ activeTab: 'plugins' })

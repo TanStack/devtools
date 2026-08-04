@@ -2,7 +2,11 @@ export const getStorageItem = (key: string) => {
   return localStorage.getItem(key)
 }
 export const setStorageItem = (key: string, value: string) => {
-  localStorage.setItem(key, value)
+  try {
+    localStorage.setItem(key, value)
+  } catch (_e) {
+    return
+  }
 }
 
 export const TANSTACK_DEVTOOLS = 'tanstack_devtools'

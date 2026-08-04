@@ -148,9 +148,9 @@ The devtools shell is a Solid.js application that renders the entire devtools UI
 The shell renders:
 - A **trigger button** (the floating devtools toggle, customizable or replaceable)
 - A **resizable Workbench panel** (docked to the top or bottom of the viewport, resizable via pointer or keyboard)
-- A compact **36px TanStack Devtools header** with explicit Plugins, SEO, and Settings destinations
-- A horizontal **Plugins strip** that expands vertically on hover or focus while keeping the panel footprint compact
-- The **Plugin Marketplace**, reached from the Plugins destination without disturbing mounted plugin panes
+- A compact **36px TanStack Devtools header** with Plugins, Marketplace, SEO, and Settings destinations
+- A fixed-height **44px secondary strip** for plugin and SEO navigation. It scrolls horizontally when space is limited.
+- A separate **Marketplace** header tab that does not disturb mounted plugin panes
 - A **settings panel** for theme, hotkeys, position, and other preferences
 - Up to three simultaneous **plugin mount frames**, divided into equal widths by static separators
 

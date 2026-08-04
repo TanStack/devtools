@@ -1,7 +1,10 @@
 import { Cogs, PiP, X } from '@tanstack/devtools-ui/icons'
-import { useDevtoolsState } from '../context/use-devtools-context'
-import { usePiPWindow } from '../context/pip-context'
-import { ensureWorkbenchGeometryStyles, useStyles } from '../styles/use-styles'
+import { createDevtoolsState } from '../context/use-devtools-context'
+import { createPiPWindow } from '../context/pip-context'
+import {
+  createStyles,
+  ensureWorkbenchGeometryStyles,
+} from '../styles/use-styles'
 import TanStackLogo from './tanstack-logo.png'
 import type { Accessor, Setter } from 'solid-js'
 
@@ -10,9 +13,9 @@ export const WorkbenchHeader = (props: {
   setShowMarketplace: Setter<boolean>
   toggleOpen: () => void
 }) => {
-  const { state, setState } = useDevtoolsState()
-  const pip = usePiPWindow()
-  const styles = useStyles()
+  const { state, setState } = createDevtoolsState()
+  const pip = createPiPWindow()
+  const styles = createStyles()
   ensureWorkbenchGeometryStyles(document)
 
   const selectDestination = (

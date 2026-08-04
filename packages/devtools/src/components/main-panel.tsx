@@ -84,7 +84,7 @@ export const MainPanel = (props: {
   return (
     <div
       id={TANSTACK_DEVTOOLS}
-      data-testid="tsd-main-panel"
+      data-testid="tanstack-devtools-panel"
       data-open={String(props.isOpen())}
       data-collapsed={String(isAttachedCollapsed())}
       data-tsd-surface

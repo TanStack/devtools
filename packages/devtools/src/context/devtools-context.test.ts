@@ -333,7 +333,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
 describe('provider resilience', () => {
   beforeEach(() => localStorage.clear())
 
-  it('fails loudly for storage access errors while retaining malformed JSON fallback', () => {
+  it('fails loudly for storage reads while tolerating storage quota errors', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementationOnce(() => {
       throw new Error('read blocked')
     })
@@ -352,7 +352,7 @@ describe('provider resilience', () => {
       getStateFromLocalStorage([
         { id: 'kept', name: 'Kept', render: () => {} },
       ]),
-    ).toThrow('quota')
+    ).not.toThrow()
   })
 
   it('generates stable unique IDs while preserving explicit duplicate IDs', () => {

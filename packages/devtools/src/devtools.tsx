@@ -23,6 +23,44 @@ import { WorkbenchHeader } from './components/workbench-header'
 import { PluginsStrip } from './components/plugins-strip'
 import { PANEL_CLOSE_THRESHOLD } from './utils/constants'
 
+const themeDocumentOwners = new WeakMap<Document, Map<symbol, string>>()
+const previousThemeAttributes = new WeakMap<Document, string | null>()
+
+const setDocumentTheme = (document: Document, owner: symbol, theme: string) => {
+  let owners = themeDocumentOwners.get(document)
+  if (!owners) {
+    owners = new Map()
+    themeDocumentOwners.set(document, owners)
+    previousThemeAttributes.set(
+      document,
+      document.documentElement.getAttribute('data-tanstack-devtools-theme'),
+    )
+  }
+  owners.delete(owner)
+  owners.set(owner, theme)
+  document.documentElement.dataset.tanstackDevtoolsTheme = theme
+}
+
+const clearDocumentTheme = (document: Document, owner: symbol) => {
+  const owners = themeDocumentOwners.get(document)
+  if (!owners) return
+  owners.delete(owner)
+  const themes = [...owners.values()]
+  const currentTheme = themes[themes.length - 1]
+  if (currentTheme) {
+    document.documentElement.dataset.tanstackDevtoolsTheme = currentTheme
+    return
+  }
+  const previousTheme = previousThemeAttributes.get(document)
+  if (previousTheme === null || previousTheme === undefined) {
+    delete document.documentElement.dataset.tanstackDevtoolsTheme
+  } else {
+    document.documentElement.dataset.tanstackDevtoolsTheme = previousTheme
+  }
+  themeDocumentOwners.delete(document)
+  previousThemeAttributes.delete(document)
+}
+
 export default function DevTools() {
   const { settings } = createDevtoolsSettings()
   const { state } = createDevtoolsState()
@@ -37,6 +75,7 @@ export default function DevTools() {
   const [isResizing, setIsResizing] = createSignal(false)
   const [isCollapsed, setIsCollapsed] = createSignal(false)
   const [showMarketplace, setShowMarketplace] = createSignal(false)
+  const themeOwner = Symbol('tanstack-devtools-theme')
 
   const updateHeight = (nextHeight: number) => {
     setHeight(nextHeight)
@@ -46,6 +85,7 @@ export default function DevTools() {
   const toggleOpen = () => {
     if (pip().pipWindow) return
     const newState = !isOpen()
+    if (newState) setIsCollapsed(false)
     setIsOpen(newState)
     setPersistOpen(newState)
     devtoolsEventClient.emit('trigger-toggled', { isOpen: newState })
@@ -55,6 +95,7 @@ export default function DevTools() {
     const unsubscribe = devtoolsEventClient.on('trigger-toggled', (event) => {
       if (pip().pipWindow) return
       const payload = event.payload as unknown as { isOpen: boolean }
+      if (payload.isOpen) setIsCollapsed(false)
       if (payload.isOpen !== isOpen()) {
         setIsOpen(payload.isOpen)
         setPersistOpen(payload.isOpen)
@@ -101,7 +142,10 @@ export default function DevTools() {
   createEffect(() => {
     const element = rootEl()
     if (element) {
-      element.style.setProperty('--tsrd-font-size', getComputedStyle(element).fontSize)
+      element.style.setProperty(
+        '--tsrd-font-size',
+        getComputedStyle(element).fontSize,
+      )
     }
   })
   createEffect(() => {
@@ -120,9 +164,9 @@ export default function DevTools() {
 
   const { theme } = createTheme()
   createEffect(() => {
-    if (typeof document !== 'undefined') {
-      document.documentElement.dataset.tanstackDevtoolsTheme = theme()
-    }
+    const activeDocument = pip().pipWindow?.document ?? document
+    setDocumentTheme(activeDocument, themeOwner, theme())
+    onCleanup(() => clearDocumentTheme(activeDocument, themeOwner))
   })
 
   return (

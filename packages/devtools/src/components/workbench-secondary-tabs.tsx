@@ -1,4 +1,4 @@
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js'
 
 export const WorkbenchSecondaryTabs = (props: {
@@ -6,7 +6,7 @@ export const WorkbenchSecondaryTabs = (props: {
   dataTestId?: string
   children: JSX.Element
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <nav
@@ -30,7 +30,7 @@ export const WorkbenchSecondaryTab = (props: {
   pluginTitleControl?: boolean
   onClick: () => void
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <button
