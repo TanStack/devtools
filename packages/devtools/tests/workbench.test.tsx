@@ -325,7 +325,7 @@ describe('workbench', { timeout: 30_000 }, () => {
   })
 
   it.each(['bottom', 'top'] as const)(
-    'collapses and restores the %s drawer without changing height or plugin lifecycle',
+    'folds only the subheader on a %s panel, leaving the panel and content alone',
     (panelLocation) => {
       localStorage.setItem(
         TANSTACK_DEVTOOLS_STATE,
@@ -341,49 +341,70 @@ describe('workbench', { timeout: 30_000 }, () => {
         '[data-testid="tanstack-devtools-panel"]',
       )!
       const storedBefore = localStorage.getItem(TANSTACK_DEVTOOLS_STATE)
-      const collapse = document.querySelector<HTMLButtonElement>(
-        'button[aria-label="Collapse TanStack Devtools drawer"]',
-      )!
+      const toggle = () =>
+        document.querySelector<HTMLButtonElement>(
+          '[data-testid="workbench-collapse-toggle"]',
+        )!
 
-      expect(collapse).toHaveAttribute('type', 'button')
-      expect(collapse).toHaveAttribute('data-tsd-control')
-      expect(collapse).toHaveAttribute('aria-expanded', 'true')
-      expect(collapse).toHaveAttribute('data-panel-location', panelLocation)
-      collapse.click()
+      expect(toggle()).toHaveAttribute('type', 'button')
+      expect(toggle()).toHaveAttribute('data-tsd-control')
+      expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+
+      toggle().click()
+
+      // The subheader is the only thing that goes. The panel stays open, keeps
+      // its height, and the plugin stays mounted and running.
+      expect(document.querySelector('[data-testid="plugins-strip"]')).toBeNull()
       expect(outerPanel).toHaveAttribute('data-open', 'true')
-      expect(outerPanel).toHaveAttribute('data-collapsed', 'true')
-      expect(outerPanel.style.transform).toBe(
-        panelLocation === 'top' ? 'translateY(-100%)' : 'translateY(100%)',
-      )
-      expect(collapse).toHaveAttribute(
-        'aria-label',
-        'Expand TanStack Devtools drawer',
-      )
-      expect(collapse).toHaveAttribute('aria-expanded', 'false')
+      expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
+      expect(outerPanel.style.transform).toBe('translateY(0px)')
+      expect(outerPanel.style.height).toBe('417px')
       expect(
-        document.querySelector('[data-testid="devtools-drawer-content"]'),
-      ).toHaveAttribute('aria-hidden', 'true')
-      expect(
-        document.querySelector('[data-testid="devtools-drawer-content"]'),
-      ).toHaveAttribute('inert')
-      expect(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)).toBe(storedBefore)
+        document.querySelector('[data-testid="workbench-header"]'),
+      ).not.toBeNull()
       expect(document.querySelector('[data-plugin-mount]')).not.toBeNull()
       expect(events).not.toContain('destroy:one')
+      expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+      expect(toggle().getAttribute('aria-label')).toBe(
+        'Show the plugin and section tabs',
+      )
+      expect(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)).toBe(storedBefore)
 
-      collapse.click()
-      expect(outerPanel).toHaveAttribute('data-collapsed', 'false')
+      toggle().click()
+      expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'false')
+      expect(
+        document.querySelector('[data-testid="plugins-strip"]'),
+      ).not.toBeNull()
       expect(outerPanel.style.height).toBe('417px')
-      expect(outerPanel.style.transform).toBe('translateY(0px)')
-      expect(
-        document.querySelector('[data-testid="devtools-drawer-content"]'),
-      ).not.toHaveAttribute('aria-hidden')
-      expect(
-        document.querySelector('[data-testid="devtools-drawer-content"]'),
-      ).not.toHaveAttribute('inert')
+      expect(document.querySelector('[data-plugin-mount]')).not.toBeNull()
       expect(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)).toBe(storedBefore)
       expect(events).not.toContain('destroy:one')
     },
   )
+
+  it('hides the fold tab on destinations that have no subheader', () => {
+    mountWorkbench([plugin('one')])
+    const toggle = () =>
+      document.querySelector('[data-testid="workbench-collapse-toggle"]')
+    const click = (label: string) =>
+      [...document.querySelectorAll<HTMLButtonElement>('button')]
+        .find(
+          (button) =>
+            button.textContent?.trim() === label ||
+            button.getAttribute('aria-label') === label,
+        )!
+        .click()
+
+    expect(toggle()).not.toBeNull()
+    click('Marketplace')
+    expect(toggle()).toBeNull()
+    click('Settings')
+    expect(toggle()).toBeNull()
+    click('SEO')
+    expect(toggle()).not.toBeNull()
+    click('Plugins')
+    expect(toggle()).not.toBeNull()
+  })
 
   it.each([
     [
@@ -407,7 +428,7 @@ describe('workbench', { timeout: 30_000 }, () => {
       },
     ],
   ] as const)(
-    'expands a collapsed drawer when Devtools opens through %s',
+    'keeps a folded subheader folded across a close and reopen through %s',
     async (_, openDevtools) => {
       mountWorkbench([plugin('one')])
       await Promise.resolve()
@@ -415,19 +436,20 @@ describe('workbench', { timeout: 30_000 }, () => {
         '[data-testid="tanstack-devtools-panel"]',
       )!
       const collapse = document.querySelector<HTMLButtonElement>(
-        'button[aria-label="Collapse TanStack Devtools drawer"]',
+        '[data-testid="workbench-collapse-toggle"]',
       )!
 
       collapse.click()
-      expect(outerPanel).toHaveAttribute('data-collapsed', 'true')
+      expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
 
       openDevtools()
       expect(outerPanel).toHaveAttribute('data-open', 'true')
-      expect(outerPanel).toHaveAttribute('data-collapsed', 'false')
+      // Folding the subheader is independent of opening and closing the panel.
+      expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
     },
   )
 
-  it('expands a collapsed drawer when an external event opens Devtools', async () => {
+  it('keeps a folded subheader folded when an external event opens Devtools', async () => {
     vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     const [
@@ -463,11 +485,11 @@ describe('workbench', { timeout: 30_000 }, () => {
         '[data-testid="tanstack-devtools-panel"]',
       )!
       const collapse = document.querySelector<HTMLButtonElement>(
-        'button[aria-label="Collapse TanStack Devtools drawer"]',
+        '[data-testid="workbench-collapse-toggle"]',
       )!
 
       collapse.click()
-      expect(outerPanel).toHaveAttribute('data-collapsed', 'true')
+      expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
 
       window.dispatchEvent(
         new CustomEvent('tanstack-dispatch-event', {
@@ -479,7 +501,7 @@ describe('workbench', { timeout: 30_000 }, () => {
         }),
       )
 
-      expect(outerPanel).toHaveAttribute('data-collapsed', 'false')
+      expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
     } finally {
       eventBus.stop()
     }
@@ -603,8 +625,8 @@ describe('workbench', { timeout: 30_000 }, () => {
     const header = document.querySelector<HTMLElement>(
       '[data-testid="workbench-header"]',
     )!
-    const logo = header.querySelector<HTMLImageElement>(
-      'img[alt="TanStack Devtools"]',
+    const logo = header.querySelector<HTMLElement>(
+      '[data-testid="workbench-logo"]',
     )!
     const plugins = [
       ...header.querySelectorAll<HTMLButtonElement>('button'),
@@ -616,7 +638,10 @@ describe('workbench', { timeout: 30_000 }, () => {
       'button[aria-label="Settings"]',
     )!
 
-    expect(logo.getAttribute('src')).toMatch(/tanstack-logo\.png/)
+    // The palm emblem is inline SVG so it stays sharp and inherits the mark
+    // colour from the theme instead of being a filtered raster.
+    expect(logo.querySelector('svg')).not.toBeNull()
+    expect(logo.querySelector('img')).toBeNull()
     expect(settings).toHaveAttribute('title', 'Settings')
     expect(settings.textContent?.trim()).toBe('')
     expect(settings.querySelector('svg')).not.toBeNull()
@@ -727,8 +752,8 @@ describe('workbench', { timeout: 30_000 }, () => {
     const strip = document.querySelector<HTMLElement>(
       '[data-testid="plugins-strip"]',
     )!
-    const logo = header.querySelector<HTMLImageElement>(
-      'img[alt="TanStack Devtools"]',
+    const logo = header.querySelector<HTMLElement>(
+      '[data-testid="workbench-logo"]',
     )!
     const destinations = header.querySelector<HTMLElement>(
       '[data-testid="workbench-destinations"]',
@@ -1060,11 +1085,11 @@ describe('workbench', { timeout: 30_000 }, () => {
   it.each([
     {
       plugins: [],
-      message: 'Browse Marketplace to discover available plugins.',
+      message: 'Discover and install devtools',
     },
     {
       plugins: [plugin('one'), plugin('two')],
-      message: 'Select a plugin to open it',
+      message: 'No plugin open',
     },
   ])('renders the registered-plugin zero state', ({ plugins, message }) => {
     mountWorkbench(plugins)

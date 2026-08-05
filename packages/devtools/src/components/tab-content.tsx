@@ -21,14 +21,11 @@ export const TabContent = (props: {
       data-tsd-surface
       style={{ flex: '1 1 0', 'min-height': '0' }}
     >
+      {/* No wrapper: the marketplace shell is its own full-height, clipped
+          flex column, and a wrapper here duplicated its `plugin-marketplace`
+          test id. */}
       {props.showMarketplace ? (
-        <div
-          data-testid="plugin-marketplace"
-          data-tsd-surface
-          style={{ height: '100%', 'min-height': '0px', overflow: 'hidden' }}
-        >
-          <PluginMarketplace />
-        </div>
+        <PluginMarketplace />
       ) : (
         component()?.({ isOpen: props.isOpen })
       )}

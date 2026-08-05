@@ -148,8 +148,8 @@ The devtools shell is a Solid.js application that renders the entire devtools UI
 The shell renders:
 - A **trigger button** (the floating devtools toggle, customizable or replaceable)
 - A **resizable Workbench panel** (docked to the top or bottom of the viewport, resizable via pointer or keyboard)
-- A compact **36px TanStack Devtools header** with Plugins, Marketplace, SEO, and Settings destinations
-- A fixed-height **44px secondary strip** for plugin and SEO navigation. It scrolls horizontally when space is limited.
+- A compact **36px TanStack Devtools header** with Plugins, Marketplace, SEO, and Settings destinations. The palm emblem is inline SVG, so it stays sharp and takes its colour from the theme.
+- A fixed-height **44px secondary strip** for plugin and SEO navigation. It scrolls horizontally when space is limited, and a pull tab on its bottom edge folds it away behind the header. Folding changes nothing else — the panel keeps its height and the destination content keeps running — so the tab is rendered only on the destinations that have a strip.
 - A separate **Marketplace** header tab that does not disturb mounted plugin panes
 - A **settings panel** for theme, hotkeys, position, and other preferences
 - Up to three simultaneous **plugin mount frames**, divided into equal widths by static separators
@@ -157,6 +157,15 @@ The shell renders:
 Settings and UI state (panel size, position, active tab, theme) are persisted in `localStorage` so they survive page reloads.
 
 The core shell owns the Workbench header, navigation, mount-frame geometry, separators, and surrounding light/dark surfaces. Each external plugin owns everything inside its mount target; core styling deliberately does not reach into plugin descendants. Detaching the Workbench uses a fixed `100vh` Picture-in-Picture layout and restores the stored docked height when reattached.
+
+#### Workbench surfaces and gutters
+
+Two rules keep the shell reading as one surface:
+
+- **Chrome versus canvas.** The header and every secondary strip paint the brand surface (cream in light mode, near-black in dark mode) and close with a translucent ink hairline. Destination content and plugin mount frames paint the workspace surface. A plugin pane can paint any colour it likes, so the separator between panes uses a mid-tone border that stays visible against both.
+- **One gutter.** `WORKBENCH_GUTTER` (16px, or `WORKBENCH_GUTTER_NARROW` at 12px below 430px) is the single inline gutter. The header, the strips, and each destination's content all start there, so the left edge is one column instead of three. `MainPanel withPadding` uses the same value.
+
+Colour comes from the semantic theme only. Raw hex values in core-owned source are rejected by `tests/semantic-color-usage.test.ts` unless they carry a narrow, path-scoped `semantic-color-exempt` marker — currently only third-party network marks and the source-inspector highlight alpha. Status colours (success, warning, error, info) mark real state; identity accents do not compete with them, so a card that is both featured and active keeps the neutral outline and lets its badge say which it is.
 
 ### @tanstack/devtools-ui -- Component Library
 

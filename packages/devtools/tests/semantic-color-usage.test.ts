@@ -13,8 +13,9 @@ const roots = [
 const extensions = new Set(['.ts', '.tsx'])
 const rawColor = /#[\da-f]{3,8}\b|\b(?:rgb|rgba|hsl|hsla|oklch)\(/i
 const gradient = /\b(?:linear|radial|conic)-gradient\(/i
+// The SEO "no image" placeholder used to hardcode greys; it is semantic now,
+// so `simulated-seo` is deliberately gone rather than left as a dead exemption.
 const allowedMarkers = new Map([
-  ['semantic-color-exempt: simulated-seo', /^src[\\/]tabs[\\/]seo-tab[\\/]/],
   [
     'semantic-color-exempt: vendor-mark',
     /^src[\\/]tabs[\\/](?:seo-tab|plugin-registry)/,

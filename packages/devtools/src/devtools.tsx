@@ -1,9 +1,10 @@
-import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import {
+  createCollapsed,
   createDevtoolsSettings,
   createDevtoolsState,
   createHeight,
@@ -73,7 +74,10 @@ export default function DevTools() {
   const pip = createPiPWindow()
   let panelRef: HTMLDivElement | undefined
   const [isResizing, setIsResizing] = createSignal(false)
-  const [isCollapsed, setIsCollapsed] = createSignal(false)
+  const { isCollapsed, setCollapsed } = createCollapsed()
+  // The fold flag outlives a single mount, so start every shell with the
+  // subheader showing rather than inheriting a fold from a previous instance.
+  onMount(() => setCollapsed(false))
   const [showMarketplace, setShowMarketplace] = createSignal(false)
   const themeOwner = Symbol('tanstack-devtools-theme')
 
@@ -85,7 +89,6 @@ export default function DevTools() {
   const toggleOpen = () => {
     if (pip().pipWindow) return
     const newState = !isOpen()
-    if (newState) setIsCollapsed(false)
     setIsOpen(newState)
     setPersistOpen(newState)
     devtoolsEventClient.emit('trigger-toggled', { isOpen: newState })
@@ -95,7 +98,6 @@ export default function DevTools() {
     const unsubscribe = devtoolsEventClient.on('trigger-toggled', (event) => {
       if (pip().pipWindow) return
       const payload = event.payload as unknown as { isOpen: boolean }
-      if (payload.isOpen) setIsCollapsed(false)
       if (payload.isOpen !== isOpen()) {
         setIsOpen(payload.isOpen)
         setPersistOpen(payload.isOpen)
@@ -103,6 +105,15 @@ export default function DevTools() {
     })
     onCleanup(unsubscribe)
   })
+
+  // Only the plugins and SEO destinations have a secondary strip. The collapse
+  // tab folds that strip away and nothing else — the header, the panel height
+  // and the destination content all stay exactly as they are — so it is not
+  // rendered at all on Marketplace or Settings, where there is no strip.
+  const showsPluginsStrip = () =>
+    state().activeTab === 'plugins' && !showMarketplace()
+  const showsSeoStrip = () => state().activeTab === 'seo' && !showMarketplace()
+  const hasSubheader = () => showsPluginsStrip() || showsSeoStrip()
 
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
@@ -187,7 +198,7 @@ export default function DevTools() {
               isResizing={isResizing}
               isOpen={isOpen}
               isCollapsed={isCollapsed}
-              toggleCollapsed={() => setIsCollapsed((collapsed) => !collapsed)}
+              hasSubheader={hasSubheader}
             >
               <ContentPanel
                 ref={(ref) => (panelRef = ref)}
@@ -199,9 +210,8 @@ export default function DevTools() {
                   setShowMarketplace={setShowMarketplace}
                   toggleOpen={toggleOpen}
                 />
-                <Show
-                  when={state().activeTab === 'plugins' && !showMarketplace()}
-                >
+                {/* Stays mounted while folded so it can slide shut. */}
+                <Show when={showsPluginsStrip()}>
                   <PluginsStrip isOpen={isOpen} />
                 </Show>
                 <TabContent

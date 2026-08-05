@@ -38,11 +38,6 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
       }}
       style={{ position: 'relative' }}
     >
-      {/* New Banner */}
-      <Show when={card.metadata?.isNew}>
-        <div class={styles().pluginMarketplaceNewBanner}>New</div>
-      </Show>
-
       <span class={getBadgeClass(card, styles)}>{getBadgeText(card)}</span>
       <div
         class={styles().pluginMarketplaceCardIcon}
@@ -61,6 +56,10 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
       <div class={styles().pluginMarketplaceCardHeader}>
         <h3 class={styles().pluginMarketplaceCardTitle}>
           {card.metadata?.title || card.devtoolsPackage}
+          {/* Inline, so it can never land on top of the icon or the badge. */}
+          <Show when={card.metadata?.isNew}>
+            <span class={styles().pluginMarketplaceNewBanner}>New</span>
+          </Show>
         </h3>
         <p class={styles().pluginMarketplaceCardPackageBadge}>
           {card.devtoolsPackage}
@@ -83,14 +82,13 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
               when={card.versionInfo?.satisfied}
               fallback={
                 <span class={styles().pluginMarketplaceCardVersionUnsatisfied}>
-                  ⚠️ v{card.versionInfo?.current} • Requires v
+                  v{card.versionInfo?.current} • requires v
                   {card.versionInfo?.required}+
                 </span>
               }
             >
               <span class={styles().pluginMarketplaceCardVersionSatisfied}>
-                ✓ v{card.versionInfo?.current} • Min v
-                {card.versionInfo?.required}
+                v{card.versionInfo?.current} • min v{card.versionInfo?.required}
               </span>
             </Show>
           </p>

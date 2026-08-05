@@ -9,7 +9,7 @@ import {
 import clsx from 'clsx'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
-import TanStackLogo from './tanstack-logo.png'
+import { TanStackEmblem } from './tanstack-emblem'
 import type { TriggerCoords } from '../context/devtools-store'
 import type { Accessor } from 'solid-js'
 
@@ -294,10 +294,7 @@ export const Trigger = (props: {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
       >
-        <Show
-          when={settings().customTrigger}
-          fallback={<img src={TanStackLogo} alt="TanStack Devtools" />}
-        >
+        <Show when={settings().customTrigger} fallback={<TanStackEmblem />}>
           <div ref={setContainerRef} />
         </Show>
       </button>

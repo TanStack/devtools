@@ -1,4 +1,4 @@
-import { createMemo, useContext as getContext } from 'solid-js'
+import { createMemo, createSignal, useContext as getContext } from 'solid-js'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants.js'
 import { DevtoolsContext } from './devtools-context.jsx'
 import type { DevtoolsStore } from './devtools-store.js'
@@ -94,6 +94,22 @@ export const createPersistOpen = () => {
   }
   return { persistOpen, setPersistOpen }
 }
+
+/**
+ * Whether the strip and destination content are collapsed behind the main
+ * header. Deliberately not part of the persisted store: it is a momentary view
+ * state, and a reload should bring the panel back in full.
+ *
+ * The shell mounts once per document, so one module-level signal is enough and
+ * saves threading the toggle through every strip that hosts the control.
+ */
+const [collapsed, setCollapsed] = createSignal(false)
+
+export const createCollapsed = () => ({
+  isCollapsed: collapsed,
+  toggleCollapsed: () => setCollapsed((previous) => !previous),
+  setCollapsed,
+})
 
 export const createHeight = () => {
   const { state, setState } = createDevtoolsState()

@@ -98,14 +98,16 @@ function SocialPreview(props: {
   const styles = createStyles()
 
   return (
-    <div
-      class={styles().seoPreviewCard}
-      style={{ 'border-color': props.color }}
-    >
+    <div class={styles().seoPreviewCard}>
       <div
         class={styles().seoPreviewHeader}
         data-testid="social-preview-heading"
       >
+        <span
+          aria-hidden="true"
+          class={styles().seoPreviewNetworkDot}
+          style={{ background: props.color }}
+        />
         {props.network} Preview
       </div>
       {props.meta.image ? (
@@ -116,18 +118,9 @@ function SocialPreview(props: {
         />
       ) : (
         <div
-          class={styles().seoPreviewImage}
-          style={{
-            background: '#222', // semantic-color-exempt: simulated-seo
-            color: '#888', // semantic-color-exempt: simulated-seo
-            display: 'flex',
-            'align-items': 'center',
-            'justify-content': 'center',
-            'min-height': '80px',
-            width: '100%',
-          }}
+          class={`${styles().seoPreviewImage} ${styles().seoPreviewImagePlaceholder}`}
         >
-          No Image
+          No image
         </div>
       )}
       <div class={styles().seoPreviewTitle} data-testid="social-preview-title">

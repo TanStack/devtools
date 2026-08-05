@@ -5,7 +5,7 @@ import {
   createStyles,
   ensureWorkbenchGeometryStyles,
 } from '../styles/use-styles'
-import TanStackLogo from './tanstack-logo.png'
+import { TanStackEmblem } from './tanstack-emblem'
 import type { Accessor, Setter } from 'solid-js'
 
 export const WorkbenchHeader = (props: {
@@ -50,8 +50,12 @@ export const WorkbenchHeader = (props: {
       data-tsd-surface
       class={styles().workbenchHeader}
     >
-      <span aria-label="TanStack Devtools" class={styles().workbenchLogo}>
-        <img src={TanStackLogo} alt="TanStack Devtools" />
+      <span
+        data-testid="workbench-logo"
+        aria-hidden="true"
+        class={styles().workbenchLogo}
+      >
+        <TanStackEmblem />
       </span>
       <strong
         data-testid="workbench-wordmark"
@@ -102,6 +106,7 @@ export const WorkbenchHeader = (props: {
             <button
               type="button"
               aria-label="Detach TanStack Devtools"
+              title="Detach into its own window"
               data-tsd-control
               class={styles().workbenchActionButton}
               onClick={detach}
@@ -111,6 +116,7 @@ export const WorkbenchHeader = (props: {
             <button
               type="button"
               aria-label="Close TanStack Devtools"
+              title="Close TanStack Devtools"
               data-tsd-control
               class={styles().workbenchActionButton}
               onClick={props.toggleOpen}

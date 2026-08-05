@@ -1,7 +1,9 @@
 import { For, Show, createEffect, createSignal } from 'solid-js'
+import { PackageIcon } from '@tanstack/devtools-ui/icons'
 import { createPlugins, createTheme } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
 import { PLUGIN_CONTAINER_ID } from '../constants'
+import { MAX_ACTIVE_PLUGINS } from '../utils/constants'
 import { PluginMarketplace } from './plugin-marketplace'
 
 export const PluginsTab = (props: { isOpen: boolean }) => {
@@ -28,8 +30,7 @@ export const PluginsTab = (props: { isOpen: boolean }) => {
     <Show
       when={(plugins()?.length ?? 0) > 0}
       fallback={
-        <div data-tsd-surface>
-          <p>Browse Marketplace to discover available plugins.</p>
+        <div data-tsd-surface class={styles().pluginsTabContent}>
           <PluginMarketplace />
         </div>
       }
@@ -48,7 +49,22 @@ export const PluginsTab = (props: { isOpen: boolean }) => {
       >
         <Show
           when={activePlugins().length > 0}
-          fallback={<div data-tsd-surface>Select a plugin to open it</div>}
+          fallback={
+            <div
+              data-testid="plugins-empty-state"
+              data-tsd-surface
+              class={styles().pluginsEmptyState}
+            >
+              <span aria-hidden="true" class={styles().pluginsEmptyStateIcon}>
+                <PackageIcon />
+              </span>
+              <p class={styles().pluginsEmptyStateTitle}>No plugin open</p>
+              <p class={styles().pluginsEmptyStateHint}>
+                Pick a plugin from the strip above to open its panel. You can
+                keep up to {MAX_ACTIVE_PLUGINS} open side by side.
+              </p>
+            </div>
+          }
         >
           <For each={activePlugins()}>
             {(pluginId, index) => (

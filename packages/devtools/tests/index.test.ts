@@ -65,9 +65,11 @@ afterEach(() => {
 describe('devtools core boundaries', () => {
   it('preserves default and custom triggers', () => {
     const defaultHost = mountShell({})
+    // The default trigger draws the palm emblem inline so it inherits the
+    // theme's mark colour; the button's aria-label carries the accessible name.
     expect(
-      document.querySelector('button[aria-label="Open TanStack Devtools"] img'),
-    ).toHaveAttribute('alt', 'TanStack Devtools')
+      document.querySelector('button[aria-label="Open TanStack Devtools"] svg'),
+    ).not.toBeNull()
     disposeShell(defaultHost)
     const customTrigger = vi.fn((element: HTMLElement) => {
       element.textContent = 'Custom trigger'

@@ -83,7 +83,7 @@ Your application loads a **Framework Adapter**, which mounts the **Core Shell**.
 
 ## Key Features
 
-- **Compact TanStack Workbench**: The trigger reveals a branded light/dark panel with a 36px banner and Plugins, Marketplace, SEO, and Settings navigation. The whole panel keeps its existing hide-and-reveal lifecycle.
+- **Compact TanStack Workbench**: The trigger reveals a branded light/dark panel with a 36px banner and Plugins, Marketplace, SEO, and Settings navigation. Navigation and the strips sit on the cream (or near-black) chrome band, content sits on the workspace surface, and every surface shares one 16px gutter. The whole panel keeps its existing hide-and-reveal lifecycle.
 - **Framework Agnostic**: Works with React, Vue, Solid, and Preact out of the box.
 - **Plugin System & Marketplace**: Build, share, discover, and install devtools plugins with a simple API. The fixed 44px secondary strip scrolls horizontally when space is limited. Marketplace is a separate header tab.
 - **Simultaneous Plugin Panes**: Open up to three plugins at once in equal-width panes while each plugin retains ownership of its own UI.

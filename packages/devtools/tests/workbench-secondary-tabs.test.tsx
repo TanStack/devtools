@@ -6,6 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from '../src/context/devtools-context'
+import { WORKBENCH_GUTTER } from '../src/utils/constants'
 import {
   WorkbenchSecondaryTab,
   WorkbenchSecondaryTabs,
@@ -133,18 +134,24 @@ describe.each(['light', 'dark'] as const)(
         gap: Number.parseFloat(getComputedStyle(bar).gap),
       }).toEqual({
         height: '44px',
-        minHeight: '44px',
-        flexBasis: '44px',
+        // Sized by its own height, not a fixed basis, so folding can animate it.
+        minHeight: '0',
+        flexBasis: 'auto',
         flexShrink: '0',
         paddingBlock: '6px',
-        paddingInlineStart: '8px',
-        paddingInlineEnd: '8px',
+        // The strip shares the workbench gutter so its first tab lines up with
+        // the header above it and the destination content below it.
+        paddingInlineStart: `${WORKBENCH_GUTTER}px`,
+        paddingInlineEnd: `${WORKBENCH_GUTTER}px`,
         overflowX: 'auto',
-        scrollPaddingInlineStart: '8px',
-        scrollPaddingInlineEnd: '8px',
-        gap: 0,
+        scrollPaddingInlineStart: `${WORKBENCH_GUTTER}px`,
+        scrollPaddingInlineEnd: `${WORKBENCH_GUTTER}px`,
+        // Adjacent selected tabs must not merge into one filled block.
+        gap: 4,
       })
-      expect(getComputedStyle(bar).borderBottomWidth).not.toBe('1px')
+      // The strip is part of the cream chrome band, so it closes with a
+      // hairline against the workspace surface underneath.
+      expect(getComputedStyle(bar).borderBottomWidth).toBe('1px')
       expect(one).toHaveAttribute('data-workbench-secondary-tab')
       expect(one).toHaveAttribute('data-tsd-selected', 'true')
       expect(one).toHaveAttribute('aria-current', 'page')

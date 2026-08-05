@@ -34,7 +34,7 @@ export const SeoTab = () => {
           ariaCurrent={activeView() === 'serp-preview' ? 'page' : undefined}
           onClick={() => setActiveView('serp-preview')}
         >
-          SERP Preview
+          SERP preview
         </WorkbenchSecondaryTab>
       </WorkbenchSecondaryTabs>
 

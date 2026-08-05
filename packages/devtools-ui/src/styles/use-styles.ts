@@ -148,26 +148,52 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
       text-align: left;
     `,
     select: css`
-      appearance: auto;
+      /* The platform chevron is drawn in the OS accent, which reads as foreign
+         next to the rest of the panel — draw our own from currentColor instead
+         so it follows the theme. */
+      appearance: none;
+      -webkit-appearance: none;
       width: 100%;
-      padding: ${semantic.padding.controlBlock}
-        ${semantic.padding.controlInline};
+      box-sizing: border-box;
+      padding: ${semantic.padding.controlBlock} 28px
+        ${semantic.padding.controlBlock} ${semantic.padding.controlInline};
       border-radius: ${semantic.radius.control};
       background-color: ${semantic.color.surface.elevated};
+      background-image:
+        linear-gradient(45deg, transparent 50%, currentColor 50%),
+        linear-gradient(135deg, currentColor 50%, transparent 50%);
+      background-position:
+        right 14px center,
+        right 9px center;
+      background-size:
+        5px 5px,
+        5px 5px;
+      background-repeat: no-repeat;
       color: ${semantic.color.text.primary};
       border: 1px solid ${semantic.color.border.control};
       font: ${semantic.type.bodySm.weight} ${semantic.type.bodySm.size} /
         ${semantic.type.bodySm.lineHeight} ${semantic.font.body};
-      transition: all 0.15s ease;
+      transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
       cursor: pointer;
 
       &:hover {
         border-color: ${semantic.color.border.focus};
       }
 
-      &:focus {
+      &:focus-visible {
         outline: 2px solid ${semantic.color.border.focus};
         outline-offset: 2px;
+      }
+      /* The custom chevron is decorative; let the platform draw its own when
+         the user forces system colours. */
+      @media (forced-colors: active) {
+        appearance: auto;
+        background-image: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     `,
     inputWrapper: css`
@@ -648,10 +674,15 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
     },
     mainPanel: {
       panel: (withPadding: boolean) => css`
-        padding: ${withPadding ? semantic.space[3] : 0};
+        /* space[4] keeps the panel's own gutter equal to the workbench gutter,
+           so a destination's content lines up with the tab strip above it. */
+        padding: ${withPadding ? semantic.space[4] : 0};
         background: ${semantic.color.surface.workspace};
         color: ${semantic.color.text.primary};
         overflow-y: auto;
+        /* Keep a scroll gesture inside the devtools instead of chaining it on
+           to the host page once this panel hits its end. */
+        overscroll-behavior: contain;
         height: 100%;
         &::selection,
         & *::selection {
