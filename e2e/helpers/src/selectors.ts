@@ -3,7 +3,7 @@ export type TabId = 'plugins' | 'seo' | 'settings'
 export const SELECTORS = {
   /** The trigger button is selected by its accessible name. */
   triggerName: 'Open TanStack Devtools',
-  mainPanel: 'tsd-main-panel',
+  mainPanel: 'tanstack-devtools-panel',
   resizeHandle: 'tsd-resize-handle',
   pipButton: 'tsd-pip-button',
   closeButton: 'tsd-close-button',

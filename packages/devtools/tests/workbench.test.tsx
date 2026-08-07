@@ -15,6 +15,8 @@ import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import {
   PANEL_CLOSE_THRESHOLD,
   PANEL_MAX_VIEWPORT_RATIO,
+  PLUGINS_STRIP_HEIGHT,
+  WORKBENCH_GUTTER,
   WORKBENCH_HEADER_HEIGHT,
 } from '../src/utils/constants'
 import type {
@@ -352,9 +354,13 @@ describe('workbench', { timeout: 30_000 }, () => {
 
       toggle().click()
 
-      // The subheader is the only thing that goes. The panel stays open, keeps
-      // its height, and the plugin stays mounted and running.
-      expect(document.querySelector('[data-testid="plugins-strip"]')).toBeNull()
+      // The subheader is the only thing that goes. It stays mounted so it can
+      // slide, but folded shut it is inert and out of the accessibility tree.
+      // The panel stays open, keeps its height, and the plugin stays mounted
+      // and running.
+      const strip = document.querySelector('[data-testid="plugins-strip"]')!
+      expect(strip).toHaveAttribute('data-collapsed', 'true')
+      expect(strip).toHaveAttribute('aria-hidden', 'true')
       expect(outerPanel).toHaveAttribute('data-open', 'true')
       expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
       expect(outerPanel.style.transform).toBe('translateY(0px)')
@@ -372,9 +378,8 @@ describe('workbench', { timeout: 30_000 }, () => {
 
       toggle().click()
       expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'false')
-      expect(
-        document.querySelector('[data-testid="plugins-strip"]'),
-      ).not.toBeNull()
+      expect(strip).not.toHaveAttribute('data-collapsed')
+      expect(strip).not.toHaveAttribute('aria-hidden')
       expect(outerPanel.style.height).toBe('417px')
       expect(document.querySelector('[data-plugin-mount]')).not.toBeNull()
       expect(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)).toBe(storedBefore)
@@ -759,25 +764,29 @@ describe('workbench', { timeout: 30_000 }, () => {
       '[data-testid="workbench-destinations"]',
     )!
 
-    expect(getComputedStyle(header).paddingRight).toBe('8px')
+    // No trailing gutter: the action icons run all the way to the panel edge.
+    expect(getComputedStyle(header).paddingRight).toBe('0px')
     expect(getComputedStyle(destinations).display).toBe('inline-flex')
     expect(Number.parseFloat(getComputedStyle(destinations).gap)).toBe(0)
     expect(plugins.parentElement).toBe(destinations)
     expect(marketplace.parentElement).toBe(destinations)
     expect(seo.parentElement).toBe(destinations)
     for (const destination of [plugins, marketplace, seo]) {
-      expect(getComputedStyle(destination).paddingInline).toBe('12px')
+      expect(getComputedStyle(destination).paddingInline).toBe('10px')
     }
     for (const action of actions) {
       expect(action).not.toBeNull()
       expect(getComputedStyle(action!).width).toBe('36px')
       expect(getComputedStyle(action!).height).toBe('36px')
     }
-    expect(getComputedStyle(plugins).backgroundColor).toBe(
-      getComputedStyle(strip).backgroundColor,
-    )
+    // The active destination is a pressed chip sitting on the brand band — a
+    // translucent overlay, so it reads as raised rather than painting the
+    // strip's own colour.
     expect(getComputedStyle(plugins).backgroundColor).not.toBe(
       'rgba(0, 0, 0, 0)',
+    )
+    expect(getComputedStyle(plugins).backgroundColor).not.toBe(
+      getComputedStyle(strip).backgroundColor,
     )
     expect(getComputedStyle(seo).backgroundColor).toBe('rgba(0, 0, 0, 0)')
     expect(getComputedStyle(logo).filter).not.toBe('none')
@@ -794,10 +803,19 @@ describe('workbench', { timeout: 30_000 }, () => {
       authoredStyleRules().some(
         (rule) =>
           rule.selector.includes(`.${stripClass}`) &&
-          /height:\s*44px/i.test(rule.cssText) &&
+          new RegExp(`height:\\s*${PLUGINS_STRIP_HEIGHT}px`, 'i').test(
+            rule.cssText,
+          ) &&
           /padding-block:\s*6px/i.test(rule.cssText) &&
-          /padding-inline-end:\s*8px/i.test(rule.cssText) &&
-          /scroll-padding-inline-end:\s*8px/i.test(rule.cssText),
+          // The strip runs on the one workbench gutter, like the header and
+          // every destination's content.
+          new RegExp(`padding-inline-end:\\s*${WORKBENCH_GUTTER}px`, 'i').test(
+            rule.cssText,
+          ) &&
+          new RegExp(
+            `scroll-padding-inline-end:\\s*${WORKBENCH_GUTTER}px`,
+            'i',
+          ).test(rule.cssText),
       ),
     ).toBe(true)
     expect(
@@ -824,7 +842,9 @@ describe('workbench', { timeout: 30_000 }, () => {
     const triggerClasses = [...trigger.classList]
     const rules = authoredStyleRules()
 
-    expect(getComputedStyle(resize).height).toBe('24px')
+    expect(getComputedStyle(resize).height).toBe('5px')
+    // The line has no focus outline of its own — hover and focus paint the bar
+    // itself, which is what reveals it.
     expect(
       rules.some(
         (rule) =>
@@ -835,9 +855,7 @@ describe('workbench', { timeout: 30_000 }, () => {
     expect(
       rules.some(
         (rule) =>
-          rule.selector.includes(`.${resizeClass}::after`) &&
-          !rule.selector.includes(':hover') &&
-          !rule.selector.includes(':focus-visible') &&
+          rule.selector === `.${resizeClass}` &&
           /background-color:\s*transparent/i.test(rule.cssText),
       ),
     ).toBe(true)
@@ -845,7 +863,7 @@ describe('workbench', { timeout: 30_000 }, () => {
       expect(
         rules.some(
           (rule) =>
-            rule.selector.includes(`.${resizeClass}${state}::after`) &&
+            rule.selector.includes(`.${resizeClass}${state}`) &&
             /background-color:/i.test(rule.cssText) &&
             !/transparent/i.test(rule.cssText),
         ),
@@ -892,8 +910,10 @@ describe('workbench', { timeout: 30_000 }, () => {
     expect(baseRule.cssText).toMatch(
       /grid-template-rows:\s*36px\s+minmax\(0,\s*1fr\)/i,
     )
+    // The strip row is auto-sized so the strip's own animated height drives it —
+    // a fixed 44px row would snap instead of sliding.
     expect(stripRule.cssText).toMatch(
-      /grid-template-rows:\s*36px\s+44px\s+minmax\(0,\s*1fr\)/i,
+      /grid-template-rows:\s*36px\s+auto\s+minmax\(0,\s*1fr\)/i,
     )
   })
 
@@ -990,8 +1010,10 @@ describe('workbench', { timeout: 30_000 }, () => {
     const workspace = document.querySelector<HTMLElement>(
       '[data-testid="plugin-marketplace"]',
     )!
-    expect(workspace.style.height).toBe('100%')
-    expect(workspace.style.minHeight).toBe('0px')
+    // Marketplace carries the constraint in its class rather than inline.
+    expect(getComputedStyle(workspace).height).toBe('100%')
+    expect(getComputedStyle(workspace).minHeight).toBe('0')
+    expect(getComputedStyle(workspace).overflow).toBe('hidden')
     expect(getComputedStyle(workspace.firstElementChild!).overflowY).toBe(
       'auto',
     )

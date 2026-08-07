@@ -76,6 +76,7 @@ export const WorkbenchHeader = (props: {
           return (
             <button
               type="button"
+              data-testid={`tsd-tab-${destination}`}
               data-tsd-control
               class={styles().workbenchNavButton}
               data-tsd-selected={isSelected(destination) ? 'true' : undefined}
@@ -92,6 +93,7 @@ export const WorkbenchHeader = (props: {
           type="button"
           aria-label="Settings"
           title="Settings"
+          data-testid="tsd-tab-settings"
           data-tsd-control
           class={styles().workbenchActionButton}
           data-icon="cogs"
@@ -107,6 +109,7 @@ export const WorkbenchHeader = (props: {
               type="button"
               aria-label="Detach TanStack Devtools"
               title="Detach into its own window"
+              data-testid="tsd-pip-button"
               data-tsd-control
               class={styles().workbenchActionButton}
               onClick={detach}
@@ -117,6 +120,7 @@ export const WorkbenchHeader = (props: {
               type="button"
               aria-label="Close TanStack Devtools"
               title="Close TanStack Devtools"
+              data-testid="tsd-close-button"
               data-tsd-control
               class={styles().workbenchActionButton}
               onClick={props.toggleOpen}
