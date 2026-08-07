@@ -1,0 +1,656 @@
+import { describe, expect, it } from 'vitest'
+import {
+  activateTab,
+  allGroups,
+  canSplit,
+  closeGroup,
+  closeTab,
+  flattenTabs,
+  insertionIndex,
+  layoutRects,
+  moveTab,
+  nextGroupId,
+  paneRects,
+  repairLayout,
+  resize,
+  singleGroup,
+  splitAt,
+  stackInto,
+  zoneAt,
+} from './layout-tree'
+import type { GroupNode, LayoutNode, SplitNode } from './layout-tree'
+
+const group = (id: string, tabs: Array<string>, active = 0): GroupNode => ({
+  kind: 'group',
+  id,
+  tabs,
+  active,
+})
+
+const split = (
+  dir: SplitNode['dir'],
+  children: Array<LayoutNode>,
+  sizes?: Array<number>,
+): SplitNode => ({
+  kind: 'split',
+  dir,
+  sizes: sizes ?? children.map(() => 1 / children.length),
+  children,
+})
+
+const BOX = { w: 1000, h: 400 }
+
+/** Every invariant the module promises, asserted on a returned tree. */
+const expectWellFormed = (tree: LayoutNode | null) => {
+  if (tree === null) return
+  const ids = flattenTabs(tree)
+  expect(new Set(ids).size, `duplicate plugin id in ${JSON.stringify(tree)}`).toBe(
+    ids.length,
+  )
+  const groupIds = allGroups(tree).map((entry) => entry.id)
+  expect(new Set(groupIds).size, 'duplicate group id').toBe(groupIds.length)
+
+  const visit = (node: LayoutNode) => {
+    if (node.kind === 'group') {
+      expect(node.tabs.length).toBeGreaterThan(0)
+      expect(node.active).toBeGreaterThanOrEqual(0)
+      expect(node.active).toBeLessThan(node.tabs.length)
+      return
+    }
+    expect(node.children.length).toBeGreaterThanOrEqual(2)
+    expect(node.sizes).toHaveLength(node.children.length)
+    expect(node.sizes.every((size) => size > 0)).toBe(true)
+    expect(node.sizes.reduce((sum, size) => sum + size, 0)).toBeCloseTo(1, 10)
+    // A same-direction split nested directly inside another is the same layout
+    // written twice, and prune is supposed to have flattened it.
+    for (const child of node.children) {
+      if (child.kind === 'split') expect(child.dir).not.toBe(node.dir)
+      visit(child)
+    }
+  }
+  visit(tree)
+}
+
+describe('flattenTabs / lookups', () => {
+  it('reads tabs left to right, top to bottom', () => {
+    const tree = split('row', [
+      group('g0', ['query', 'form']),
+      split('col', [group('g1', ['router']), group('g2', ['a11y'])]),
+    ])
+    expect(flattenTabs(tree)).toEqual(['query', 'form', 'router', 'a11y'])
+    expect(flattenTabs(null)).toEqual([])
+  })
+
+  it('derives the next group id from the ids in use, not a counter', () => {
+    expect(nextGroupId(null)).toBe('g0')
+    expect(nextGroupId(group('g0', ['a']))).toBe('g1')
+    expect(
+      nextGroupId(split('row', [group('g0', ['a']), group('g7', ['b'])])),
+    ).toBe('g8')
+    // Non-matching ids must not break the scan.
+    expect(nextGroupId(group('custom', ['a']))).toBe('g0')
+  })
+})
+
+describe('closeTab', () => {
+  it('keeps the neighbour selected when an earlier tab goes', () => {
+    const next = closeTab(group('g0', ['a', 'b', 'c'], 2), 'a')
+    expect(next).toEqual(group('g0', ['b', 'c'], 1))
+    expectWellFormed(next)
+  })
+
+  it('clamps active when the last tab goes', () => {
+    const next = closeTab(group('g0', ['a', 'b'], 1), 'b')
+    expect(next).toEqual(group('g0', ['a'], 0))
+    expectWellFormed(next)
+  })
+
+  it('collapses the split when a group empties', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const next = closeTab(tree, 'a')
+    expect(next).toEqual(group('g1', ['b'], 0))
+    expectWellFormed(next)
+  })
+
+  it('collapses two levels when a nested group empties', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      split('col', [group('g1', ['b']), group('g2', ['c'])]),
+    ])
+    // Removing b leaves the col split with one child, which unwraps to g2, and
+    // the row split then holds g0 and g2.
+    const next = closeTab(tree, 'b')
+    expect(next).toEqual(split('row', [group('g0', ['a']), group('g2', ['c'])]))
+    expectWellFormed(next)
+  })
+
+  it('returns null when the last tab anywhere goes', () => {
+    expect(closeTab(group('g0', ['a']), 'a')).toBeNull()
+    expect(closeTab(null, 'a')).toBeNull()
+  })
+
+  it('is a no-op for an unknown tab', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    expect(closeTab(tree, 'nope')).toEqual(tree)
+  })
+
+  it('preserves the surviving siblings share of the space', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      group('g1', ['b']),
+      group('g2', ['c']),
+    ])
+    const next = closeTab(tree, 'b') as SplitNode
+    expect(next.children).toHaveLength(2)
+    expect(next.sizes.reduce((sum, size) => sum + size, 0)).toBeCloseTo(1, 10)
+    expectWellFormed(next)
+  })
+})
+
+describe('closeGroup', () => {
+  it('removes every tab in the group and prunes', () => {
+    const tree = split('row', [
+      group('g0', ['a', 'b']),
+      group('g1', ['c']),
+    ])
+    const next = closeGroup(tree, 'g0')
+    expect(next).toEqual(group('g1', ['c'], 0))
+    expectWellFormed(next)
+  })
+
+  it('is a no-op for an unknown group', () => {
+    const tree = group('g0', ['a'])
+    expect(closeGroup(tree, 'gX')).toEqual(tree)
+  })
+})
+
+describe('activateTab', () => {
+  it('selects without moving', () => {
+    const next = activateTab(group('g0', ['a', 'b', 'c']), 'c')
+    expect(next).toEqual(group('g0', ['a', 'b', 'c'], 2))
+  })
+
+  it('ignores an unknown tab', () => {
+    const tree = group('g0', ['a'])
+    expect(activateTab(tree, 'zzz')).toEqual(tree)
+  })
+})
+
+describe('moveTab', () => {
+  it('reorders within one group', () => {
+    const next = moveTab(group('g0', ['a', 'b', 'c']), 'a', 'g0', 2)
+    expect(next).toEqual(group('g0', ['b', 'c', 'a'], 2))
+    expectWellFormed(next)
+  })
+
+  it('moves between groups and selects it at the destination', () => {
+    const tree = split('row', [group('g0', ['a', 'b']), group('g1', ['c'])])
+    const next = moveTab(tree, 'a', 'g1', 0)
+    expect(next).toEqual(
+      split('row', [group('g0', ['b']), group('g1', ['a', 'c'], 0)]),
+    )
+    expectWellFormed(next)
+  })
+
+  it('collapses the source group when it empties', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const next = moveTab(tree, 'a', 'g1', 1)
+    expect(next).toEqual(group('g1', ['b', 'a'], 1))
+    expectWellFormed(next)
+  })
+
+  it('clamps an out-of-range index instead of creating a hole', () => {
+    expect(moveTab(group('g0', ['a', 'b']), 'a', 'g0', 99)).toEqual(
+      group('g0', ['b', 'a'], 1),
+    )
+    expect(moveTab(group('g0', ['a', 'b']), 'b', 'g0', -5)).toEqual(
+      group('g0', ['b', 'a'], 0),
+    )
+  })
+
+  it('never duplicates the tab it moved', () => {
+    const tree = split('row', [group('g0', ['a', 'b']), group('g1', ['c'])])
+    const next = moveTab(tree, 'b', 'g1', 0)
+    expect(flattenTabs(next).filter((id) => id === 'b')).toHaveLength(1)
+    expectWellFormed(next)
+  })
+
+  it('is a no-op for an unknown group or tab', () => {
+    const tree = group('g0', ['a'])
+    expect(moveTab(tree, 'a', 'gX', 0)).toEqual(tree)
+    expect(moveTab(tree, 'zz', 'g0', 0)).toEqual(group('g0', ['zz', 'a'], 0))
+  })
+})
+
+describe('stackInto', () => {
+  it('appends and selects', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const next = stackInto(tree, 'g0', 'b')
+    expect(next).toEqual(group('g0', ['a', 'b'], 1))
+    expectWellFormed(next)
+  })
+})
+
+describe('splitAt', () => {
+  it('puts the new group on the dropped side', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const right = splitAt(tree, 'g0', 'right', 'b') as SplitNode
+    expect(flattenTabs(right)).toEqual(['a', 'b'])
+    expect((right.children[0] as GroupNode).tabs).toEqual(['a'])
+    expectWellFormed(right)
+
+    const left = splitAt(tree, 'g1', 'left', 'a') as SplitNode
+    expect(flattenTabs(left)).toEqual(['a', 'b'])
+    expectWellFormed(left)
+  })
+
+  it('splits on the correct axis', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    // g0 is inside a row split, so a vertical split nests a col beneath it.
+    const below = splitAt(tree, 'g0', 'bottom', 'b') as SplitNode
+    expect(below.dir).toBe('col')
+    expectWellFormed(below)
+  })
+
+  it('treats center as a stack', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    expect(splitAt(tree, 'g0', 'center', 'b')).toEqual(
+      group('g0', ['a', 'b'], 1),
+    )
+  })
+
+  it('refuses to split a group by its own only tab', () => {
+    // Dragging a lone tab onto its own pane edge would otherwise put it beside
+    // itself, or delete it outright.
+    const tree = group('g0', ['a'])
+    expect(splitAt(tree, 'g0', 'right', 'a')).toEqual(tree)
+    expect(flattenTabs(splitAt(tree, 'g0', 'right', 'a'))).toEqual(['a'])
+  })
+
+  it('splits a group out of one of its own tabs when it has several', () => {
+    const next = splitAt(group('g0', ['a', 'b']), 'g0', 'right', 'b')
+    expect(flattenTabs(next)).toEqual(['a', 'b'])
+    expect(allGroups(next)).toHaveLength(2)
+    expectWellFormed(next)
+  })
+
+  it('seeds a tree from nothing', () => {
+    expect(splitAt(null, 'g0', 'right', 'a')).toEqual(group('g0', ['a'], 0))
+  })
+
+  it('gives the new group an unused id', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const next = splitAt(tree, 'g0', 'right', 'c')
+    const ids = allGroups(next).map((entry) => entry.id)
+    expect(new Set(ids).size).toBe(ids.length)
+    expectWellFormed(next)
+  })
+
+  it('is a no-op for an unknown group', () => {
+    const tree = group('g0', ['a'])
+    expect(splitAt(tree, 'gX', 'right', 'b')).toEqual(tree)
+  })
+})
+
+describe('resize', () => {
+  it('moves budget across one gutter and leaves the rest alone', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b']), group('g2', ['c'])],
+      [0.4, 0.4, 0.2],
+    )
+    const next = resize(tree, [], 0, 0.1) as SplitNode
+    expect(next.sizes[0]).toBeCloseTo(0.5, 10)
+    expect(next.sizes[1]).toBeCloseTo(0.3, 10)
+    expect(next.sizes[2]).toBeCloseTo(0.2, 10)
+    expectWellFormed(next)
+  })
+
+  it('conserves the total', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    for (const delta of [0.3, -0.45, 5, -5]) {
+      const next = resize(tree, [], 0, delta) as SplitNode
+      expect(next.sizes.reduce((sum, size) => sum + size, 0)).toBeCloseTo(1, 10)
+    }
+  })
+
+  it('clamps at the minimum instead of collapsing a pane', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const next = resize(tree, [], 0, 0.9, 0.2) as SplitNode
+    expect(next.sizes[0]).toBeCloseTo(0.8, 10)
+    expect(next.sizes[1]).toBeCloseTo(0.2, 10)
+  })
+
+  it('falls back to an even share when the minimum cannot fit twice', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const next = resize(tree, [], 0, 1, 0.9) as SplitNode
+    expect(next.sizes[0]).toBeCloseTo(0.5, 10)
+    expect(next.sizes[1]).toBeCloseTo(0.5, 10)
+  })
+
+  it('resizes a nested split by path', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      split('col', [group('g1', ['b']), group('g2', ['c'])]),
+    ])
+    const next = resize(tree, [1], 0, 0.2) as SplitNode
+    const inner = next.children[1] as SplitNode
+    expect(inner.sizes[0]).toBeCloseTo(0.7, 10)
+    expect(inner.sizes[1]).toBeCloseTo(0.3, 10)
+    // The outer split is untouched.
+    expect(next.sizes[0]).toBeCloseTo(0.5, 10)
+    expectWellFormed(next)
+  })
+
+  it('is a no-op for a bad path or gutter', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    expect(resize(tree, [9], 0, 0.1)).toEqual(tree)
+    expect(resize(tree, [], 5, 0.1)).toEqual(tree)
+    expect(resize(tree, [], 0, 0)).toEqual(tree)
+    expect(resize(group('g0', ['a']), [], 0, 0.1)).toEqual(group('g0', ['a']))
+  })
+})
+
+describe('layoutRects', () => {
+  it('fills the box with one group', () => {
+    expect(layoutRects(group('g0', ['a']), BOX)).toEqual({
+      g0: { left: 0, top: 0, width: 1000, height: 400 },
+    })
+  })
+
+  it('divides a row by weight', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b'])],
+      [0.6, 0.4],
+    )
+    expect(layoutRects(tree, BOX)).toEqual({
+      g0: { left: 0, top: 0, width: 600, height: 400 },
+      g1: { left: 600, top: 0, width: 400, height: 400 },
+    })
+  })
+
+  it('divides a column by weight', () => {
+    const tree = split('col', [group('g0', ['a']), group('g1', ['b'])])
+    expect(layoutRects(tree, BOX)).toEqual({
+      g0: { left: 0, top: 0, width: 1000, height: 200 },
+      g1: { left: 0, top: 200, width: 1000, height: 200 },
+    })
+  })
+
+  it('subtracts gutters from the available extent', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const rects = layoutRects(tree, BOX, 8)
+    expect(rects.g0).toEqual({ left: 0, top: 0, width: 496, height: 400 })
+    expect(rects.g1).toEqual({ left: 504, top: 0, width: 496, height: 400 })
+    // The two panes plus the gutter account for the whole box.
+    expect(rects.g0!.width + 8 + rects.g1!.width).toBe(BOX.w)
+  })
+
+  it('handles nesting', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      split('col', [group('g1', ['b']), group('g2', ['c'])]),
+    ])
+    expect(layoutRects(tree, BOX)).toEqual({
+      g0: { left: 0, top: 0, width: 500, height: 400 },
+      g1: { left: 500, top: 0, width: 500, height: 200 },
+      g2: { left: 500, top: 200, width: 500, height: 200 },
+    })
+  })
+
+  it('gives every tab in a group the group rect', () => {
+    const tree = split('row', [group('g0', ['a', 'b']), group('g1', ['c'])])
+    const rects = paneRects(tree, BOX)
+    expect(rects.a).toEqual(rects.b)
+    expect(rects.a).toEqual({ left: 0, top: 0, width: 500, height: 400 })
+    expect(rects.c!.left).toBe(500)
+  })
+
+  it('returns nothing for an empty tree', () => {
+    expect(layoutRects(null, BOX)).toEqual({})
+    expect(paneRects(null, BOX)).toEqual({})
+  })
+})
+
+describe('canSplit', () => {
+  const min = { w: 280, h: 160 }
+
+  it('allows a horizontal split with room', () => {
+    expect(canSplit(group('g0', ['a']), 'g0', 'right', min, BOX)).toBe(true)
+  })
+
+  it('refuses a vertical split in a short workspace', () => {
+    // 400 tall halves to 200, which clears 160; nesting again would not.
+    const tree = split('col', [group('g0', ['a']), group('g1', ['b'])])
+    expect(canSplit(tree, 'g0', 'bottom', min, BOX)).toBe(false)
+  })
+
+  it('refuses a horizontal split once panes are narrow', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      group('g1', ['b']),
+      group('g2', ['c']),
+    ])
+    // Each pane is ~333 wide, so halving gives ~166, under the 280 minimum.
+    expect(canSplit(tree, 'g0', 'right', min, BOX)).toBe(false)
+  })
+
+  it('always allows center, and refuses an unknown group', () => {
+    expect(canSplit(group('g0', ['a']), 'g0', 'center', min, BOX)).toBe(true)
+    expect(canSplit(group('g0', ['a']), 'gX', 'right', min, BOX)).toBe(false)
+  })
+})
+
+describe('zoneAt', () => {
+  const rect = { left: 0, top: 0, width: 400, height: 200 }
+
+  it('picks the nearest edge inside the band', () => {
+    expect(zoneAt({ x: 10, y: 100 }, rect)).toBe('left')
+    expect(zoneAt({ x: 390, y: 100 }, rect)).toBe('right')
+    expect(zoneAt({ x: 200, y: 5 }, rect)).toBe('top')
+    expect(zoneAt({ x: 200, y: 195 }, rect)).toBe('bottom')
+  })
+
+  it('picks center away from the edges', () => {
+    expect(zoneAt({ x: 200, y: 100 }, rect)).toBe('center')
+  })
+
+  it('respects the rect offset', () => {
+    const offset = { left: 500, top: 200, width: 400, height: 200 }
+    expect(zoneAt({ x: 510, y: 300 }, offset)).toBe('left')
+    expect(zoneAt({ x: 700, y: 300 }, offset)).toBe('center')
+  })
+
+  it('does not divide by zero on a collapsed rect', () => {
+    expect(zoneAt({ x: 0, y: 0 }, { left: 0, top: 0, width: 0, height: 0 })).toBe(
+      'center',
+    )
+  })
+})
+
+describe('insertionIndex', () => {
+  const tabs = [
+    { left: 0, top: 0, width: 100, height: 30 },
+    { left: 100, top: 0, width: 100, height: 30 },
+    { left: 200, top: 0, width: 100, height: 30 },
+  ]
+
+  it('inserts before a tab in its first half', () => {
+    expect(insertionIndex(10, tabs)).toBe(0)
+    expect(insertionIndex(120, tabs)).toBe(1)
+  })
+
+  it('inserts after a tab in its second half', () => {
+    expect(insertionIndex(80, tabs)).toBe(1)
+    expect(insertionIndex(180, tabs)).toBe(2)
+  })
+
+  it('appends past the end and handles an empty bar', () => {
+    expect(insertionIndex(999, tabs)).toBe(3)
+    expect(insertionIndex(0, [])).toBe(0)
+  })
+})
+
+describe('repairLayout', () => {
+  const known = new Set(['a', 'b', 'c'])
+
+  it('passes a valid tree through', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    expect(repairLayout(tree, known)).toEqual(tree)
+  })
+
+  it('prunes unknown plugin ids and collapses what empties', () => {
+    const tree = split('row', [group('g0', ['gone']), group('g1', ['b'])])
+    const repaired = repairLayout(tree, known)
+    expect(repaired).toEqual(group('g1', ['b'], 0))
+    expectWellFormed(repaired)
+  })
+
+  it('drops a duplicated plugin id, keeping the first', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['a', 'b'])])
+    const repaired = repairLayout(tree, known)
+    expect(flattenTabs(repaired)).toEqual(['a', 'b'])
+    expectWellFormed(repaired)
+  })
+
+  it('renormalises sizes that do not sum to 1', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b'])],
+      [10, 30],
+    )
+    const repaired = repairLayout(tree, known) as SplitNode
+    expect(repaired.sizes[0]).toBeCloseTo(0.25, 10)
+    expect(repaired.sizes[1]).toBeCloseTo(0.75, 10)
+    expectWellFormed(repaired)
+  })
+
+  it('replaces missing or non-numeric sizes with equal shares', () => {
+    for (const sizes of [undefined, 'nope', [1], [0, 0]]) {
+      const repaired = repairLayout(
+        { kind: 'split', dir: 'row', sizes, children: [group('g0', ['a']), group('g1', ['b'])] },
+        known,
+      ) as SplitNode
+      expect(repaired.sizes).toHaveLength(2)
+      expect(repaired.sizes[0]).toBeCloseTo(0.5, 10)
+      expectWellFormed(repaired)
+    }
+  })
+
+  it('clamps an out-of-range active index', () => {
+    expect(repairLayout(group('g0', ['a', 'b'], 99), known)).toEqual(
+      group('g0', ['a', 'b'], 1),
+    )
+    expect(repairLayout(group('g0', ['a', 'b'], -3), known)).toEqual(
+      group('g0', ['a', 'b'], 0),
+    )
+  })
+
+  it('gives duplicated group ids a fresh one', () => {
+    const tree = split('row', [group('dup', ['a']), group('dup', ['b'])])
+    const repaired = repairLayout(tree, known)
+    const ids = allGroups(repaired).map((entry) => entry.id)
+    expect(new Set(ids).size).toBe(2)
+    expectWellFormed(repaired)
+  })
+
+  it('salvages plugin ids from an unrecognisable shape', () => {
+    // The arrangement is lost, but the plugins that were open stay open.
+    const repaired = repairLayout(
+      { totally: 'wrong', but: ['a', { nested: 'c' }, 'unknown'] },
+      known,
+    )
+    expect(flattenTabs(repaired)).toEqual(['a', 'c'])
+    expectWellFormed(repaired)
+  })
+
+  it('never throws on hostile input', () => {
+    const cycle: Record<string, unknown> = { kind: 'split', dir: 'row' }
+    cycle.children = [cycle]
+    for (const raw of [
+      null,
+      undefined,
+      0,
+      'string',
+      [],
+      {},
+      { kind: 'group' },
+      { kind: 'group', id: 'g0', tabs: 'not-an-array' },
+      { kind: 'split', dir: 'sideways', children: [] },
+      { kind: 'split', dir: 'row', children: [null, 3, 'x'] },
+      cycle,
+    ]) {
+      expect(() => repairLayout(raw, known)).not.toThrow()
+      expectWellFormed(repairLayout(raw, known))
+    }
+  })
+
+  it('returns null when nothing is salvageable', () => {
+    expect(repairLayout({ kind: 'group', id: 'g0', tabs: ['zzz'] }, known)).toBeNull()
+    expect(repairLayout(null, known)).toBeNull()
+  })
+})
+
+describe('migration from activePlugins', () => {
+  it('becomes one group in the stored order', () => {
+    expect(singleGroup(['a', 'b', 'c'])).toEqual(group('g0', ['a', 'b', 'c'], 0))
+  })
+
+  it('is null for no open plugins', () => {
+    expect(singleGroup([])).toBeNull()
+  })
+
+  it('round-trips through flattenTabs, which is what activePlugins becomes', () => {
+    const stored = ['query', 'router', 'a11y']
+    expect(flattenTabs(singleGroup(stored))).toEqual(stored)
+  })
+})
+
+describe('sequences of operations keep the tree well formed', () => {
+  it('survives building up to nine panes and tearing them down', () => {
+    const ids = Array.from({ length: 9 }, (_, index) => `p${index}`)
+    let tree = singleGroup([ids[0]!])
+    expectWellFormed(tree)
+
+    // Alternate splitting right and bottom, and stack a couple, so the tree
+    // ends up genuinely mixed rather than a single row.
+    const zones = ['right', 'bottom', 'center', 'right', 'bottom', 'right', 'center', 'bottom'] as const
+    ids.slice(1).forEach((id, index) => {
+      const target = allGroups(tree)[index % allGroups(tree).length]!
+      const zone = zones[index]!
+      tree =
+        zone === 'center'
+          ? stackInto(tree, target.id, id)
+          : splitAt(tree, target.id, zone, id)
+      expectWellFormed(tree)
+    })
+    expect(flattenTabs(tree).sort()).toEqual([...ids].sort())
+
+    // Rects must tile the box without overlapping, at every stage.
+    const rects = Object.values(layoutRects(tree, BOX))
+    const area = rects.reduce((sum, r) => sum + r.width * r.height, 0)
+    expect(area).toBeCloseTo(BOX.w * BOX.h, 4)
+
+    for (const id of ids) {
+      tree = closeTab(tree, id)
+      expectWellFormed(tree)
+    }
+    expect(tree).toBeNull()
+  })
+
+  it('survives repeated moves between every pair of groups', () => {
+    let tree: LayoutNode | null = split('row', [
+      group('g0', ['a', 'b']),
+      split('col', [group('g1', ['c']), group('g2', ['d'])]),
+    ])
+    for (const tabId of ['a', 'b', 'c', 'd']) {
+      for (const target of allGroups(tree)) {
+        const moved = moveTab(tree, tabId, target.id, 0)
+        expectWellFormed(moved)
+        expect(flattenTabs(moved).sort()).toEqual(['a', 'b', 'c', 'd'])
+        tree = moved
+      }
+    }
+  })
+})
