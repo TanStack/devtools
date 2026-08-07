@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   activateTab,
   allGroups,
+  appendPane,
   canSplit,
   closeGroup,
   closeTab,
@@ -15,6 +16,7 @@ import {
   resize,
   singleGroup,
   splitAt,
+  splitterHandles,
   stackInto,
   zoneAt,
 } from './layout-tree'
@@ -40,13 +42,16 @@ const split = (
 
 const BOX = { w: 1000, h: 400 }
 
+const isGroupNode = (node: LayoutNode) => node.kind === 'group'
+
 /** Every invariant the module promises, asserted on a returned tree. */
 const expectWellFormed = (tree: LayoutNode | null) => {
   if (tree === null) return
   const ids = flattenTabs(tree)
-  expect(new Set(ids).size, `duplicate plugin id in ${JSON.stringify(tree)}`).toBe(
-    ids.length,
-  )
+  expect(
+    new Set(ids).size,
+    `duplicate plugin id in ${JSON.stringify(tree)}`,
+  ).toBe(ids.length)
   const groupIds = allGroups(tree).map((entry) => entry.id)
   expect(new Set(groupIds).size, 'duplicate group id').toBe(groupIds.length)
 
@@ -149,10 +154,7 @@ describe('closeTab', () => {
 
 describe('closeGroup', () => {
   it('removes every tab in the group and prunes', () => {
-    const tree = split('row', [
-      group('g0', ['a', 'b']),
-      group('g1', ['c']),
-    ])
+    const tree = split('row', [group('g0', ['a', 'b']), group('g1', ['c'])])
     const next = closeGroup(tree, 'g0')
     expect(next).toEqual(group('g1', ['c'], 0))
     expectWellFormed(next)
@@ -413,6 +415,101 @@ describe('layoutRects', () => {
   })
 })
 
+describe('appendPane', () => {
+  it('seeds from nothing', () => {
+    expect(appendPane(null, 'a')).toEqual(group('g0', ['a'], 0))
+  })
+
+  it('gives every pane an equal share as they are added', () => {
+    let tree = appendPane(null, 'a')
+    tree = appendPane(tree, 'b')
+    expect((tree as SplitNode).sizes).toEqual([0.5, 0.5])
+
+    tree = appendPane(tree, 'c')
+    // The reason appendPane exists: splitting the last pane instead would give
+    // 1/2, 1/4, 1/4, so panes opened side by side would not match.
+    const sizes = (tree as SplitNode).sizes
+    expect(sizes).toHaveLength(3)
+    for (const size of sizes) expect(size).toBeCloseTo(1 / 3, 10)
+    expect(flattenTabs(tree)).toEqual(['a', 'b', 'c'])
+    expectWellFormed(tree)
+  })
+
+  it('extends the existing row rather than nesting', () => {
+    const tree = appendPane(appendPane(appendPane(null, 'a'), 'b'), 'c')
+    expect((tree as SplitNode).children.every(isGroupNode)).toBe(true)
+  })
+
+  it('never duplicates a pane that is already open', () => {
+    const tree = appendPane(appendPane(null, 'a'), 'b')
+    const again = appendPane(tree, 'a')
+    expect(flattenTabs(again).filter((id) => id === 'a')).toHaveLength(1)
+    expectWellFormed(again)
+  })
+
+  it('can stack a column instead', () => {
+    const tree = appendPane(appendPane(null, 'a'), 'b', 'col')
+    expect((tree as SplitNode).dir).toBe('col')
+  })
+})
+
+describe('splitterHandles', () => {
+  it('finds none in a lone group', () => {
+    expect(splitterHandles(group('g0', ['a']), BOX, 6)).toEqual([])
+    expect(splitterHandles(null, BOX, 6)).toEqual([])
+  })
+
+  it('places one gutter between two panes, filling the gap', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    const [handle] = splitterHandles(tree, BOX, 6)
+    const rects = layoutRects(tree, BOX, 6)
+    expect(handle!.dir).toBe('row')
+    expect(handle!.gutterIndex).toBe(0)
+    expect(handle!.path).toEqual([])
+    // It sits exactly in the space layoutRects left between the two panes.
+    expect(handle!.rect.left).toBe(rects.g0!.left + rects.g0!.width)
+    expect(handle!.rect.width).toBe(6)
+    expect(handle!.rect.left + handle!.rect.width).toBe(rects.g1!.left)
+    expect(handle!.extent).toBe(BOX.w - 6)
+  })
+
+  it('spans the cross axis of a column split', () => {
+    const tree = split('col', [group('g0', ['a']), group('g1', ['b'])])
+    const [handle] = splitterHandles(tree, BOX, 6)
+    expect(handle!.dir).toBe('col')
+    expect(handle!.rect.width).toBe(BOX.w)
+    expect(handle!.rect.height).toBe(6)
+    expect(handle!.extent).toBe(BOX.h - 6)
+  })
+
+  it('gives n-1 gutters and paths into nested splits', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      group('g1', ['b']),
+      split('col', [group('g2', ['c']), group('g3', ['d'])]),
+    ])
+    const handles = splitterHandles(tree, BOX, 6)
+    // Two in the outer row, one in the nested column.
+    expect(handles).toHaveLength(3)
+    expect(handles.filter((h) => h.dir === 'row')).toHaveLength(2)
+    const nested = handles.find((h) => h.dir === 'col')!
+    expect(nested.path).toEqual([2])
+    expect(nested.gutterIndex).toBe(0)
+  })
+
+  it('keeps gutters inside the box', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      group('g1', ['b']),
+      group('g2', ['c']),
+    ])
+    for (const handle of splitterHandles(tree, BOX, 6)) {
+      expect(handle.rect.left).toBeGreaterThanOrEqual(0)
+      expect(handle.rect.left + handle.rect.width).toBeLessThanOrEqual(BOX.w)
+    }
+  })
+})
+
 describe('canSplit', () => {
   const min = { w: 280, h: 160 }
 
@@ -463,9 +560,9 @@ describe('zoneAt', () => {
   })
 
   it('does not divide by zero on a collapsed rect', () => {
-    expect(zoneAt({ x: 0, y: 0 }, { left: 0, top: 0, width: 0, height: 0 })).toBe(
-      'center',
-    )
+    expect(
+      zoneAt({ x: 0, y: 0 }, { left: 0, top: 0, width: 0, height: 0 }),
+    ).toBe('center')
   })
 })
 
@@ -529,7 +626,12 @@ describe('repairLayout', () => {
   it('replaces missing or non-numeric sizes with equal shares', () => {
     for (const sizes of [undefined, 'nope', [1], [0, 0]]) {
       const repaired = repairLayout(
-        { kind: 'split', dir: 'row', sizes, children: [group('g0', ['a']), group('g1', ['b'])] },
+        {
+          kind: 'split',
+          dir: 'row',
+          sizes,
+          children: [group('g0', ['a']), group('g1', ['b'])],
+        },
         known,
       ) as SplitNode
       expect(repaired.sizes).toHaveLength(2)
@@ -587,14 +689,18 @@ describe('repairLayout', () => {
   })
 
   it('returns null when nothing is salvageable', () => {
-    expect(repairLayout({ kind: 'group', id: 'g0', tabs: ['zzz'] }, known)).toBeNull()
+    expect(
+      repairLayout({ kind: 'group', id: 'g0', tabs: ['zzz'] }, known),
+    ).toBeNull()
     expect(repairLayout(null, known)).toBeNull()
   })
 })
 
 describe('migration from activePlugins', () => {
   it('becomes one group in the stored order', () => {
-    expect(singleGroup(['a', 'b', 'c'])).toEqual(group('g0', ['a', 'b', 'c'], 0))
+    expect(singleGroup(['a', 'b', 'c'])).toEqual(
+      group('g0', ['a', 'b', 'c'], 0),
+    )
   })
 
   it('is null for no open plugins', () => {
@@ -615,7 +721,16 @@ describe('sequences of operations keep the tree well formed', () => {
 
     // Alternate splitting right and bottom, and stack a couple, so the tree
     // ends up genuinely mixed rather than a single row.
-    const zones = ['right', 'bottom', 'center', 'right', 'bottom', 'right', 'center', 'bottom'] as const
+    const zones = [
+      'right',
+      'bottom',
+      'center',
+      'right',
+      'bottom',
+      'right',
+      'center',
+      'bottom',
+    ] as const
     ids.slice(1).forEach((id, index) => {
       const target = allGroups(tree)[index % allGroups(tree).length]!
       const zone = zones[index]!

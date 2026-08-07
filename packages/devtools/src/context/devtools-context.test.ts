@@ -1,5 +1,6 @@
 import { createComponent, createEffect, createRoot, useContext } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MAX_ACTIVE_PLUGINS } from '../utils/constants'
 import { flattenTabs } from '../utils/layout-tree'
 import { TANSTACK_DEVTOOLS_STATE } from '../utils/storage'
 import {
@@ -220,7 +221,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
     expect(state.plugins).toHaveLength(3)
   })
 
-  it('should limit defaultOpen plugins to MAX_ACTIVE_PLUGINS (3) when 5 have defaultOpen: true', () => {
+  it('opens every defaultOpen plugin that fits under MAX_ACTIVE_PLUGINS', () => {
     const plugins: Array<TanStackDevtoolsPlugin> = [
       {
         id: 'plugin1',
@@ -255,15 +256,14 @@ describe('getExistingStateFromStorage - integration tests', () => {
     ]
 
     const state = getExistingStateFromStorage(undefined, plugins)
-    // Should only activate first 3 plugins
-    expect(flattenTabs(state.state.layout)).toEqual([
-      'plugin1',
-      'plugin2',
-      'plugin3',
-    ])
-    expect(flattenTabs(state.state.layout)).toHaveLength(3)
-    expect(flattenTabs(state.state.layout)).not.toContain('plugin4')
-    expect(flattenTabs(state.state.layout)).not.toContain('plugin5')
+    // Five is under the cap now that panes can split and stack, so all five
+    // open. Pinned to the constant rather than a literal.
+    expect(flattenTabs(state.state.layout)).toEqual(
+      plugins.slice(0, MAX_ACTIVE_PLUGINS).map((plugin) => plugin.id),
+    )
+    expect(flattenTabs(state.state.layout).length).toBeLessThanOrEqual(
+      MAX_ACTIVE_PLUGINS,
+    )
     // All 5 plugins should still be in the plugins array
     expect(state.plugins).toHaveLength(5)
   })

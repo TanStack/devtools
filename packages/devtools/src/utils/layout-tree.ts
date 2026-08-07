@@ -69,11 +69,7 @@ export const flattenTabs = (tree: LayoutNode | null): Array<string> =>
       : tree.children.flatMap(flattenTabs)
 
 export const allGroups = (tree: LayoutNode | null): Array<GroupNode> =>
-  tree === null
-    ? []
-    : isGroup(tree)
-      ? [tree]
-      : tree.children.flatMap(allGroups)
+  tree === null ? [] : isGroup(tree) ? [tree] : tree.children.flatMap(allGroups)
 
 export const findGroupOfTab = (
   tree: LayoutNode | null,
@@ -101,7 +97,10 @@ export const nextGroupId = (tree: LayoutNode | null): string => {
   return `g${highest + 1}`
 }
 
-export const singleGroup = (tabs: Array<string>, id = 'g0'): LayoutNode | null =>
+export const singleGroup = (
+  tabs: Array<string>,
+  id = 'g0',
+): LayoutNode | null =>
   tabs.length === 0 ? null : { kind: 'group', id, tabs: [...tabs], active: 0 }
 
 /** Scale a list of weights so it sums to 1. Falls back to equal shares. */
@@ -233,8 +232,7 @@ export const moveTab = (
   const source = findGroupOfTab(tree, tabId)
   // Moving within one group is a reorder, so compute the destination against
   // the list as it looks with the tab already lifted out.
-  const withoutTab =
-    source === null ? tree : (closeTab(tree, tabId) ?? null)
+  const withoutTab = source === null ? tree : (closeTab(tree, tabId) ?? null)
   // Closing the tab may have pruned the target group out of existence, which
   // happens when it was that group's only tab. Then there is nothing to move.
   if (withoutTab === null) return singleGroup([tabId], groupId)
@@ -267,8 +265,7 @@ export const stackInto = (
 const zoneAxis = (zone: DropZone): SplitNode['dir'] =>
   zone === 'left' || zone === 'right' ? 'row' : 'col'
 
-const zoneLeads = (zone: DropZone): boolean =>
-  zone === 'left' || zone === 'top'
+const zoneLeads = (zone: DropZone): boolean => zone === 'left' || zone === 'top'
 
 /**
  * Split the group under `groupId`, putting `tabId` in a new group on the given
@@ -309,6 +306,36 @@ export const splitAt = (
     return { ...node, children: node.children.map(place) }
   }
   return prune(place(lifted))
+}
+
+/**
+ * Add a pane alongside the existing ones, all sharing the space equally.
+ *
+ * This is what opening a plugin from the strip does, and it is deliberately not
+ * `splitAt`: splitting the last pane halves *it*, so opening three would give
+ * 1/2, 1/4, 1/4. Panes opened side by side should be the same size.
+ */
+export const appendPane = (
+  tree: LayoutNode | null,
+  tabId: string,
+  dir: SplitNode['dir'] = 'row',
+): LayoutNode | null => {
+  if (tree === null) return singleGroup([tabId])
+  const lifted = closeTab(tree, tabId)
+  if (lifted === null) return singleGroup([tabId])
+
+  const newGroup: GroupNode = {
+    kind: 'group',
+    id: nextGroupId(lifted),
+    tabs: [tabId],
+    active: 0,
+  }
+  const children =
+    isSplit(lifted) && lifted.dir === dir
+      ? [...lifted.children, newGroup]
+      : [lifted, newGroup]
+  // No sizes argument, so `normalise` gives every child an equal share.
+  return prune(split(dir, children))
 }
 
 /** Locate a node by walking child indices from the root. */
@@ -401,6 +428,74 @@ export const layoutRects = (
     walk(tree, { left: 0, top: 0, width: box.w, height: box.h })
   }
   return out
+}
+
+/** One draggable gutter: where it sits and which sizes it moves. */
+export type SplitterHandle = {
+  /** Path to the split this gutter belongs to. */
+  path: Path
+  /** Gutter between children `gutterIndex` and `gutterIndex + 1`. */
+  gutterIndex: number
+  dir: SplitNode['dir']
+  rect: Rect
+  /**
+   * The split's usable extent along its own axis, in px, excluding gutters.
+   * Converts a pointer delta into a size fraction.
+   */
+  extent: number
+}
+
+/** Every gutter in the tree, positioned in the same space as the pane rects. */
+export const splitterHandles = (
+  tree: LayoutNode | null,
+  box: Size,
+  gutter = 0,
+): Array<SplitterHandle> => {
+  const handles: Array<SplitterHandle> = []
+  const walk = (node: LayoutNode, rect: Rect, path: Path): void => {
+    if (isGroup(node)) return
+    const horizontal = node.dir === 'row'
+    const gutters = gutter * (node.children.length - 1)
+    const available = Math.max(
+      (horizontal ? rect.width : rect.height) - gutters,
+      0,
+    )
+    let offset = horizontal ? rect.left : rect.top
+    node.children.forEach((child, index) => {
+      const extent = available * (node.sizes[index] ?? 0)
+      const childRect: Rect = horizontal
+        ? { left: offset, top: rect.top, width: extent, height: rect.height }
+        : { left: rect.left, top: offset, width: rect.width, height: extent }
+      walk(child, childRect, [...path, index])
+      offset += extent
+      if (index < node.children.length - 1) {
+        handles.push({
+          path,
+          gutterIndex: index,
+          dir: node.dir,
+          extent: available,
+          rect: horizontal
+            ? {
+                left: offset,
+                top: rect.top,
+                width: gutter,
+                height: rect.height,
+              }
+            : {
+                left: rect.left,
+                top: offset,
+                width: rect.width,
+                height: gutter,
+              },
+        })
+        offset += gutter
+      }
+    })
+  }
+  if (tree !== null) {
+    walk(tree, { left: 0, top: 0, width: box.w, height: box.h }, [])
+  }
+  return handles
 }
 
 /** Rect per plugin id, which is what the panes are keyed by. */

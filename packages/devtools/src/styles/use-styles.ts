@@ -4,6 +4,7 @@ import { createEffect, createSignal } from 'solid-js'
 import { createTheme } from '../context/use-devtools-context'
 import {
   PLUGINS_STRIP_HEIGHT,
+  PLUGIN_GROUP_TAB_HEIGHT,
   WORKBENCH_GUTTER,
   WORKBENCH_GUTTER_NARROW,
   WORKBENCH_HEADER_HEIGHT,
@@ -975,6 +976,160 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-weight: ${semantic.type.bodySm.weight};
       line-height: ${semantic.type.bodySm.lineHeight};
       color: ${semantic.color.text.secondary};
+    `,
+    /**
+     * The panes' permanent home. Every pane is a direct child for its whole
+     * life and is placed with inline offsets computed from the layout tree, so
+     * a drag never re-parents it. That is what stops an iframe plugin reloading
+     * and a canvas plugin losing its context every time the layout changes.
+     */
+    pluginWorkspace: css`
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: ${semantic.color.surface.workspace};
+    `,
+    /**
+     * Off-screen but still announced. Used for the live region that narrates
+     * picking a pane up and putting it down, which is the only feedback a
+     * screen-reader user gets from a move.
+     */
+    pluginSrOnly: css`
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    `,
+    /** A group's tab bar, sitting along the top edge of the group's rect. */
+    pluginGroupTabs: css`
+      display: flex;
+      align-items: stretch;
+      gap: 2px;
+      height: ${PLUGIN_GROUP_TAB_HEIGHT}px;
+      min-width: 0;
+      padding-inline: 4px;
+      box-sizing: border-box;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scrollbar-width: thin;
+      background: ${semantic.color.surface.brand};
+      border-bottom: 1px solid ${semantic.color.state.pressed};
+    `,
+    /**
+     * Presentational wrapper holding the two sibling controls of one tab. They
+     * are siblings rather than nested because a button inside a button is
+     * invalid, and the inner one would be unreachable by keyboard.
+     */
+    pluginGroupTabItem: css`
+      display: inline-flex;
+      align-items: stretch;
+      flex: 0 0 auto;
+      max-width: 200px;
+      background: transparent;
+      transition: background 0.2s ease;
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.surface.workspace};
+      }
+      &:hover:not([data-tsd-selected='true']) {
+        background: ${semantic.color.state.hover};
+      }
+      &[data-tsd-held='true'] {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: -2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    `,
+    pluginGroupTab: css`
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      padding-inline: 8px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: ${semantic.color.text.mutedOnBrand};
+      font-family: ${semantic.font.body};
+      font-size: ${semantic.type.bodyXs.size};
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: grab;
+      &[aria-pressed='true'] {
+        color: ${semantic.color.text.primary};
+        cursor: default;
+      }
+    `,
+    /** 24px square, which is the smallest target WCAG 2.5.8 accepts. */
+    pluginGroupTabClose: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 24px;
+      align-self: center;
+      margin-inline-end: 2px;
+      padding: 0;
+      border: 0;
+      border-radius: 2px;
+      background: transparent;
+      color: ${semantic.color.text.mutedOnBrand};
+      cursor: pointer;
+      &:hover {
+        background: ${semantic.color.state.pressed};
+      }
+      & svg {
+        width: 10px;
+        height: 10px;
+      }
+    `,
+    /**
+     * A gutter between two panes of one split. It is a real focusable separator
+     * so it can be driven from the keyboard, matching the whole-panel resizer.
+     */
+    pluginSplitter: (dir: 'row' | 'col') => css`
+      position: absolute;
+      z-index: 2;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+      cursor: ${dir === 'row' ? 'col-resize' : 'row-resize'};
+      touch-action: none;
+      &:hover,
+      &:focus-visible {
+        background-color: ${semantic.color.border.focus};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+      @media (forced-colors: active) {
+        &:hover,
+        &:focus-visible {
+          background-color: Highlight;
+        }
+      }
+    `,
+    /** The highlight that shows where a dragged tab would land. */
+    pluginDropOverlay: css`
+      position: absolute;
+      z-index: 3;
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 2px solid ${semantic.color.border.focus};
+      background: ${semantic.color.state.hover};
+      @media (forced-colors: active) {
+        border-color: Highlight;
+      }
     `,
     pluginPaneSeparator: css`
       flex: 0 0 1px;

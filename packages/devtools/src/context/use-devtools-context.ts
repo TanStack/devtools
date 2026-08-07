@@ -1,12 +1,6 @@
 import { createMemo, createSignal, useContext as getContext } from 'solid-js'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants.js'
-import {
-  allGroups,
-  closeTab,
-  flattenTabs,
-  singleGroup,
-  splitAt,
-} from '../utils/layout-tree.js'
+import { appendPane, closeTab, flattenTabs } from '../utils/layout-tree.js'
 import { DevtoolsContext } from './devtools-context.jsx'
 import type { LayoutNode } from '../utils/layout-tree.js'
 import type { DevtoolsStore } from './devtools-store.js'
@@ -60,13 +54,10 @@ export const createPlugins = () => {
       const isActive = flattenTabs(current).includes(pluginId)
 
       if (isActive) {
-        // Teardown cannot hang off the pane's own `onCleanup` while the panes
-        // live inside the destination-switched subtree: navigating to
-        // Marketplace unmounts them, which would destroy every plugin. It moves
-        // once the panes live in a container that outlives the navigation.
-        store.plugins
-          ?.find((plugin) => plugin.id === pluginId)
-          ?.destroy?.(pluginId)
+        // `destroy` is deliberately not called here. It hangs off the pane's own
+        // teardown in `PluginWorkspace`, so it fires exactly once however the
+        // pane was closed — this toggle, a tab's close button, or a whole group
+        // going away — and it fires before the mount node is detached.
         return {
           ...previous,
           state: { ...previous.state, layout: closeTab(current, pluginId) },
@@ -75,17 +66,13 @@ export const createPlugins = () => {
 
       if (flattenTabs(current).length >= MAX_ACTIVE_PLUGINS) return previous
 
-      // Opening from the strip puts the plugin beside the last pane, which is
-      // the side-by-side behaviour the strip has always had. Dropping decides
-      // placement for itself.
-      const groups = allGroups(current)
-      const last = groups[groups.length - 1]
-      const next =
-        last === undefined
-          ? singleGroup([pluginId])
-          : splitAt(current, last.id, 'right', pluginId)
-
-      return { ...previous, state: { ...previous.state, layout: next } }
+      // Opening from the strip adds a pane alongside the others at an equal
+      // share, which is the side-by-side behaviour the strip has always had.
+      // Dragging decides placement for itself.
+      return {
+        ...previous,
+        state: { ...previous.state, layout: appendPane(current, pluginId) },
+      }
     })
   }
 
