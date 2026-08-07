@@ -1,6 +1,14 @@
 import { createMemo, createSignal, useContext as getContext } from 'solid-js'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants.js'
+import {
+  allGroups,
+  closeTab,
+  flattenTabs,
+  singleGroup,
+  splitAt,
+} from '../utils/layout-tree.js'
 import { DevtoolsContext } from './devtools-context.jsx'
+import type { LayoutNode } from '../utils/layout-tree.js'
 import type { DevtoolsStore } from './devtools-store.js'
 
 const createDevtoolsContext = () => {
@@ -26,34 +34,62 @@ export function createTheme() {
 export const createPlugins = () => {
   const { store, setStore } = createDevtoolsContext()
   const plugins = createMemo(() => store.plugins)
-  const activePlugins = createMemo(() => store.state.activePlugins)
+  /**
+   * Derived, never stored. The layout tree is the only record of what is open,
+   * so this cannot drift out of step with it.
+   *
+   * Compared by contents, not identity: `flattenTabs` builds a fresh array every
+   * time, and without this every unrelated store write would look like a change
+   * and re-run each plugin's `render`.
+   */
+  const activePlugins = createMemo(() => flattenTabs(store.state.layout), [], {
+    equals: (a, b) => a.length === b.length && a.every((id, i) => id === b[i]),
+  })
+  const layout = createMemo(() => store.state.layout)
+
+  const setLayout = (next: LayoutNode | null) => {
+    setStore((previous) => ({
+      ...previous,
+      state: { ...previous.state, layout: next },
+    }))
+  }
 
   const toggleActivePlugins = (pluginId: string) => {
     setStore((previous) => {
-      const isActive = previous.state.activePlugins.includes(pluginId)
-      const currentPlugin = store.plugins?.find(
-        (plugin) => plugin.id === pluginId,
-      )
+      const current = previous.state.layout
+      const isActive = flattenTabs(current).includes(pluginId)
 
-      if (currentPlugin?.destroy && isActive) {
-        currentPlugin.destroy(pluginId)
+      if (isActive) {
+        // Teardown cannot hang off the pane's own `onCleanup` while the panes
+        // live inside the destination-switched subtree: navigating to
+        // Marketplace unmounts them, which would destroy every plugin. It moves
+        // once the panes live in a container that outlives the navigation.
+        store.plugins
+          ?.find((plugin) => plugin.id === pluginId)
+          ?.destroy?.(pluginId)
+        return {
+          ...previous,
+          state: { ...previous.state, layout: closeTab(current, pluginId) },
+        }
       }
 
-      const updatedPlugins = isActive
-        ? previous.state.activePlugins.filter((id) => id !== pluginId)
-        : [...previous.state.activePlugins, pluginId]
-      if (updatedPlugins.length > MAX_ACTIVE_PLUGINS) return previous
-      return {
-        ...previous,
-        state: {
-          ...previous.state,
-          activePlugins: updatedPlugins,
-        },
-      }
+      if (flattenTabs(current).length >= MAX_ACTIVE_PLUGINS) return previous
+
+      // Opening from the strip puts the plugin beside the last pane, which is
+      // the side-by-side behaviour the strip has always had. Dropping decides
+      // placement for itself.
+      const groups = allGroups(current)
+      const last = groups[groups.length - 1]
+      const next =
+        last === undefined
+          ? singleGroup([pluginId])
+          : splitAt(current, last.id, 'right', pluginId)
+
+      return { ...previous, state: { ...previous.state, layout: next } }
     })
   }
 
-  return { plugins, toggleActivePlugins, activePlugins }
+  return { plugins, toggleActivePlugins, activePlugins, layout, setLayout }
 }
 
 export const createDevtoolsState = () => {

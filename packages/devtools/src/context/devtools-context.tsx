@@ -1,6 +1,7 @@
 import { createComponent, createContext, createEffect } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
+import { flattenTabs, repairLayout, singleGroup } from '../utils/layout-tree'
 import { tryParseJson } from '../utils/sanitize'
 import {
   TANSTACK_DEVTOOLS_SETTINGS,
@@ -113,20 +114,26 @@ export function getStateFromLocalStorage(
   plugins: Array<TanStackDevtoolsPlugin> | undefined,
 ) {
   const existingStateString = getStorageItem(TANSTACK_DEVTOOLS_STATE)
-  const existingState =
-    tryParseJson<DevtoolsStore['state']>(existingStateString)
+  const existingState = tryParseJson<
+    DevtoolsStore['state'] & { activePlugins?: Array<string> }
+  >(existingStateString)
   const pluginIds =
     plugins?.map((plugin, i) => generatePluginId(plugin, i)) || []
 
-  if (existingState?.activePlugins) {
-    const originalLength = existingState.activePlugins.length
-    // Filter out any active plugins that are no longer available
-    existingState.activePlugins = existingState.activePlugins.filter((id) =>
-      pluginIds.includes(id),
-    )
+  if (existingState) {
+    const known = new Set(pluginIds)
+    const before = JSON.stringify(existingState.layout ?? null)
+    // State written before the workspace became a tree only knows which plugins
+    // were open, not how they were arranged, so it reopens as a single group in
+    // the stored order.
+    const raw =
+      existingState.layout ?? singleGroup(existingState.activePlugins ?? [])
+    // Never throws: an unknown plugin id, a malformed tree, or a hand-edited
+    // entry costs the arrangement at worst, but must not stop the panel opening.
+    existingState.layout = repairLayout(raw, known)
+    delete existingState.activePlugins
 
-    if (existingState.activePlugins.length !== originalLength) {
-      // If any active plugins were removed, update local storage
+    if (JSON.stringify(existingState.layout ?? null) !== before) {
       setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(existingState))
     }
   }
@@ -150,14 +157,14 @@ export const getExistingStateFromStorage = (
       }
     }) || []
 
-  // If no active plugins exist, add plugins with defaultOpen: true
-  // Or if there's only 1 plugin, activate it automatically
-  let activePlugins = existingState?.activePlugins || []
+  // If nothing was open, seed from plugins with defaultOpen: true, or activate
+  // a lone plugin automatically.
+  let layout = existingState?.layout ?? null
 
   const shouldFillWithDefaultOpenPlugins =
-    activePlugins.length === 0 && pluginsWithIds.length > 0
+    flattenTabs(layout).length === 0 && pluginsWithIds.length > 0
   if (shouldFillWithDefaultOpenPlugins) {
-    activePlugins = getDefaultActivePlugins(pluginsWithIds)
+    layout = singleGroup(getDefaultActivePlugins(pluginsWithIds))
   }
 
   const state: DevtoolsStore = {
@@ -166,7 +173,7 @@ export const getExistingStateFromStorage = (
     state: {
       ...initialState.state,
       ...existingState,
-      activePlugins,
+      layout,
     },
     settings: {
       ...initialState.settings,

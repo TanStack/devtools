@@ -5,6 +5,7 @@ import DevTools from '../src/devtools'
 import { DevtoolsProvider } from '../src/context/devtools-context'
 import { PiPProvider } from '../src/context/pip-context'
 import { PluginSectionComponent } from '../src/tabs/marketplace/plugin-section'
+import { flattenTabs } from '../src/utils/layout-tree'
 import { TANSTACK_DEVTOOLS_STATE } from '../src/utils/storage'
 import {
   DEVTOOLS_FONT_STYLE_ID,
@@ -1128,14 +1129,18 @@ describe('workbench', { timeout: 30_000 }, () => {
   it('auto-activates one registered plugin and preserves its destroy lifecycle', () => {
     mountWorkbench([plugin('one')])
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual(['one'])
     expect(
       events.filter((event) => event.startsWith('render:one:')),
     ).toHaveLength(1)
     click('Plugin one')
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual([])
     expect(events.filter((event) => event === 'destroy:one')).toHaveLength(1)
   })
@@ -1207,16 +1212,18 @@ describe('workbench', { timeout: 30_000 }, () => {
 
   it('moves among Marketplace and core destinations without plugin destruction', () => {
     mountWorkbench([plugin('one')])
-    const activeBefore = JSON.parse(
-      localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!,
-    ).activePlugins
+    const activeBefore = flattenTabs(
+      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+    )
     expect(activeBefore).toEqual(['one'])
     click('Marketplace')
     expect(
       document.querySelector('[data-testid="plugin-marketplace"]'),
     ).toBeInTheDocument()
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual(activeBefore)
     click('Settings')
     click('Plugins')
@@ -1251,7 +1258,9 @@ describe('workbench', { timeout: 30_000 }, () => {
       new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
     )
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual(['one'])
     expect(events).toContain('render:one:dark:false')
     expect(events).not.toContain('destroy:one')
