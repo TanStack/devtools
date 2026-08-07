@@ -415,6 +415,103 @@ describe('layoutRects', () => {
   })
 })
 
+describe('closing a pane gives its space back', () => {
+  // The reported shape: one pane top-left, one bottom-left, one down the right.
+  const topBottomLeftPlusRight = () =>
+    split('row', [
+      split('col', [group('g0', ['top']), group('g1', ['bottom'])]),
+      group('g2', ['right']),
+    ])
+
+  it('expands the top-left pane to full height when the bottom-left closes', () => {
+    const before = layoutRects(topBottomLeftPlusRight(), BOX)
+    expect(before.g0!.height).toBeCloseTo(BOX.h / 2, 6)
+
+    const after = closeTab(topBottomLeftPlusRight(), 'bottom')
+    const rects = layoutRects(after, BOX)
+    // The column is gone, so the survivor takes the whole left half.
+    expect(rects.g0!.height).toBe(BOX.h)
+    expect(rects.g0!.top).toBe(0)
+    expect(rects.g0!.width).toBeCloseTo(BOX.w / 2, 6)
+    // The right pane is untouched.
+    expect(rects.g2!.height).toBe(BOX.h)
+    expect(rects.g2!.width).toBeCloseTo(BOX.w / 2, 6)
+    expectWellFormed(after)
+  })
+
+  it('expands the bottom-left pane when the top-left closes', () => {
+    const after = closeTab(topBottomLeftPlusRight(), 'top')
+    const rects = layoutRects(after, BOX)
+    expect(rects.g1!.height).toBe(BOX.h)
+    expect(rects.g1!.top).toBe(0)
+    expectWellFormed(after)
+  })
+
+  it('leaves no empty split behind, whichever left pane goes', () => {
+    for (const closing of ['top', 'bottom']) {
+      const after = closeTab(topBottomLeftPlusRight(), closing)!
+      expect(after.kind).toBe('split')
+      expect((after as SplitNode).dir).toBe('row')
+      expect((after as SplitNode).children).toHaveLength(2)
+      // Every child is a plain group now: the column collapsed rather than
+      // lingering with a single child.
+      expect((after as SplitNode).children.every(isGroupNode)).toBe(true)
+    }
+  })
+
+  it('shares the space out when one of three siblings closes', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      group('g1', ['b']),
+      group('g2', ['c']),
+    ])
+    const after = closeTab(tree, 'b')
+    const rects = layoutRects(after, BOX)
+    expect((after as SplitNode).children).toHaveLength(2)
+    expect(rects.g0!.width).toBeCloseTo(BOX.w / 2, 6)
+    expect(rects.g2!.width).toBeCloseTo(BOX.w / 2, 6)
+    // No gap where the middle pane used to be.
+    expect(rects.g0!.left + rects.g0!.width).toBeCloseTo(rects.g2!.left, 6)
+    expectWellFormed(after)
+  })
+
+  it('keeps a resized split proportional after a sibling closes', () => {
+    // A user who dragged the gutter should not have the survivor land somewhere
+    // arbitrary.
+    const tree = split(
+      'row',
+      [
+        split(
+          'col',
+          [group('g0', ['top']), group('g1', ['bottom'])],
+          [0.8, 0.2],
+        ),
+        group('g2', ['right']),
+      ],
+      [0.3, 0.7],
+    )
+    const after = closeTab(tree, 'bottom')
+    const rects = layoutRects(after, BOX)
+    expect(rects.g0!.height).toBe(BOX.h)
+    expect(rects.g0!.width).toBeCloseTo(BOX.w * 0.3, 6)
+    expect(rects.g2!.width).toBeCloseTo(BOX.w * 0.7, 6)
+    expectWellFormed(after)
+  })
+
+  it('does not collapse a group that still has another tab', () => {
+    // Closing one of two stacked tabs leaves the group in place, at its own size.
+    const tree = split('row', [
+      split('col', [group('g0', ['top']), group('g1', ['b1', 'b2'])]),
+      group('g2', ['right']),
+    ])
+    const after = closeTab(tree, 'b2')
+    const rects = layoutRects(after, BOX)
+    expect(rects.g0!.height).toBeCloseTo(BOX.h / 2, 6)
+    expect(rects.g1!.height).toBeCloseTo(BOX.h / 2, 6)
+    expectWellFormed(after)
+  })
+})
+
 describe('appendPane', () => {
   it('seeds from nothing', () => {
     expect(appendPane(null, 'a')).toEqual(group('g0', ['a'], 0))
@@ -536,6 +633,28 @@ describe('canSplit', () => {
   it('always allows center, and refuses an unknown group', () => {
     expect(canSplit(group('g0', ['a']), 'g0', 'center', min, BOX)).toBe(true)
     expect(canSplit(group('g0', ['a']), 'gX', 'right', min, BOX)).toBe(false)
+  })
+})
+
+describe('selecting a stacked tab', () => {
+  it('only changes which tab is active, never the structure', () => {
+    // Two panes merged into one group, then each tab selected in turn. The tree
+    // must stay a single group: selecting is not a rearrangement.
+    const merged = stackInto(
+      split('row', [group('g0', ['a']), group('g1', ['b'])]),
+      'g0',
+      'b',
+    )
+    expect(merged).toEqual(group('g0', ['a', 'b'], 1))
+
+    const backToA = activateTab(merged, 'a')
+    expect(backToA).toEqual(group('g0', ['a', 'b'], 0))
+    expect(allGroups(backToA)).toHaveLength(1)
+
+    const backToB = activateTab(backToA, 'b')
+    expect(backToB).toEqual(group('g0', ['a', 'b'], 1))
+    expect(allGroups(backToB)).toHaveLength(1)
+    expectWellFormed(backToB)
   })
 })
 

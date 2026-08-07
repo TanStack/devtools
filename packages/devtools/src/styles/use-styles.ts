@@ -679,6 +679,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      /* A plugin entry can be dragged down into the workspace to place its pane,
+         so it advertises that rather than looking like a plain button. */
+      &[data-plugin-title-control] {
+        cursor: grab;
+      }
       min-height: 32px;
       padding: ${semantic.padding.controlBlock}
         ${semantic.padding.controlInline};
@@ -1117,6 +1122,49 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         &:focus-visible {
           background-color: Highlight;
         }
+      }
+    `,
+    /**
+     * The tab that follows the cursor while dragging, so it is obvious which pane
+     * is being carried. Pointer-transparent, or it would sit between the pointer
+     * and the drop zone being aimed at.
+     */
+    pluginDragPreview: css`
+      position: fixed;
+      z-index: 2147483646;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 220px;
+      height: ${PLUGIN_GROUP_TAB_HEIGHT}px;
+      padding-inline: 10px;
+      box-sizing: border-box;
+      pointer-events: none;
+      border: 1px solid ${semantic.color.border.focus};
+      border-radius: 3px;
+      background: ${semantic.color.surface.brand};
+      color: ${semantic.color.text.primary};
+      font-family: ${semantic.font.body};
+      font-size: ${semantic.type.bodyXs.size};
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.95;
+      /* Sits just off the cursor so it never covers the pointer itself. */
+      transform: translate(12px, 12px);
+      @media (forced-colors: active) {
+        border-color: Highlight;
+      }
+    `,
+    /**
+     * While a pane is being carried, every surface shows the grabbing cursor —
+     * the pointer travels well outside the tab it started on, so the cursor has to
+     * be set at the document level, not on the tab.
+     */
+    pluginDraggingCursor: css`
+      &,
+      & * {
+        cursor: grabbing !important;
       }
     `,
     /** The highlight that shows where a dragged tab would land. */

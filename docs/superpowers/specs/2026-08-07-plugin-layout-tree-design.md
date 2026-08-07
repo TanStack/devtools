@@ -14,7 +14,9 @@ Users want to open up to 9 plugins, arrange them in splits and stacks, resize th
 
 Two properties of the existing code constrain every decision below.
 
-**Plugins own their DOM.** `plugin.render(mount, props)` hands a mount node to third-party code. `examples/react/basic/src/setup.tsx:89` registers a plugin whose whole body is `<iframe src="http://localhost:3005" />`. Moving a DOM node to a different parent reloads any iframe inside it and can drop canvas or WebGL contexts. `display: none` does not.
+**Plugins own their DOM.** `plugin.render(mount, props)` hands a mount node to third-party code, which is free to put an `<iframe>` or a `<canvas>` in it — `examples/react/basic/src/setup.tsx:87-90` carries exactly such a plugin, commented out. Removing a node from the document and re-inserting it reloads any iframe inside it and can drop canvas or WebGL contexts. `display: none` does not, and neither does changing its inline offsets.
+
+Note the sharp edge, confirmed by measurement in a browser rather than reasoning: **it is not only re-parenting that costs a reload.** Solid's `<For>` reorders by removing and re-inserting nodes, so iterating panes in *layout* order reloads an iframe every time the arrangement changes, even though the parent is the same element throughout. Pane elements must therefore be iterated in an order that only changes when a plugin opens or closes.
 
 **jsdom has no layout engine.** `getBoundingClientRect()` returns zeros and `clientWidth` is 0. Existing tests mock both. Any rect maths verified only through jsdom is verifying its own mocks.
 
@@ -68,15 +70,16 @@ Rejected: keeping both `activePlugins` and `layout` as parallel state. Two sourc
 
 ### 2. Flat DOM, panes positioned from computed rects
 
-Every pane is a direct child of one container for its entire life and never re-parents. The tree is walked to a rect per pane and applied inline.
+Every pane is a direct child of one container for its entire life and never re-parents. The tree is walked to a rect per pane and applied inline. Crucially, the iteration order is **sorted by plugin id, not layout order**, for the reason in Context: `<For>` reorders by remove-and-reinsert, and that reloads an iframe. Sorted by id, the DOM sequence changes only when a plugin opens or closes, which inserts or removes a node in any case.
 
 ```tsx
-<div class={styles().pluginsWorkspace} style={{ position: 'relative' }}>
-  <For each={openPluginIds()}>{(id) => <Pane id={id} rect={rects()[id]} />}</For>
+// paneOrder = [...activePlugins()].sort()  — stable across rearrangement
+<div class={styles().pluginWorkspace} style={{ position: 'relative' }}>
+  <For each={paneOrder()}>{(id) => <Pane id={id} rect={rects()[id]} />}</For>
 </div>
 ```
 
-This is what keeps the example's iframe plugin alive across a drag. It also produces the rect maths that drop-zone hit-testing needs anyway.
+Verified in a browser: with a load counter on an injected iframe, a resize, a navigation to another destination and back, and a keyboard move of the pane into another group all leave the count at 1. Iterating in layout order took the move to 2.
 
 Inactive tabs in a stack are hidden with `display: none`, which does not reload an iframe.
 
@@ -130,7 +133,11 @@ Baseline `packages/devtools/dist/index.js` is 45.41 kB against a 60 kB limit —
 | draggable + 4 extras + droppable | 54.22 kB | +8.81 |
 | **chosen set** (the above plus `createSortable`) | **61.04 kB** | **+15.63** |
 
-**Decision:** keep `createSortable` for its cross-list transfer and FLIP animation, and raise the size limit from 60 kB to **65 kB**, leaving 3.96 kB of headroom. The alternative — dropping Sortable for 54.22 kB and reimplementing reorder on the `moveTab()` reducer — was measured and rejected: it saves 6.04 kB but loses reorder animation, which is a core part of the UX this feature exists to improve.
+**Decision:** keep `createSortable` for its cross-list transfer and FLIP animation, and raise the size limit from 60 kB to **65 kB**.
+
+**Built cost: 59.56 kB.** Lower than the 61.04 kB spike because only `createSortable` is imported — the pane hit-testing is a handful of lines against the rects the tree already produces, so `createDroppable` and the extras are not needed. That fits the original 60 kB limit with 0.44 kB to spare, so the raise turned out not to be strictly necessary; it stays at 65 kB because 0.44 kB is too thin to build on.
+
+Also worth knowing when reading the published types: `row()` takes the item's **key**, not the item (`row(id)`, not `row(item)` as the docs show), and items may be primitives keyed by themselves, so no key accessor is needed. The alternative — dropping Sortable for 54.22 kB and reimplementing reorder on the `moveTab()` reducer — was measured and rejected: it saves 6.04 kB but loses reorder animation, which is a core part of the UX this feature exists to improve.
 
 `createSplitPane` and `createResizable` stay out for the architectural reasons above, not for size.
 

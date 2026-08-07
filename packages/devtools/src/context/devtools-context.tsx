@@ -1,5 +1,5 @@
 import { createComponent, createContext, createEffect } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import { createStore, reconcile } from 'solid-js/store'
 import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
 import { flattenTabs, repairLayout, singleGroup } from '../utils/layout-tree'
 import { tryParseJson } from '../utils/sanitize'
@@ -78,6 +78,31 @@ export interface TanStackDevtoolsPlugin {
 export const DevtoolsContext = createContext<{
   store: DevtoolsStore
   setStore: Setter<DevtoolsStore>
+  /**
+   * Swap the layout tree wholesale.
+   *
+   * Needed because a Solid store *merges* object nodes rather than replacing
+   * them: writing the layout through `setStore` leaves behind keys the old shape
+   * had and the new one does not. Closing one of three panes would keep the third
+   * child, so the layout never collapsed and the surviving pane never grew.
+   */
+  replaceLayout: (next: DevtoolsStore['state']['layout']) => void
+  /**
+   * Where the Plugins strip hands a drag over to the workspace.
+   *
+   * A mutable holder on the context rather than a module-level variable: this
+   * package ships several bundles, so two components can end up holding different
+   * copies of the same module and never see each other's writes. The context is
+   * the one thing they are guaranteed to share.
+   *
+   * A direct call, not a signal — an effect reacting to a signal runs a microtask
+   * later and every pointer move until then is lost.
+   */
+  paneDragBridge: {
+    handler:
+      | ((pluginId: string, point: { x: number; y: number }) => void)
+      | null
+  }
 }>()
 
 interface ContextProps {
@@ -215,6 +240,7 @@ export const DevtoolsProvider = (props: ContextProps) => {
 
   const value = {
     store,
+    paneDragBridge: { handler: null },
     setStore: (
       updater: (prev: DevtoolsStore) => DevtoolsStore | Partial<DevtoolsStore>,
     ) => {
@@ -228,6 +254,21 @@ export const DevtoolsProvider = (props: ContextProps) => {
         ...prev,
         ...newState,
       }))
+    },
+    replaceLayout: (next: DevtoolsStore['state']['layout']) => {
+      // `reconcile`, not a plain write. A Solid store merges one object node into
+      // another, so writing the new tree over the old one keeps whatever keys and
+      // children the old shape had — closing one of three panes left the third
+      // child behind and the layout never collapsed. Clearing to `null` first
+      // would fix that but empties the layout for an instant, which tears every
+      // plugin down and rebuilds it. `reconcile` diffs in one step, shrinking
+      // arrays and dropping absent keys, with no empty state in between.
+      setStore(
+        'state',
+        'layout',
+        next === null ? null : reconcile(next, { key: null }),
+      )
+      setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(store.state))
     },
   }
 

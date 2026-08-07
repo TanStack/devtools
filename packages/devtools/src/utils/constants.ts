@@ -5,7 +5,7 @@
  * a cap on how many can be *open*, not on how many fit side by side — a stacked
  * tab costs no space.
  */
-export const MAX_ACTIVE_PLUGINS = 9
+export const MAX_ACTIVE_PLUGINS = 18
 
 /**
  * Height of a group's tab bar, along the top edge of the group's rect. Tall

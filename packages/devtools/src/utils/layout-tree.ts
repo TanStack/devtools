@@ -196,6 +196,46 @@ export const closeGroup = (
   )
 }
 
+/**
+ * Replace a group's tab order wholesale, keeping the same tab selected.
+ *
+ * This is the seam a sortable tab bar reports into: it hands back the new order
+ * and this writes it to the tree, which stays the source of truth. Ids that are
+ * not already in the group are ignored — a transfer is `moveTab`, not this.
+ */
+export const setTabs = (
+  tree: LayoutNode | null,
+  groupId: string,
+  tabIds: Array<string>,
+): LayoutNode | null => {
+  const group = findGroupById(tree, groupId)
+  if (tree === null || group === null) return tree
+  const existing = new Set(group.tabs)
+  const seen = new Set<string>()
+  const reordered = tabIds.filter((id) => {
+    if (!existing.has(id) || seen.has(id)) return false
+    seen.add(id)
+    return true
+  })
+  // Anything the caller dropped stays, appended, so a partial report cannot
+  // silently close a pane.
+  const tabs = [...reordered, ...group.tabs.filter((id) => !seen.has(id))]
+  if (tabs.length === 0) return tree
+  const activeId = group.tabs[group.active]
+  const active = Math.max(
+    tabs.findIndex((id) => id === activeId),
+    0,
+  )
+
+  const visit = (node: LayoutNode): LayoutNode => {
+    if (isGroup(node)) {
+      return node.id === groupId ? { ...node, tabs, active } : node
+    }
+    return { ...node, children: node.children.map(visit) }
+  }
+  return visit(tree)
+}
+
 /** Show a tab that is already open, without moving it. */
 export const activateTab = (
   tree: LayoutNode | null,

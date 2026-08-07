@@ -45,6 +45,18 @@ const plugin = (id: string): TanStackDevtoolsPlugin => ({
   destroy: (pluginId) => events.push(`destroy:${pluginId}`),
 })
 
+/**
+ * Close an open plugin. Its strip entry is gone once it has a pane — the pane's
+ * own tab is the only place it is selected or closed.
+ */
+const closePane = (pluginId: string) => {
+  const control = document.querySelector<HTMLButtonElement>(
+    `[data-testid="plugin-tab-close-${pluginId}"]`,
+  )
+  expect(control, `missing close control for ${pluginId}`).toBeTruthy()
+  control!.click()
+}
+
 const click = (name: string) => {
   const control = [
     ...document.querySelectorAll<HTMLElement>('button,[role="button"]'),
@@ -1077,14 +1089,17 @@ describe('workbench', { timeout: 30_000 }, () => {
   it('preserves destination transitions without destroying or detaching panes', () => {
     mountWorkbench(['one', 'two', 'three'].map(plugin))
     for (const name of ['Plugin one', 'Plugin two', 'Plugin three']) click(name)
-    expect(
+    const paneIds = () =>
       [...document.querySelectorAll('[id^="plugin-container-"]')].map(
         (node) => node.id,
-      ),
-    ).toEqual([
+      )
+    // Sorted by plugin id, not by layout position. Panes are placed absolutely so
+    // their document order has no visual effect, and keeping it stable is what
+    // stops `For` re-inserting a node — which would reload an iframe plugin.
+    expect(paneIds()).toEqual([
       'plugin-container-one',
-      'plugin-container-two',
       'plugin-container-three',
+      'plugin-container-two',
     ])
     // Three panes in one row means two gutters between them.
     expect(
@@ -1107,13 +1122,43 @@ describe('workbench', { timeout: 30_000 }, () => {
       expect(events).not.toContain('destroy:one')
     }
 
-    click('Plugin two')
+    // Rearranging must leave the DOM sequence alone, for the same reason.
+    const orderBefore = paneIds()
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .focus()
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+      )
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
+      )
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+      )
+    expect(paneIds()).toEqual(orderBefore)
+    expect(document.querySelector('#plugin-container-one')).toBe(paneOne)
+
+    closePane('two')
     expect(events).toContain('destroy:two')
     expect(
       document.querySelector('#plugin-container-two'),
     ).not.toBeInTheDocument()
     // Exactly once, however the pane was closed.
     expect(events.filter((event) => event === 'destroy:two')).toHaveLength(1)
+    // Closing it hands the plugin back to the strip, which is where it is
+    // reopened from.
+    expect(
+      [...document.querySelectorAll('[data-plugin-title-control]')].some(
+        (entry) => entry.textContent?.trim() === 'Plugin two',
+      ),
+    ).toBe(true)
   })
 
   it('refuses to open more than MAX_ACTIVE_PLUGINS without destroying any', () => {
@@ -1165,7 +1210,7 @@ describe('workbench', { timeout: 30_000 }, () => {
     expect(
       events.filter((event) => event.startsWith('render:one:')),
     ).toHaveLength(1)
-    click('Plugin one')
+    closePane('one')
     expect(
       flattenTabs(
         JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
@@ -1208,8 +1253,9 @@ describe('workbench', { timeout: 30_000 }, () => {
     )!
 
     expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('dark')
-    stringControl.click()
-    expect(stringControl).toHaveAttribute('data-tsd-selected', 'true')
+    // Not clicked: a strip entry only exists while its plugin is closed, so
+    // clicking it removes the very element under test. The semantic styling is
+    // the point here, not a selected state the strip no longer has.
     expect(stringControl.className).not.toBe('')
     expect(stringHeading.getAttribute('style')).toBeNull()
     expect(callbackHeading.style.all).toBe('initial')
@@ -1236,7 +1282,10 @@ describe('workbench', { timeout: 30_000 }, () => {
     bad.name = () => {
       throw new Error('name boom')
     }
-    expect(() => mountWorkbench([bad])).toThrow('name boom')
+    // Two plugins, so neither auto-opens and both stay in the strip — that is
+    // where a title callback runs. A lone plugin opens on mount and never gets a
+    // strip entry.
+    expect(() => mountWorkbench([bad, plugin('other')])).toThrow('name boom')
   })
 
   it('moves among Marketplace and core destinations without plugin destruction', () => {

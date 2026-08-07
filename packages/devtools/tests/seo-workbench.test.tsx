@@ -127,5 +127,8 @@ describe.each(['light', 'dark'] as const)('%s SEO workbench', (theme) => {
     expect(
       linkTitles.every((title) => getComputedStyle(title).color === linkColor),
     ).toBe(true)
-  }, 10_000)
+    // Two full SEO mounts plus a lot of getComputedStyle against a large sheet
+    // take about 4s on an idle machine, so 10s left too little headroom and this
+    // timed out under parallel load. Matches the workbench suite's allowance.
+  }, 30_000)
 })

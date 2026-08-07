@@ -77,6 +77,7 @@ export const WorkbenchSecondaryTab = (props: {
   ariaLabelledBy?: string
   pluginTitleControl?: boolean
   onClick: () => void
+  onPointerDown?: (event: PointerEvent) => void
 }) => {
   const styles = createStyles()
 
@@ -97,6 +98,7 @@ export const WorkbenchSecondaryTab = (props: {
           inline: 'nearest',
         })
       }
+      onPointerDown={(event) => props.onPointerDown?.(event)}
       onClick={props.onClick}
     >
       {props.children}

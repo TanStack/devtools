@@ -1514,6 +1514,9 @@ importers:
 
   packages/devtools:
     dependencies:
+      '@neodrag/solid':
+        specifier: 3.0.0-next.10
+        version: 3.0.0-next.10(@neodrag/core@3.0.0-next.10)(solid-js@1.9.12)
       '@solid-primitives/event-listener':
         specifier: ^2.4.3
         version: 2.4.5(solid-js@1.9.12)
@@ -3952,6 +3955,15 @@ packages:
     peerDependencies:
       '@emnapi/core': ^1.7.1
       '@emnapi/runtime': ^1.7.1
+
+  '@neodrag/core@3.0.0-next.10':
+    resolution: {integrity: sha512-Yb6tpgr3XE/5d96NMQqsSRFD+HD37R1LmgjrrAA8Xzd/G9GSqb5kcuYIrOC1i7/nFEaDoI+Lh0KZUiXGfCmbig==}
+
+  '@neodrag/solid@3.0.0-next.10':
+    resolution: {integrity: sha512-uYnHQuJyAsR9qg36+M8MUvRJJdAsnu3CK0afgYSz3ycjVj0gvLKEYcpdsb+e6/UwoPkqEOadxMcUebz0eg9Ckg==}
+    peerDependencies:
+      '@neodrag/core': 3.0.0-next.10
+      solid-js: ^1.0.0
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -14410,6 +14422,13 @@ snapshots:
       '@emnapi/runtime': 1.11.1
       '@tybys/wasm-util': 0.10.2
     optional: true
+
+  '@neodrag/core@3.0.0-next.10': {}
+
+  '@neodrag/solid@3.0.0-next.10(@neodrag/core@3.0.0-next.10)(solid-js@1.9.12)':
+    dependencies:
+      '@neodrag/core': 3.0.0-next.10
+      solid-js: 1.9.12
 
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
