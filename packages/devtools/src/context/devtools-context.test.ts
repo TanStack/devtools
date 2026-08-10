@@ -1,5 +1,7 @@
 import { createComponent, createEffect, createRoot, useContext } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MAX_ACTIVE_PLUGINS } from '../utils/constants'
+import { flattenTabs } from '../utils/layout-tree'
 import { TANSTACK_DEVTOOLS_STATE } from '../utils/storage'
 import {
   DevtoolsContext,
@@ -19,7 +21,7 @@ describe('getStateFromLocalStorage', () => {
     const state = getStateFromLocalStorage(undefined)
     expect(state).toEqual(undefined)
   })
-  it('should return parsed state from localStorage and not remove valid plugins', () => {
+  it('migrates a legacy activePlugins array into a single layout group', () => {
     const mockState = {
       activePlugins: ['plugin1'],
       settings: {
@@ -34,7 +36,40 @@ describe('getStateFromLocalStorage', () => {
         name: 'Plugin 1',
       },
     ])
-    expect(state).toEqual(mockState)
+    // State written before the workspace became a tree reopens as one group, in
+    // the stored order, and the superseded key is dropped.
+    expect(state).toEqual({
+      layout: { kind: 'group', id: 'g0', tabs: ['plugin1'], active: 0 },
+      settings: { theme: 'dark' },
+    })
+    expect(state).not.toHaveProperty('activePlugins')
+    // The migration is written back, so it only happens once.
+    expect(
+      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!),
+    ).not.toHaveProperty('activePlugins')
+  })
+
+  it('keeps an existing layout tree instead of rebuilding it', () => {
+    const layout = {
+      kind: 'split',
+      dir: 'row',
+      sizes: [0.5, 0.5],
+      children: [
+        { kind: 'group', id: 'g0', tabs: ['plugin1'], active: 0 },
+        { kind: 'group', id: 'g1', tabs: ['plugin2'], active: 0 },
+      ],
+    }
+    localStorage.setItem(
+      TANSTACK_DEVTOOLS_STATE,
+      JSON.stringify({ layout, activePlugins: ['plugin1'] }),
+    )
+    const state = getStateFromLocalStorage([
+      { id: 'plugin1', render: () => {}, name: 'Plugin 1' },
+      { id: 'plugin2', render: () => {}, name: 'Plugin 2' },
+    ])
+    // The tree wins: activePlugins is the superseded key, not a second opinion.
+    expect(state?.layout).toEqual(layout)
+    expect(flattenTabs(state?.layout ?? null)).toEqual(['plugin1', 'plugin2'])
   })
   it('should filter out inactive plugins', () => {
     const mockState = {
@@ -46,7 +81,7 @@ describe('getStateFromLocalStorage', () => {
     localStorage.setItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(mockState))
     const plugins = [{ id: 'plugin1', render: () => {}, name: 'Plugin 1' }]
     const state = getStateFromLocalStorage(plugins)
-    expect(state?.activePlugins).toEqual(['plugin1'])
+    expect(flattenTabs(state?.layout ?? null)).toEqual(['plugin1'])
   })
   it('should return empty plugin state if all active plugins are invalid', () => {
     const mockState = {
@@ -58,7 +93,7 @@ describe('getStateFromLocalStorage', () => {
     localStorage.setItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(mockState))
     const plugins = [{ id: 'plugin3', render: () => {}, name: 'Plugin 3' }]
     const state = getStateFromLocalStorage(plugins)
-    expect(state?.activePlugins).toEqual([])
+    expect(flattenTabs(state?.layout ?? null)).toEqual([])
   })
   it('should handle invalid JSON in localStorage gracefully', () => {
     localStorage.setItem(TANSTACK_DEVTOOLS_STATE, 'invalid json')
@@ -120,7 +155,7 @@ describe('getStateFromLocalStorage', () => {
 
     const state = getStateFromLocalStorage(plugins)
     // Should keep existing activePlugins - defaultOpen logic won't override in getExistingStateFromStorage
-    expect(state?.activePlugins).toEqual(['plugin2'])
+    expect(flattenTabs(state?.layout ?? null)).toEqual(['plugin2'])
   })
 
   it('should automatically activate a single plugin when no active plugins exist', () => {
@@ -154,7 +189,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
     ]
 
     const state = getExistingStateFromStorage(undefined, plugins)
-    expect(state.state.activePlugins).toEqual(['only-plugin'])
+    expect(flattenTabs(state.state.layout)).toEqual(['only-plugin'])
     expect(state.plugins).toHaveLength(1)
     expect(state.plugins![0]?.id).toBe('only-plugin')
   })
@@ -182,11 +217,11 @@ describe('getExistingStateFromStorage - integration tests', () => {
     ]
 
     const state = getExistingStateFromStorage(undefined, plugins)
-    expect(state.state.activePlugins).toEqual(['plugin1', 'plugin3'])
+    expect(flattenTabs(state.state.layout)).toEqual(['plugin1', 'plugin3'])
     expect(state.plugins).toHaveLength(3)
   })
 
-  it('should limit defaultOpen plugins to MAX_ACTIVE_PLUGINS (3) when 5 have defaultOpen: true', () => {
+  it('opens every defaultOpen plugin that fits under MAX_ACTIVE_PLUGINS', () => {
     const plugins: Array<TanStackDevtoolsPlugin> = [
       {
         id: 'plugin1',
@@ -221,11 +256,14 @@ describe('getExistingStateFromStorage - integration tests', () => {
     ]
 
     const state = getExistingStateFromStorage(undefined, plugins)
-    // Should only activate first 3 plugins
-    expect(state.state.activePlugins).toEqual(['plugin1', 'plugin2', 'plugin3'])
-    expect(state.state.activePlugins).toHaveLength(3)
-    expect(state.state.activePlugins).not.toContain('plugin4')
-    expect(state.state.activePlugins).not.toContain('plugin5')
+    // Five is under the cap now that panes can split and stack, so all five
+    // open. Pinned to the constant rather than a literal.
+    expect(flattenTabs(state.state.layout)).toEqual(
+      plugins.slice(0, MAX_ACTIVE_PLUGINS).map((plugin) => plugin.id),
+    )
+    expect(flattenTabs(state.state.layout).length).toBeLessThanOrEqual(
+      MAX_ACTIVE_PLUGINS,
+    )
     // All 5 plugins should still be in the plugins array
     expect(state.plugins).toHaveLength(5)
   })
@@ -268,7 +306,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
 
     const state = getExistingStateFromStorage(undefined, plugins)
     // Should preserve the localStorage state, not use defaultOpen
-    expect(state.state.activePlugins).toEqual(['plugin2', 'plugin4'])
+    expect(flattenTabs(state.state.layout)).toEqual(['plugin2', 'plugin4'])
     expect(state.plugins).toHaveLength(4)
   })
 
@@ -292,7 +330,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
     ]
 
     const state = getExistingStateFromStorage(undefined, plugins)
-    expect(state.state.activePlugins).toEqual([])
+    expect(flattenTabs(state.state.layout)).toEqual([])
     expect(state.plugins).toHaveLength(3)
   })
 
@@ -308,7 +346,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
 
     const state = getExistingStateFromStorage(undefined, plugins)
     // Single plugin should be activated regardless of defaultOpen flag
-    expect(state.state.activePlugins).toEqual(['only-plugin'])
+    expect(flattenTabs(state.state.layout)).toEqual(['only-plugin'])
   })
 
   it('should merge config settings into the returned state', () => {
@@ -326,7 +364,7 @@ describe('getExistingStateFromStorage - integration tests', () => {
 
     const state = getExistingStateFromStorage(config as any, plugins)
     expect(state.settings.theme).toBe('light')
-    expect(state.state.activePlugins).toEqual(['plugin1'])
+    expect(flattenTabs(state.state.layout)).toEqual(['plugin1'])
   })
 })
 

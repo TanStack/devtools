@@ -1,4 +1,5 @@
 import type { TabName } from '../tabs'
+import type { LayoutNode } from '../utils/layout-tree'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
 import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 
@@ -113,7 +114,14 @@ export type DevtoolsStore = {
   state: {
     activeTab: TabName
     height: number
-    activePlugins: Array<string>
+    /**
+     * How the open plugins are arranged: a tree of splits and tab groups. This
+     * is the only record of which plugins are open — `activePlugins` is derived
+     * from it by `createPlugins`, so the two can never disagree.
+     *
+     * `null` means nothing is open.
+     */
+    layout: LayoutNode | null
     persistOpen: boolean
   }
   plugins?: Array<TanStackDevtoolsPlugin>
@@ -144,7 +152,7 @@ export const initialState: DevtoolsStore = {
   state: {
     activeTab: 'plugins',
     height: 400,
-    activePlugins: [],
+    layout: null,
     persistOpen: false,
   },
 }

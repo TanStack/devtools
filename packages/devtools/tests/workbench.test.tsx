@@ -5,6 +5,7 @@ import DevTools from '../src/devtools'
 import { DevtoolsProvider } from '../src/context/devtools-context'
 import { PiPProvider } from '../src/context/pip-context'
 import { PluginSectionComponent } from '../src/tabs/marketplace/plugin-section'
+import { flattenTabs } from '../src/utils/layout-tree'
 import { TANSTACK_DEVTOOLS_STATE } from '../src/utils/storage'
 import {
   DEVTOOLS_FONT_STYLE_ID,
@@ -13,6 +14,7 @@ import {
 } from '@tanstack/devtools-ui/internal'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import {
+  MAX_ACTIVE_PLUGINS,
   PANEL_CLOSE_THRESHOLD,
   PANEL_MAX_VIEWPORT_RATIO,
   PLUGINS_STRIP_HEIGHT,
@@ -42,6 +44,18 @@ const plugin = (id: string): TanStackDevtoolsPlugin => ({
   },
   destroy: (pluginId) => events.push(`destroy:${pluginId}`),
 })
+
+/**
+ * Close an open plugin. Its strip entry is gone once it has a pane — the pane's
+ * own tab is the only place it is selected or closed.
+ */
+const closePane = (pluginId: string) => {
+  const control = document.querySelector<HTMLButtonElement>(
+    `[data-testid="plugin-tab-close-${pluginId}"]`,
+  )
+  expect(control, `missing close control for ${pluginId}`).toBeTruthy()
+  control!.click()
+}
 
 const click = (name: string) => {
   const control = [
@@ -945,10 +959,16 @@ describe('workbench', { timeout: 30_000 }, () => {
       '[data-testid="plugins-workspace"]',
     )!
     const pane = document.querySelector<HTMLElement>('[data-plugin-mount]')!
-    expect(workspace.style.height).toBe('100%')
-    expect(workspace.style.minHeight).toBe('0px')
-    expect(workspace.style.overflow).toBe('hidden')
+    // The workspace carries its constraint in a class now, not inline, because
+    // the inline styles on it are the pane offsets computed from the layout.
+    expect(getComputedStyle(workspace).height).toBe('100%')
+    expect(getComputedStyle(workspace).minHeight).toBe('0')
+    expect(getComputedStyle(workspace).overflow).toBe('hidden')
     expect(getComputedStyle(pane).overflowY).toBe('auto')
+    // Each pane is placed absolutely so it never changes parent, which is what
+    // keeps an iframe plugin from reloading when the layout changes.
+    expect(getComputedStyle(pane).position).toBe('absolute')
+    expect(pane.parentElement).toBe(workspace)
   })
 
   it('keeps pane sizing on the core mount frame without clamping plugin-owned descendants', () => {
@@ -1066,22 +1086,28 @@ describe('workbench', { timeout: 30_000 }, () => {
     },
   )
 
-  it('preserves destination transitions and rejects a fourth plugin without destroying', () => {
-    mountWorkbench(['one', 'two', 'three', 'four'].map(plugin))
+  it('preserves destination transitions without destroying or detaching panes', () => {
+    mountWorkbench(['one', 'two', 'three'].map(plugin))
     for (const name of ['Plugin one', 'Plugin two', 'Plugin three']) click(name)
-    expect(
+    const paneIds = () =>
       [...document.querySelectorAll('[id^="plugin-container-"]')].map(
         (node) => node.id,
-      ),
-    ).toEqual([
+      )
+    // Sorted by plugin id, not by layout position. Panes are placed absolutely so
+    // their document order has no visual effect, and keeping it stable is what
+    // stops `For` re-inserting a node — which would reload an iframe plugin.
+    expect(paneIds()).toEqual([
       'plugin-container-one',
-      'plugin-container-two',
       'plugin-container-three',
+      'plugin-container-two',
     ])
+    // Three panes in one row means two gutters between them.
     expect(
       document.querySelectorAll('[data-tsd-separator="plugin-pane"]'),
     ).toHaveLength(2)
-    for (const destination of ['SEO', 'Settings', 'Plugins']) {
+
+    const paneOne = document.querySelector('#plugin-container-one')!
+    for (const destination of ['SEO', 'Settings', 'Marketplace', 'Plugins']) {
       click(destination)
       expect(
         [...document.querySelectorAll<HTMLButtonElement>('button')].find(
@@ -1090,18 +1116,67 @@ describe('workbench', { timeout: 30_000 }, () => {
             button.textContent?.trim() === destination,
         ),
       ).toHaveAttribute('data-tsd-selected', 'true')
-      if (destination !== 'Plugins') click('Plugins')
-      click('Plugin four')
-      expect(
-        document.querySelector('#plugin-container-four'),
-      ).not.toBeInTheDocument()
+      // The workspace outlives the navigation, so the very same node is still
+      // there. Detaching it would reload an iframe plugin.
+      expect(document.querySelector('#plugin-container-one')).toBe(paneOne)
       expect(events).not.toContain('destroy:one')
     }
-    click('Plugin two')
+
+    // Rearranging must leave the DOM sequence alone, for the same reason.
+    const orderBefore = paneIds()
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .focus()
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+      )
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }),
+      )
+    document
+      .querySelector<HTMLButtonElement>('[data-testid="plugin-tab-three"]')!
+      .dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+      )
+    expect(paneIds()).toEqual(orderBefore)
+    expect(document.querySelector('#plugin-container-one')).toBe(paneOne)
+
+    closePane('two')
     expect(events).toContain('destroy:two')
     expect(
       document.querySelector('#plugin-container-two'),
     ).not.toBeInTheDocument()
+    // Exactly once, however the pane was closed.
+    expect(events.filter((event) => event === 'destroy:two')).toHaveLength(1)
+    // Closing it hands the plugin back to the strip, which is where it is
+    // reopened from.
+    expect(
+      [...document.querySelectorAll('[data-plugin-title-control]')].some(
+        (entry) => entry.textContent?.trim() === 'Plugin two',
+      ),
+    ).toBe(true)
+  })
+
+  it('refuses to open more than MAX_ACTIVE_PLUGINS without destroying any', () => {
+    const ids = Array.from(
+      { length: MAX_ACTIVE_PLUGINS + 1 },
+      (_, index) => `p${index}`,
+    )
+    mountWorkbench(ids.map(plugin))
+    for (const id of ids) click(`Plugin ${id}`)
+    expect(document.querySelectorAll('[id^="plugin-container-"]')).toHaveLength(
+      MAX_ACTIVE_PLUGINS,
+    )
+    const overflow = ids[MAX_ACTIVE_PLUGINS]!
+    expect(
+      document.querySelector(`#plugin-container-${overflow}`),
+    ).not.toBeInTheDocument()
+    // Being over the cap must not tear anything down.
+    expect(events.filter((event) => event.startsWith('destroy:'))).toEqual([])
   })
 
   it.each([
@@ -1128,14 +1203,18 @@ describe('workbench', { timeout: 30_000 }, () => {
   it('auto-activates one registered plugin and preserves its destroy lifecycle', () => {
     mountWorkbench([plugin('one')])
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual(['one'])
     expect(
       events.filter((event) => event.startsWith('render:one:')),
     ).toHaveLength(1)
-    click('Plugin one')
+    closePane('one')
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual([])
     expect(events.filter((event) => event === 'destroy:one')).toHaveLength(1)
   })
@@ -1174,8 +1253,9 @@ describe('workbench', { timeout: 30_000 }, () => {
     )!
 
     expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('dark')
-    stringControl.click()
-    expect(stringControl).toHaveAttribute('data-tsd-selected', 'true')
+    // Not clicked: a strip entry only exists while its plugin is closed, so
+    // clicking it removes the very element under test. The semantic styling is
+    // the point here, not a selected state the strip no longer has.
     expect(stringControl.className).not.toBe('')
     expect(stringHeading.getAttribute('style')).toBeNull()
     expect(callbackHeading.style.all).toBe('initial')
@@ -1202,21 +1282,26 @@ describe('workbench', { timeout: 30_000 }, () => {
     bad.name = () => {
       throw new Error('name boom')
     }
-    expect(() => mountWorkbench([bad])).toThrow('name boom')
+    // Two plugins, so neither auto-opens and both stay in the strip — that is
+    // where a title callback runs. A lone plugin opens on mount and never gets a
+    // strip entry.
+    expect(() => mountWorkbench([bad, plugin('other')])).toThrow('name boom')
   })
 
   it('moves among Marketplace and core destinations without plugin destruction', () => {
     mountWorkbench([plugin('one')])
-    const activeBefore = JSON.parse(
-      localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!,
-    ).activePlugins
+    const activeBefore = flattenTabs(
+      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+    )
     expect(activeBefore).toEqual(['one'])
     click('Marketplace')
     expect(
       document.querySelector('[data-testid="plugin-marketplace"]'),
     ).toBeInTheDocument()
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual(activeBefore)
     click('Settings')
     click('Plugins')
@@ -1251,26 +1336,47 @@ describe('workbench', { timeout: 30_000 }, () => {
       new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
     )
     expect(
-      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).activePlugins,
+      flattenTabs(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!).layout,
+      ),
     ).toEqual(['one'])
     expect(events).toContain('render:one:dark:false')
     expect(events).not.toContain('destroy:one')
   })
 
-  it('keeps equal-width frames and static separators for three active plugins', () => {
+  it('gives three active plugins equal shares and a draggable gutter between each', () => {
     mountWorkbench(['one', 'two', 'three'].map(plugin))
     for (const name of ['Plugin one', 'Plugin two', 'Plugin three']) click(name)
     const panes = [
       ...document.querySelectorAll<HTMLElement>('[data-plugin-mount]'),
     ]
     expect(panes).toHaveLength(3)
+    // Panes are positioned from the layout tree, not by flex, so they never
+    // change parent when the arrangement changes.
     for (const pane of panes) {
-      expect(pane.style.flex).toBe('1 1 0px')
-      expect(pane.style.minWidth).toBe('0px')
+      expect(pane.style.position).toBe('absolute')
     }
-    expect(
-      document.querySelectorAll('[data-tsd-separator="plugin-pane"]'),
-    ).toHaveLength(2)
+    // Equal shares: read the tree rather than the rects, because jsdom has no
+    // layout engine and every rect would measure zero.
+    const stored = JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!)
+    expect(stored.layout.kind).toBe('split')
+    expect(stored.layout.dir).toBe('row')
+    expect(stored.layout.sizes).toHaveLength(3)
+    for (const size of stored.layout.sizes) {
+      expect(size).toBeCloseTo(1 / 3, 6)
+    }
+    const separators = [
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-tsd-separator="plugin-pane"]',
+      ),
+    ]
+    expect(separators).toHaveLength(2)
+    // Each gutter is operable, unlike the decorative rules it replaces.
+    for (const separator of separators) {
+      expect(separator).toHaveAttribute('role', 'separator')
+      expect(separator).toHaveAttribute('tabindex', '0')
+      expect(separator).toHaveAttribute('aria-orientation', 'vertical')
+    }
   })
 
   it('keeps callback title resets isolated from the semantic control wrapper', () => {
