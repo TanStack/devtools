@@ -1035,6 +1035,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
      * invalid, and the inner one would be unreachable by keyboard.
      */
     pluginGroupTabItem: css`
+      position: relative;
       display: inline-flex;
       align-items: stretch;
       flex: 0 0 auto;
@@ -1055,11 +1056,18 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         transition: none;
       }
     `,
+    /** The sortable item: exactly the draggable part of a tab, nothing else. */
+    pluginGroupTabRow: css`
+      display: inline-flex;
+      align-items: stretch;
+      min-width: 0;
+    `,
     pluginGroupTab: css`
       display: inline-flex;
       align-items: center;
       min-width: 0;
-      padding-inline: 8px;
+      /* Room at the end for the close button, which sits over this one. */
+      padding-inline: 8px 28px;
       border: 0;
       border-radius: 0;
       background: transparent;
@@ -1075,16 +1083,23 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         cursor: default;
       }
     `,
-    /** 24px square, which is the smallest target WCAG 2.5.8 accepts. */
+    /**
+     * 24px square, the smallest target WCAG 2.5.8 accepts, laid over the right end
+     * of the tab. Positioned rather than in flow so it is a sibling of the
+     * sortable row: the drag engine finds its target by walking up the tree, so a
+     * close button nested inside the row would always be a drag surface.
+     */
     pluginGroupTabClose: css`
+      position: absolute;
+      inset-inline-end: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       width: 24px;
       height: 24px;
-      flex: 0 0 24px;
-      align-self: center;
-      margin-inline-end: 2px;
       padding: 0;
       border: 0;
       border-radius: 2px;
@@ -1157,9 +1172,10 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
     `,
     /**
-     * While a pane is being carried, every surface shows the grabbing cursor —
-     * the pointer travels well outside the tab it started on, so the cursor has to
-     * be set at the document level, not on the tab.
+     * While a pane is being carried, every surface *inside the panel* shows the
+     * grabbing cursor — the pointer travels well outside the tab it started on.
+     * Applied to the panel, never to `<html>`: the host page's cursor is not ours
+     * to change.
      */
     pluginDraggingCursor: css`
       &,

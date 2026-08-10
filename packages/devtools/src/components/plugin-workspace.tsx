@@ -17,6 +17,7 @@ import {
 } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
 import { PLUGIN_CONTAINER_ID } from '../constants'
+import { TANSTACK_DEVTOOLS } from '../utils/storage'
 import {
   MAX_ACTIVE_PLUGINS,
   MIN_PANE_SIZE,
@@ -125,42 +126,42 @@ const GroupTabBar = (props: {
       <For each={props.tabs}>
         {(tabId, index) => (
           <span
-            {...sortable.row(tabId)}
             class={styles().pluginGroupTabItem}
             data-tsd-selected={
               index() === props.activeIndex ? 'true' : undefined
             }
             data-tsd-held={props.heldTabId === tabId ? 'true' : undefined}
           >
-            <button
-              type="button"
-              data-tsd-group-tab
-              data-testid={`plugin-tab-${tabId}`}
-              data-tsd-control
-              aria-pressed={index() === props.activeIndex}
-              aria-describedby={props.moveHintId}
-              class={styles().pluginGroupTab}
-              onPointerDown={(event) => props.onPointerDown(tabId, event)}
-              onKeyDown={(event) => props.onKeyDown(tabId, event)}
-              onClick={() => props.onSelect(tabId)}
-            >
-              {props.titleOf(tabId)}
-            </button>
+            {/* Only this span carries the sortable key. The drag engine listens
+                globally and walks *up* from whatever the pointer hit looking for
+                that key, so anything inside here is a drag surface no matter what
+                its own handlers do — `stopPropagation` cannot help. Keeping the
+                close button outside is what makes clicking it never start a
+                drag. */}
+            <span {...sortable.row(tabId)} class={styles().pluginGroupTabRow}>
+              <button
+                type="button"
+                data-tsd-group-tab
+                data-testid={`plugin-tab-${tabId}`}
+                data-tsd-control
+                aria-pressed={index() === props.activeIndex}
+                aria-describedby={props.moveHintId}
+                class={styles().pluginGroupTab}
+                onPointerDown={(event) => props.onPointerDown(tabId, event)}
+                onKeyDown={(event) => props.onKeyDown(tabId, event)}
+                onClick={() => props.onSelect(tabId)}
+              >
+                {props.titleOf(tabId)}
+              </button>
+            </span>
+            {/* Sibling of the row, laid over its right end. */}
             <button
               type="button"
               aria-label={`Close ${props.titleOf(tabId)}`}
               data-testid={`plugin-tab-close-${tabId}`}
               data-tsd-control
               class={styles().pluginGroupTabClose}
-              // The sortable row wraps this button, so without stopping the
-              // pointer events here the drag layer treats a press on the X as the
-              // start of a sort and swallows the click that would follow — which
-              // is why closing a tab worked only sometimes.
-              onPointerDown={(event) => event.stopPropagation()}
-              onPointerUp={(event) => {
-                event.stopPropagation()
-                props.onClose(tabId)
-              }}
+              onPointerUp={() => props.onClose(tabId)}
               // Keyboard activation fires `click` with no pointer events at all,
               // so both paths are needed. Closing twice is harmless: the second
               // call finds no such tab and returns the tree unchanged.
@@ -309,20 +310,22 @@ export const PluginWorkspace = (props: {
   }
 
   /**
-   * The grabbing cursor has to live on the document: the pointer leaves the tab it
-   * started on almost immediately, and a cursor set on the tab would stop applying
-   * the moment it does.
+   * The grabbing cursor covers the whole devtools panel, because the pointer
+   * leaves the tab it started on immediately — but no further than that. Putting
+   * it on `<html>` worked, and also forced `cursor: grabbing` onto every element
+   * of the host page for the duration of the drag. The devtools must not restyle
+   * the page they are inspecting.
    */
   createEffect(() => {
-    const dragging = previewAt() !== null
-    const root = document.documentElement
+    const host = workspaceEl?.closest<HTMLElement>(`#${TANSTACK_DEVTOOLS}`)
+    if (!host) return
     const className = styles().pluginDraggingCursor
-    if (!dragging) {
-      root.classList.remove(className)
+    if (previewAt() === null) {
+      host.classList.remove(className)
       return
     }
-    root.classList.add(className)
-    onCleanup(() => root.classList.remove(className))
+    host.classList.add(className)
+    onCleanup(() => host.classList.remove(className))
   })
 
   /**

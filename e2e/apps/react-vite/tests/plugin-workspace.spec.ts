@@ -232,19 +232,28 @@ test('shows what is being dragged and a grabbing cursor while held', async ({
   // a containing block and the workspace's overflow would clip it.
   const box = await preview.boundingBox()
   expect(box!.width).toBeGreaterThan(0)
+  // Grabbing inside the panel...
   await expect
     .poll(() =>
-      page.evaluate(() => getComputedStyle(document.documentElement).cursor),
+      page.evaluate(
+        () =>
+          getComputedStyle(document.querySelector('[data-tsd-group-tab]')!)
+            .cursor,
+      ),
     )
     .toBe('grabbing')
+  // ...and nothing at all on the host page. The devtools must not restyle the
+  // page they are inspecting, not even for the length of a drag.
+  expect(
+    await page.evaluate(() => ({
+      html: getComputedStyle(document.documentElement).cursor,
+      body: getComputedStyle(document.body).cursor,
+      heading: getComputedStyle(document.querySelector('h1')!).cursor,
+    })),
+  ).toEqual({ html: 'auto', body: 'auto', heading: 'auto' })
 
   await page.mouse.up()
   await expect(preview).toHaveCount(0)
-  await expect
-    .poll(() =>
-      page.evaluate(() => getComputedStyle(document.documentElement).cursor),
-    )
-    .not.toBe('grabbing')
 })
 
 /**
