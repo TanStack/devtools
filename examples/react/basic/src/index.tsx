@@ -11,6 +11,7 @@ import Devtools from './setup'
 import { queryPlugin } from './plugin'
 import { Button } from './button'
 import { Feature } from './feature'
+import './example.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -168,37 +169,57 @@ function App() {
   const [win, setWin] = useState<Window | null>(null)
   const [postId, setPostId] = useState(-1)
   return (
-    <div>
+    <main className="example-shell">
       <Context.Provider value={{ count: state, setCount: setState }}>
         <QueryClientProvider client={queryClient}>
-          <h1>TanStack Devtools React Basic Example</h1>
-          current count: {state}
-          <Button onClick={() => setState(state + 1)}>Click me</Button>
-          <Button onClick={() => setWin(window.open('', '', 'popup'))}>
-            Click me to open new window
-          </Button>
+          <header className="example-header">
+            <p className="example-eyebrow">TanStack Devtools</p>
+            <h1>React basic example</h1>
+            <p>
+              Explore cached posts, plugin panels, and the development-only
+              accessibility fixture in one focused sandbox.
+            </p>
+          </header>
+          <section
+            className="example-card example-actions"
+            aria-label="Example controls"
+          >
+            <p>
+              Current count <strong>{state}</strong>
+            </p>
+            <div className="example-button-row">
+              <Button onClick={() => setState(state + 1)}>
+                Increment count
+              </Button>
+              <Button onClick={() => setWin(window.open('', '', 'popup'))}>
+                Open a new window
+              </Button>
+            </div>
+          </section>
           {win && createPortal(<Mounted />, win.document.body)}
-          <Feature />
-          <p>
-            As you visit the posts below, you will notice them in a loading
-            state the first time you load them. However, after you return to
-            this list and click on any posts you have already visited again, you
-            will see them load instantly and background refresh right before
-            your eyes!{' '}
-            <strong>
-              (You may need to throttle your network speed to simulate longer
-              loading sequences)
-            </strong>
-          </p>
-          {postId > -1 ? (
-            <Post postId={postId} setPostId={setPostId} />
-          ) : (
-            <Posts setPostId={setPostId} />
-          )}
+          <section className="example-card example-content">
+            <Feature />
+            <p>
+              As you visit the posts below, you will notice them in a loading
+              state the first time you load them. However, after you return to
+              this list and click on any posts you have already visited again,
+              you will see them load instantly and background refresh right
+              before your eyes!{' '}
+              <strong>
+                (You may need to throttle your network speed to simulate longer
+                loading sequences)
+              </strong>
+            </p>
+            {postId > -1 ? (
+              <Post postId={postId} setPostId={setPostId} />
+            ) : (
+              <Posts setPostId={setPostId} />
+            )}
+          </section>
           <Devtools />
         </QueryClientProvider>
       </Context.Provider>
-    </div>
+    </main>
   )
 }
 

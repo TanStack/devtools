@@ -1,5 +1,4 @@
-/** @jsxImportSource solid-js */
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { render } from 'solid-js/web'
 import { JsonTree } from '../src/components/tree'
 import { ThemeContextProvider } from '../src/components/theme'
@@ -17,14 +16,16 @@ function renderTree<TData, TName extends CollapsiblePaths<TData>>(
     collapsePaths?: Array<TName>
     config?: { dateFormat?: string }
     copyable?: boolean
+    theme?: 'light' | 'dark'
   } = {},
 ) {
+  const { theme = 'light', ...treeProps } = extraProps
   container = document.createElement('div')
   document.body.appendChild(container)
   dispose = render(
     () => (
-      <ThemeContextProvider theme="dark">
-        <JsonTree value={value} {...extraProps} />
+      <ThemeContextProvider theme={theme}>
+        <JsonTree value={value} {...treeProps} />
       </ThemeContextProvider>
     ),
     container,
@@ -33,11 +34,66 @@ function renderTree<TData, TName extends CollapsiblePaths<TData>>(
 }
 
 afterEach(() => {
+  vi.restoreAllMocks()
   dispose()
   container.remove()
 })
 
 describe('JsonTree', () => {
+  it.each(['light', 'dark'] as const)(
+    'operates %s expanders from focus with Enter and Space',
+    (theme) => {
+      const el = renderTree({ nested: { value: 1 } }, { theme })
+      const expander = el.querySelector<HTMLElement>('[aria-expanded]')!
+      expect(expander.getAttribute('role')).toBe('button')
+      expect(expander.tabIndex).toBe(0)
+      expect(expander.getAttribute('aria-label')).toBeTruthy()
+      expect(expander.getAttribute('data-tsd-selected')).toBeNull()
+      expander.focus()
+      expect(document.activeElement).toBe(expander)
+      expander.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+      )
+      expect(expander.getAttribute('aria-expanded')).toBe('false')
+      expander.dispatchEvent(
+        new KeyboardEvent('keydown', { key: ' ', bubbles: true }),
+      )
+      expect(expander.getAttribute('aria-expanded')).toBe('true')
+    },
+  )
+
+  it.each(['light', 'dark'] as const)(
+    'uses %s semantic current-color copy success and error states',
+    async (theme) => {
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const writeText = vi.fn().mockResolvedValue(undefined)
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText },
+      })
+      const el = renderTree({ value: 1 }, { copyable: true, theme })
+      const copy = el.querySelector<HTMLButtonElement>(
+        'button[title="Copy object to clipboard"]',
+      )!
+      copy.click()
+      await Promise.resolve()
+      expect(copy.getAttribute('data-copy-state')).toBe('SuccessCopy')
+      expect(copy.querySelector('path')?.getAttribute('stroke')).toBe(
+        'currentColor',
+      )
+
+      writeText.mockRejectedValueOnce(new Error('copy failed'))
+      const second = el.querySelectorAll<HTMLButtonElement>(
+        'button[title="Copy object to clipboard"]',
+      )[1]!
+      second.click()
+      await Promise.resolve()
+      expect(second.getAttribute('data-copy-state')).toBe('ErrorCopy')
+      expect(second.querySelector('path')?.getAttribute('stroke')).toBe(
+        'currentColor',
+      )
+    },
+  )
   describe('string', () => {
     it('renders a string value wrapped in quotes', () => {
       const el = renderTree('hello world')
@@ -221,6 +277,22 @@ describe('JsonTree', () => {
   })
 
   describe('key rendering', () => {
+    it('marks copy actions and syntax tokens for forced colors', () => {
+      const el = renderTree(
+        { name: 'Alice', age: 30, nested: { active: true } },
+        { copyable: true },
+      )
+      expect(el.querySelectorAll('[data-tsd-control]').length).toBeGreaterThan(
+        0,
+      )
+      const syntax = [...el.querySelectorAll('[data-tsd-syntax]')]
+      expect(syntax.length).toBeGreaterThan(0)
+      expect(syntax.every((node) => node.textContent?.trim())).toBe(true)
+      const selectedStates = [...el.querySelectorAll('[data-tsd-control]')].map(
+        (node) => node.getAttribute('data-tsd-selected'),
+      )
+      expect(selectedStates.every((state) => state === null)).toBe(true)
+    })
     it('renders quoted key names for primitive values', () => {
       const el = renderTree({ count: 5, label: 'test' })
       expect(el.textContent).toContain('"count"')

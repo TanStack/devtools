@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js'
+import { createSignal, createUniqueId } from 'solid-js'
 import { createStyles } from '../styles/use-styles'
 
 interface InputProps {
@@ -13,6 +13,8 @@ interface InputProps {
 export function Input(props: InputProps) {
   const styles = createStyles()
   const [val, setVal] = createSignal(props.value || '')
+  const id = createUniqueId()
+  const descriptionId = `${id}-description`
 
   const handleChange = (e: Event) => {
     const value = (e.target as HTMLInputElement).value
@@ -24,12 +26,19 @@ export function Input(props: InputProps) {
     <div class={styles().inputContainer}>
       <div class={styles().inputWrapper}>
         {props.label && (
-          <label class={styles().inputLabel}>{props.label}</label>
+          <label for={id} class={styles().inputLabel}>
+            {props.label}
+          </label>
         )}
         {props.description && (
-          <p class={styles().inputDescription}>{props.description}</p>
+          <p id={descriptionId} class={styles().inputDescription}>
+            {props.description}
+          </p>
         )}
         <input
+          id={id}
+          data-tsd-control
+          aria-describedby={props.description ? descriptionId : undefined}
           type={props.type || 'text'}
           class={styles().input}
           value={val()}

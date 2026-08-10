@@ -18,12 +18,23 @@ export const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
   return (
     <div class={styles().pluginMarketplaceHeader}>
       <div class={styles().pluginMarketplaceTitleRow}>
-        <h2 class={styles().pluginMarketplaceTitle}>Plugin Marketplace</h2>
-        <div style={{ display: 'flex', 'align-items': 'center' }}>
+        <div class={styles().pluginMarketplaceTitleBlock}>
+          <h2 class={styles().pluginMarketplaceTitle}>Plugin Marketplace</h2>
+          <p class={styles().pluginMarketplaceDescription}>
+            Discover and install devtools for TanStack Query, Router, Form, and
+            Pacer
+          </p>
+        </div>
+        <div
+          data-testid="marketplace-controls"
+          class={styles().pluginMarketplaceControls}
+        >
           <div class={styles().pluginMarketplaceSearchWrapper}>
             <SearchIcon />
             <input
               type="text"
+              aria-label="Search plugins"
+              data-tsd-control
               class={styles().pluginMarketplaceSearch}
               placeholder="Search plugins..."
               value={props.searchInput()}
@@ -31,6 +42,9 @@ export const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
             />
           </div>
           <button
+            type="button"
+            aria-label="Marketplace settings"
+            data-tsd-control
             class={styles().pluginMarketplaceSettingsButton}
             onClick={props.onSettingsClick}
           >
@@ -38,11 +52,6 @@ export const MarketplaceHeader = (props: MarketplaceHeaderProps) => {
           </button>
         </div>
       </div>
-
-      <p class={styles().pluginMarketplaceDescription}>
-        Discover and install devtools for TanStack Query, Router, Form, and
-        Pacer
-      </p>
 
       <TagFilters
         tags={props.tags}

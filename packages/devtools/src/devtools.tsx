@@ -1,11 +1,12 @@
-import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
-
 import {
+  createCollapsed,
   createDevtoolsSettings,
+  createDevtoolsState,
   createHeight,
   createPersistOpen,
   createTheme,
@@ -16,13 +17,54 @@ import { getHotkeyPermutations } from './utils/hotkey'
 import { Trigger } from './components/trigger'
 import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
-import { Tabs } from './components/tabs'
 import { TabContent } from './components/tab-content'
 import { createPiPWindow } from './context/pip-context'
 import { SourceInspector } from './components/source-inspector'
+import { WorkbenchHeader } from './components/workbench-header'
+import { PluginsStrip } from './components/plugins-strip'
+import { PANEL_CLOSE_THRESHOLD } from './utils/constants'
+
+const themeDocumentOwners = new WeakMap<Document, Map<symbol, string>>()
+const previousThemeAttributes = new WeakMap<Document, string | null>()
+
+const setDocumentTheme = (document: Document, owner: symbol, theme: string) => {
+  let owners = themeDocumentOwners.get(document)
+  if (!owners) {
+    owners = new Map()
+    themeDocumentOwners.set(document, owners)
+    previousThemeAttributes.set(
+      document,
+      document.documentElement.getAttribute('data-tanstack-devtools-theme'),
+    )
+  }
+  owners.delete(owner)
+  owners.set(owner, theme)
+  document.documentElement.dataset.tanstackDevtoolsTheme = theme
+}
+
+const clearDocumentTheme = (document: Document, owner: symbol) => {
+  const owners = themeDocumentOwners.get(document)
+  if (!owners) return
+  owners.delete(owner)
+  const themes = [...owners.values()]
+  const currentTheme = themes[themes.length - 1]
+  if (currentTheme) {
+    document.documentElement.dataset.tanstackDevtoolsTheme = currentTheme
+    return
+  }
+  const previousTheme = previousThemeAttributes.get(document)
+  if (previousTheme === null || previousTheme === undefined) {
+    delete document.documentElement.dataset.tanstackDevtoolsTheme
+  } else {
+    document.documentElement.dataset.tanstackDevtoolsTheme = previousTheme
+  }
+  themeDocumentOwners.delete(document)
+  previousThemeAttributes.delete(document)
+}
 
 export default function DevTools() {
   const { settings } = createDevtoolsSettings()
+  const { state } = createDevtoolsState()
   const { setHeight } = createHeight()
   const { persistOpen, setPersistOpen } = createPersistOpen()
   const [rootEl, setRootEl] = createSignal<HTMLDivElement>()
@@ -30,173 +72,112 @@ export default function DevTools() {
     settings().defaultOpen || persistOpen(),
   )
   const pip = createPiPWindow()
-  let panelRef: HTMLDivElement | undefined = undefined
+  let panelRef: HTMLDivElement | undefined
   const [isResizing, setIsResizing] = createSignal(false)
+  const { isCollapsed, setCollapsed } = createCollapsed()
+  // The fold flag outlives a single mount, so start every shell with the
+  // subheader showing rather than inheriting a fold from a previous instance.
+  onMount(() => setCollapsed(false))
+  const [showMarketplace, setShowMarketplace] = createSignal(false)
+  const themeOwner = Symbol('tanstack-devtools-theme')
+
+  const updateHeight = (nextHeight: number) => {
+    setHeight(nextHeight)
+    setIsOpen(nextHeight >= PANEL_CLOSE_THRESHOLD)
+  }
 
   const toggleOpen = () => {
-    if (pip().pipWindow) {
-      return
-    }
-    const open = isOpen()
-    const newState = !open
+    if (pip().pipWindow) return
+    const newState = !isOpen()
     setIsOpen(newState)
     setPersistOpen(newState)
-
-    // Emit event when user toggles devtools
     devtoolsEventClient.emit('trigger-toggled', { isOpen: newState })
   }
 
-  // Listen for trigger-toggled events to control devtools
   createEffect(() => {
     const unsubscribe = devtoolsEventClient.on('trigger-toggled', (event) => {
-      if (pip().pipWindow) {
-        return
-      }
+      if (pip().pipWindow) return
       const payload = event.payload as unknown as { isOpen: boolean }
-      const shouldBeOpen = payload.isOpen
-      if (shouldBeOpen !== isOpen()) {
-        setIsOpen(shouldBeOpen)
-        setPersistOpen(shouldBeOpen)
+      if (payload.isOpen !== isOpen()) {
+        setIsOpen(payload.isOpen)
+        setPersistOpen(payload.isOpen)
       }
     })
-
     onCleanup(unsubscribe)
   })
-  // Used to resize the panel
+
+  // Only the plugins and SEO destinations have a secondary strip. The collapse
+  // tab folds that strip away and nothing else — the header, the panel height
+  // and the destination content all stay exactly as they are — so it is not
+  // rendered at all on Marketplace or Settings, where there is no strip.
+  const showsPluginsStrip = () =>
+    state().activeTab === 'plugins' && !showMarketplace()
+  const showsSeoStrip = () => state().activeTab === 'seo' && !showMarketplace()
+  const hasSubheader = () => showsPluginsStrip() || showsSeoStrip()
+
   const handleDragStart = (
     panelElement: HTMLDivElement | undefined,
     startEvent: MouseEvent,
   ) => {
-    if (startEvent.button !== 0) return // Only allow left click for drag
-    if (!panelElement) return
+    if (startEvent.button !== 0 || !panelElement) return
     setIsResizing(true)
-
     const dragInfo = {
       originalHeight: panelElement.getBoundingClientRect().height,
       pageY: startEvent.pageY,
     }
-
     const run = (moveEvent: MouseEvent) => {
       const delta = dragInfo.pageY - moveEvent.pageY
       const newHeight =
         settings().panelLocation === 'bottom'
           ? dragInfo.originalHeight + delta
           : dragInfo.originalHeight - delta
-
-      setHeight(newHeight)
-
-      if (newHeight < 70) {
-        setIsOpen(false)
-      } else {
-        setIsOpen(true)
-      }
+      updateHeight(newHeight)
     }
-
-    const unsub = () => {
+    const stop = () => {
       setIsResizing(false)
       document.removeEventListener('mousemove', run)
-      document.removeEventListener('mouseUp', unsub)
+      document.removeEventListener('mouseup', stop)
     }
-
     document.addEventListener('mousemove', run)
-    document.addEventListener('mouseup', unsub)
+    document.addEventListener('mouseup', stop)
   }
 
-  // Handle resizing and padding adjustments
   createEffect(() => {
-    if (isOpen()) {
-      const previousValue = rootEl()?.parentElement?.style.paddingBottom
-
-      const run = () => {
-        if (!panelRef) return
-        // const containerHeight = panelRef.getBoundingClientRect().height
-        if (rootEl()?.parentElement) {
-          setRootEl((prev) => {
-            if (prev?.parentElement) {
-              // prev.parentElement.style.paddingBottom = `${containerHeight}px`
-            }
-            return prev
-          })
-        }
-      }
-
-      run()
-
-      if (typeof window !== 'undefined') {
-        ;(pip().pipWindow ?? window).addEventListener('resize', run)
-
-        return () => {
-          ;(pip().pipWindow ?? window).removeEventListener('resize', run)
-          if (rootEl()?.parentElement && typeof previousValue === 'string') {
-            setRootEl((prev) => {
-              // prev!.parentElement!.style.paddingBottom = previousValue
-              return prev
-            })
-          }
-        }
-      }
-    } else {
-      // Reset padding when devtools are closed
-      if (rootEl()?.parentElement) {
-        setRootEl((prev) => {
-          if (prev?.parentElement) {
-            prev.parentElement.removeAttribute('style')
-          }
-          return prev
-        })
-      }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen()) toggleOpen()
     }
-    return
-  })
-
-  createEffect(() => {
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && isOpen()) {
-        toggleOpen()
-      }
-    })
+    window.addEventListener('keydown', onKeyDown)
+    onCleanup(() => window.removeEventListener('keydown', onKeyDown))
   })
   createDisableTabbing(isOpen)
   createEffect(() => {
-    if (rootEl()) {
-      const el = rootEl()
-      const fontSize = getComputedStyle(el!).fontSize
-      el?.style.setProperty('--tsrd-font-size', fontSize)
+    const element = rootEl()
+    if (element) {
+      element.style.setProperty(
+        '--tsrd-font-size',
+        getComputedStyle(element).fontSize,
+      )
     }
   })
   createEffect(() => {
     const isEditableTarget = (element: Element | null) => {
       if (!element || !(element instanceof HTMLElement)) return false
       if (element.isContentEditable) return true
-      const tagName = element.tagName
-      if (
-        tagName === 'INPUT' ||
-        tagName === 'TEXTAREA' ||
-        tagName === 'SELECT'
-      ) {
-        return true
-      }
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)) return true
       return element.getAttribute('role') === 'textbox'
     }
-
-    const permutations = getHotkeyPermutations(settings().openHotkey)
-
-    for (const permutation of permutations) {
+    for (const permutation of getHotkeyPermutations(settings().openHotkey)) {
       createShortcut(permutation, () => {
-        if (isEditableTarget(document.activeElement)) return
-        toggleOpen()
+        if (!isEditableTarget(document.activeElement)) toggleOpen()
       })
     }
   })
 
   const { theme } = createTheme()
-
   createEffect(() => {
-    if (typeof document === 'undefined') {
-      return
-    }
-
-    document.documentElement.dataset.tanstackDevtoolsTheme = theme()
+    const activeDocument = pip().pipWindow?.document ?? document
+    setDocumentTheme(activeDocument, themeOwner, theme())
+    onCleanup(() => clearDocumentTheme(activeDocument, themeOwner))
   })
 
   return (
@@ -213,13 +194,30 @@ export default function DevTools() {
             }
           >
             <Trigger isOpen={isOpen} setIsOpen={toggleOpen} />
-            <MainPanel isResizing={isResizing} isOpen={isOpen}>
+            <MainPanel
+              isResizing={isResizing}
+              isOpen={isOpen}
+              isCollapsed={isCollapsed}
+              hasSubheader={hasSubheader}
+            >
               <ContentPanel
                 ref={(ref) => (panelRef = ref)}
-                handleDragStart={(e) => handleDragStart(panelRef, e)}
+                handleDragStart={(event) => handleDragStart(panelRef, event)}
+                handleHeightChange={updateHeight}
               >
-                <Tabs toggleOpen={toggleOpen} />
-                <TabContent isOpen={isOpen()} />
+                <WorkbenchHeader
+                  showMarketplace={showMarketplace}
+                  setShowMarketplace={setShowMarketplace}
+                  toggleOpen={toggleOpen}
+                />
+                {/* Stays mounted while folded so it can slide shut. */}
+                <Show when={showsPluginsStrip()}>
+                  <PluginsStrip isOpen={isOpen} />
+                </Show>
+                <TabContent
+                  isOpen={isOpen()}
+                  showMarketplace={showMarketplace()}
+                />
               </ContentPanel>
             </MainPanel>
           </Show>

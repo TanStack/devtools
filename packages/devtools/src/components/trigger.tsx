@@ -9,7 +9,7 @@ import {
 import clsx from 'clsx'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
-import TanStackLogo from './tanstack-logo.png'
+import { TanStackEmblem } from './tanstack-emblem'
 import type { TriggerCoords } from '../context/devtools-store'
 import type { Accessor } from 'solid-js'
 
@@ -67,6 +67,7 @@ export const Trigger = (props: {
       // static-flow position) and the hand-off to inline left/top is seamless.
       (!isFloating() || !coords()) &&
         styles().mainCloseBtnPosition(settings().position),
+      !settings().customTrigger && styles().mainCloseBtnDefault,
       styles().mainCloseBtnAnimation(props.isOpen(), settings().hideUntilHover),
       isFloating() && styles().mainCloseBtnFloating,
     )
@@ -273,6 +274,7 @@ export const Trigger = (props: {
       <button
         ref={setButtonRef}
         type="button"
+        data-tsd-control
         aria-label="Open TanStack Devtools"
         class={buttonStyle()}
         style={
@@ -292,10 +294,7 @@ export const Trigger = (props: {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
       >
-        <Show
-          when={settings().customTrigger}
-          fallback={<img src={TanStackLogo} alt="TanStack Devtools" />}
-        >
+        <Show when={settings().customTrigger} fallback={<TanStackEmblem />}>
           <div ref={setContainerRef} />
         </Show>
       </button>

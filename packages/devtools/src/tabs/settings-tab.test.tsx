@@ -1,6 +1,7 @@
-import { render } from '@solidjs/testing-library'
+import { fireEvent, render } from '@solidjs/testing-library'
+import { createSignal } from 'solid-js'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { ThemeContextProvider } from '@tanstack/devtools-ui'
+import { Select, ThemeContextProvider } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from '../context/devtools-context'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { SettingsTab } from './settings-tab'
@@ -86,5 +87,61 @@ describe('SettingsTab', () => {
     setSettings({ defaultOpen: true })
 
     expect(getDefaultOpenCheckbox().checked).toBe(true)
+  })
+
+  it('uses native change events and keeps a controlled generic value in sync', () => {
+    const NumericSelect = () => {
+      const [value, setValue] = createSignal(1)
+      return (
+        <>
+          <Select
+            label="Number"
+            options={[
+              { label: 'One', value: 1 },
+              { label: 'Two', value: 2 },
+            ]}
+            value={value()}
+            onChange={setValue}
+          />
+          <button type="button" onClick={() => setValue(1)}>
+            Reset
+          </button>
+          <output>{value()}</output>
+        </>
+      )
+    }
+    const { getByLabelText, getByRole, getByText } = render(() => (
+      <ThemeContextProvider theme="dark">
+        <>
+          <Select
+            label="Zero"
+            options={[
+              { label: 'One', value: 1 },
+              { label: 'Zero', value: 0 },
+            ]}
+            value={0}
+          />
+          <Select
+            label="Empty"
+            options={[
+              { label: 'Fallback', value: 'fallback' },
+              { label: 'Empty', value: '' },
+            ]}
+            value=""
+          />
+          <NumericSelect />
+        </>
+      </ThemeContextProvider>
+    ))
+    expect(getByLabelText<HTMLSelectElement>('Zero').value).toBe('0')
+    expect(getByLabelText<HTMLSelectElement>('Empty').value).toBe('')
+    const select = getByLabelText<HTMLSelectElement>('Number')
+
+    select.value = '2'
+    fireEvent.change(select)
+    expect(getByText('2')).toBeTruthy()
+
+    fireEvent.click(getByRole('button', { name: 'Reset' }))
+    expect(select.value).toBe('1')
   })
 })

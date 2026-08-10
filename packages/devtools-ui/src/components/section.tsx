@@ -8,7 +8,11 @@ export const Section = ({
 }: JSX.IntrinsicElements['section']) => {
   const styles = createStyles()
   return (
-    <section class={clsx(styles().section.main, rest.class)} {...rest}>
+    <section
+      data-tsd-surface
+      class={clsx(styles().section.main, rest.class)}
+      {...rest}
+    >
       {children}
     </section>
   )
@@ -20,7 +24,11 @@ export const SectionTitle = ({
 }: JSX.IntrinsicElements['h3']) => {
   const styles = createStyles()
   return (
-    <h3 class={clsx(styles().section.title, rest.class)} {...rest}>
+    <h3
+      data-tsd-separator
+      class={clsx(styles().section.title, rest.class)}
+      {...rest}
+    >
       {children}
     </h3>
   )

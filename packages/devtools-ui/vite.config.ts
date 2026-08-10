@@ -5,7 +5,15 @@ import packageJson from './package.json'
 import type { Plugin } from 'vite'
 
 const config = defineConfig({
+  base: './',
   plugins: [solid() as any satisfies Plugin],
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
+    },
+  },
   test: {
     name: packageJson.name,
     dir: './',
@@ -21,7 +29,7 @@ const config = defineConfig({
 export default mergeConfig(
   config,
   tanstackViteConfig({
-    entry: ['./src/index.ts', './src/icons.ts'],
+    entry: ['./src/index.ts', './src/icons.ts', './src/internal.ts'],
     srcDir: './src',
     cjs: false,
   }),

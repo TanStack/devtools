@@ -211,7 +211,7 @@ export const groupIntoSections = (
   // Always add featured section, even if no cards to show the partner banner
   sections.push({
     id: 'featured',
-    displayName: '⭐ Featured',
+    displayName: 'Featured',
     cards: featuredCards,
   })
 
@@ -222,7 +222,7 @@ export const groupIntoSections = (
   if (activeCards.length > 0) {
     sections.push({
       id: 'active',
-      displayName: '✓ Active Plugins',
+      displayName: 'Active Plugins',
       cards: activeCards,
     })
   }

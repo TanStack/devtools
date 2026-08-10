@@ -128,7 +128,7 @@ export const SourceInspector = () => {
         left: `${highlightState.bounding.left}px`,
         top: `${highlightState.bounding.top}px`,
 
-        'background-color': 'oklch(55.4% 0.046 257.417 /0.25)',
+        'background-color': 'oklch(55.4% 0.046 257.417 /0.25)', // semantic-color-exempt: source-highlight-alpha
         transition: 'all 0.05s linear',
         position: 'fixed' as const,
         'z-index': 9999,
@@ -163,7 +163,7 @@ export const SourceInspector = () => {
         position: 'fixed' as const,
         left: `${left}px`,
         top: `${top}px`,
-        'background-color': 'oklch(55.4% 0.046 257.417 /0.80)',
+        'background-color': 'oklch(55.4% 0.046 257.417 /0.80)', // semantic-color-exempt: source-highlight-alpha
         color: 'white',
         padding: '2px 4px',
         fontSize: '12px',

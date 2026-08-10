@@ -1,4 +1,4 @@
-import { createSignal } from 'solid-js'
+import { createEffect, createSignal, createUniqueId } from 'solid-js'
 import { createStyles } from '../styles/use-styles'
 
 interface SelectOption<T extends string | number> {
@@ -17,28 +17,47 @@ interface SelectProps<T extends string | number> {
 export function Select<T extends string | number>(props: SelectProps<T>) {
   const styles = createStyles()
   const [selected, setSelected] = createSignal(
-    props.value || props.options[0]?.value,
+    props.value ?? props.options[0]?.value,
   )
+  const id = createUniqueId()
+  const descriptionId = `${id}-description`
+
+  createEffect(() => {
+    if (props.value !== undefined) {
+      setSelected(() => props.value)
+    }
+  })
 
   const handleChange = (e: Event) => {
-    const value = (e.target as HTMLSelectElement).value as T
-    setSelected((prev) => (prev !== value ? value : prev))
-    props.onChange?.(value)
+    const value = (e.target as HTMLSelectElement).value
+    const option = props.options.find(
+      (candidate) => String(candidate.value) === value,
+    )
+    if (!option) return
+    setSelected(() => option.value)
+    props.onChange?.(option.value)
   }
 
   return (
     <div class={styles().selectContainer}>
       <div class={styles().selectWrapper}>
         {props.label && (
-          <label class={styles().selectLabel}>{props.label}</label>
+          <label for={id} class={styles().selectLabel}>
+            {props.label}
+          </label>
         )}
         {props.description && (
-          <p class={styles().selectDescription}>{props.description}</p>
+          <p id={descriptionId} class={styles().selectDescription}>
+            {props.description}
+          </p>
         )}
         <select
+          id={id}
+          data-tsd-control
+          aria-describedby={props.description ? descriptionId : undefined}
           class={styles().select}
           value={selected()}
-          onInput={handleChange}
+          onChange={handleChange}
         >
           {props.options.map((opt) => (
             <option value={opt.value}>{opt.label}</option>

@@ -32,8 +32,8 @@ export function Shell() {
   const showOverlayState = createMemo(() => config.showOverlays)
 
   return (
-    <MainPanel class={styles().root} withPadding={false}>
-      <Header class={styles().header}>
+    <MainPanel class={styles().root} withPadding={false} data-tsd-surface>
+      <Header class={styles().header} data-tsd-surface>
         <div class={styles().headerTitleRow}>
           <h2 class={styles().headerTitle}>Accessibility Audit</h2>
 
@@ -79,6 +79,7 @@ export function Shell() {
             </div>
 
             <Button
+              data-tsd-selected={showOverlayState() ? 'true' : undefined}
               variant={showOverlayState() ? 'success' : 'warning'}
               onClick={() => setConfig('showOverlays', !config.showOverlays)}
             >
@@ -88,7 +89,7 @@ export function Shell() {
         </div>
       </Header>
 
-      <div class={styles().statusBar}>
+      <div class={styles().statusBar} data-tsd-surface data-tsd-separator>
         <span>
           <Show when={allyResult.state === 'done'}>
             {`${SEVERITY_LABELS[config.threshold]}+ | ${RULE_SET_LABELS[config.ruleSet]}`}
@@ -110,10 +111,10 @@ export function Shell() {
         </Button>
       </div>
 
-      <div class={styles().content}>
+      <div class={styles().content} data-tsd-surface>
         <Switch>
           <Match when={allyResult.state === 'init'}>
-            <div class={styles().emptyState}>
+            <div class={styles().emptyState} data-tsd-surface>
               <p class={styles().emptyPrimary}>No audit results yet</p>
 
               <p class={styles().emptySecondary}>
@@ -129,7 +130,7 @@ export function Shell() {
               allyResult.audit.issues.length === 0
             }
           >
-            <div class={styles().successState}>
+            <div class={styles().successState} data-tsd-surface>
               <p class={styles().successTitle}>
                 No accessibility issues found!
               </p>

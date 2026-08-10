@@ -36,6 +36,12 @@
         "default": "./dist/esm/icons.js"
       }
     },
+    "./internal": {
+      "import": {
+        "types": "./dist/esm/internal.d.ts",
+        "default": "./dist/esm/internal.js"
+      }
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -44,7 +50,9 @@
   },
   "files": [
     "dist/",
-    "src"
+    "src",
+    "!src/assets/fonts/*.ttf",
+    "!src/assets/fonts/*.woff2"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
@@ -53,7 +61,8 @@
     "test:lib": "vitest",
     "test:lib:dev": "pnpm test:lib --watch",
     "test:types": "tsc",
-    "test:build": "publint --strict",
+    "test:assets": "pnpm build && node ./scripts/check-font-assets.mjs",
+    "test:build": "pnpm test:assets && publint --strict",
     "build": "vite build"
   },
   "dependencies": {

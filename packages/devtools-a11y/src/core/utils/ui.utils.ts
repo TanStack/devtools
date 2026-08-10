@@ -1,4 +1,8 @@
+import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
+import { getSeverityStyle } from '../styles/severity-theme'
+
 // types
+import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 import type {
   A11yIssue,
   RuleSetPreset,
@@ -83,37 +87,14 @@ export const RULE_SET_LABELS: Record<RuleSetPreset, string> = {
 }
 
 /**
- * Color scheme for different severity levels
- */
-const SEVERITY_COLORS: Record<
-  SeverityThreshold,
-  { border: string; bg: string; text: string }
-> = {
-  critical: {
-    border: '#dc2626',
-    bg: 'rgba(220, 38, 38, 0.15)',
-    text: '#dc2626',
-  },
-  serious: {
-    border: '#ea580c',
-    bg: 'rgba(234, 88, 12, 0.15)',
-    text: '#ea580c',
-  },
-  moderate: {
-    border: '#ca8a04',
-    bg: 'rgba(202, 138, 4, 0.15)',
-    text: '#ca8a04',
-  },
-  minor: { border: '#2563eb', bg: 'rgba(37, 99, 235, 0.15)', text: '#2563eb' },
-}
-
-/**
  * Inject overlay styles into the document
  */
-function injectStyles(): void {
-  if (document.getElementById(HIGHLIGHT_STYLE_ID)) {
-    return
-  }
+function injectStyles(theme: TanStackDevtoolsTheme): void {
+  document.getElementById(HIGHLIGHT_STYLE_ID)?.remove()
+
+  const semantic = resolveSemanticTheme(theme)
+  const styleFor = (impact: SeverityThreshold) =>
+    getSeverityStyle(impact, theme)
 
   const style = document.createElement('style')
   style.id = HIGHLIGHT_STYLE_ID
@@ -121,63 +102,61 @@ function injectStyles(): void {
   // Tooltips use fixed positioning to avoid layout shifts
   style.textContent = `
     .${HIGHLIGHT_CLASS}--critical {
-      outline: 3px solid ${SEVERITY_COLORS.critical.border} !important;
+      outline: ${styleFor('critical').outline} ${styleFor('critical').colors.border} !important;
       outline-offset: 2px !important;
-      background-color: ${SEVERITY_COLORS.critical.bg} !important;
+      background-color: ${styleFor('critical').colors.subtleFill} !important;
     }
 
     .${HIGHLIGHT_CLASS}--serious {
-      outline: 3px solid ${SEVERITY_COLORS.serious.border} !important;
+      outline: ${styleFor('serious').outline} ${styleFor('serious').colors.border} !important;
       outline-offset: 2px !important;
-      background-color: ${SEVERITY_COLORS.serious.bg} !important;
+      background-color: ${styleFor('serious').colors.subtleFill} !important;
     }
 
     .${HIGHLIGHT_CLASS}--moderate {
-      outline: 2px solid ${SEVERITY_COLORS.moderate.border} !important;
+      outline: ${styleFor('moderate').outline} ${styleFor('moderate').colors.border} !important;
       outline-offset: 2px !important;
-      background-color: ${SEVERITY_COLORS.moderate.bg} !important;
+      background-color: ${styleFor('moderate').colors.subtleFill} !important;
     }
 
     .${HIGHLIGHT_CLASS}--minor {
-      outline: 2px dashed ${SEVERITY_COLORS.minor.border} !important;
+      outline: ${styleFor('minor').outline} ${styleFor('minor').colors.border} !important;
       outline-offset: 2px !important;
-      background-color: ${SEVERITY_COLORS.minor.bg} !important;
+      background-color: ${styleFor('minor').colors.subtleFill} !important;
     }
 
     .${TOOLTIP_CLASS} {
       position: fixed;
       padding: 4px 8px;
       border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      font-family: system-ui, -apple-system, sans-serif;
+      font: ${semantic.type.bodyXs.weight} ${semantic.type.bodyXs.size} / ${semantic.type.bodyXs.lineHeight} ${semantic.font.body};
       white-space: nowrap;
       z-index: 99990;
       pointer-events: none;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      box-shadow: ${semantic.shadow.sm};
       max-width: 90vw;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .${TOOLTIP_CLASS}--critical {
-      background: ${SEVERITY_COLORS.critical.border};
-      color: white;
+      background: ${styleFor('critical').colors.solidFill};
+      color: ${styleFor('critical').colors.onFill};
     }
 
     .${TOOLTIP_CLASS}--serious {
-      background: ${SEVERITY_COLORS.serious.border};
-      color: white;
+      background: ${styleFor('serious').colors.solidFill};
+      color: ${styleFor('serious').colors.onFill};
     }
 
     .${TOOLTIP_CLASS}--moderate {
-      background: ${SEVERITY_COLORS.moderate.border};
-      color: white;
+      background: ${styleFor('moderate').colors.solidFill};
+      color: ${styleFor('moderate').colors.onFill};
     }
 
     .${TOOLTIP_CLASS}--minor {
-      background: ${SEVERITY_COLORS.minor.border};
-      color: white;
+      background: ${styleFor('minor').colors.solidFill};
+      color: ${styleFor('minor').colors.onFill};
     }
   `
   document.head.appendChild(style)
@@ -306,13 +285,11 @@ function createTooltip(
 
   // Build tooltip content showing all issues
   if (sortedIssues.length === 1) {
-    tooltip.textContent = `${mostSevere.toUpperCase()}: ${firstIssue.ruleId}`
+    tooltip.textContent = `${SEVERITY_LABELS[mostSevere]}: ${firstIssue.ruleId}`
   } else {
     // Multiple issues - show count and list
     const issueList = sortedIssues
-      .map(
-        (issue) => `${issue.impact.charAt(0).toUpperCase()}: ${issue.ruleId}`,
-      )
+      .map((issue) => `${SEVERITY_LABELS[issue.impact]}: ${issue.ruleId}`)
       .join(' | ')
     tooltip.textContent = `${sortedIssues.length} issues: ${issueList}`
   }
@@ -342,12 +319,16 @@ function createTooltip(
 export function highlightElement(
   selector: string,
   impact: SeverityThreshold = 'serious',
-  options: { showTooltip?: boolean; ruleId?: string } = {},
+  options: {
+    showTooltip?: boolean
+    ruleId?: string
+    theme?: TanStackDevtoolsTheme
+  } = {},
 ): void {
-  const { showTooltip = true, ruleId } = options
+  const { showTooltip = true, ruleId, theme = 'dark' } = options
 
   try {
-    injectStyles()
+    injectStyles(theme)
 
     const elements = document.querySelectorAll(selector)
     if (elements.length === 0) {
@@ -389,8 +370,11 @@ export function highlightElement(
  * Highlight all elements with issues.
  * Shows all issues per element in the tooltip, using the most severe for highlighting.
  */
-export function highlightAllIssues(issues: Array<A11yIssue>): void {
-  injectStyles()
+export function highlightAllIssues(
+  issues: Array<A11yIssue>,
+  theme: TanStackDevtoolsTheme = 'dark',
+): void {
+  injectStyles(theme)
   clearHighlights()
 
   // Track ALL issues for each selector

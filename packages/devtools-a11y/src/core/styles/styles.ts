@@ -1,16 +1,11 @@
 import * as goober from 'goober'
 import { createTheme } from '@tanstack/devtools-ui'
 import { createMemo } from 'solid-js'
+import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 
-import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
+import { getSeverityStyle } from './severity-theme'
+
 import type { RuleCategory, SeverityThreshold } from '../types/types'
-
-const SEVERITY_COLORS: Record<SeverityThreshold, string> = {
-  critical: '#dc2626',
-  serious: '#ea580c',
-  moderate: '#ca8a04',
-  minor: '#2563eb',
-}
 
 export const CATEGORY_LABELS: Record<RuleCategory, string> = {
   all: 'All Categories',
@@ -47,129 +42,118 @@ export const CATEGORIES: Array<RuleCategory> = [
 ]
 
 const css = goober.css
-const FONT_SCALE = 1.1
-const fontPx = (size: number) => `calc(${size}px * ${FONT_SCALE})`
 
-function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
-  const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
-
-  const bg = t('#f9fafb;', '#191c24')
-  const fg = t('#1e293b', '#e2e8f0')
-  const border = t('#e2e8f0', '#292e3d')
-  const muted = t('#64748b', '#94a3b8')
-  const muted2 = t('#727c8b', '#818386')
+function createA11yPanelStyles(themeName: 'light' | 'dark') {
+  const theme = resolveSemanticTheme(themeName)
+  const { color, font, gap, radius, shadow, space, type } = theme
 
   return {
-    colors: { bg, fg, border, muted, muted2, theme },
-
+    colors: { theme: themeName },
     root: css`
       height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
       position: relative;
+      background: ${color.surface.workspace};
+      color: ${color.text.primary};
+      font-family: ${font.body};
+      font-weight: 300;
     `,
-
     header: css`
-      padding: 16px;
-      border-bottom: 1px solid ${border};
+      padding: ${space[3]} ${space[4]};
+      border-bottom: 1px solid ${color.border.decorative};
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: ${gap.section};
       flex-shrink: 0;
       anchor-name: --a11y-toast-anchor;
+      background: ${color.surface.brand};
     `,
     headerTitleRow: css`
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: ${gap.control};
       min-width: 0;
     `,
     headerTitle: css`
       margin: 0;
-      font-size: ${fontPx(16)};
-      font-weight: 600;
+      font-family: ${font.display};
+      font-size: ${type.headingPane.size};
+      line-height: ${type.headingPane.lineHeight};
+      font-weight: ${type.headingPane.weight};
     `,
     headerSub: css`
-      font-size: ${fontPx(12)};
-      color: ${muted};
+      font-size: ${type.bodyXs.size};
+      line-height: ${type.bodyXs.lineHeight};
+      color: ${color.text.mutedOnBrand};
       white-space: nowrap;
     `,
     headerActions: css`
       display: flex;
-      gap: 8px;
+      gap: ${gap.control};
       align-items: center;
       flex-wrap: wrap;
       justify-content: flex-end;
     `,
     primaryButton: css`
-      padding: 8px 16px;
-      color: #fff;
-      border-radius: 6px;
+      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
+      border-radius: ${radius.control};
       cursor: pointer;
-      font-weight: 500;
-      font-size: ${fontPx(13)};
-      opacity: 1;
     `,
     primaryButtonDisabled: css`
       cursor: not-allowed;
       opacity: 0.7;
     `,
     button: css`
-      padding: 8px 12px;
-      color: ${fg};
-      border: 1px solid ${border};
-      border-radius: 6px;
+      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
+      border-radius: ${radius.control};
       cursor: pointer;
-      font-size: ${fontPx(11)};
     `,
     buttonRow: css`
       display: flex;
-      gap: 6px;
+      gap: ${gap.tight};
       align-items: center;
     `,
     toggleOverlay: css`
-      padding: 8px 12px;
-      color: ${fg};
-      border: 1px solid ${border};
-      border-radius: 6px;
+      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
+      border-radius: ${radius.control};
       cursor: pointer;
-      font-size: ${fontPx(13)};
     `,
     toggleOverlayOn: css`
-      background: #10b981;
-      color: #fff;
-      border-color: #10b981;
+      background: ${color.status.success.subtleFill};
+      color: ${color.status.success.text};
+      border-color: ${color.status.success.border};
     `,
-
     statusBar: css`
-      padding: 8px 16px;
-      border-bottom: 1px solid ${border};
+      padding: ${space[2]} ${space[4]};
+      border-bottom: 1px solid ${color.border.decorative};
       display: flex;
-      gap: 12px;
+      gap: ${gap.section};
       align-items: center;
       flex-shrink: 0;
-      font-size: ${fontPx(11)};
-      color: ${muted};
+      font-size: ${type.bodyXs.size};
+      line-height: ${type.bodyXs.lineHeight};
+      color: ${color.text.muted};
+      background: ${color.surface.subtle};
     `,
     statusSpacer: css`
       flex: 1;
     `,
     smallLinkButton: css`
-      padding: 4px 10px;
+      padding: ${space[1]} ${space[2]};
       background: transparent;
-      color: #0ea5e9;
-      border: 1px solid ${border};
-      border-radius: 4px;
+      color: ${color.text.link};
+      border: 1px solid ${color.border.control};
+      border-radius: ${radius.control};
       cursor: pointer;
-      font-size: ${fontPx(11)};
-      font-weight: 500;
     `,
-
     content: css`
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: ${space[4]};
+      background: ${color.surface.workspace};
     `,
     emptyState: css`
       display: flex;
@@ -178,14 +162,17 @@ function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
       justify-content: center;
       height: 100%;
       text-align: center;
-      color: ${muted};
+      color: ${color.text.muted};
     `,
     emptyPrimary: css`
-      font-size: ${fontPx(14)};
-      margin: 0 0 8px 0;
+      font-size: ${type.bodySm.size};
+      line-height: ${type.bodySm.lineHeight};
+      margin: 0 0 ${space[2]} 0;
+      color: ${color.text.primary};
     `,
     emptySecondary: css`
-      font-size: ${fontPx(12)};
+      font-size: ${type.bodyXs.size};
+      line-height: ${type.bodyXs.lineHeight};
       margin: 0;
     `,
     successState: css`
@@ -195,308 +182,335 @@ function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
       justify-content: center;
       height: 100%;
       text-align: center;
+      background: ${color.status.success.subtleFill};
+      border-radius: ${radius.group};
     `,
     successTitle: css`
-      font-size: ${fontPx(16)};
-      color: #10b981;
-      font-weight: 600;
+      font-family: ${font.display};
+      font-size: ${type.headingPane.size};
+      line-height: ${type.headingPane.lineHeight};
+      color: ${color.status.success.text};
+      font-weight: 700;
       margin: 0;
     `,
     successSub: css`
-      font-size: ${fontPx(12)};
-      color: ${muted};
-      margin-top: 8px;
-      margin-bottom: 0;
+      font-size: ${type.bodyXs.size};
+      color: ${color.status.success.text};
+      margin: ${space[2]} 0 0;
     `,
-
     summaryGrid: css`
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-
+      gap: ${gap.control};
+      margin-bottom: ${space[4]};
       @media (max-width: 520px) {
         grid-template-columns: repeat(2, 1fr);
       }
     `,
     summaryButton: css`
-      padding: 12px;
-      color: ${fg};
-      background: ${bg};
-      border-radius: 8px;
-      border: 1px solid ${border};
+      padding: ${space[3]};
+      color: ${color.text.primary};
+      background: ${color.surface.subtle};
+      border-radius: ${radius.group};
+      border: 1px solid ${color.border.decorative};
       text-align: left;
       cursor: pointer;
-      box-shadow: none;
-
+      box-shadow: ${shadow.xs};
       &:hover {
-        background: ${t('#f0f2f5', '#111318')};
+        background: ${color.state.hover};
+      }
+      &:focus-visible {
+        outline: 2px solid ${color.border.focus};
+        outline-offset: 2px;
       }
     `,
     summaryButtonActive: (impact: SeverityThreshold) => css`
-      box-shadow: 0 0 0 2px ${SEVERITY_COLORS[impact]};
+      background: ${getSeverityStyle(impact, themeName).colors.subtleFill};
+      border-color: ${getSeverityStyle(impact, themeName).colors.border};
     `,
     summaryCount: (impact: SeverityThreshold) => css`
-      font-size: ${fontPx(24)};
+      font-family: ${font.display};
+      font-size: 24px;
+      line-height: 28px;
       font-weight: 700;
-      color: ${SEVERITY_COLORS[impact]};
+      color: ${getSeverityStyle(impact, themeName).colors.text};
     `,
     summaryLabel: css`
-      font-size: ${fontPx(11)};
-      color: ${muted};
+      font-size: ${type.labelSm.size};
+      line-height: ${type.labelSm.lineHeight};
+      font-weight: ${type.labelSm.weight};
+      letter-spacing: ${type.labelSm.tracking};
+      color: ${color.text.muted};
       text-transform: uppercase;
     `,
-
     section: css`
-      margin-bottom: 16px;
+      margin-bottom: ${space[4]};
     `,
     sectionTitle: (impact: SeverityThreshold) => css`
-      color: ${SEVERITY_COLORS[impact]};
-      font-size: ${fontPx(13)};
-      font-weight: 600;
-      margin: 0 0 8px 0;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      color: ${getSeverityStyle(impact, themeName).colors.text};
+      font-family: ${font.display};
+      font-size: ${type.headingCompact.size};
+      line-height: ${type.headingCompact.lineHeight};
+      font-weight: 700;
+      margin: 0 0 ${space[2]};
     `,
-
     issueCard: css`
-      padding: 12px;
-      margin-bottom: 8px;
-      border: 1px solid ${border};
-      border-radius: 6px;
+      padding: ${space[3]};
+      margin-bottom: ${space[2]};
+      border: 1px solid ${color.border.decorative};
+      border-radius: ${radius.group};
       cursor: pointer;
+      background: ${color.surface.elevated};
+      box-shadow: ${shadow.xs};
     `,
     issueCardSelected: css`
-      background: ${t('#e0f2fe', '#1e3a5f')};
-      border-color: #0ea5e9;
+      background: ${color.state.selectionFill};
+      color: ${color.state.selectionText};
+      border-color: ${color.border.focus};
     `,
     issueRow: css`
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      gap: 12px;
+      gap: ${gap.section};
     `,
     issueMain: css`
       flex: 1;
       min-width: 0;
     `,
+    issueSelectButton: css`
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+      color: inherit;
+      background: transparent;
+      border: 0;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+      &:focus-visible {
+        outline: 2px solid ${color.border.focus};
+        outline-offset: 2px;
+        border-radius: ${radius.control};
+      }
+    `,
+    issueSelectButtonSelected: css`
+      &:focus-visible {
+        outline-color: ${color.state.selectionText};
+      }
+    `,
     issueTitleRow: css`
       font-weight: 600;
-      font-size: ${fontPx(13)};
-      margin-bottom: 4px;
+      font-size: ${type.bodySm.size};
+      line-height: ${type.bodySm.lineHeight};
+      margin-bottom: ${space[1]};
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: ${gap.control};
     `,
     dot: (impact: SeverityThreshold) => css`
-      width: 8px;
-      height: 8px;
+      width: ${space[2]};
+      height: ${space[2]};
       border-radius: 50%;
-      background: ${SEVERITY_COLORS[impact]};
+      background: ${getSeverityStyle(impact, themeName).colors.solidFill};
       flex-shrink: 0;
     `,
+    severityLabel: (impact: SeverityThreshold) => css`
+      font-size: ${type.labelSm.size};
+      line-height: ${type.labelSm.lineHeight};
+      color: ${getSeverityStyle(impact, themeName).colors.text};
+      background: ${getSeverityStyle(impact, themeName).colors.subtleFill};
+      border: 1px solid ${getSeverityStyle(impact, themeName).colors.border};
+      padding: 2px ${space[1]};
+      border-radius: ${radius.control};
+    `,
     issueMessage: css`
-      font-size: ${fontPx(12)};
-      color: ${t('#475569', '#cbd5e1')};
-      margin: 0 0 8px 0;
-      line-height: 1.4;
+      font-size: ${type.bodyXs.size};
+      line-height: ${type.bodyXs.lineHeight};
+      color: inherit;
+      margin: 0 0 ${space[2]};
     `,
     selector: css`
-      font-size: ${fontPx(10)};
-      color: ${muted2};
-      font-family:
-        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-        'Liberation Mono', 'Courier New', monospace;
+      font-size: ${type.bodyXs.size};
+      line-height: ${type.bodyXs.lineHeight};
+      color: inherit;
+      font-family: ${font.mono};
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      opacity: 0.8;
     `,
     issueAside: css`
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 4px;
+      gap: ${gap.tight};
       flex-shrink: 0;
     `,
     helpLink: css`
-      font-size: ${fontPx(12)};
-      color: #0ea5e9;
-      padding: 0 12px;
+      font-size: ${type.bodyXs.size};
+      color: ${color.text.link};
+      padding: 0 ${space[3]};
       font-weight: 600;
       text-decoration: underline;
       text-underline-offset: 2px;
-
-      &:hover {
-        color: #0284c7;
-      }
-
       &:focus-visible {
-        outline: 2px solid #0ea5e9;
+        outline: 2px solid ${color.border.focus};
         outline-offset: 2px;
-        border-radius: 4px;
+        border-radius: ${radius.control};
+      }
+    `,
+    helpLinkSelected: css`
+      color: ${color.state.selectionText};
+    `,
+    issueGhostControlSelected: css`
+      && {
+        color: ${color.state.selectionText};
+        border-color: ${color.state.selectionText};
       }
     `,
     disableRule: css`
-      font-size: ${fontPx(10)};
-      color: ${muted};
+      font-size: ${type.bodyXs.size};
+      color: ${color.text.muted};
       background: none;
       border: none;
       cursor: pointer;
       padding: 0;
       font-weight: 600;
-
-      &:hover {
-        color: #000000;
-      }
-
-      &:focus-visible {
-        outline: 2px solid #0ea5e9;
-        outline-offset: 2px;
-        border-radius: 4px;
-      }
     `,
     tags: css`
       display: flex;
-      gap: 4px;
-      margin-top: 8px;
+      gap: ${gap.tight};
+      margin-top: ${space[2]};
       flex-wrap: wrap;
     `,
     tag: css`
-      font-size: ${fontPx(10)};
-      padding: 2px 6px;
-      border: 1px solid ${border};
-      border-radius: 4px;
-      color: ${muted};
+      font-size: ${type.bodyXs.size};
+      padding: 2px ${space[1]};
+      border: 1px solid currentColor;
+      border-radius: ${radius.control};
+      color: inherit;
+      opacity: 0.8;
     `,
-
     settingsOverlay: css`
       position: absolute;
       inset: 0;
-      background: ${bg};
+      background: ${color.surface.workspace};
       display: flex;
       flex-direction: column;
       z-index: 10;
     `,
     settingsHeader: css`
-      padding: 12px 16px;
-      border-bottom: 1px solid ${border};
+      padding: ${space[3]} ${space[4]};
+      border-bottom: 1px solid ${color.border.decorative};
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
+      background: ${color.surface.brand};
     `,
     settingsTitle: css`
       margin: 0;
-      font-size: ${fontPx(14)};
-      font-weight: 600;
+      font-family: ${font.display};
+      font-size: ${type.headingPane.size};
+      line-height: ${type.headingPane.lineHeight};
+      font-weight: 700;
     `,
     doneButton: css`
-      padding: 6px 12px;
-      background: ${bg};
-      color: ${bg};
-      border: none;
-      border-radius: 4px;
+      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
+      border-radius: ${radius.control};
       cursor: pointer;
-      font-size: ${fontPx(12)};
-      font-weight: 500;
     `,
     settingsContent: css`
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: ${space[4]};
     `,
     settingsSection: css`
       margin-bottom: 24px;
     `,
     settingsRowStack: css`
       display: grid;
-      gap: 12px;
+      gap: ${gap.section};
     `,
     settingsSectionLabel: css`
-      margin: 0 0 12px 0;
-      font-size: ${fontPx(12)};
-      font-weight: 600;
+      margin: 0 0 ${space[3]};
+      font-size: ${type.labelSm.size};
+      line-height: ${type.labelSm.lineHeight};
+      font-weight: ${type.labelSm.weight};
+      letter-spacing: ${type.labelSm.tracking};
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: ${muted};
+      color: ${color.text.muted};
     `,
     settingsRow: css`
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid ${border};
-      gap: 12px;
+      padding: ${space[2]} 0;
+      border-bottom: 1px solid ${color.border.decorative};
+      gap: ${gap.section};
     `,
     settingsRowTitle: css`
-      font-size: ${fontPx(13)};
+      font-size: ${type.bodySm.size};
       font-weight: 500;
     `,
     settingsRowDesc: css`
-      font-size: ${fontPx(11)};
-      color: ${muted};
+      font-size: ${type.bodyXs.size};
+      color: ${color.text.muted};
       margin-top: 2px;
     `,
     select: css`
-      padding: 6px 10px;
-      border: 1px solid ${border};
-      border-radius: 4px;
-      background: ${bg};
-      color: ${fg};
-      font-size: ${fontPx(12)};
+      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
+      border: 1px solid ${color.border.control};
+      border-radius: ${radius.control};
+      background: ${color.surface.elevated};
+      color: ${color.text.primary};
+      font-size: ${type.bodyXs.size};
     `,
     rulesHeaderRow: css`
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 12px;
-      gap: 12px;
+      margin-bottom: ${space[3]};
+      gap: ${gap.section};
       flex-wrap: wrap;
     `,
     rulesHeaderActions: css`
       display: flex;
-      gap: 6px;
+      gap: ${gap.tight};
     `,
     filtersRow: css`
       display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
+      gap: ${gap.control};
+      margin-bottom: ${space[3]};
       flex-wrap: wrap;
     `,
     search: css`
       flex: 1;
       min-width: 180px;
-      padding: 8px 10px;
-      border: 1px solid ${border};
-      border-radius: 4px;
-      background: ${bg};
-      color: ${fg};
-      font-size: ${fontPx(12)};
-      box-sizing: border-box;
     `,
     rulesList: css`
-      border: 1px solid ${border};
-      border-radius: 6px;
+      border: 1px solid ${color.border.decorative};
+      border-radius: ${radius.group};
       overflow-y: auto;
+      background: ${color.surface.elevated};
     `,
     ruleRow: css`
       display: flex;
       align-items: flex-start;
-      gap: 8px;
-      padding: 8px 10px;
+      gap: ${gap.control};
+      padding: ${space[2]} ${space[3]};
       cursor: pointer;
-      opacity: 1;
       background: transparent;
-
       &:hover {
-        background: ${t('#f0f2f5', '#111318')};
+        background: ${color.state.hover};
       }
     `,
     ruleRowDisabled: css`
       opacity: 0.6;
     `,
     ruleRowBorder: css`
-      border-bottom: 1px solid ${border};
+      border-bottom: 1px solid ${color.border.decorative};
     `,
     ruleCheckbox: css`
       margin-top: 2px;
@@ -509,41 +523,41 @@ function createA11yPanelStyles(theme: TanStackDevtoolsTheme) {
     ruleTop: css`
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: ${gap.tight};
       margin-bottom: 2px;
     `,
     ruleId: css`
       font-weight: 500;
-      font-size: ${fontPx(12)};
-      text-decoration: none;
+      font-size: ${type.bodyXs.size};
     `,
     ruleIdDisabled: css`
       text-decoration: line-through;
     `,
     bpBadge: css`
-      font-size: ${fontPx(9)};
-      padding: 1px 4px;
-      background: #f59e0b;
-      color: #fff;
-      border-radius: 3px;
+      font-size: ${type.bodyXs.size};
+      padding: 1px ${space[1]};
+      background: ${color.status.warning.subtleFill};
+      color: ${color.status.warning.text};
+      border: 1px solid ${color.status.warning.border};
+      border-radius: ${radius.control};
       font-weight: 500;
     `,
     ruleDesc: css`
-      font-size: ${fontPx(11)};
-      color: ${muted};
-      line-height: 2;
+      font-size: ${type.bodyXs.size};
+      color: ${color.text.muted};
+      line-height: ${type.bodyXs.lineHeight};
     `,
     catTagRow: css`
       display: flex;
-      gap: 4px;
-      margin-top: 4px;
+      gap: ${gap.tight};
+      margin-top: ${space[1]};
     `,
     catTag: css`
-      font-size: ${fontPx(9)};
-      padding: 1px 4px;
-      border: 1px solid ${muted};
-      border-radius: 3px;
-      color: ${muted};
+      font-size: ${type.bodyXs.size};
+      padding: 1px ${space[1]};
+      border: 1px solid ${color.border.control};
+      border-radius: ${radius.control};
+      color: ${color.text.muted};
     `,
   }
 }

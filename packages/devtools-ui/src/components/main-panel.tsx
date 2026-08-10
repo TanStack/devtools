@@ -18,6 +18,7 @@ export const MainPanel = ({
 
   return (
     <div
+      data-tsd-surface
       class={clsx(
         styles().mainPanel.panel(Boolean(withPadding)),
         className,

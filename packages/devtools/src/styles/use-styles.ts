@@ -1,13 +1,38 @@
 import * as goober from 'goober'
+import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 import { createEffect, createSignal } from 'solid-js'
 import { createTheme } from '../context/use-devtools-context'
-import { tokens } from './tokens'
+import {
+  PLUGINS_STRIP_HEIGHT,
+  PLUGIN_GROUP_TAB_HEIGHT,
+  WORKBENCH_GUTTER,
+  WORKBENCH_GUTTER_NARROW,
+  WORKBENCH_HEADER_HEIGHT,
+} from '../utils/constants'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 import type { Accessor } from 'solid-js'
 import type { DevtoolsStore } from '../context/devtools-store'
 
-const mSecondsToCssSeconds = (mSeconds: number) =>
-  `${(mSeconds / 1000).toFixed(2)}s`
+const WORKBENCH_GEOMETRY_STYLE_ID = 'tanstack-devtools-workbench-geometry'
+
+export const ensureWorkbenchGeometryStyles = (targetDocument: Document) => {
+  if (targetDocument.getElementById(WORKBENCH_GEOMETRY_STYLE_ID)) return
+  const style = targetDocument.createElement('style')
+  style.id = WORKBENCH_GEOMETRY_STYLE_ID
+  style.textContent = `
+@media (max-width: 360px) {
+  .tsd-workbench-wordmark { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tsd-workbench-secondary-tabs, .tsd-workbench-secondary-tabs > * { transition: none !important; }
+  .tsd-motion-safe { animation: none !important; transition: none !important; transform: none !important; }
+  /* Core controls and surfaces animate on hover/active by default; drop all of
+     it in one place. Both markers are stamped by core only, so this never
+     reaches inside a plugin's own markup. */
+  [data-tsd-control], [data-tsd-surface] { transition: none !important; }
+}`
+  targetDocument.head.appendChild(style)
+}
 
 const fadeIn = goober.keyframes`
   from {
@@ -49,101 +74,32 @@ const statusFadeIn = goober.keyframes`
   }
 `
 
-const iconPop = goober.keyframes`
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
-`
-
 const spin = goober.keyframes`
   to {
     transform: rotate(360deg);
   }
 `
 
-const sparkle = goober.keyframes`
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.1) rotate(10deg);
-  }
-`
-
 const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
-  const { colors, font, size, border } = tokens
-  const { fontFamily, size: fontSize } = font
+  const semantic = resolveSemanticTheme(theme)
   const css = goober.css
-  const t = (light: string, dark: string) => (theme === 'light' ? light : dark)
 
   return {
-    seoTabContainer: css`
-      padding: 0;
-      margin: 0 auto;
-      background: ${t(colors.white, colors.darkGray[700])};
-      border-radius: 8px;
-      box-shadow: none;
-      overflow-y: auto;
-      height: 100%;
+    seoWorkspace: css`
       display: flex;
       flex-direction: column;
-      gap: 0;
       width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    `,
+    seoContent: css`
+      flex: 1 1 auto;
+      height: auto;
+      min-height: 0;
       overflow-y: auto;
-    `,
-    seoTabTitle: css`
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      margin: 0;
-      padding: 1rem 1.5rem 0.5rem 1.5rem;
-      text-align: left;
-      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
-    `,
-    seoTabSection: css`
-      padding: 1.5rem;
-      background: ${t(colors.gray[50], colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 2rem;
-      border-radius: 0.75rem;
-    `,
-    seoSubNav: css`
-      display: flex;
-      flex-direction: row;
-      gap: 0;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[800])};
-    `,
-    seoSubNavLabel: css`
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: ${t(colors.gray[600], colors.gray[400])};
-      background: none;
-      border: none;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -1px;
-      cursor: pointer;
-      font-family: inherit;
-      &:hover {
-        color: ${t(colors.gray[800], colors.gray[200])};
-      }
-    `,
-    seoSubNavLabelActive: css`
-      color: ${t(colors.gray[900], colors.gray[100])};
-      border-bottom-color: ${t(colors.gray[900], colors.gray[100])};
+      overscroll-behavior: contain;
     `,
     seoPreviewSection: css`
       display: flex;
@@ -157,55 +113,90 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding-bottom: 0.5rem;
     `,
     seoPreviewCard: css`
-      border: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      border-radius: 8px;
-      padding: 12px 10px;
-      background: ${t(colors.white, colors.darkGray[900])};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: ${semantic.radius.overlay};
+      padding: 12px;
+      background: ${semantic.color.surface.elevated};
       margin-bottom: 0;
-      box-shadow: 0 1px 3px ${t('rgba(0,0,0,0.05)', 'rgba(0,0,0,0.1)')};
+      box-shadow: ${semantic.shadow.xs};
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       min-width: 200px;
       max-width: 240px;
-      font-size: 0.95rem;
-      gap: 4px;
+      font-size: ${semantic.type.bodySm.size};
+      gap: ${semantic.gap.tight};
     `,
     seoPreviewHeader: css`
-      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: ${semantic.type.bodyXs.size};
       font-weight: 600;
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      text-transform: uppercase;
       margin-bottom: 0;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
+    `,
+    /**
+     * The network's own brand colour survives as a small dot so the card can
+     * still be identified at a glance, without giving every card a different
+     * coloured outline.
+     */
+    seoPreviewNetworkDot: css`
+      width: 8px;
+      height: 8px;
+      flex: 0 0 8px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 1px ${semantic.color.state.hover};
+      @media (forced-colors: active) {
+        forced-color-adjust: none;
+      }
     `,
     seoPreviewImage: css`
+      width: 100%;
       max-width: 100%;
-      border-radius: 6px;
+      box-sizing: border-box;
+      border-radius: ${semantic.radius.group};
       margin-bottom: 6px;
-      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.03)', 'rgba(0,0,0,0.06)')};
-      height: 160px;
+      background: ${semantic.color.surface.subtle};
+      height: 120px;
       object-fit: cover;
     `,
+    seoPreviewImagePlaceholder: css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: ${semantic.color.text.muted};
+      font-size: ${semantic.type.bodyXs.size};
+      border: 1px dashed ${semantic.color.border.decorative};
+    `,
     seoPreviewTitle: css`
-      font-size: 0.9rem;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.bodySm.size};
+      line-height: ${semantic.type.bodySm.lineHeight};
+      font-weight: 700;
+      margin-bottom: 2px;
+      color: ${semantic.color.text.primary};
     `,
     seoPreviewDesc: css`
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       margin-bottom: 4px;
-      font-size: 0.8rem;
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
     `,
     seoPreviewUrl: css`
-      color: ${t(colors.gray[500], colors.gray[500])};
-      font-size: 0.75rem;
+      color: ${semantic.color.text.muted};
+      font-family: ${semantic.font.mono};
+      font-size: 11px;
       margin-bottom: 0;
       word-break: break-all;
     `,
     seoMissingTagsSection: css`
-      margin-top: 4px;
-      font-size: 0.875rem;
-      color: ${t(colors.red[500], colors.red[400])};
+      margin-top: 6px;
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
+      color: ${semantic.color.status.error.text};
     `,
     seoMissingTagsList: css`
       margin: 4px 0 0 0;
@@ -217,53 +208,51 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       max-width: 240px;
     `,
     seoMissingTag: css`
-      background: ${t(colors.red[100], colors.red[500] + '22')};
-      color: ${t(colors.red[700], colors.red[500])};
-      border-radius: 3px;
+      background: ${semantic.color.status.error.subtleFill};
+      color: ${semantic.color.status.error.text};
+      border-radius: ${semantic.radius.control};
       padding: 2px 6px;
-      font-size: 0.75rem;
+      font-family: ${semantic.font.mono};
+      font-size: 11px;
       font-weight: 500;
     `,
-    seoAllTagsFound: css`
-      color: ${t(colors.green[700], colors.green[500])};
-      font-weight: 500;
-      margin-left: 0;
-      padding: 0 10px 8px 10px;
-      font-size: 0.875rem;
-    `,
+    /* No box of its own: the section already provides one, and the snippet
+       below provides another. A label plus spacing is enough. */
     serpPreviewBlock: css`
-      margin-bottom: 1.5rem;
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 10px;
-      padding: 1rem;
+      margin-bottom: ${WORKBENCH_GUTTER}px;
+      &:last-child {
+        margin-bottom: 0;
+      }
     `,
     serpPreviewLabel: css`
-      font-size: 0.875rem;
+      font-size: ${semantic.type.bodyXs.size};
       font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: ${semantic.color.text.secondary};
     `,
     serpSnippet: css`
-      border: 1px solid ${t(colors.gray[100], colors.gray[800])};
+      border: 1px solid ${semantic.color.border.decorative};
       border-radius: 8px;
       padding: 1rem 1.25rem;
-      background: ${t(colors.white, colors.darkGray[900])};
+      background: ${semantic.color.surface.elevated};
       max-width: 600px;
-      font-family: ${fontFamily.sans};
-      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+      font-family: ${semantic.font.body};
+      box-shadow: ${semantic.shadow.xs};
     `,
     serpSnippetMobile: css`
-      border: 1px solid ${t(colors.gray[100], colors.gray[800])};
+      border: 1px solid ${semantic.color.border.decorative};
       border-radius: 8px;
       padding: 1rem 1.25rem;
-      background: ${t(colors.white, colors.darkGray[900])};
+      background: ${semantic.color.surface.elevated};
       max-width: 380px;
-      font-family: ${fontFamily.sans};
-      box-shadow: 0 1px 2px ${t('rgba(0,0,0,0.04)', 'rgba(0,0,0,0.08)')};
+      font-family: ${semantic.font.body};
+      box-shadow: ${semantic.shadow.xs};
     `,
     serpSnippetDescMobile: css`
       font-size: 0.875rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
       margin: 0;
       line-height: 1.5;
       display: -webkit-box;
@@ -291,7 +280,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     serpSnippetDefaultFavicon: css`
       width: 28px;
       height: 28px;
-      background-color: ${t(colors.gray[200], colors.gray[800])};
+      background-color: ${semantic.color.surface.subtle};
       border-radius: 50%;
       flex-shrink: 0;
       object-fit: contain;
@@ -308,51 +297,28 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     serpSnippetSiteName: css`
       font-size: 0.875rem;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       line-height: 1.4;
       margin: 0;
     `,
     serpSnippetSiteUrl: css`
       font-size: 0.75rem;
-      color: ${t(colors.gray[500], colors.gray[500])};
+      color: ${semantic.color.text.muted};
       line-height: 1.4;
       margin: 0;
     `,
     serpSnippetTitle: css`
       font-size: 1.25rem;
       font-weight: 400;
-      color: ${t('#1a0dab', '#8ab4f8')};
+      color: ${semantic.color.text.link};
       margin: 0 0 4px 0;
       line-height: 1.3;
     `,
     serpSnippetDesc: css`
       font-size: 0.875rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
       margin: 0;
       line-height: 1.5;
-    `,
-    serpMeasureHidden: css`
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      visibility: hidden;
-      pointer-events: none;
-      box-sizing: border-box;
-    `,
-    serpMeasureHiddenMobile: css`
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      width: 340px;
-      visibility: hidden;
-      pointer-events: none;
-      font-size: 0.875rem;
-      line-height: 1.5;
-    `,
-    serpReportSection: css`
-      margin-top: 1rem;
-      font-size: 0.875rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
     `,
     serpErrorList: css`
       margin: 4px 0 0 0;
@@ -361,7 +327,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     serpReportItem: css`
       margin-top: 0.25rem;
-      color: ${t(colors.red[700], colors.red[400])};
+      color: ${semantic.color.status.error.text};
       font-size: 0.875rem;
     `,
     devtoolsPanelContainer: (
@@ -370,15 +336,20 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     ) => css`
       direction: ltr;
       position: fixed;
-      overflow-y: hidden;
-      overflow-x: hidden;
+      overflow: visible;
       ${panelLocation}: 0;
-      right: 0;
+      inset-inline: 0;
       z-index: 99999;
-      width: 100%;
+      inline-size: 100%;
+      max-inline-size: 100%;
+      box-sizing: border-box;
       ${isDetached ? '' : 'max-height: 90%;'}
-      border-top: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      transform-origin: top;
+      border: 0;
+      box-shadow: none;
+      transition: transform 160ms ease-out;
+      @media (prefers-reduced-motion: reduce) {
+        transition-duration: 0ms;
+      }
     `,
     devtoolsPanelContainerVisibility: (isOpen: boolean) => {
       return css`
@@ -394,51 +365,390 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
 
       return css`
-        transition: all 0.4s ease;
+        transition: transform 160ms ease-out;
+        @media (prefers-reduced-motion: reduce) {
+          transition-duration: 0ms;
+        }
       `
     },
-    devtoolsPanelContainerAnimation: (
-      isOpen: boolean,
-      height: number,
-      panelLocation: TanStackDevtoolsConfig['panelLocation'],
-    ) => {
-      if (isOpen) {
-        return css`
-          pointer-events: auto;
-          transform: translateY(0);
-        `
-      }
-      return css`
-        pointer-events: none;
-        transform: translateY(${panelLocation === 'top' ? -height : height}px);
-      `
-    },
+    devtoolsDrawerContent: css`
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+    `,
     devtoolsPanel: css`
-      display: flex;
-      font-size: ${fontSize.sm};
-      font-family: ${fontFamily.sans};
-      background-color: ${t(colors.white, colors.darkGray[700])};
-      color: ${t(colors.gray[900], colors.gray[300])};
-      width: w-screen;
-      flex-direction: row;
+      display: grid;
+      font-size: ${semantic.type.bodySm.size};
+      font-family: ${semantic.font.body};
+      background-color: ${semantic.color.surface.workspace};
+      color: ${semantic.color.text.primary};
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      grid-template-rows: ${WORKBENCH_HEADER_HEIGHT}px minmax(0, 1fr);
+      /* The strip row is auto-sized so the strip's own animated height drives
+         it — a fixed 44px row would snap instead of sliding. */
+      &:has([data-testid='plugins-strip']) {
+        grid-template-rows: ${WORKBENCH_HEADER_HEIGHT}px auto minmax(0, 1fr);
+      }
       overflow-x: hidden;
       overflow-y: hidden;
       height: 100%;
     `,
+    workbenchHeader: css`
+      display: flex;
+      align-items: center;
+      gap: ${semantic.gap.control};
+      min-width: 0;
+      height: ${WORKBENCH_HEADER_HEIGHT}px;
+      /* No trailing gutter: the action icons run to the panel edge. */
+      padding: 0 0 0 ${WORKBENCH_GUTTER}px;
+      box-sizing: border-box;
+      background: ${semantic.color.surface.brand};
+      color: ${semantic.color.text.mutedOnBrand};
+      /* A translucent ink rule, not border.decorative — decorative *is* the
+         cream brand surface, so it disappears on the chrome band itself. */
+      border-bottom: 1px solid ${semantic.color.state.pressed};
+      & button {
+        min-width: 28px;
+        height: 100%;
+        box-sizing: border-box;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      & button {
+        transition: all 0.3s ease;
+      }
+      & button:hover:not([data-tsd-selected='true']) {
+        background: ${semantic.color.state.hover};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        & button {
+          transition: none;
+        }
+      }
+      & button:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+      @media (max-width: 430px) {
+        gap: ${semantic.gap.tight};
+        padding-inline-start: ${WORKBENCH_GUTTER_NARROW}px;
+        & button {
+          min-width: 24px;
+        }
+      }
+      @media (max-width: 360px) {
+        gap: 2px;
+        padding-inline-start: 4px;
+        & button {
+          padding-inline: 3px;
+          font-size: 11px;
+        }
+      }
+    `,
+    workbenchLogo: css`
+      display: inline-flex;
+      align-items: center;
+      width: 16px;
+      height: 21px;
+      flex: 0 0 16px;
+      color: ${semantic.color.text.primary};
+      & > svg {
+        width: 100%;
+        height: 100%;
+      }
+      @media (max-width: 360px) {
+        width: 14px;
+        height: 18px;
+        flex-basis: 14px;
+      }
+    `,
+    workbenchDestinations: css`
+      display: inline-flex;
+      align-items: stretch;
+      align-self: stretch;
+      gap: 0;
+      /* The destinations are the part that must survive a narrow panel: let
+         them scroll rather than letting flex squeeze the labels together. */
+      min-width: 0;
+      flex: 0 1 auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      margin: 0;
+      padding: 0;
+      & > button {
+        flex: 0 0 auto;
+      }
+    `,
+    workbenchNavButton: css`
+      margin: 0;
+      padding-inline: 10px;
+      font-size: ${semantic.type.bodyXs.size};
+      font-weight: ${semantic.type.labelSm.weight};
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      color: ${semantic.color.text.mutedOnBrand};
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.state.pressed};
+        color: ${semantic.color.text.primary};
+        font-weight: 700;
+      }
+      @media (max-width: 361px) {
+        padding-inline: 4px;
+      }
+    `,
+    workbenchActions: css`
+      display: inline-flex;
+      align-items: center;
+      gap: ${semantic.gap.tight};
+      height: 100%;
+      margin-left: auto;
+      @media (max-width: 360px) {
+        gap: 0;
+      }
+    `,
+    workbenchActionButton: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: ${WORKBENCH_HEADER_HEIGHT}px;
+      min-width: ${WORKBENCH_HEADER_HEIGHT}px;
+      height: ${WORKBENCH_HEADER_HEIGHT}px;
+      flex: 0 0 ${WORKBENCH_HEADER_HEIGHT}px;
+      padding: 0;
+      color: ${semantic.color.text.mutedOnBrand};
+      & svg {
+        width: 20px;
+        height: 20px;
+      }
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.state.pressed};
+        color: ${semantic.color.text.primary};
+      }
+      @media (max-width: 360px) {
+        width: 32px;
+        min-width: 32px;
+        flex-basis: 32px;
+      }
+    `,
+    /**
+     * A pull tab protruding from the bottom edge of the lowest chrome band —
+     * below the secondary strip when one is on screen, below the header when
+     * not. It is positioned against the panel rather than nested inside the
+     * strip, because the strip scrolls horizontally and would clip it.
+     *
+     * Collapsed is the exception: the panel is then only as tall as the header
+     * and sits flush against the viewport edge, so a downward tab would be off
+     * screen. There it flips to the panel's outer edge instead.
+     */
+    /**
+     * A pull tab protruding from the bottom edge of the subheader, dropping back
+     * to the header's bottom edge once the subheader is folded away — so it
+     * always hangs off whatever chrome band is lowest, always inside the panel.
+     *
+     * It is positioned against the panel rather than nested inside the strip,
+     * because the strip scrolls horizontally and would clip it. Both bands are
+     * border-box, so their hairlines already sit inside these heights.
+     */
+    workbenchCollapseToggle: (isCollapsed: boolean) => css`
+      position: absolute;
+      top: ${isCollapsed
+        ? WORKBENCH_HEADER_HEIGHT
+        : WORKBENCH_HEADER_HEIGHT + PLUGINS_STRIP_HEIGHT}px;
+      inset-inline-end: 7%;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 20px;
+      box-sizing: border-box;
+      padding: 0;
+      /* Open at the top so it reads as attached to the band above it. */
+      border: 1px solid ${semantic.color.state.pressed};
+      border-top: 0;
+      border-radius: 0 0 ${semantic.radius.group} ${semantic.radius.group};
+      background: ${semantic.color.surface.brand};
+      color: ${semantic.color.text.mutedOnBrand};
+      cursor: pointer;
+      transition: all 0.3s ease;
+      &:hover {
+        height: 24px;
+        color: ${semantic.color.text.primary};
+        background: ${semantic.color.surface.subtle};
+      }
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+        &:hover {
+          height: 20px;
+        }
+      }
+    `,
+    workbenchCollapseIcon: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      transition: transform 0.3s ease;
+      & svg {
+        width: 18px;
+        height: 18px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition-duration: 0ms;
+      }
+    `,
+    workbenchWordmark: css`
+      white-space: nowrap;
+      /* A wordmark is display type, not body copy. */
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.headingCompact.size};
+      font-weight: ${semantic.type.headingCompact.weight};
+      line-height: ${semantic.type.headingCompact.lineHeight};
+      letter-spacing: -0.01em;
+      color: ${semantic.color.text.primary};
+      margin-inline-end: ${semantic.space[2]};
+      /* Give up the wordmark before the destination labels start colliding —
+         the emblem still carries the branding. */
+      @media (max-width: 560px) {
+        display: none;
+      }
+    `,
+    /**
+     * The subheader slides rather than disappearing: it stays mounted and
+     * animates its own height to zero, and the panel's strip row is auto-sized
+     * so the row follows it. Folded it is `inert` so nothing inside stays
+     * focusable behind a zero-height band.
+     */
+    workbenchSecondaryTabs: (collapsed: boolean) => css`
+      display: flex;
+      align-items: center;
+      gap: ${semantic.gap.tight};
+      min-width: 0;
+      box-sizing: border-box;
+      padding-block: ${collapsed ? '0px' : '6px'};
+      padding-inline-start: ${WORKBENCH_GUTTER}px;
+      padding-inline-end: ${WORKBENCH_GUTTER}px;
+      scroll-padding-inline-start: ${WORKBENCH_GUTTER}px;
+      scroll-padding-inline-end: ${WORKBENCH_GUTTER}px;
+      height: ${collapsed ? 0 : PLUGINS_STRIP_HEIGHT}px;
+      min-height: 0;
+      flex: 0 0 auto;
+      opacity: ${collapsed ? 0 : 1};
+      /* Chrome band: the strip belongs to the header, not to the canvas. */
+      background: ${semantic.color.surface.brand};
+      border-bottom: ${collapsed ? '0' : '1px'} solid
+        ${semantic.color.state.pressed};
+      overflow-x: ${collapsed ? 'hidden' : 'auto'};
+      overflow-y: hidden;
+      white-space: nowrap;
+      scrollbar-width: thin;
+      transition: all 0.3s ease;
+      /* Tabs must not shift as the strip scrolls, but they still animate their
+         own hover and selected states. */
+      & > * {
+        transform: none;
+      }
+      & > :last-child {
+        scroll-margin-inline-end: ${WORKBENCH_GUTTER}px;
+      }
+      @media (max-width: 430px) {
+        padding-inline: ${WORKBENCH_GUTTER_NARROW}px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    `,
+    workbenchSecondaryTab: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      /* A plugin entry can be dragged down into the workspace to place its pane,
+         so it advertises that rather than looking like a plain button. */
+      &[data-plugin-title-control] {
+        cursor: grab;
+      }
+      min-height: 32px;
+      padding: ${semantic.padding.controlBlock}
+        ${semantic.padding.controlInline};
+      border: 1px solid transparent;
+      border-radius: ${semantic.radius.control};
+      background: transparent;
+      color: ${semantic.color.text.secondary};
+      font-family: ${semantic.font.body};
+      font-size: ${semantic.type.labelSm.size};
+      font-weight: ${semantic.type.labelSm.weight};
+      line-height: ${semantic.type.labelSm.lineHeight};
+      letter-spacing: ${semantic.type.labelSm.tracking};
+      cursor: pointer;
+      flex: 0 0 auto;
+      appearance: none;
+      transition: all 0.3s ease;
+      &:hover {
+        background: ${semantic.color.state.hover};
+        color: ${semantic.color.text.primary};
+      }
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.state.selectionFill};
+        border-color: ${semantic.color.state.selectionFill};
+        color: ${semantic.color.state.selectionText};
+      }
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+    `,
+    pluginTitleText: css`
+      margin: 0;
+      color: inherit;
+      font-family: ${semantic.font.body};
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      letter-spacing: inherit;
+    `,
+    /**
+     * A thin bar sitting on the panel's own edge. It must NOT be grown into a
+     * fat hit area: at 24px tall it covered the top of the 36px header, so a
+     * press aimed at a header button started a resize instead — which is what
+     * made dragging feel like click, drag, click.
+     */
     dragHandle: (panelLocation: TanStackDevtoolsConfig['panelLocation']) => css`
       position: absolute;
       left: 0;
       ${panelLocation === 'bottom' ? 'top' : 'bottom'}: 0;
       width: 100%;
-      height: 4px;
+      height: 5px;
       cursor: row-resize;
       user-select: none;
+      touch-action: none;
       z-index: 100000;
-      &:hover {
-        background-color: ${t(colors.gray[400], colors.gray[500])};
+      background-color: transparent;
+      transition: all 0.3s ease;
+      &:hover,
+      &:focus-visible {
+        background-color: ${semantic.color.border.control};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     `,
-
     mainCloseBtn: css`
       background: transparent;
       position: fixed;
@@ -450,17 +760,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       border: 0;
       align-items: center;
       padding: 0;
-      font-size: ${font.size.xs};
+      font-size: ${semantic.type.bodyXs.size};
       cursor: pointer;
-      transition: all 0.25s ease-out;
-      & > img {
-        width: 56px;
-        height: 56px;
-        transition: all 0.3s ease;
-        outline-offset: 2px;
-        border-radius: ${border.radius.full};
-        outline: 2px solid transparent;
-      }
+      transition: opacity 0.25s ease-out;
       &:hide-until-hover {
         opacity: 0;
         pointer-events: none;
@@ -471,37 +773,107 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         pointer-events: auto;
         visibility: visible;
       }
-      & > img:focus-visible,
-      img:hover {
-        outline: 2px solid ${t(colors.black, colors.black)};
+    `,
+    mainCloseBtnDefault: css`
+      background: ${semantic.color.surface.brand};
+      color: ${semantic.color.text.primary};
+      width: 60px;
+      height: 60px;
+      justify-content: center;
+      border-radius: 14px;
+      /*
+       * Two inset layers carry the chip's finish so both can animate:
+       * a 1px edge ring, transparent at rest so it fades in on hover, and a
+       * full-bleed tint that lifts the brand fill off pitch black in dark mode
+       * (and off flat cream in light) without replacing it.
+       */
+      box-shadow:
+        inset 0 0 0 1px transparent,
+        inset 0 0 0 999px ${semantic.color.state.hover},
+        ${semantic.shadow.sm};
+      transition: all 0.3s ease;
+      /* Sized by height with width following the emblem's own tall aspect, so
+         the mark fills the chip instead of being letterboxed inside a square. */
+      & > svg {
+        width: auto;
+        height: 48px;
+        outline: none;
+        transition: all 0.3s ease;
+      }
+      /*
+       * Hover keeps the brand fill: this chip floats over the user's page, so
+       * replacing the fill with a translucent state colour would make it
+       * vanish. Hover deepens the resting tint one step, brings in the edge
+       * ring, and scales the chip up a touch.
+       *
+       * It animates the scale property rather than a transform: floating mode
+       * sets transform inline to drive the drag, so a transform here would be
+       * overridden and never apply.
+       */
+      &:hover {
+        box-shadow:
+          inset 0 0 0 1px ${semantic.color.border.control},
+          inset 0 0 0 999px ${semantic.color.state.pressed},
+          ${semantic.shadow.overlay};
+        scale: 1.06;
+      }
+      &:hover > svg {
+        scale: 1.04;
+      }
+      &:active {
+        scale: 0.98;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition-property: opacity;
+        & > svg {
+          transition: none;
+        }
+        &:hover,
+        &:hover > svg,
+        &:active {
+          scale: 1;
+        }
+      }
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
       }
     `,
     mainCloseBtnFloating: css`
       /* Floating placement is driven by inline left/top, so don't animate
-         position (would fight the drag/throw rAF loop) — only opacity. */
-      transition: opacity 0.25s ease-out;
-      cursor: grab;
+         position (would fight the drag/throw rAF loop). The hover treatment
+         uses box-shadow and scale, both of which are safe to keep. */
+      transition:
+        opacity 0.3s ease,
+        box-shadow 0.3s ease,
+        scale 0.3s ease,
+        background-color 0.3s ease,
+        color 0.3s ease;
+      /* Stays a pointer even though it is draggable: the trigger reads as a
+         button first, and a grab cursor made it look like a handle. */
+      cursor: pointer;
       touch-action: none;
       user-select: none;
-      &:active {
-        cursor: grabbing;
-      }
     `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
       const base = css`
-        ${position === 'top-left' ? `top: ${size[2]}; left: ${size[2]};` : ''}
-        ${position === 'top-right' ? `top: ${size[2]}; right: ${size[2]};` : ''}
+        ${position === 'top-left'
+          ? `top: ${semantic.space[2]}; left: ${semantic.space[2]};`
+          : ''}
+        ${position === 'top-right'
+          ? `top: ${semantic.space[2]}; right: ${semantic.space[2]};`
+          : ''}
         ${position === 'middle-left'
-          ? `top: 50%; left: ${size[2]}; transform: translateY(-50%);`
+          ? `top: 50%; left: ${semantic.space[2]}; transform: translateY(-50%);`
           : ''}
         ${position === 'middle-right'
-          ? `top: 50%; right: ${size[2]}; transform: translateY(-50%);`
+          ? `top: 50%; right: ${semantic.space[2]}; transform: translateY(-50%);`
           : ''}
         ${position === 'bottom-left'
-          ? `bottom: ${size[2]}; left: ${size[2]};`
+          ? `bottom: ${semantic.space[2]}; left: ${semantic.space[2]};`
           : ''}
         ${position === 'bottom-right'
-          ? `bottom: ${size[2]}; right: ${size[2]};`
+          ? `bottom: ${semantic.space[2]}; right: ${semantic.space[2]};`
           : ''}
       `
       return base
@@ -530,170 +902,307 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         visibility: hidden;
       `
     },
-    tabContainer: css`
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      height: 100%;
-      background-color: ${t(colors.gray[50], colors.darkGray[900])};
-      border-right: 1px solid ${t(colors.gray[200], colors.gray[800])};
-      box-shadow: none;
-      position: relative;
-      width: ${size[10]};
-    `,
-
-    tab: css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      height: ${size[10]};
-      cursor: pointer;
-      font-size: ${fontSize.sm};
-      font-family: ${fontFamily.sans};
-      color: ${t(colors.gray[600], colors.gray[400])};
-      background-color: transparent;
-      border: none;
-      transition: all 0.15s ease;
-      border-left: 2px solid transparent;
-      &:hover:not(.close):not(.active):not(.detach) {
-        background-color: ${t(colors.gray[100], colors.gray[800])};
-        color: ${t(colors.gray[900], colors.gray[100])};
-        border-left: 2px solid ${t(colors.gray[900], colors.gray[100])};
-      }
-      &.active {
-        background-color: ${t(colors.gray[100], colors.gray[800])};
-        color: ${t(colors.gray[900], colors.gray[100])};
-        border-left: 2px solid ${t(colors.gray[900], colors.gray[100])};
-      }
-      &.detach {
-        &:hover {
-          background-color: ${t(colors.gray[100], colors.gray[800])};
-        }
-        &:hover {
-          color: ${t(colors.green[700], colors.green[500])};
-        }
-      }
-      &.close {
-        margin-top: auto;
-        &:hover {
-          background-color: ${t(colors.gray[100], colors.gray[800])};
-        }
-        &:hover {
-          color: ${t(colors.red[700], colors.red[500])};
-        }
-      }
-      &.disabled {
-        cursor: not-allowed;
-        opacity: 0.2;
-        pointer-events: none;
-      }
-      &.disabled:hover {
-        background-color: transparent;
-        color: ${colors.gray[300]};
-      }
-      & > svg {
-        flex-shrink: 0;
-      }
-    `,
     tabContent: css`
       transition: all 0.2s ease-in-out;
       width: 100%;
+      max-width: 100%;
+      min-width: 0;
       height: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
     `,
-    pluginsTabPanel: css`
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    `,
-
-    pluginsTabDraw: (isExpanded: boolean) => css`
-      width: ${isExpanded ? size[48] : 0};
-      height: 100%;
-      background-color: ${t(colors.white, colors.darkGray[900])};
-      box-shadow: none;
-      ${isExpanded
-        ? `border-right: 1px solid ${t(colors.gray[200], colors.gray[800])};`
-        : ''}
-    `,
-    pluginsTabDrawExpanded: css`
-      width: ${size[48]};
-      border-right: 1px solid ${t(colors.gray[200], colors.gray[800])};
-    `,
-    pluginsTabDrawTransition: (mSeconds: number) => {
-      return css`
-        transition: width ${mSecondsToCssSeconds(mSeconds)} ease;
-      `
-    },
-
-    pluginsTabSidebar: (isExpanded: boolean) => css`
-      width: ${size[48]};
-      overflow-y: auto;
-      transform: ${isExpanded ? 'translateX(0)' : 'translateX(-100%)'};
-      display: flex;
-      flex-direction: column;
-    `,
-
-    pluginsTabSidebarTransition: (mSeconds: number) => {
-      return css`
-        transition: transform ${mSecondsToCssSeconds(mSeconds)} ease;
-      `
-    },
-
-    pluginsList: css`
-      flex: 1;
-      overflow-y: auto;
-    `,
-
-    pluginName: css`
-      font-size: ${fontSize.xs};
-      font-family: ${fontFamily.sans};
-      color: ${t(colors.gray[600], colors.gray[400])};
-      padding: ${size[2]};
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s ease;
-      border-left: 2px solid transparent;
-
-      &:hover {
-        background-color: ${t(colors.gray[100], colors.gray[800])};
-        color: ${t(colors.gray[900], colors.gray[100])};
-        padding: ${size[2]};
-      }
-      &.active {
-        background-color: ${t(colors.gray[100], colors.gray[800])};
-        color: ${t(colors.gray[900], colors.gray[100])};
-        border-left: 2px solid ${t(colors.gray[900], colors.gray[100])};
-      }
-      &.active:hover {
-        background-color: ${t(colors.gray[200], colors.gray[700])};
-      }
-    `,
+    /**
+     * A plugin's mount target, and the scroll boundary between that plugin and
+     * the host page.
+     *
+     * `overscroll-behavior: contain` belongs HERE and on the other outermost
+     * destination scrollers only — never on their descendants. Plugins nest
+     * several `overflow: auto` wrappers that often have nothing to scroll; a
+     * wheel over one of those is meant to chain up to this element. Containing
+     * every descendant turns each empty wrapper into a dead end and the pane
+     * stops scrolling altogether.
+     */
     pluginsTabContent: css`
+      /*
+       * A positioning context per pane. Plugins position their own chrome
+       * absolutely and assume their own root is the containing block, but a
+       * plugin root is often statically positioned — without this, a top-zero
+       * offset resolves against the whole Workbench and the plugin paints its
+       * controls over our header. With three panes open they would all pile
+       * into the same corner.
+       */
+      position: relative;
       width: 100%;
       height: 100%;
       min-width: 0;
       min-height: 0;
-
-      & > * {
-        min-width: 0;
-        min-height: 0;
-        width: 100%;
-        height: 100%;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    `,
+    pluginsEmptyState: css`
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: ${semantic.gap.control};
+      min-width: 0;
+      padding: ${WORKBENCH_GUTTER}px;
+      text-align: center;
+      background: ${semantic.color.surface.workspace};
+    `,
+    pluginsEmptyStateIcon: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: ${semantic.space[1]};
+      border-radius: 50%;
+      background: ${semantic.color.surface.subtle};
+      color: ${semantic.color.text.muted};
+      & svg {
+        width: 22px;
+        height: 22px;
       }
-
-      & > * > * {
-        min-width: 0;
-        min-height: 0;
-        width: 100%;
-        height: 100%;
+    `,
+    pluginsEmptyStateTitle: css`
+      margin: 0;
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.headingPane.size};
+      font-weight: ${semantic.type.headingPane.weight};
+      line-height: ${semantic.type.headingPane.lineHeight};
+      color: ${semantic.color.text.primary};
+    `,
+    pluginsEmptyStateHint: css`
+      margin: 0;
+      max-width: 42ch;
+      font-size: ${semantic.type.bodySm.size};
+      font-weight: ${semantic.type.bodySm.weight};
+      line-height: ${semantic.type.bodySm.lineHeight};
+      color: ${semantic.color.text.secondary};
+    `,
+    /**
+     * The panes' permanent home. Every pane is a direct child for its whole
+     * life and is placed with inline offsets computed from the layout tree, so
+     * a drag never re-parents it. That is what stops an iframe plugin reloading
+     * and a canvas plugin losing its context every time the layout changes.
+     */
+    pluginWorkspace: css`
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: ${semantic.color.surface.workspace};
+    `,
+    /**
+     * Off-screen but still announced. Used for the live region that narrates
+     * picking a pane up and putting it down, which is the only feedback a
+     * screen-reader user gets from a move.
+     */
+    pluginSrOnly: css`
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+      border: 0;
+    `,
+    /** A group's tab bar, sitting along the top edge of the group's rect. */
+    pluginGroupTabs: css`
+      display: flex;
+      align-items: stretch;
+      gap: 2px;
+      height: ${PLUGIN_GROUP_TAB_HEIGHT}px;
+      min-width: 0;
+      padding-inline: 4px;
+      box-sizing: border-box;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      scrollbar-width: thin;
+      background: ${semantic.color.surface.brand};
+      border-bottom: 1px solid ${semantic.color.state.pressed};
+    `,
+    /**
+     * Presentational wrapper holding the two sibling controls of one tab. They
+     * are siblings rather than nested because a button inside a button is
+     * invalid, and the inner one would be unreachable by keyboard.
+     */
+    pluginGroupTabItem: css`
+      position: relative;
+      display: inline-flex;
+      align-items: stretch;
+      flex: 0 0 auto;
+      max-width: 200px;
+      background: transparent;
+      transition: background 0.2s ease;
+      &[data-tsd-selected='true'] {
+        background: ${semantic.color.surface.workspace};
       }
-
-      &:not(:last-child) {
-        border-right: 5px solid ${t(colors.purple[200], colors.purple[800])};
+      &:hover:not([data-tsd-selected='true']) {
+        background: ${semantic.color.state.hover};
+      }
+      &[data-tsd-held='true'] {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: -2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    `,
+    /** The sortable item: exactly the draggable part of a tab, nothing else. */
+    pluginGroupTabRow: css`
+      display: inline-flex;
+      align-items: stretch;
+      min-width: 0;
+    `,
+    pluginGroupTab: css`
+      display: inline-flex;
+      align-items: center;
+      min-width: 0;
+      /* Room at the end for the close button, which sits over this one. */
+      padding-inline: 8px 28px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: ${semantic.color.text.mutedOnBrand};
+      font-family: ${semantic.font.body};
+      font-size: ${semantic.type.bodyXs.size};
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: grab;
+      &[aria-pressed='true'] {
+        color: ${semantic.color.text.primary};
+        cursor: default;
+      }
+    `,
+    /**
+     * 24px square, the smallest target WCAG 2.5.8 accepts, laid over the right end
+     * of the tab. Positioned rather than in flow so it is a sibling of the
+     * sortable row: the drag engine finds its target by walking up the tree, so a
+     * close button nested inside the row would always be a drag surface.
+     */
+    pluginGroupTabClose: css`
+      position: absolute;
+      inset-inline-end: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      border: 0;
+      border-radius: 2px;
+      background: transparent;
+      color: ${semantic.color.text.mutedOnBrand};
+      cursor: pointer;
+      &:hover {
+        background: ${semantic.color.state.pressed};
+      }
+      & svg {
+        width: 10px;
+        height: 10px;
+      }
+    `,
+    /**
+     * A gutter between two panes of one split. It is a real focusable separator
+     * so it can be driven from the keyboard, matching the whole-panel resizer.
+     */
+    pluginSplitter: (dir: 'row' | 'col') => css`
+      position: absolute;
+      z-index: 2;
+      background-color: transparent;
+      transition: background-color 0.2s ease;
+      cursor: ${dir === 'row' ? 'col-resize' : 'row-resize'};
+      touch-action: none;
+      &:hover,
+      &:focus-visible {
+        background-color: ${semantic.color.border.focus};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+      @media (forced-colors: active) {
+        &:hover,
+        &:focus-visible {
+          background-color: Highlight;
+        }
+      }
+    `,
+    /**
+     * The tab that follows the cursor while dragging, so it is obvious which pane
+     * is being carried. Pointer-transparent, or it would sit between the pointer
+     * and the drop zone being aimed at.
+     */
+    pluginDragPreview: css`
+      position: fixed;
+      z-index: 2147483646;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      max-width: 220px;
+      height: ${PLUGIN_GROUP_TAB_HEIGHT}px;
+      padding-inline: 10px;
+      box-sizing: border-box;
+      pointer-events: none;
+      border: 1px solid ${semantic.color.border.focus};
+      border-radius: 3px;
+      background: ${semantic.color.surface.brand};
+      color: ${semantic.color.text.primary};
+      font-family: ${semantic.font.body};
+      font-size: ${semantic.type.bodyXs.size};
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.95;
+      /* Sits just off the cursor so it never covers the pointer itself. */
+      transform: translate(12px, 12px);
+      @media (forced-colors: active) {
+        border-color: Highlight;
+      }
+    `,
+    /**
+     * While a pane is being carried, every surface *inside the panel* shows the
+     * grabbing cursor — the pointer travels well outside the tab it started on.
+     * Applied to the panel, never to `<html>`: the host page's cursor is not ours
+     * to change.
+     */
+    pluginDraggingCursor: css`
+      &,
+      & * {
+        cursor: grabbing !important;
+      }
+    `,
+    /** The highlight that shows where a dragged tab would land. */
+    pluginDropOverlay: css`
+      position: absolute;
+      z-index: 3;
+      pointer-events: none;
+      box-sizing: border-box;
+      border: 2px solid ${semantic.color.border.focus};
+      background: ${semantic.color.state.hover};
+      @media (forced-colors: active) {
+        border-color: Highlight;
+      }
+    `,
+    pluginPaneSeparator: css`
+      flex: 0 0 1px;
+      align-self: stretch;
+      /* Plugins paint their own surface, which may be lighter or darker than
+         ours, so this rule needs a mid tone that shows against both. */
+      background: ${semantic.color.border.control};
+      @media (forced-colors: active) {
+        background: CanvasText;
       }
     `,
 
@@ -702,14 +1211,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       flex-direction: column;
       gap: 0.75rem;
     `,
+    /* An indented, ruled block reads as "this belongs to the switch above". */
     conditionalSetting: css`
-      margin-left: 1.5rem;
-      padding-left: 1rem;
-      border-left: 2px solid ${t(colors.gray[300], colors.gray[600])};
-      background-color: ${t(colors.gray[50], colors.darkGray[900])};
-      padding: 0.75rem;
-      border-radius: 0.375rem;
-      margin-top: 0.5rem;
+      margin-top: ${semantic.space[2]};
+      margin-inline-start: ${WORKBENCH_GUTTER}px;
+      padding: ${semantic.space[3]};
+      border-inline-start: 2px solid ${semantic.color.border.decorative};
+      background-color: ${semantic.color.surface.subtle};
+      border-start-end-radius: ${semantic.radius.group};
+      border-end-end-radius: ${semantic.radius.group};
     `,
     settingRow: css`
       display: grid;
@@ -722,7 +1232,39 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     settingsModifiers: css`
       display: flex;
-      gap: 0.5rem;
+      flex-wrap: wrap;
+      gap: 6px;
+    `,
+    hotkeyTitle: css`
+      margin: 0;
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.headingCompact.size};
+      line-height: ${semantic.type.headingCompact.lineHeight};
+      font-weight: ${semantic.type.headingCompact.weight};
+      color: ${semantic.color.text.primary};
+    `,
+    hotkeyDescription: css`
+      margin: 0;
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
+      color: ${semantic.color.text.secondary};
+    `,
+    hotkeyResult: css`
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      font-size: ${semantic.type.bodyXs.size};
+      color: ${semantic.color.text.secondary};
+    `,
+    hotkeyResultKeys: css`
+      padding: 1px 6px;
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: ${semantic.radius.control};
+      background: ${semantic.color.surface.subtle};
+      color: ${semantic.color.text.primary};
+      font-family: ${semantic.font.mono};
+      font-size: 11px;
     `,
     settingsStack: css`
       display: flex;
@@ -731,327 +1273,238 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
 
     // No Plugins Fallback Styles
-    noPluginsFallback: css`
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 400px;
-      padding: 2rem;
-      background: ${t(colors.gray[50], colors.darkGray[700])};
-      width: 100%;
-      height: 100%;
-    `,
-    noPluginsFallbackContent: css`
-      max-width: 600px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    `,
-    noPluginsFallbackIcon: css`
-      width: 64px;
-      height: 64px;
-      color: ${t(colors.gray[400], colors.gray[600])};
-      margin-bottom: 0.5rem;
-
-      svg {
-        width: 100%;
-        height: 100%;
-      }
-    `,
-    noPluginsFallbackTitle: css`
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      margin: 0;
-    `,
-    noPluginsFallbackDescription: css`
-      font-size: 0.95rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
-      line-height: 1.5;
-      margin: 0;
-    `,
-    noPluginsSuggestions: css`
-      width: 100%;
-      margin-top: 1.5rem;
-      padding: 1.5rem;
-      background: ${t(colors.white, colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.5rem;
-    `,
-    noPluginsSuggestionsTitle: css`
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      margin: 0 0 0.5rem 0;
-    `,
-    noPluginsSuggestionsDesc: css`
-      font-size: 0.875rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
-      margin: 0 0 1rem 0;
-    `,
-    noPluginsSuggestionsList: css`
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    `,
-    noPluginsSuggestionCard: css`
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1rem;
-      background: ${t(colors.gray[50], colors.darkGray[900])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.375rem;
-      transition: all 0.15s ease;
-
-      &:hover {
-        border-color: ${t(colors.gray[300], colors.gray[600])};
-        background: ${t(colors.gray[100], colors.darkGray[800])};
-      }
-    `,
-    noPluginsSuggestionInfo: css`
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.25rem;
-      flex: 1;
-    `,
-    noPluginsSuggestionPackage: css`
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      margin: 0;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-    `,
-    noPluginsSuggestionSource: css`
-      font-size: 0.8rem;
-      color: ${t(colors.gray[500], colors.gray[500])};
-      margin: 0;
-    `,
-    noPluginsSuggestionStatus: css`
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: ${t(colors.green[600], colors.green[400])};
-
-      svg {
-        width: 18px;
-        height: 18px;
-      }
-    `,
-    noPluginsSuggestionStatusText: css`
-      font-size: 0.875rem;
-      font-weight: 500;
-    `,
-    noPluginsSuggestionStatusTextError: css`
-      font-size: 0.875rem;
-      font-weight: 500;
-      color: ${t(colors.red[600], colors.red[400])};
-    `,
-    noPluginsEmptyState: css`
-      margin-top: 1.5rem;
-      padding: 1.5rem;
-      background: ${t(colors.white, colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.5rem;
-    `,
-    noPluginsEmptyStateText: css`
-      font-size: 0.875rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
-      margin: 0;
-      line-height: 1.5;
-    `,
-    noPluginsFallbackLinks: css`
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-    `,
-    noPluginsFallbackLink: css`
-      font-size: 0.875rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
-      text-decoration: none;
-      transition: color 0.15s ease;
-
-      &:hover {
-        color: ${t(colors.gray[900], colors.gray[100])};
-        text-decoration: underline;
-      }
-    `,
-    noPluginsFallbackLinkSeparator: css`
-      color: ${t(colors.gray[400], colors.gray[600])};
-    `,
-
-    // Plugin Marketplace Styles (for "Add More" tab)
+    /* Shell: positions the settings drawer and clips it to the workbench. */
     pluginMarketplace: css`
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      font-family: ${semantic.font.body};
+      color: ${semantic.color.text.primary};
       width: 100%;
-      overflow-y: auto;
-      padding: 2rem;
-      background: ${t(
-        'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        'linear-gradient(135deg, #1a1d23 0%, #13161a 100%)',
-      )};
+      min-width: 0;
+      max-width: 100%;
+      box-sizing: border-box;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      background: ${semantic.color.surface.workspace};
       animation: ${fadeIn} 0.3s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    `,
+    pluginMarketplaceScroll: css`
+      flex: 1 1 auto;
+      min-height: 0;
+      min-width: 0;
+      box-sizing: border-box;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: ${WORKBENCH_GUTTER}px;
+      @media (max-width: 430px) {
+        padding: ${WORKBENCH_GUTTER_NARROW}px;
+      }
     `,
     pluginMarketplaceHeader: css`
-      margin-bottom: 2rem;
-      padding-bottom: 1rem;
-      border-bottom: 2px solid ${t(colors.gray[200], colors.gray[700])};
+      margin-bottom: ${WORKBENCH_GUTTER}px;
+      padding-bottom: ${semantic.space[3]};
+      border-bottom: 1px solid ${semantic.color.border.decorative};
     `,
     pluginMarketplaceTitleRow: css`
       display: flex;
-      align-items: center;
+      align-items: flex-end;
       justify-content: space-between;
-      gap: 2rem;
-      margin-bottom: 0.5rem;
+      gap: ${WORKBENCH_GUTTER}px;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+    `,
+    /** Title + description stay together so the search box can't split them. */
+    pluginMarketplaceTitleBlock: css`
+      display: flex;
+      flex-direction: column;
+      gap: ${semantic.gap.tight};
+      min-width: 0;
+    `,
+    pluginMarketplaceControls: css`
+      display: flex;
+      align-items: center;
+      flex: 1 1 320px;
+      width: 100%;
+      max-width: 448px;
+      min-width: 0;
+      margin-left: auto;
     `,
     pluginMarketplaceTitle: css`
-      font-size: 1.5rem;
+      font-family: ${semantic.font.display};
+      font-size: 1.125rem;
+      line-height: 1.3;
       font-weight: 700;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      color: ${semantic.color.text.primary};
       margin: 0;
       letter-spacing: -0.02em;
     `,
     pluginMarketplaceDescription: css`
-      font-size: 0.95rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
-      margin: 0 0 1rem 0;
-      line-height: 1.5;
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
+      color: ${semantic.color.text.secondary};
+      margin: 0;
+      max-width: 72ch;
     `,
     pluginMarketplaceSearchWrapper: css`
       position: relative;
       display: flex;
       align-items: center;
+      flex: 1 1 0%;
+      width: auto;
       max-width: 400px;
-      flex-shrink: 0;
+      min-width: 0;
+      @media (max-width: 430px) {
+        width: 100%;
+        max-width: none;
+      }
 
       svg {
         position: absolute;
-        left: 1rem;
-        color: ${t(colors.gray[400], colors.gray[500])};
+        left: 8px;
+        width: 14px;
+        height: 14px;
+        color: ${semantic.color.text.muted};
         pointer-events: none;
       }
     `,
     pluginMarketplaceSearch: css`
       width: 100%;
-      padding: 0.75rem 1rem 0.75rem 2.75rem;
-      background: ${t(colors.gray[50], colors.darkGray[900])};
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.5rem;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      font-size: 0.875rem;
-      font-family: ${fontFamily.sans};
-      transition: all 0.2s ease;
+      box-sizing: border-box;
+      padding: 5px 10px 5px 28px;
+      background: ${semantic.color.surface.app};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: ${semantic.radius.control};
+      color: ${semantic.color.text.primary};
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
+      font-family: ${semantic.font.body};
+      transition: all 0.3s ease;
 
       &::placeholder {
-        color: ${t(colors.gray[400], colors.gray[500])};
+        color: ${semantic.color.text.muted};
+      }
+
+      &:hover {
+        border-color: ${semantic.color.border.control};
       }
 
       &:focus {
         outline: none;
-        border-color: ${t(colors.blue[500], colors.blue[400])};
-        background: ${t(colors.white, colors.darkGray[800])};
-        box-shadow: 0 0 0 3px
-          ${t('rgba(59, 130, 246, 0.1)', 'rgba(96, 165, 250, 0.1)')};
+        border-color: ${semantic.color.border.focus};
+        background: ${semantic.color.surface.elevated};
+        box-shadow: 0 0 0 2px ${semantic.color.state.pressed};
       }
-    `,
-    pluginMarketplaceFilters: css`
-      margin-top: 1.5rem;
-      padding-top: 1rem;
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
     `,
     pluginMarketplaceTagsContainer: css`
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background: ${t(colors.gray[50], colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.5rem;
+      gap: 6px;
+      margin-top: ${semantic.space[3]};
+      padding: 0;
+      background: transparent;
+      border: 0;
     `,
     pluginMarketplaceTagButton: css`
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
+      padding: 3px 10px;
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
       font-weight: 500;
-      background: ${t(colors.white, colors.darkGray[700])};
-      border: 2px solid ${t(colors.gray[300], colors.gray[600])};
-      border-radius: 0.375rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: 999px;
+      color: ${semantic.color.text.secondary};
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.3s ease;
 
       &:hover {
-        background: ${t(colors.gray[100], colors.darkGray[600])};
-        border-color: ${t(colors.gray[400], colors.gray[500])};
-        color: ${t(colors.gray[900], colors.gray[100])};
+        background: ${semantic.color.state.hover};
+        border-color: ${semantic.color.border.control};
+        color: ${semantic.color.text.primary};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     `,
     pluginMarketplaceTagButtonActive: css`
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-      )} !important;
-      border-color: ${t('#2563eb', '#3b82f6')} !important;
-      color: white !important;
+      background: ${semantic.color.state.selectionFill} !important;
+      border-color: ${semantic.color.state.selectionFill} !important;
+      color: ${semantic.color.state.selectionText} !important;
 
       &:hover {
-        background: ${t(
-          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        )} !important;
-        border-color: ${t('#1d4ed8', '#2563eb')} !important;
+        background: ${semantic.color.state.selectionFill} !important;
+        border-color: ${semantic.color.border.focus} !important;
       }
     `,
     pluginMarketplaceSettingsButton: css`
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0.75rem;
-      background: ${t(colors.gray[100], colors.darkGray[800])};
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.5rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      flex: 0 0 auto;
+      padding: 5px;
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: ${semantic.radius.control};
+      color: ${semantic.color.text.secondary};
       cursor: pointer;
-      transition: all 0.2s ease;
-      margin-left: 0.5rem;
+      transition: all 0.3s ease;
+      margin-left: 6px;
+
+      & svg {
+        width: 14px;
+        height: 14px;
+      }
 
       &:hover {
-        background: ${t(colors.gray[200], colors.darkGray[700])};
-        border-color: ${t(colors.gray[300], colors.gray[600])};
-        color: ${t(colors.gray[900], colors.gray[100])};
+        background: ${semantic.color.state.hover};
+        border-color: ${semantic.color.border.control};
+        color: ${semantic.color.text.primary};
       }
-
-      &:active {
-        transform: scale(0.95);
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     `,
+    /* Absolute, not fixed: the drawer belongs to the marketplace pane, so it
+       must not cover the host page outside the workbench. */
     pluginMarketplaceSettingsPanel: css`
-      position: fixed;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      width: 350px;
-      background: ${t(colors.white, colors.darkGray[800])};
-      border-left: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      box-shadow: -4px 0 12px ${t('rgba(0, 0, 0, 0.1)', 'rgba(0, 0, 0, 0.4)')};
-      z-index: 1000;
+      position: absolute;
+      inset-block: 0;
+      inset-inline-end: 0;
+      width: 320px;
+      max-width: 100%;
+      box-sizing: border-box;
+      background: ${semantic.color.surface.elevated};
+      border-inline-start: 1px solid ${semantic.color.border.decorative};
+      box-shadow: ${semantic.shadow.overlay};
+      z-index: 2;
       display: flex;
       flex-direction: column;
       animation: ${slideInRight} 0.3s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     `,
     pluginMarketplaceSettingsPanelHeader: css`
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 1.5rem;
-      border-bottom: 1px solid ${t(colors.gray[200], colors.gray[700])};
+      gap: ${semantic.gap.control};
+      padding: ${semantic.space[3]} ${WORKBENCH_GUTTER}px;
+      border-bottom: 1px solid ${semantic.color.border.decorative};
     `,
     pluginMarketplaceSettingsPanelTitle: css`
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.headingCompact.size};
+      line-height: ${semantic.type.headingCompact.lineHeight};
+      font-weight: 700;
+      color: ${semantic.color.text.primary};
       margin: 0;
     `,
     pluginMarketplaceSettingsPanelClose: css`
@@ -1061,147 +1514,122 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: 0.5rem;
       background: transparent;
       border: none;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       cursor: pointer;
       border-radius: 0.375rem;
-      transition: all 0.15s ease;
+      transition: all 0.3s ease;
 
       &:hover {
-        background: ${t(colors.gray[100], colors.darkGray[700])};
-        color: ${t(colors.gray[900], colors.gray[100])};
+        background: ${semantic.color.state.hover};
+        color: ${semantic.color.text.primary};
       }
     `,
     pluginMarketplaceSettingsPanelContent: css`
       flex: 1;
-      padding: 1.5rem;
+      min-height: 0;
+      padding: ${WORKBENCH_GUTTER}px;
       overflow-y: auto;
+      overscroll-behavior: contain;
     `,
     pluginMarketplaceGrid: css`
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+      gap: ${semantic.gap.section};
       animation: ${slideUp} 0.4s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
     `,
     pluginMarketplaceCard: css`
-      background: ${t(colors.white, colors.darkGray[800])};
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.75rem;
-      padding: 1.5rem;
+      background: ${semantic.color.surface.elevated};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: ${semantic.radius.overlay};
+      padding: ${WORKBENCH_GUTTER}px;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: ${semantic.gap.section};
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
 
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: ${t(
-          'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)',
-          'linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%)',
-        )};
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.25s ease;
-      }
-
+      /* Cards stay grounded: hover raises the shadow a step instead of lifting
+         the card off the page. */
       &:hover {
-        border-color: ${t(colors.gray[400], colors.gray[500])};
-        box-shadow: 0 8px 24px ${t('rgba(0,0,0,0.1)', 'rgba(0,0,0,0.4)')};
-        transform: translateY(-4px);
-
-        &::before {
-          transform: scaleX(1);
-        }
+        border-color: ${semantic.color.border.control};
+        box-shadow: ${semantic.shadow.sm};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     `,
     pluginMarketplaceCardIcon: css`
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
+      flex: 0 0 32px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
-        'linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)',
-      )};
-      border-radius: 0.5rem;
-      color: white;
-      transition: transform 0.25s ease;
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: ${semantic.radius.group};
+      color: ${semantic.color.text.secondary};
 
       svg {
-        width: 20px;
-        height: 20px;
-      }
-
-      &.custom-logo {
+        width: 16px;
+        height: 16px;
       }
     `,
     pluginMarketplaceCardHeader: css`
       flex: 1;
     `,
     pluginMarketplaceCardTitle: css`
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: ${t(colors.gray[900], colors.gray[100])};
-      margin: 0 0 0.5rem 0;
-      line-height: 1.4;
-    `,
-    pluginMarketplaceCardDescription: css`
-      font-size: 0.8rem;
-      color: ${t(colors.gray[500], colors.gray[500])};
-      margin: 0;
-      padding: 0;
-      background: transparent;
-      border-radius: 0.375rem;
-      display: block;
-      font-weight: 500;
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.bodySm.size};
+      line-height: ${semantic.type.bodySm.lineHeight};
+      font-weight: 700;
+      color: ${semantic.color.text.primary};
+      /* Room on the trailing side so a long name never runs under the badge. */
+      margin: 0 72px 4px 0;
     `,
     pluginMarketplaceCardPackageBadge: css`
       margin-top: 4px;
       margin-bottom: 8px;
       font-size: 0.6875rem;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-      opacity: 0.6;
-      padding: 4px 8px;
-      padding-left: 0;
-      background-color: var(--bg-tertiary);
-      border-radius: 4px;
+      font-family: ${semantic.font.mono};
+      color: ${semantic.color.text.muted};
+      padding: 0;
       word-break: break-all;
       display: inline-block;
     `,
     pluginMarketplaceCardDescriptionText: css`
-      line-height: 1.5;
       margin-top: 0;
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodySm.lineHeight};
+      color: ${semantic.color.text.secondary};
     `,
     pluginMarketplaceCardVersionInfo: css`
       margin-top: 8px;
       font-size: 0.6875rem;
-      font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+      font-family: ${semantic.font.mono};
     `,
     pluginMarketplaceCardVersionSatisfied: css`
-      color: ${t(colors.green[600], colors.green[400])};
+      color: ${semantic.color.status.success.text};
     `,
     pluginMarketplaceCardVersionUnsatisfied: css`
-      color: ${t(colors.red[600], colors.red[400])};
+      color: ${semantic.color.status.error.text};
     `,
     pluginMarketplaceCardDocsLink: css`
       display: inline-flex;
       align-items: center;
       gap: 0.25rem;
       font-size: 0.75rem;
-      color: ${t(colors.blue[600], colors.blue[400])};
+      color: ${semantic.color.text.link};
       text-decoration: none;
       margin-top: 0.5rem;
-      transition: color 0.15s ease;
+      transition: all 0.3s ease;
 
       &:hover {
-        color: ${t(colors.blue[700], colors.blue[300])};
+        color: ${semantic.color.text.link};
         text-decoration: underline;
       }
 
@@ -1220,67 +1648,59 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       font-size: 0.6875rem;
       font-weight: 500;
       padding: 0.25rem 0.5rem;
-      background: ${t(colors.gray[100], colors.darkGray[700])};
-      border: 1px solid ${t(colors.gray[300], colors.gray[600])};
-      border-radius: 0.25rem;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      background: ${semantic.color.surface.subtle};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-radius: 999px;
+      color: ${semantic.color.text.secondary};
     `,
     pluginMarketplaceCardImage: css`
       width: 28px;
       height: 28px;
       object-fit: contain;
     `,
+    /* A flat inline pill, not a rotated corner ribbon: the badge already owns
+       the top-right corner and the icon owns the top-left. */
     pluginMarketplaceNewBanner: css`
-      position: absolute;
-      top: 12px;
-      right: -35px;
-      background-color: ${t(colors.green[500], colors.green[500])};
-      color: white;
-      padding: 4px 40px;
-      font-size: 0.6875rem;
-      font-weight: bold;
+      display: inline-block;
+      vertical-align: middle;
+      margin-inline-start: 6px;
+      background-color: ${semantic.color.status.success.subtleFill};
+      color: ${semantic.color.status.success.text};
+      padding: 1px 6px;
+      font-family: ${semantic.font.body};
+      font-size: 11px;
+      font-weight: 600;
       text-transform: uppercase;
-      transform: rotate(45deg);
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
-      z-index: 10;
-      letter-spacing: 0.5px;
+      border-radius: 999px;
+      letter-spacing: 0.05em;
     `,
+    /* Featured and active cards keep the neutral outline — their section
+       heading and their badge already say which they are, so a second and a
+       third accent colour would only add noise. */
     pluginMarketplaceCardFeatured: css`
-      border-color: ${t(colors.blue[500], colors.blue[400])};
-      border-width: 2px;
+      border-color: ${semantic.color.border.control};
     `,
     pluginMarketplaceCardActive: css`
-      border-color: ${t(colors.green[500], colors.green[600])};
-      border-width: 2px;
-
-      &:hover {
-        border-color: ${t(colors.green[500], colors.green[600])};
-        box-shadow: none;
-        transform: none;
-
-        &::before {
-          transform: scaleX(0);
-        }
-      }
+      border-inline-start: 3px solid ${semantic.color.status.success.border};
     `,
     pluginMarketplaceCardStatus: css`
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      color: ${t(colors.green[600], colors.green[400])};
+      color: ${semantic.color.status.success.text};
       animation: ${statusFadeIn} 0.3s ease;
 
       svg {
         width: 18px;
         height: 18px;
-        animation: ${iconPop} 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: ${statusFadeIn} 120ms ease-out;
       }
     `,
     pluginMarketplaceCardSpinner: css`
       width: 18px;
       height: 18px;
-      border: 2px solid ${t(colors.gray[200], colors.gray[700])};
-      border-top-color: ${t(colors.blue[600], colors.blue[400])};
+      border: 2px solid ${semantic.color.border.decorative};
+      border-top-color: ${semantic.color.status.info.border};
       border-radius: 50%;
       animation: ${spin} 0.8s linear infinite;
     `,
@@ -1291,48 +1711,61 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginMarketplaceCardStatusTextError: css`
       font-size: 0.875rem;
       font-weight: 600;
-      color: ${t(colors.red[600], colors.red[400])};
+      color: ${semantic.color.status.error.text};
     `,
     pluginMarketplaceEmpty: css`
       padding: 3rem 2rem;
       text-align: center;
-      background: ${t(colors.white, colors.darkGray[800])};
-      border: 2px dashed ${t(colors.gray[300], colors.gray[700])};
+      background: ${semantic.color.surface.elevated};
+      border: 2px dashed ${semantic.color.border.control};
       border-radius: 0.75rem;
       animation: ${fadeIn} 0.3s ease;
     `,
     pluginMarketplaceEmptyText: css`
       font-size: 0.95rem;
-      color: ${t(colors.gray[600], colors.gray[400])};
+      color: ${semantic.color.text.secondary};
       margin: 0;
       line-height: 1.6;
     `,
 
     // Framework sections
     pluginMarketplaceSection: css`
-      margin-bottom: 2.5rem;
+      margin-bottom: ${WORKBENCH_GUTTER * 1.5}px;
 
       &:last-child {
         margin-bottom: 0;
       }
     `,
+    /* A section heading is a heading, not a card. It gets a rule underneath so
+       the eye reads "group starts here" without another box in the stack. */
     pluginMarketplaceSectionHeader: css`
-      margin-bottom: 1rem;
-      padding: 1rem 1.25rem;
+      margin-bottom: ${semantic.gap.section};
+      padding: 0 0 6px;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: ${semantic.gap.tight};
       cursor: pointer;
       user-select: none;
-      background: ${t(colors.gray[50], colors.darkGray[800])};
-      border: 1px solid ${t(colors.gray[200], colors.gray[700])};
-      border-radius: 0.5rem;
-      transition: all 0.15s ease;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid ${semantic.color.border.decorative};
+      border-radius: 0;
+      transition: all 0.3s ease;
 
       &:hover {
-        background: ${t(colors.gray[100], colors.darkGray[700])};
-        border-color: ${t(colors.gray[300], colors.gray[600])};
+        border-bottom-color: ${semantic.color.border.control};
       }
+      &:hover h3 {
+        color: ${semantic.color.text.primary};
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
+    `,
+    pluginMarketplaceSectionContent: css`
+      display: flex;
+      flex-direction: column;
+      gap: ${semantic.gap.sectionLarge};
     `,
     pluginMarketplaceSectionHeaderLeft: css`
       display: flex;
@@ -1340,107 +1773,102 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       gap: 0.5rem;
     `,
     pluginMarketplaceSectionChevron: css`
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: ${t(colors.gray[700], colors.gray[300])};
+      color: ${semantic.color.text.secondary};
       transition: transform 0.2s ease;
     `,
     pluginMarketplaceSectionChevronCollapsed: css`
       transform: rotate(-90deg);
     `,
     pluginMarketplaceSectionTitle: css`
-      font-size: 1.25rem;
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.headingPane.size};
+      line-height: ${semantic.type.headingPane.lineHeight};
       font-weight: 700;
-      color: ${t(colors.gray[900], colors.gray[50])};
+      color: ${semantic.color.text.secondary};
       margin: 0;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-    `,
-    pluginMarketplaceSectionBadge: css`
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.5rem;
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-      )};
-      color: white;
-      border-radius: 0.25rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      gap: ${semantic.gap.control};
+      transition: all 0.3s ease;
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
+      }
     `,
     pluginMarketplaceFeatureBanner: css`
-      margin-top: 1rem;
-      padding: 1.25rem 1.5rem;
-      background: ${t(
-        'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)',
-      )};
-      border-radius: 0.75rem;
-      border: 1px solid ${t(colors.blue[400], colors.blue[800])};
-      box-shadow:
-        0 4px 6px -1px rgba(0, 0, 0, 0.1),
-        0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      margin-top: 0;
+      padding: ${semantic.space[3]} ${WORKBENCH_GUTTER}px;
+      background: ${semantic.color.surface.brand};
+      border-radius: ${semantic.radius.overlay};
+      border: 1px solid ${semantic.color.border.decorative};
+      border-inline-start: 3px solid ${semantic.color.state.selectionFill};
+      box-shadow: none;
     `,
     pluginMarketplaceFeatureBannerContent: css`
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: ${semantic.gap.control};
+      align-items: flex-start;
     `,
     pluginMarketplaceFeatureBannerTitle: css`
-      font-size: 1.125rem;
+      font-family: ${semantic.font.display};
+      font-size: ${semantic.type.headingCompact.size};
+      line-height: ${semantic.type.headingCompact.lineHeight};
       font-weight: 700;
-      color: white;
+      color: ${semantic.color.text.primary};
       margin: 0;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 6px;
     `,
     pluginMarketplaceFeatureBannerIcon: css`
-      width: 24px;
-      height: 24px;
+      width: 14px;
+      height: 14px;
       display: inline-flex;
+      color: ${semantic.color.text.secondary};
     `,
     pluginMarketplaceFeatureBannerText: css`
-      font-size: 0.95rem;
-      color: ${t('rgba(255, 255, 255, 0.95)', 'rgba(255, 255, 255, 0.9)')};
-      line-height: 1.5;
+      font-size: ${semantic.type.bodyXs.size};
+      color: ${semantic.color.text.mutedOnBrand};
+      line-height: ${semantic.type.bodySm.lineHeight};
+      max-width: 78ch;
       margin: 0;
     `,
     pluginMarketplaceFeatureBannerButton: css`
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.625rem 1.25rem;
-      background: white;
-      color: ${colors.blue[600]};
+      gap: 6px;
+      padding: 5px 12px;
+      background: ${semantic.color.state.selectionFill};
+      color: ${semantic.color.state.selectionText};
       font-weight: 600;
-      font-size: 0.95rem;
-      border-radius: 0.5rem;
+      font-size: ${semantic.type.bodyXs.size};
+      border-radius: ${semantic.radius.control};
       border: none;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       text-decoration: none;
       align-self: flex-start;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      box-shadow: none;
 
       &:hover {
-        background: ${t(colors.gray[50], colors.gray[100])};
-        transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        opacity: 0.85;
       }
-
-      &:active {
-        transform: translateY(0);
+      &:focus-visible {
+        outline: 2px solid ${semantic.color.border.focus};
+        outline-offset: 2px;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        transition: none;
       }
     `,
     pluginMarketplaceFeatureBannerButtonIcon: css`
-      width: 18px;
-      height: 18px;
+      width: 14px;
+      height: 14px;
     `,
     pluginMarketplaceCardDisabled: css`
       opacity: 0.6;
@@ -1456,99 +1884,39 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     // Card state badges
     pluginMarketplaceCardBadge: css`
       position: absolute;
-      top: 1rem;
-      right: 1rem;
-      padding: 0.25rem 0.5rem;
-      font-size: 0.65rem;
+      top: ${WORKBENCH_GUTTER}px;
+      right: ${WORKBENCH_GUTTER}px;
+      padding: 1px 6px;
+      font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      border-radius: 0.25rem;
+      border-radius: 999px;
       letter-spacing: 0.05em;
     `,
     pluginMarketplaceCardBadgeInstall: css`
-      background: ${t(colors.green[100], colors.green[900])};
-      color: ${t(colors.green[700], colors.green[300])};
+      background: ${semantic.color.status.success.subtleFill};
+      color: ${semantic.color.status.success.text};
+    `,
+    pluginMarketplaceCardBadgeActive: css`
+      background: ${semantic.color.status.success.subtleFill};
+      color: ${semantic.color.status.success.text};
     `,
     pluginMarketplaceCardBadgeAdd: css`
-      background: ${t(colors.blue[100], colors.blue[900])};
-      color: ${t(colors.blue[700], colors.blue[300])};
+      background: ${semantic.color.status.info.subtleFill};
+      color: ${semantic.color.status.info.text};
+    `,
+    pluginMarketplaceCardBadgeBlocked: css`
+      background: ${semantic.color.status.warning.subtleFill};
+      color: ${semantic.color.status.warning.text};
     `,
     pluginMarketplaceCardBadgeRequires: css`
-      background: ${t(colors.gray[100], colors.gray[800])};
-      color: ${t(colors.gray[600], colors.gray[400])};
+      background: ${semantic.color.status.neutral.subtleFill};
+      color: ${semantic.color.status.neutral.text};
     `,
 
     // Button style for already installed plugins
     pluginMarketplaceButtonInstalled: css`
       opacity: 0.5;
-    `,
-
-    // Add More Tab Style (visually distinct from regular plugins)
-    pluginNameAddMore: css`
-      font-size: ${fontSize.xs};
-      font-family: ${fontFamily.sans};
-      color: ${t(colors.gray[600], colors.gray[400])};
-      padding: ${size[3]} ${size[2]};
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.15s ease;
-      border-left: 2px solid transparent;
-      background: ${t(
-        'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
-        'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
-      )};
-      font-weight: 600;
-      position: relative;
-      margin-top: auto;
-
-      h3 {
-        margin: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.25rem;
-
-        &::before {
-          content: '✨';
-          font-size: 0.875rem;
-          animation: ${sparkle} 2s ease-in-out infinite;
-        }
-      }
-
-      &:hover {
-        background: ${t(
-          'linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%)',
-          'linear-gradient(135deg, #374151 0%, #1f2937 100%)',
-        )};
-        color: ${t(colors.gray[900], colors.gray[100])};
-        border-left-color: ${t(colors.blue[500], colors.blue[400])};
-
-        h3::before {
-          animation: ${sparkle} 0.5s ease-in-out infinite;
-        }
-      }
-
-      &.active {
-        background: ${t(
-          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-          'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)',
-        )};
-        color: ${t(colors.white, colors.white)};
-        border-left: 2px solid ${t(colors.blue[600], colors.blue[300])};
-        box-shadow: 0 4px 12px
-          ${t('rgba(59, 130, 246, 0.3)', 'rgba(96, 165, 250, 0.3)')};
-
-        h3::before {
-          filter: brightness(0) invert(1);
-        }
-      }
-
-      &.active:hover {
-        background: ${t(
-          'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-          'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-        )};
-      }
     `,
   }
 }

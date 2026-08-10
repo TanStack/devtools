@@ -34,6 +34,20 @@ type UseHeadChangesOptions = {
   observeTitle?: boolean
 }
 
+/**
+ * A `<style>` tag in `<head>` never carries SEO metadata, and CSS-in-JS
+ * libraries write into one constantly — goober alone re-stamps its `nonce`
+ * attribute and rewrites its text on every `css()` call. Reporting those as head
+ * changes feeds a loop: the consumer re-renders, the re-render emits CSS, the
+ * CSS mutates `<head>`, and the observer fires again. Stylesheets are filtered
+ * out so only real metadata reaches the consumer.
+ */
+const isStyleNode = (node: Node): boolean => {
+  const element =
+    node.nodeType === 3 /* Node.TEXT_NODE */ ? node.parentNode : node
+  return (element as Element | null)?.nodeName === 'STYLE'
+}
+
 export function createHeadChanges(
   onChange: (change: HeadChange, raw?: MutationRecord) => void,
   opts: UseHeadChangesOptions = {},
@@ -49,11 +63,14 @@ export function createHeadChanges(
     const headObserver = new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.type === 'childList') {
-          m.addedNodes.forEach((node) => onChange({ kind: 'added', node }, m))
-          m.removedNodes.forEach((node) =>
-            onChange({ kind: 'removed', node }, m),
-          )
+          m.addedNodes.forEach((node) => {
+            if (!isStyleNode(node)) onChange({ kind: 'added', node }, m)
+          })
+          m.removedNodes.forEach((node) => {
+            if (!isStyleNode(node)) onChange({ kind: 'removed', node }, m)
+          })
         } else if (m.type === 'attributes') {
+          if (isStyleNode(m.target)) continue
           const el = m.target as Element
           onChange(
             {

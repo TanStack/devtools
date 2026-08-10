@@ -142,7 +142,9 @@ function SerpSnippetPreview(props: {
 
   return (
     <div class={styles().serpPreviewBlock}>
-      <div class={styles().serpPreviewLabel}>{props.label}</div>
+      <div class={styles().serpPreviewLabel} data-testid="serp-preview-label">
+        {props.label}
+      </div>
       <div
         class={
           props.isMobile ? styles().serpSnippetMobile : styles().serpSnippet
@@ -159,13 +161,16 @@ function SerpSnippetPreview(props: {
             <div class={styles().serpSnippetDefaultFavicon} />
           )}
           <div class={styles().serpSnippetSiteColumn}>
-            <span class={styles().serpSnippetSiteName}>
+            <span
+              class={styles().serpSnippetSiteName}
+              data-testid="serp-preview-site-name"
+            >
               {props.data.siteName || props.data.url}
             </span>
             <span class={styles().serpSnippetSiteUrl}>{props.data.url}</span>
           </div>
         </div>
-        <div class={styles().serpSnippetTitle}>
+        <div class={styles().serpSnippetTitle} data-testid="serp-preview-title">
           {props.displayTitle || props.data.title || 'No title'}
         </div>
         {!props.isMobile && (
