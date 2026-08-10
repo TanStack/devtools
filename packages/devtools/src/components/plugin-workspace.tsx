@@ -152,6 +152,18 @@ const GroupTabBar = (props: {
               data-testid={`plugin-tab-close-${tabId}`}
               data-tsd-control
               class={styles().pluginGroupTabClose}
+              // The sortable row wraps this button, so without stopping the
+              // pointer events here the drag layer treats a press on the X as the
+              // start of a sort and swallows the click that would follow — which
+              // is why closing a tab worked only sometimes.
+              onPointerDown={(event) => event.stopPropagation()}
+              onPointerUp={(event) => {
+                event.stopPropagation()
+                props.onClose(tabId)
+              }}
+              // Keyboard activation fires `click` with no pointer events at all,
+              // so both paths are needed. Closing twice is harmless: the second
+              // call finds no such tab and returns the tree unchanged.
               onClick={() => props.onClose(tabId)}
             >
               <X aria-hidden="true" />
