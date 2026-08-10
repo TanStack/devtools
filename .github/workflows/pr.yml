@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@0d673e0e803498ff328c59e8f25e9313f2fb568f # main
+        uses: TanStack/config/.github/setup@0b5996988cf0938ae77119e0164f9738a453d7c8 # main
       - name: Get base and head commits for `nx affected`
         uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4.4.0
         with:
@@ -52,7 +52,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@0d673e0e803498ff328c59e8f25e9313f2fb568f # main
+        uses: TanStack/config/.github/setup@0b5996988cf0938ae77119e0164f9738a453d7c8 # main
       - name: Build packages
         run: pnpm run build:all
       - name: Install Playwright Chromium
@@ -68,7 +68,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@0d673e0e803498ff328c59e8f25e9313f2fb568f # main
+        uses: TanStack/config/.github/setup@0b5996988cf0938ae77119e0164f9738a453d7c8 # main
       - name: Build Packages
         run: pnpm run build:all
       - name: Publish Previews
@@ -82,6 +82,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@0d673e0e803498ff328c59e8f25e9313f2fb568f # main
+        uses: TanStack/config/.github/setup@0b5996988cf0938ae77119e0164f9738a453d7c8 # main
       - name: Changeset Preview
-        uses: TanStack/config/.github/changeset-preview@0d673e0e803498ff328c59e8f25e9313f2fb568f # main
+        uses: TanStack/config/.github/changeset-preview@0b5996988cf0938ae77119e0164f9738a453d7c8 # main
