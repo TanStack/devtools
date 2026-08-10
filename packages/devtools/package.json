@@ -67,7 +67,7 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@neodrag/solid": "3.0.0-next.10",
+    "@neodrag/solid": "3.0.0-next.11",
     "@solid-primitives/event-listener": "^2.4.3",
     "@solid-primitives/keyboard": "^1.3.3",
     "@solid-primitives/resize-observer": "^2.1.3",
