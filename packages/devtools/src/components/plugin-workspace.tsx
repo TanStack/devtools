@@ -1,5 +1,6 @@
 import {
   For,
+  Index,
   Show,
   createEffect,
   createMemo,
@@ -738,7 +739,12 @@ export const PluginWorkspace = (props: {
           }}
         </For>
 
-        <For each={handles()}>
+        {/* `Index`, not `For`: `splitterHandles` returns fresh objects on every
+            re-measure, so a keyed `For` destroyed and rebuilt every gutter
+            whenever the geometry changed. That threw away keyboard focus
+            mid-resize and left stale element references behind. Keying by
+            position keeps the elements alive and just updates their values. */}
+        <Index each={handles()}>
           {(handle) => (
             <div
               role="separator"
@@ -747,28 +753,32 @@ export const PluginWorkspace = (props: {
               data-tsd-separator="plugin-pane"
               data-testid="plugin-splitter"
               aria-orientation={
-                handle.dir === 'row' ? 'vertical' : 'horizontal'
+                handle().dir === 'row' ? 'vertical' : 'horizontal'
               }
               aria-label="Resize plugin panes"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={Math.round(
-                ((handle.dir === 'row' ? handle.rect.left : handle.rect.top) /
-                  Math.max(handle.extent, 1)) *
+                ((handle().dir === 'row'
+                  ? handle().rect.left
+                  : handle().rect.top) /
+                  Math.max(handle().extent, 1)) *
                   100,
               )}
-              class={styles().pluginSplitter(handle.dir)}
+              class={styles().pluginSplitter(handle().dir)}
               style={{
-                left: `${handle.rect.left}px`,
-                top: `${handle.rect.top}px`,
-                width: `${handle.rect.width}px`,
-                height: `${handle.rect.height}px`,
+                left: `${handle().rect.left}px`,
+                top: `${handle().rect.top}px`,
+                width: `${handle().rect.width}px`,
+                height: `${handle().rect.height}px`,
               }}
-              onPointerDown={(event) => startSplitterDrag(handle, event)}
-              onKeyDown={(event) => resizeFromKeyboard(handle, event)}
+              // Read through the accessor at gesture time, so a gutter that has
+              // been re-measured since render still moves the right sizes.
+              onPointerDown={(event) => startSplitterDrag(handle(), event)}
+              onKeyDown={(event) => resizeFromKeyboard(handle(), event)}
             />
           )}
-        </For>
+        </Index>
       </Show>
 
       {/* Outside the "has panes" branch on purpose: dropping onto an empty

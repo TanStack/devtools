@@ -19,6 +19,12 @@ const openTwoPanes = async (dt: DevtoolsPage) => {
   await dt.openViaTrigger()
   await dt.stripEntry('Event Probe').click()
   await expect(dt.groupTabBars()).toHaveCount(2)
+  // Wait for the geometry too, not just the tab bars. The workspace measures
+  // itself and then derives rects, so acting on the first render measured a
+  // splitter that was not positioned yet — or not there at all.
+  await expect(dt.splitters()).toHaveCount(1)
+  await expect(dt.pane(DEMO)).toBeVisible()
+  await expect(dt.pane(PROBE)).toBeVisible()
 }
 
 test.beforeEach(async ({ page }) => {
@@ -60,6 +66,7 @@ test('dragging the gutter moves width from one pane to the other', async ({
   const beforeDemo = (await dt.pane(DEMO).boundingBox())!.width
   const beforeProbe = (await dt.pane(PROBE).boundingBox())!.width
 
+  await expect(dt.splitters().first()).toBeVisible()
   const gutter = await dt.splitters().first().boundingBox()
   await page.mouse.move(
     gutter!.x + gutter!.width / 2,
@@ -84,12 +91,16 @@ test('a gutter resizes from the keyboard', async ({ page }) => {
   await openTwoPanes(dt)
 
   const before = await dt.pane(DEMO).boundingBox()
-  await dt.splitters().first().focus()
-  await page.keyboard.press('ArrowRight')
-  await page.keyboard.press('ArrowRight')
+  // `press` on the locator focuses and sends the key as one step. Focusing and
+  // then pressing separately sometimes lost the key, because the splitter is
+  // re-rendered whenever the geometry changes.
+  await dt.splitters().first().press('ArrowRight')
+  await dt.splitters().first().press('ArrowRight')
 
-  const after = await dt.pane(DEMO).boundingBox()
-  expect(after!.width).toBeGreaterThan(before!.width)
+  // Poll: the width follows a state change, so it is not there on the same tick.
+  await expect
+    .poll(async () => (await dt.pane(DEMO).boundingBox())!.width)
+    .toBeGreaterThan(before!.width)
 })
 
 test('dropping a tab in the middle of a pane stacks it as a tab', async ({

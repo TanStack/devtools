@@ -19,7 +19,8 @@
 /** Where on a pane a drop landed. `center` stacks, the four edges split. */
 export type DropZone = 'left' | 'right' | 'top' | 'bottom' | 'center'
 
-export type Size = { w: number; h: number }
+/** Internal: nothing outside this module names it, so it stays unexported. */
+type Size = { w: number; h: number }
 export type Rect = { left: number; top: number; width: number; height: number }
 
 export type GroupNode = {
@@ -54,11 +55,9 @@ const EPSILON = 1e-9
  */
 const MAX_STORED_DEPTH = 32
 
-export const isGroup = (node: LayoutNode): node is GroupNode =>
-  node.kind === 'group'
+const isGroup = (node: LayoutNode): node is GroupNode => node.kind === 'group'
 
-export const isSplit = (node: LayoutNode): node is SplitNode =>
-  node.kind === 'split'
+const isSplit = (node: LayoutNode): node is SplitNode => node.kind === 'split'
 
 /** Every plugin id in visual order: left to right, top to bottom. */
 export const flattenTabs = (tree: LayoutNode | null): Array<string> =>
@@ -77,7 +76,7 @@ export const findGroupOfTab = (
 ): GroupNode | null =>
   allGroups(tree).find((group) => group.tabs.includes(tabId)) ?? null
 
-export const findGroupById = (
+const findGroupById = (
   tree: LayoutNode | null,
   groupId: string,
 ): GroupNode | null =>
@@ -379,10 +378,7 @@ export const appendPane = (
 }
 
 /** Locate a node by walking child indices from the root. */
-export const nodeAtPath = (
-  tree: LayoutNode | null,
-  path: Path,
-): LayoutNode | null => {
+const nodeAtPath = (tree: LayoutNode | null, path: Path): LayoutNode | null => {
   let node = tree
   for (const index of path) {
     if (node === null || !isSplit(node)) return null

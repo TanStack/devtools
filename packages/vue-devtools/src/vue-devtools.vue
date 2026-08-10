@@ -15,6 +15,18 @@ const titlesToRender = shallowRef<RenderArray>([])
 const pluginsToRender = shallowRef<RenderArray>([])
 const div = ref<HTMLElement>()
 
+/**
+ * Drop any existing entry for a mount element before adding the new one.
+ *
+ * `render` and the title callback are called again whenever the theme or the
+ * panel's open state changes, and the core reuses the same mount node for the
+ * lifetime of a plugin. Appending unconditionally therefore stacked a second copy
+ * of the plugin into the same container every time.
+ */
+function replaceById(entries: RenderArray, id: string): RenderArray {
+  return entries.filter((entry) => entry.id !== id)
+}
+
 function getPlugin(plugin: TanStackDevtoolsVuePlugin): TanStackDevtoolsPlugin {
   return {
     id: plugin.id,
@@ -24,7 +36,7 @@ function getPlugin(plugin: TanStackDevtoolsVuePlugin): TanStackDevtoolsPlugin {
         : (e, theme) => {
             const id = e.getAttribute('id')!
             titlesToRender.value = [
-              ...titlesToRender.value,
+              ...replaceById(titlesToRender.value, id),
               {
                 id,
                 component: plugin.name as DefineComponent<any>,
@@ -37,7 +49,7 @@ function getPlugin(plugin: TanStackDevtoolsVuePlugin): TanStackDevtoolsPlugin {
     render: (e, theme) => {
       const id = e.getAttribute('id')!
       pluginsToRender.value = [
-        ...pluginsToRender.value,
+        ...replaceById(pluginsToRender.value, id),
         { id, component: plugin.component, props: { theme, ...plugin.props } },
       ]
     },
