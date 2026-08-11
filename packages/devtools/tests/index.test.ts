@@ -5,11 +5,8 @@ import DevTools from '../src/devtools'
 import { TanStackDevtoolsCore } from '../src/core'
 import { DevtoolsProvider } from '../src/context/devtools-context'
 import { PiPProvider } from '../src/context/pip-context'
-import { mountDevtools } from '../src/mount-impl'
+import * as mountImpl from '../src/mount-impl'
 import type { TanStackDevtoolsConfig } from '../src/context/devtools-context'
-
-vi.mock('../src/mount-impl', () => ({ mountDevtools: vi.fn() }))
-const mockedMount = vi.mocked(mountDevtools)
 
 const shellDisposers = new Map<HTMLElement, () => void>()
 const mountShell = (config: Partial<TanStackDevtoolsConfig>) => {
@@ -41,7 +38,6 @@ const disposeShell = (host: HTMLElement) => {
 beforeEach(() => {
   localStorage.clear()
   history.replaceState({}, '', '/')
-  mockedMount.mockReset()
   vi.stubGlobal(
     'ResizeObserver',
     class ResizeObserver {
@@ -134,7 +130,10 @@ describe('devtools core boundaries', () => {
   })
 
   it('aborts a pending dynamic mount and resets after repeated mount errors', async () => {
-    mockedMount.mockReturnValue({
+    // Spy on the live ESM export. Vitest 4's module runner does not apply
+    // `vi.mock` to `import('./mount-impl')` inside core.ts, so a file-level
+    // mock never sees those calls. A spy on the same module namespace does.
+    const mockedMount = vi.spyOn(mountImpl, 'mountDevtools').mockReturnValue({
       dispose: vi.fn(),
       eventBus: { stop: vi.fn() },
     })
@@ -152,9 +151,10 @@ describe('devtools core boundaries', () => {
     })
     const failing = new TanStackDevtoolsCore({})
     failing.mount(host)
-    await vi.waitFor(() => expect(error).toHaveBeenCalledTimes(1))
+    await vi.waitFor(() => expect(mockedMount).toHaveBeenCalledTimes(1))
     failing.mount(host)
-    await vi.waitFor(() => expect(error).toHaveBeenCalledTimes(2))
+    await vi.waitFor(() => expect(mockedMount).toHaveBeenCalledTimes(2))
+    expect(error).toHaveBeenCalledTimes(2)
     expect(() => failing.unmount()).toThrow('Devtools is not mounted')
   })
 })

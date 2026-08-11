@@ -63,7 +63,7 @@
     "@angular/core": "^21.2.0",
     "ng-packagr": "^21.2.0",
     "tslib": "^2.3.0",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.10"
   },
   "peerDependencies": {
     "@angular/core": ">=21.0.0"

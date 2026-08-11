@@ -9,6 +9,9 @@ const config = defineConfig({
   plugins: [
     solid({
       ssr: process.env.VITEST !== 'true',
+      // Vitest 4's module runner treats `/@solid-refresh` as `file:///@solid-refresh`
+      // and throws. HMR is not used in tests.
+      hot: process.env.VITEST !== 'true',
     }) as any satisfies Plugin,
   ],
   test: {
