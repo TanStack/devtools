@@ -9,14 +9,19 @@ describe('EventClient', () => {
   let bus: ClientEventBus
 
   beforeEach(() => {
-    // Create a fresh bus for each test to ensure isolation
+    // EventClient starts reconnect intervals and has no public stop.
+    // Fake timers so each test owns those intervals and leftover
+    // `tanstack-connect` events do not leak into the next test.
+    vi.useFakeTimers()
     bus = new ClientEventBus()
     bus.start()
   })
 
   afterEach(() => {
-    // Clean up after each test
     bus.stop()
+    vi.clearAllTimers()
+    vi.useRealTimers()
+    vi.restoreAllMocks()
   })
 
   describe('debug config', () => {
@@ -209,8 +214,7 @@ describe('EventClient', () => {
   describe('queued events', () => {
     it('emits queued events when connected to the event bus', async () => {
       bus.stop()
-      // Wait for bus to fully stop
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       const client = new EventClient({
         debug: false,
@@ -222,13 +226,13 @@ describe('EventClient', () => {
 
       // Start bus first, then emit (to ensure bus is ready)
       bus.start()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       // Now emit - this will queue and trigger connection
       client.emit('event', { foo: 'bar' })
 
       // wait for connection to establish and queued events to be emitted
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await vi.advanceTimersByTimeAsync(300)
       expect(eventHandler).toHaveBeenCalledWith({
         type: 'test-queued:event',
         payload: { foo: 'bar' },
@@ -241,7 +245,7 @@ describe('EventClient', () => {
       // The ClientEventBus dispatches to global window events which persist across tests
       // This needs a more robust cleanup mechanism
       bus.stop()
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await vi.advanceTimersByTimeAsync(100)
 
       const client = new EventClient({
         debug: false,
@@ -253,7 +257,7 @@ describe('EventClient', () => {
 
       // Start bus FIRST, wait for it to be ready
       bus.start()
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await vi.advanceTimersByTimeAsync(100)
 
       // NOW emit multiple events (they'll queue and then connect)
       client.emit('event', { count: 1 })
@@ -261,7 +265,7 @@ describe('EventClient', () => {
       client.emit('event', { count: 3 })
 
       // Wait for connection and all queued events to be emitted
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await vi.advanceTimersByTimeAsync(300)
 
       // All 3 events should have been received
       expect(eventHandler).nthCalledWith(1, {
@@ -308,7 +312,7 @@ describe('EventClient', () => {
   describe('connecting behavior', () => {
     it('should only attempt connection once when #connecting flag is set', async () => {
       bus.stop()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       const client = new EventClient({
         debug: false,
@@ -338,7 +342,7 @@ describe('EventClient', () => {
 
     it('should stop connect loop after successful connection', async () => {
       bus.stop()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       const client = new EventClient({
         debug: false,
@@ -351,15 +355,15 @@ describe('EventClient', () => {
 
       // Start bus to allow connection
       bus.start()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       // Wait for connection to establish
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await vi.advanceTimersByTimeAsync(200)
 
       const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
 
       // Wait for what would be several retry intervals
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      await vi.advanceTimersByTimeAsync(400)
 
       const connectCalls = dispatchSpy.mock.calls.filter(
         (call) =>
@@ -375,7 +379,7 @@ describe('EventClient', () => {
     it('should respect max retries limit', async () => {
       // Don't start the bus so connection always fails
       bus.stop()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       const client = new EventClient({
         debug: false,
@@ -389,7 +393,7 @@ describe('EventClient', () => {
       client.emit('event', { foo: 'bar' })
 
       // Wait long enough for max retries (5 attempts at 50ms intervals = 250ms + buffer)
-      await new Promise((resolve) => setTimeout(resolve, 400))
+      await vi.advanceTimersByTimeAsync(400)
 
       const connectCalls = dispatchSpy.mock.calls.filter(
         (call) =>
@@ -401,7 +405,7 @@ describe('EventClient', () => {
 
       // Wait longer to ensure no more attempts
       dispatchSpy.mockClear()
-      await new Promise((resolve) => setTimeout(resolve, 200))
+      await vi.advanceTimersByTimeAsync(200)
 
       const additionalCalls = dispatchSpy.mock.calls.filter(
         (call) =>
@@ -416,7 +420,7 @@ describe('EventClient', () => {
 
     it('should reset connecting flag when connection succeeds and allow new connections', async () => {
       bus.stop()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       // Create first client and connect it
       const client1 = new EventClient({
@@ -427,18 +431,18 @@ describe('EventClient', () => {
 
       // Start bus before emitting so connection succeeds
       bus.start()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       // First connection attempt
       client1.emit('event1', { id: 1 })
 
       // Wait for connection
-      await new Promise((resolve) => setTimeout(resolve, 150))
+      await vi.advanceTimersByTimeAsync(150)
 
       // Now create a SECOND client (which will need to connect)
       // Stop/start bus to simulate a scenario where new client needs to connect
       bus.stop()
-      await new Promise((resolve) => setTimeout(resolve, 50))
+      await vi.advanceTimersByTimeAsync(50)
 
       const dispatchSpy = vi.spyOn(window, 'dispatchEvent')
 
@@ -452,7 +456,7 @@ describe('EventClient', () => {
       client2.emit('event2', { id: 2 })
 
       // Wait a bit for the connection attempt
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await vi.advanceTimersByTimeAsync(100)
 
       const connectCalls = dispatchSpy.mock.calls.filter(
         (call) =>
