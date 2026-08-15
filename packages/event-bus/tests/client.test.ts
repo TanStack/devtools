@@ -109,8 +109,9 @@ describe('ClientEventBus', () => {
         __TANSTACK_DEVTOOLS_PROTOCOL__: 'http',
       })
 
+      let bus: ClientEventBus | undefined
       try {
-        const bus = new ClientEventBus({
+        bus = new ClientEventBus({
           connectToServerBus: true,
           port: 443,
           host: 'devtools.example.com',
@@ -121,8 +122,8 @@ describe('ClientEventBus', () => {
         expect(mockWebSocketInstances[0].url).toBe(
           'wss://devtools.example.com:443/__devtools/ws',
         )
-        bus.stop()
       } finally {
+        bus?.stop()
         Reflect.deleteProperty(globalThis, '__TANSTACK_DEVTOOLS_PORT__')
         Reflect.deleteProperty(globalThis, '__TANSTACK_DEVTOOLS_HOST__')
         Reflect.deleteProperty(globalThis, '__TANSTACK_DEVTOOLS_PROTOCOL__')
