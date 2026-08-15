@@ -101,6 +101,33 @@ describe('ClientEventBus', () => {
       expect(mockEventSourceInstances.length).toBe(0)
       bus.stop()
     })
+
+    it('should prefer explicit config over bundler-injected defaults', () => {
+      Object.assign(globalThis, {
+        __TANSTACK_DEVTOOLS_PORT__: 4206,
+        __TANSTACK_DEVTOOLS_HOST__: 'localhost',
+        __TANSTACK_DEVTOOLS_PROTOCOL__: 'http',
+      })
+
+      try {
+        const bus = new ClientEventBus({
+          connectToServerBus: true,
+          port: 443,
+          host: 'devtools.example.com',
+          protocol: 'https',
+        })
+        bus.start()
+
+        expect(mockWebSocketInstances[0].url).toBe(
+          'wss://devtools.example.com:443/__devtools/ws',
+        )
+        bus.stop()
+      } finally {
+        Reflect.deleteProperty(globalThis, '__TANSTACK_DEVTOOLS_PORT__')
+        Reflect.deleteProperty(globalThis, '__TANSTACK_DEVTOOLS_HOST__')
+        Reflect.deleteProperty(globalThis, '__TANSTACK_DEVTOOLS_PROTOCOL__')
+      }
+    })
   })
 
   describe('connectWebSocket with protocol', () => {
