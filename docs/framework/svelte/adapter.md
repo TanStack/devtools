@@ -38,14 +38,14 @@ type TanStackDevtoolsSveltePlugin = {
 | Field | Type | Description |
 | --- | --- | --- |
 | `id` | `string` (optional) | Unique identifier for the plugin. |
-| `component` | `Component<any>` | The Svelte component to render as the plugin panel content. |
-| `name` | `string \| Component<any>` | Display name for the tab title. Can be a plain string or a Svelte component for custom rendering. |
-| `props` | `Record<string, any>` (optional) | Additional props passed to the plugin component on mount. |
+| `component` | `Component<any>` | The Svelte component to render as the plugin panel content. It receives the shared `theme` and `devtoolsOpen` props. |
+| `name` | `string \| Component<any>` | Display name for the tab title. A custom Svelte component receives the same merged plugin props. |
+| `props` | `Record<string, any>` (optional) | Additional props merged with the shared plugin props when the component mounts. |
 | `defaultOpen` | `boolean` (optional) | Whether this plugin tab should be open by default. |
 
 ## Key Difference from Other Frameworks
 
-The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. Props are provided through the `props` field and passed to the component via Svelte's `mount()` API, rather than being embedded directly in a JSX expression.
+The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. It passes `{ theme, devtoolsOpen, ...plugin.props }` to the component through Svelte's `mount()` API.
 
 ```svelte
 <!-- Svelte: pass component reference + props -->

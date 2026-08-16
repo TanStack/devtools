@@ -66,15 +66,15 @@ export class TanStackDevtoolsSvelteAdapter {
       name:
         typeof plugin.name === 'string'
           ? plugin.name
-          : (el, theme) => {
+          : (el, props) => {
               this.renderComponent(plugin.name as Component<any>, el, {
-                theme,
+                ...props,
                 ...(plugin.props ?? {}),
               })
             },
-      render: (el, theme) => {
+      render: (el, props) => {
         this.renderComponent(plugin.component, el, {
-          theme,
+          ...props,
           ...(plugin.props ?? {}),
         })
       },

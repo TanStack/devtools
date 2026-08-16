@@ -7,13 +7,20 @@ Every TanStack Devtools plugin follows a well-defined lifecycle: it is registere
 
 ## Plugin Interface
 
-All plugins implement the `TanStackDevtoolsPlugin` interface, which is the low-level contract between a plugin and the devtools core. Framework adapters (React, Vue, Solid, Preact) wrap this interface so you can work with familiar components, but under the hood every plugin is reduced to these fields:
+All plugins implement the `TanStackDevtoolsPlugin` interface, which is the low-level contract between a plugin and the devtools core. Framework adapters wrap this interface so you can work with familiar components, but under the hood every plugin is reduced to these fields:
 
 ```ts
+interface TanStackDevtoolsPluginProps {
+  theme: 'dark' | 'light'
+  devtoolsOpen: boolean
+}
+
 interface TanStackDevtoolsPlugin {
   id?: string
-  name: string | ((el: HTMLHeadingElement, theme: 'dark' | 'light') => void)
-  render: (el: HTMLDivElement, theme: 'dark' | 'light') => void
+  name:
+    | string
+    | ((el: HTMLHeadingElement, props: TanStackDevtoolsPluginProps) => void)
+  render: (el: HTMLDivElement, props: TanStackDevtoolsPluginProps) => void
   destroy?: (pluginId: string) => void
   defaultOpen?: boolean
 }
@@ -28,7 +35,7 @@ A unique identifier for the plugin. If you omit it, the core generates one from 
 Displayed as the tab title in the sidebar. This can be:
 
 - **A plain string** - rendered as text inside an `<h3>` element.
-- **A function** - receives the heading element (`HTMLHeadingElement`) and the current theme (`'dark' | 'light'`). You can render anything into the heading, such as an icon next to the name or a fully custom title.
+- **A function** - receives the heading element and the current `{ theme, devtoolsOpen }` props. You can render anything into the heading, such as an icon next to the name or a fully custom title.
 
 ```ts
 // Simple string name
@@ -36,7 +43,7 @@ Displayed as the tab title in the sidebar. This can be:
 
 // Custom title via function
 {
-  name: (el, theme) => {
+  name: (el, { theme }) => {
     el.innerHTML = `<span style="color: ${theme === 'dark' ? '#fff' : '#000'}">My Plugin</span>`
   },
   render: (el) => { /* ... */ }
@@ -45,18 +52,18 @@ Displayed as the tab title in the sidebar. This can be:
 
 ### `render` (required)
 
-The main rendering function. It receives a `<div>` container element and the current theme. Your job is to render your plugin UI into this container using whatever approach you prefer - raw DOM manipulation, a framework portal, or anything else.
+The main rendering function receives a `<div>` container element and the current `{ theme, devtoolsOpen }` props. Your job is to render your plugin UI into this container using whatever approach you prefer - raw DOM manipulation, a framework portal, or anything else.
 
 ```ts
-render: (el, theme) => {
-  el.innerHTML = `<div class="${theme}">Hello from my plugin!</div>`
+render: (el, { theme, devtoolsOpen }) => {
+  el.innerHTML = `<div class="${theme}" data-open="${devtoolsOpen}">Hello from my plugin!</div>`
 }
 ```
 
 The `render` function is called:
 
 1. When the plugin's tab is first activated (clicked or opened by default).
-2. When the theme changes, so your UI can adapt.
+2. When the theme or devtools open state changes, so your UI can adapt.
 
 ### `destroy` (optional)
 
@@ -82,13 +89,13 @@ Here is what happens when you provide plugins to the devtools:
    - A content container: `<div id="plugin-container-{pluginId}">` where the plugin renders its UI.
    - A title container: `<h3 id="plugin-title-container-{pluginId}">` where the plugin's name is rendered.
 
-3. **Title rendering** - For each plugin, the core checks if `name` is a string or function. If it's a string, the text is set directly on the heading element. If it's a function, the function is called with the heading element and current theme.
+3. **Title rendering** - For each plugin, the core checks if `name` is a string or function. If it is a string, the text is set directly on the heading element. If it is a function, the function is called with the heading element and current plugin props.
 
-4. **Plugin activation** - When the user clicks a plugin's tab (or the plugin is auto-opened via `defaultOpen`), the plugin is added to the `activePlugins` list. The core then calls `plugin.render(container, theme)` with the content `<div>` and the current theme.
+4. **Plugin activation** - When the user clicks a plugin's tab (or the plugin is auto-opened via `defaultOpen`), the plugin is added to the `activePlugins` list. The core then calls `plugin.render(container, props)` with the content `<div>` and `{ theme, devtoolsOpen }`.
 
 5. **Rendering** - The container is a regular `<div>` element. Your plugin can render anything into it - DOM nodes, a framework component tree via portals, a canvas, an iframe, etc.
 
-6. **Theme changes** - When the user toggles the theme in settings, `render` is called again with the new theme value. Your plugin should update its appearance accordingly.
+6. **Plugin prop changes** - When the theme or devtools open state changes, `render` is called again with the new props. Your plugin should update accordingly.
 
 ```mermaid
 flowchart TD
@@ -97,7 +104,7 @@ flowchart TD
     C --> D["&lt;h3 id='plugin-title-container-{id}'&gt;<br/>created per plugin"]
     C --> E["&lt;div id='plugin-container-{id}'&gt;<br/>created per active plugin"]
     D --> F["plugin.name<br/><i>string set or function called</i>"]
-    E --> G["plugin.render(div, theme)<br/><i>called with container + theme</i>"]
+    E --> G["plugin.render(div, props)<br/><i>called with container + plugin props</i>"]
 ```
 
 ## Framework Adapter Pattern
@@ -167,6 +174,30 @@ The Vue adapter uses `<Teleport>` to render your Vue component into the containe
 
 Your Vue component receives the `theme` as a prop along with any other props you pass. It runs within the Vue app's reactivity system with full access to composition API, inject/provide, etc.
 
+### Svelte
+
+The Svelte adapter mounts the plugin component directly into the container and forwards the shared plugin props together with any plugin-specific props:
+
+```svelte
+<!-- What you write: -->
+<script lang="ts">
+  import { TanStackDevtools } from '@tanstack/svelte-devtools'
+  import MyPluginComponent from './MyPluginComponent.svelte'
+
+  const plugins = [
+    {
+      name: 'My Plugin',
+      component: MyPluginComponent,
+      props: { someProp: 'value' },
+    },
+  ]
+</script>
+
+<TanStackDevtools {plugins} />
+```
+
+Internally, the adapter calls `mount(component, { target, props })` with `{ theme, devtoolsOpen, ...plugin.props }`. It calls `unmount()` when the plugin is destroyed, which runs the component's Svelte cleanup lifecycle.
+
 ### The Key Insight
 
 ```mermaid
@@ -177,14 +208,15 @@ graph LR
     subgraph core["Devtools Core (Solid.js)"]
         container["Plugin Container<br/>&lt;div id='plugin-container-{id}'&gt;"]
     end
-    comp -- "Portal / Teleport" --> container
+    comp -- "Framework rendering API" --> container
 ```
 
-Regardless of framework, your plugin component runs in its **normal framework context** with full reactivity, hooks, signals, lifecycle methods, and dependency injection. It just renders into a different DOM location via portals or teleports. This means:
+Regardless of framework, your plugin component runs in its **normal framework context** with full reactivity, hooks, signals, lifecycle methods, and dependency injection. The adapter renders it into a DOM location owned by the devtools core. This means:
 
 - React plugins can use `useState`, `useEffect`, `useContext`, and any React library.
 - Solid plugins can use signals, stores, `createEffect`, and the full Solid API.
 - Vue plugins can use `ref`, `computed`, `watch`, `inject`, and any Vue composable.
+- Svelte plugins can use runes, context, lifecycle hooks, and any Svelte library.
 
 The framework adapter handles all the wiring between your component and the devtools container.
 
@@ -212,5 +244,6 @@ Framework adapters handle their own cleanup automatically:
 - **React** unmounts the portal, which triggers the normal React cleanup cycle (`useEffect` cleanup functions, etc.).
 - **Vue** destroys the Teleport, which runs `onUnmounted` hooks in your component.
 - **Solid** disposes of the Portal's reactive scope, running any `onCleanup` callbacks.
+- **Svelte** calls `unmount()` for the mounted component, running its cleanup lifecycle.
 
 You typically do **not** need to implement `destroy` unless your plugin has manual subscriptions, timers, WebSocket connections, or other resources that aren't tied to your framework's lifecycle. If all your cleanup is handled by framework hooks (like `useEffect` cleanup in React or `onCleanup` in Solid), the adapter takes care of it for you.

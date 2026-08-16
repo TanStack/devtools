@@ -190,15 +190,17 @@ This client is a singleton (`devtoolsEventClient`) used by both the core shell a
 Each framework adapter is a thin wrapper that bridges its framework's component model to the core Solid.js shell. The pattern is the same across all adapters:
 
 1. **Creates a `TanStackDevtoolsCore` instance** with the user's plugins and config.
-2. **Mounts it to a DOM element** using the framework's lifecycle hooks (`useEffect` in React, `onMounted` in Vue, `onMount` in Solid).
-3. **Converts framework-specific plugin definitions** into the core's DOM-based `render(el, theme)` interface. Each adapter defines its own plugin type (e.g. `TanStackDevtoolsReactPlugin`) that accepts framework-native components, then wraps them in a `render` callback that the core calls with a target DOM element and the current theme.
-4. **Uses the framework's portal/teleport mechanism** to render plugin components into the core's DOM containers:
+2. **Mounts it to a DOM element** using the framework's lifecycle APIs, such as `useEffect` in React, `onMounted` in Vue, `$effect` in Svelte, and `onMount` in Solid.
+3. **Converts framework-specific plugin definitions** into the core's DOM-based `render(el, props)` interface. Each adapter defines its own plugin type (e.g. `TanStackDevtoolsReactPlugin`) that accepts framework-native components, then wraps them in a `render` callback that the core calls with a target DOM element and `{ theme, devtoolsOpen }`.
+4. **Uses the framework's rendering API** to render plugin components into the core's DOM containers:
    - **React** -- `createPortal()` from `react-dom`
    - **Vue** -- `<Teleport :to="'#' + plugin.id" />`
    - **Solid** -- `<Portal mount={el} />`
    - **Preact** -- Same portal pattern as React
+   - **Svelte** -- `mount(component, { target: el, props })`
+   - **Angular** -- `createComponent()` with the container's environment injector
 
-The key insight: the core shell is always Solid.js, but your plugins run in **your** framework. A React plugin is a real React component rendered by React's `createPortal` into a DOM element that the Solid.js shell created. A Vue plugin is a real Vue component rendered by Vue's `<Teleport>`. The adapters bridge this gap so you never need to think about Solid.js unless you want to.
+The key insight: the core shell is always Solid.js, but your plugins run in **your** framework. Each adapter receives the same plugin props and renders a native framework component into a DOM element created by the Solid.js shell. The adapters bridge this gap so you never need to think about Solid.js unless you want to.
 
 ### What an adapter does NOT do
 

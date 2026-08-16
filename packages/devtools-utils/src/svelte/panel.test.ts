@@ -1,22 +1,30 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createSveltePanel } from './panel'
+
+const { onDestroy } = vi.hoisted(() => ({ onDestroy: vi.fn() }))
+
+vi.mock('svelte', () => ({ onDestroy }))
 
 // Minimal stand-in for a class-based devtools core.
 function makeCoreClass() {
   const mount = vi.fn()
   const unmount = vi.fn()
-  let lastProps: unknown
+  const construct = vi.fn()
   class Core {
     mount = mount
     unmount = unmount
-    constructor(props: unknown) {
-      lastProps = props
+    constructor() {
+      construct()
     }
   }
-  return { Core, mount, unmount, getLastProps: () => lastProps }
+  return { Core, construct, mount, unmount }
 }
 
 describe('createSveltePanel', () => {
+  beforeEach(() => {
+    onDestroy.mockReset()
+  })
+
   it('returns a [Panel, NoOpPanel] tuple of component functions', () => {
     const { Core } = makeCoreClass()
     const [Panel, NoOpPanel] = createSveltePanel(Core as any)
@@ -24,30 +32,28 @@ describe('createSveltePanel', () => {
     expect(typeof NoOpPanel).toBe('function')
   })
 
-  it('Panel constructs the core with devtoolsProps, mounts it into a host element, and tears it down on destroy', () => {
-    const { Core, mount, unmount, getLastProps } = makeCoreClass()
+  it('Panel constructs the core, mounts it with plugin props, and registers teardown', () => {
+    const { Core, construct, mount, unmount } = makeCoreClass()
     const [Panel] = createSveltePanel(Core as any)
 
     const anchor = document.createElement('span')
     document.body.appendChild(anchor)
-
-    // Svelte 5 invokes a component with (anchor, props); the panel inserts its
-    // own host element before the anchor and mounts the core into it.
-    const instance = (Panel as any)(anchor, {
+    const props = {
       theme: 'dark',
-      devtoolsProps: { foo: 'bar' },
-    })
+      devtoolsOpen: true,
+    }
+    ;(Panel as any)(anchor, props)
 
-    expect(getLastProps()).toEqual({ foo: 'bar' })
+    expect(construct).toHaveBeenCalledTimes(1)
     expect(mount).toHaveBeenCalledTimes(1)
     const call = mount.mock.calls[0]!
     const mountedEl = call[0] as HTMLElement
-    const theme = call[1]
     expect(mountedEl).toBeInstanceOf(HTMLElement)
     expect(mountedEl.parentElement).toBe(document.body)
-    expect(theme).toBe('dark')
+    expect(call[1]).toBe(props)
 
-    instance.destroy()
+    expect(onDestroy).toHaveBeenCalledTimes(1)
+    onDestroy.mock.calls[0]![0]()
     expect(unmount).toHaveBeenCalledTimes(1)
     expect(mountedEl.parentElement).toBeNull()
 
@@ -55,10 +61,12 @@ describe('createSveltePanel', () => {
   })
 
   it('NoOpPanel never constructs or mounts the core class', () => {
-    const { Core, mount } = makeCoreClass()
+    const { Core, construct, mount } = makeCoreClass()
     const [, NoOpPanel] = createSveltePanel(Core as any)
     const anchor = document.createElement('span')
-    ;(NoOpPanel as any)(anchor, { theme: 'dark' })
+    ;(NoOpPanel as any)(anchor, { theme: 'dark', devtoolsOpen: true })
+    expect(construct).not.toHaveBeenCalled()
     expect(mount).not.toHaveBeenCalled()
+    expect(onDestroy).not.toHaveBeenCalled()
   })
 })

@@ -1,35 +1,39 @@
+import { onDestroy } from 'svelte'
 import type { Component } from 'svelte'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps {
-  theme?: 'dark' | 'light' | 'system'
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
 export function createSveltePanel<
   TComponentProps extends DevtoolsPanelProps,
   TCoreDevtoolsClass extends {
-    mount: (el: HTMLElement, theme?: DevtoolsPanelProps['theme']) => void
+    mount: (el: HTMLElement, props: TComponentProps) => void
     unmount: () => void
   },
 >(
-  CoreClass: new (props: TComponentProps) => TCoreDevtoolsClass,
-): [Component<any>, Component<any>] {
-  const Panel: Component<any> = ((anchor: any, props: any) => {
+  CoreClass: new () => TCoreDevtoolsClass,
+): [Component<TComponentProps>, Component<TComponentProps>] {
+  const Panel: Component<TComponentProps> = ((
+    anchor: any,
+    props: TComponentProps,
+  ) => {
     const el = document.createElement('div')
     el.style.height = '100%'
     anchor.before(el)
 
-    const instance = new CoreClass(props?.devtoolsProps as TComponentProps)
-    instance.mount(el, props?.theme)
+    const instance = new CoreClass()
+    instance.mount(el, props)
 
-    return {
-      destroy() {
-        instance.unmount()
-        el.remove()
-      },
-    }
-  }) as any
+    onDestroy(() => {
+      instance.unmount()
+      el.remove()
+    })
 
-  const NoOpPanel: Component<any> = (() => ({})) as any
+    return {}
+  }) as Component<TComponentProps>
+
+  const NoOpPanel: Component<TComponentProps> =
+    (() => ({})) as Component<TComponentProps>
 
   return [Panel, NoOpPanel]
 }
