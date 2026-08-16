@@ -9,12 +9,12 @@ vi.mock('svelte', () => ({ onDestroy }))
 function makeCoreClass() {
   const mount = vi.fn()
   const unmount = vi.fn()
-  const construct = vi.fn()
+  const construct = vi.fn<(...args: Array<unknown>) => void>()
   class Core {
     mount = mount
     unmount = unmount
-    constructor() {
-      construct()
+    constructor(...args: Array<unknown>) {
+      construct(...args)
     }
   }
   return { Core, construct, mount, unmount }
@@ -45,6 +45,7 @@ describe('createSveltePanel', () => {
     ;(Panel as any)(anchor, props)
 
     expect(construct).toHaveBeenCalledTimes(1)
+    expect(construct).toHaveBeenCalledWith()
     expect(mount).toHaveBeenCalledTimes(1)
     const call = mount.mock.calls[0]!
     const mountedEl = call[0] as HTMLElement

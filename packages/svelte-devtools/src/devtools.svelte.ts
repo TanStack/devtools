@@ -89,6 +89,8 @@ export class TanStackDevtoolsSvelteAdapter {
     container: HTMLElement,
     props: Record<string, unknown>,
   ) {
+    this.destroyComponentsInContainer(container.id)
+
     const instance = mount(component, {
       target: container,
       props,
