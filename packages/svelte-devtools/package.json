@@ -24,10 +24,9 @@
   "svelte": "dist/esm/index.js",
   "exports": {
     ".": {
-      "import": {
-        "types": "./dist/esm/index.d.ts",
-        "default": "./dist/esm/index.js"
-      }
+      "types": "./dist/esm/index.d.ts",
+      "svelte": "./dist/esm/index.js",
+      "import": "./dist/esm/index.js"
     },
     "./package.json": "./package.json"
   },
