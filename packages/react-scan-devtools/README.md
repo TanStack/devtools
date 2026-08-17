@@ -9,7 +9,6 @@ npm install @tanstack/react-scan-devtools react-scan
 ```tsx
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { reactScanDevtoolsPlugin } from '@tanstack/react-scan-devtools'
-
 ;<TanStackDevtools plugins={[reactScanDevtoolsPlugin()]} />
 ```
 
