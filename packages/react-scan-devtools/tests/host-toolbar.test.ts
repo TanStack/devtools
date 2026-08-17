@@ -11,28 +11,8 @@ function mountScanRoot() {
   const toolbar = document.createElement('div')
   toolbar.id = 'react-scan-toolbar'
   shadow.appendChild(toolbar)
-  document.body.appendChild(root)
+  document.documentElement.appendChild(root)
   return { root, shadow, toolbar }
-}
-
-function fakeBox(
-  top: number,
-  left: number,
-  width: number,
-  height: number,
-): () => DOMRect {
-  return () =>
-    ({
-      top,
-      left,
-      width,
-      height,
-      right: left + width,
-      bottom: top + height,
-      x: left,
-      y: top,
-      toJSON: () => ({}),
-    }) as DOMRect
 }
 
 describe('dockReactScanToolbar', () => {
@@ -40,50 +20,38 @@ describe('dockReactScanToolbar', () => {
     document.getElementById('react-scan-root')?.remove()
   })
 
-  it('injects dock styles that pin the native toolbar to the host box', async () => {
-    const { shadow } = mountScanRoot()
+  it('moves the native root into the plugin pane and fills it', async () => {
+    const { root, shadow } = mountScanRoot()
+    const pane = document.createElement('div')
+    pane.id = 'plugin-container-react-scan'
     const host = document.createElement('div')
-    Object.defineProperty(host, 'getBoundingClientRect', {
-      value: fakeBox(10, 20, 300, 200),
-    })
-    document.body.appendChild(host)
+    pane.appendChild(host)
+    document.body.appendChild(pane)
 
     const stop = dockReactScanToolbar(host)
     await Promise.resolve()
+
+    expect(root.parentElement).toBe(pane)
     const style = shadow.getElementById('tsd-react-scan-dock-style')
-    expect(style?.textContent).toContain('top: 10px')
-    expect(style?.textContent).toContain('height: 200px')
+    expect(style?.textContent).toContain('tsd-react-scan-docked')
+    expect(style?.textContent).toContain('position: absolute')
 
     hideReactScanToolbar()
     await Promise.resolve()
     expect(style?.textContent).toContain('tsd-react-scan-docked')
-    expect(style?.textContent).toContain('height: 200px')
 
     stop()
+    expect(root.parentElement).toBe(document.documentElement)
     expect(style?.textContent).toMatch(/display:\s*none/)
-    host.remove()
+    pane.remove()
   })
 
-  it('uses a parent pane when the host has no height', async () => {
+  it('hides the toolbar when it is not docked', async () => {
     const { shadow } = mountScanRoot()
-    const shortHost = document.createElement('div')
-    Object.defineProperty(shortHost, 'getBoundingClientRect', {
-      value: fakeBox(0, 0, 100, 0),
-    })
-    const tallParent = document.createElement('div')
-    tallParent.id = 'plugin-container-react-scan'
-    Object.defineProperty(tallParent, 'getBoundingClientRect', {
-      value: fakeBox(40, 8, 400, 240),
-    })
-    tallParent.appendChild(shortHost)
-    document.body.appendChild(tallParent)
-
-    const stop = dockReactScanToolbar(shortHost)
+    hideReactScanToolbar()
     await Promise.resolve()
     expect(
       shadow.getElementById('tsd-react-scan-dock-style')?.textContent,
-    ).toContain('height: 240px')
-    stop()
-    tallParent.remove()
+    ).toMatch(/display:\s*none/)
   })
 })

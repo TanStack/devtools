@@ -3,43 +3,22 @@ const DOCK_STYLE_ID = 'tsd-react-scan-dock-style'
 const COLLAPSED_STORAGE_KEY = 'react-scan-widget-collapsed-v1'
 const DOCKED_MARKER = 'tsd-react-scan-docked'
 
-function getShadowRoot(): ShadowRoot | null {
-  const root = document.getElementById(REACT_SCAN_ROOT_ID)
-  return root?.shadowRoot ?? null
-}
-
-function boxFor(host: HTMLElement): DOMRect {
-  const pane = host.closest('[id^="plugin-container-"]')
-  if (pane instanceof HTMLElement) {
-    const paneRect = pane.getBoundingClientRect()
-    if (paneRect.height >= 80) {
-      return paneRect
-    }
-  }
-  const self = host.getBoundingClientRect()
-  if (self.height >= 80) {
-    return self
-  }
-  let current: HTMLElement | null = host.parentElement
-  while (current) {
-    const rect = current.getBoundingClientRect()
-    if (rect.height >= 80) {
-      return rect
-    }
-    current = current.parentElement
-  }
-  return self
-}
-
-function dockCss(rect: DOMRect): string {
-  return `
+const FILL_CSS = `
 /* ${DOCKED_MARKER} */
+#react-scan-root {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+}
 #react-scan-toolbar {
-  position: fixed !important;
-  top: ${rect.top}px !important;
-  left: ${rect.left}px !important;
-  width: ${rect.width}px !important;
-  height: ${rect.height}px !important;
+  position: absolute !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
   max-width: none !important;
   max-height: none !important;
   min-width: 0 !important;
@@ -49,7 +28,7 @@ function dockCss(rect: DOMRect): string {
   border-radius: 0 !important;
   box-shadow: none !important;
   animation: none !important;
-  inset: auto !important;
+  pointer-events: auto !important;
 }
 #react-scan-toolbar.opacity-0 {
   opacity: 1 !important;
@@ -61,6 +40,18 @@ function dockCss(rect: DOMRect): string {
   display: none !important;
 }
 `
+
+function getRoot(): HTMLElement | null {
+  return document.getElementById(REACT_SCAN_ROOT_ID)
+}
+
+function getShadowRoot(root = getRoot()): ShadowRoot | null {
+  return root?.shadowRoot ?? null
+}
+
+function paneFor(host: HTMLElement): HTMLElement {
+  const pane = host.closest('[id^="plugin-container-"]')
+  return pane instanceof HTMLElement ? pane : host
 }
 
 function ensureDockStyle(shadow: ShadowRoot): HTMLStyleElement {
@@ -74,12 +65,36 @@ function ensureDockStyle(shadow: ShadowRoot): HTMLStyleElement {
   return style
 }
 
-function syncDockStyle(host: HTMLElement, style: HTMLStyleElement) {
-  style.textContent = dockCss(boxFor(host))
+function applyFillCss(root: HTMLElement) {
+  const shadow = getShadowRoot(root)
+  if (!shadow) {
+    return
+  }
+  ensureDockStyle(shadow).textContent = FILL_CSS
 }
 
-function waitForShadowRoot(timeoutMs: number): Promise<ShadowRoot | null> {
-  const existing = getShadowRoot()
+function hideFillCss(root: HTMLElement | null) {
+  const shadow = getShadowRoot(root ?? undefined)
+  if (!shadow) {
+    return
+  }
+  const style = ensureDockStyle(shadow)
+  const dockedInPane =
+    !!root &&
+    root.parentElement !== document.documentElement &&
+    style.textContent.includes(DOCKED_MARKER)
+  if (dockedInPane) {
+    return
+  }
+  style.textContent = `
+#react-scan-toolbar {
+  display: none !important;
+}
+`
+}
+
+function waitForRoot(timeoutMs: number): Promise<HTMLElement | null> {
+  const existing = getRoot()
   if (existing) {
     return Promise.resolve(existing)
   }
@@ -87,10 +102,10 @@ function waitForShadowRoot(timeoutMs: number): Promise<ShadowRoot | null> {
   return new Promise((resolve) => {
     const startedAt = Date.now()
     const observer = new MutationObserver(() => {
-      const shadow = getShadowRoot()
-      if (shadow) {
+      const root = getRoot()
+      if (root) {
         observer.disconnect()
-        resolve(shadow)
+        resolve(root)
       }
     })
     observer.observe(document.documentElement, {
@@ -99,10 +114,10 @@ function waitForShadowRoot(timeoutMs: number): Promise<ShadowRoot | null> {
     })
 
     const tick = () => {
-      const shadow = getShadowRoot()
-      if (shadow) {
+      const root = getRoot()
+      if (root) {
         observer.disconnect()
-        resolve(shadow)
+        resolve(root)
         return
       }
       if (Date.now() - startedAt >= timeoutMs) {
@@ -125,74 +140,57 @@ export function expandReactScanToolbar() {
 }
 
 export function hideReactScanToolbar() {
-  void waitForShadowRoot(8000).then((shadow) => {
-    if (!shadow) {
-      return
-    }
-    const style = ensureDockStyle(shadow)
-    if (style.textContent.includes(DOCKED_MARKER)) {
-      return
-    }
-    style.textContent = `
-#react-scan-toolbar {
-  display: none !important;
-}
-`
+  void waitForRoot(8000).then((root) => {
+    hideFillCss(root)
   })
 }
 
 export function dockReactScanToolbar(host: HTMLElement): () => void {
+  const pane = paneFor(host)
+  const previousParent = document.documentElement
   let stopped = false
-  let style: HTMLStyleElement | null = null
-  let frame = 0
-  const observers: Array<ResizeObserver> = []
+  let root: HTMLElement | null = null
+  let observer: MutationObserver | null = null
 
-  const sync = () => {
-    if (stopped || !style) {
-      return
-    }
-    syncDockStyle(host, style)
-  }
-
-  const attach = (shadow: ShadowRoot) => {
+  const place = (next: HTMLElement) => {
     if (stopped) {
       return
     }
-    style = ensureDockStyle(shadow)
-    sync()
-
-    if (typeof ResizeObserver !== 'undefined') {
-      const resize = new ResizeObserver(sync)
-      resize.observe(host)
-      observers.push(resize)
+    root = next
+    if (next.parentElement !== pane) {
+      pane.appendChild(next)
     }
-
-    window.addEventListener('resize', sync)
-    window.addEventListener('scroll', sync, true)
+    pane.style.position = pane.style.position || 'relative'
+    pane.style.overflow = 'hidden'
+    applyFillCss(next)
   }
 
-  void waitForShadowRoot(8000).then((shadow) => {
-    if (shadow) {
-      attach(shadow)
+  const attach = (next: HTMLElement) => {
+    place(next)
+    observer = new MutationObserver(() => {
+      const current = getRoot()
+      if (current && current.parentElement !== pane && !stopped) {
+        place(current)
+      }
+    })
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    })
+  }
+
+  void waitForRoot(8000).then((next) => {
+    if (next) {
+      attach(next)
     }
   })
 
-  frame = window.setInterval(sync, 250)
-
   return () => {
     stopped = true
-    window.clearInterval(frame)
-    window.removeEventListener('resize', sync)
-    window.removeEventListener('scroll', sync, true)
-    for (const observer of observers) {
-      observer.disconnect()
+    observer?.disconnect()
+    if (root && root.parentElement === pane) {
+      previousParent.appendChild(root)
     }
-    if (style) {
-      style.textContent = `
-#react-scan-toolbar {
-  display: none !important;
-}
-`
-    }
+    hideFillCss(root)
   }
 }

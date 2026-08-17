@@ -20,11 +20,10 @@ export function Shell() {
       data-tsd-surface
       data-testid="react-scan-host"
       style={{
-        position: 'absolute',
-        inset: '0',
+        position: 'relative',
         height: '100%',
         width: '100%',
-        'min-height': '180px',
+        'min-height': '100%',
       }}
     />
   )
