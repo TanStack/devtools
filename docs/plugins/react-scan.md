@@ -3,9 +3,9 @@ title: React Scan Plugin
 id: react-scan-plugin
 ---
 
-You want the full [react-scan](https://github.com/aidenybai/react-scan) workbench inside TanStack Devtools, not a second floating toolbar on the page. This plugin starts `react-scan` and docks its native UI into the TanStack tab.
+You want the official [react-scan](https://github.com/aidenybai/react-scan) panel inside TanStack Devtools, not a second floating toolbar on the page. This plugin starts `scan()` in the app, so app re-renders are scanned. It then locks the native React Scan panel into the TanStack tab.
 
-That native UI includes:
+That native panel includes:
 
 - Inspect mode to pick a component on the page
 - The inspector: What Changed, props, and the component tree
@@ -13,7 +13,7 @@ That native UI includes:
 - Outline toggle for re-renders
 - FPS meter
 
-Page outlines stay on the page. The toolbar sits in the plugin pane.
+Page outlines stay on the page. The native panel fills the plugin pane. You cannot drag it and it has no close control. Close the tab from TanStack Devtools.
 
 ## Installation
 
@@ -49,8 +49,9 @@ Do not also load `react-scan/dist/auto.global.js`. Two scanners will run at the 
 1. Open the **React Scan** plugin.
 2. Click the inspect icon, then click a component in the app.
 3. The inspector shows why that component rendered and its tree.
-4. Click the bell for slowdown notifications.
-5. Use the outline toggle to turn page outlines on or off.
+4. Interact with the app (for example click **Increment count**). What Changed updates for the selected component.
+5. Click the bell for slowdown notifications.
+6. Use the outline toggle to turn page outlines on or off.
 
 ## Options
 
@@ -82,4 +83,4 @@ If you want the real plugin in every environment, import `@tanstack/react-scan-d
 
 ## Example
 
-See `examples/react/basic`. Open the React Scan tab, click inspect, then click **Increment count**.
+See `examples/react/basic`. Open the React Scan tab, click inspect, click **Increment count**, then click it again to see What Changed.

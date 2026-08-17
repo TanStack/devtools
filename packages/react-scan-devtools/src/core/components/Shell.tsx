@@ -1,30 +1,32 @@
-/** @jsxImportSource solid-js */
-
-import { onCleanup, onMount } from 'solid-js'
+import { useEffect, useRef } from 'react'
 import { dockReactScanToolbar } from '../host-toolbar'
 
-export function Shell() {
-  let host: HTMLDivElement | undefined
+export function ReactScanDevtoolsPanel() {
+  const hostRef = useRef<HTMLDivElement>(null)
 
-  onMount(() => {
+  useEffect(() => {
+    const host = hostRef.current
     if (!host) {
       return
     }
-    const stop = dockReactScanToolbar(host)
-    onCleanup(stop)
-  })
+    return dockReactScanToolbar(host)
+  }, [])
 
   return (
     <div
-      ref={host}
+      ref={hostRef}
       data-tsd-surface
       data-testid="react-scan-host"
       style={{
         position: 'relative',
         height: '100%',
         width: '100%',
-        'min-height': '100%',
+        minHeight: '100%',
       }}
     />
   )
+}
+
+export function ReactScanDevtoolsPanelNoOp() {
+  return null
 }

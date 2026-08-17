@@ -1,6 +1,6 @@
 # @tanstack/react-scan-devtools
 
-React Scan plugin for TanStack Devtools. It starts `react-scan` and docks the native React Scan UI (inspect, What Changed, notifications, FPS) into the TanStack tab.
+React Scan plugin for TanStack Devtools. It starts `react-scan` in the app and docks the official React Scan panel into the TanStack tab.
 
 ```bash
 npm install @tanstack/react-scan-devtools react-scan

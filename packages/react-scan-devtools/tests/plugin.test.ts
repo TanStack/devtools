@@ -8,7 +8,6 @@ vi.mock('react-scan', () => ({
 }))
 
 vi.mock('@tanstack/devtools-utils/react', () => ({
-  createReactPanel: () => [() => null, () => null],
   createReactPlugin: ({ name, id }: { name: string; id?: string }) => [
     () => ({
       name,

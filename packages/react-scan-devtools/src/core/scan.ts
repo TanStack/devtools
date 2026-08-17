@@ -1,5 +1,5 @@
-import { scan, setOptions } from 'react-scan'
 import { expandReactScanToolbar, hideReactScanToolbar } from './host-toolbar'
+import { scan, setOptions } from 'react-scan'
 import { DEFAULT_PLUGIN_SETTINGS } from './types'
 import type { Options } from 'react-scan'
 import type { ReactScanDevtoolsOptions, ReactScanPluginSettings } from './types'
