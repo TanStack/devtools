@@ -1,5 +1,5 @@
-import { mount, unmount } from 'svelte'
-import { PLUGIN_CONTAINER_ID, TanStackDevtoolsCore } from '@tanstack/devtools'
+import { flushSync, mount, unmount } from 'svelte'
+import { TanStackDevtoolsCore } from '@tanstack/devtools'
 import type { Component } from 'svelte'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
@@ -11,10 +11,7 @@ type MountedComponent = ReturnType<typeof mount>
 
 export class TanStackDevtoolsSvelteAdapter {
   private devtools: TanStackDevtoolsCore | null = null
-  private mountedComponents: Array<{
-    instance: MountedComponent
-    containerId: string
-  }> = []
+  private mountedComponents = new Map<HTMLElement, MountedComponent>()
 
   mount(target: HTMLElement, init: TanStackDevtoolsSvelteInit) {
     const pluginsMap = this.getPluginsMap(init.plugins)
@@ -60,6 +57,8 @@ export class TanStackDevtoolsSvelteAdapter {
   private convertPlugin(
     plugin: TanStackDevtoolsSveltePlugin,
   ): TanStackDevtoolsPlugin {
+    let panelContainer: HTMLElement | undefined
+
     return {
       id: plugin.id,
       defaultOpen: plugin.defaultOpen,
@@ -73,13 +72,20 @@ export class TanStackDevtoolsSvelteAdapter {
               })
             },
       render: (el, props) => {
+        if (panelContainer && panelContainer !== el) {
+          this.destroyComponentInContainer(panelContainer)
+        }
+        panelContainer = el
         this.renderComponent(plugin.component, el, {
           ...props,
           ...(plugin.props ?? {}),
         })
       },
-      destroy: (pluginId) => {
-        this.destroyComponentsInContainer(`${PLUGIN_CONTAINER_ID}-${pluginId}`)
+      destroy: () => {
+        if (panelContainer) {
+          this.destroyComponentInContainer(panelContainer)
+          panelContainer = undefined
+        }
       },
     }
   }
@@ -89,31 +95,29 @@ export class TanStackDevtoolsSvelteAdapter {
     container: HTMLElement,
     props: Record<string, unknown>,
   ) {
-    this.destroyComponentsInContainer(container.id)
+    this.destroyComponentInContainer(container)
 
     const instance = mount(component, {
       target: container,
       props,
     })
-
-    const containerId = container.id
-    this.mountedComponents.push({ instance, containerId })
+    this.mountedComponents.set(container, instance)
+    flushSync()
   }
 
-  private destroyComponentsInContainer(containerId: string) {
-    this.mountedComponents = this.mountedComponents.filter((entry) => {
-      if (entry.containerId === containerId) {
-        unmount(entry.instance)
-        return false
-      }
-      return true
-    })
+  private destroyComponentInContainer(container: HTMLElement) {
+    const instance = this.mountedComponents.get(container)
+    if (!instance) return
+
+    this.mountedComponents.delete(container)
+    unmount(instance)
   }
 
   private destroyAllComponents() {
-    for (const entry of this.mountedComponents) {
-      unmount(entry.instance)
+    const instances = [...this.mountedComponents.values()]
+    this.mountedComponents.clear()
+    for (const instance of instances) {
+      unmount(instance)
     }
-    this.mountedComponents = []
   }
 }

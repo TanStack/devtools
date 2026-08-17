@@ -47,6 +47,8 @@ type TanStackDevtoolsSveltePlugin = {
 
 The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. It passes `{ theme, devtoolsOpen, ...plugin.props }` to the component through Svelte's `mount()` API.
 
+When the core renders a plugin again, the adapter unmounts the component associated with that container before mounting its replacement. This runs Svelte cleanup and leaves one component instance owning the container.
+
 ```svelte
 <!-- Svelte: pass component reference + props -->
 <script lang="ts">
