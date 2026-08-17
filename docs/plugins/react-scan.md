@@ -3,7 +3,17 @@ title: React Scan Plugin
 id: react-scan-plugin
 ---
 
-You want React render problems inside TanStack Devtools, not a second floating toolbar on the page. The React Scan plugin starts [react-scan](https://github.com/aidenybai/react-scan), keeps outlines on the page, and shows a live render list in the TanStack tab.
+You want the full [react-scan](https://github.com/aidenybai/react-scan) workbench inside TanStack Devtools, not a second floating toolbar on the page. This plugin starts `react-scan` and docks its native UI into the TanStack tab.
+
+That native UI includes:
+
+- Inspect mode to pick a component on the page
+- The inspector: What Changed, props, and the component tree
+- Slowdown notifications
+- Outline toggle for re-renders
+- FPS meter
+
+Page outlines stay on the page. The toolbar sits in the plugin pane.
 
 ## Installation
 
@@ -32,33 +42,15 @@ createRoot(document.getElementById('root')!).render(
 
 `scan()` starts when you call `reactScanDevtoolsPlugin()`. You do not need a script tag.
 
-The `react-scan` toolbar stays hidden. Outlines still paint on the page.
-
 Do not also load `react-scan/dist/auto.global.js`. Two scanners will run at the same time.
 
-## Panel
+## How to use the tab
 
-The tab shows one row per component:
-
-- Name
-- Render count
-- Time in milliseconds
-- Unnecessary render count
-- Last FPS
-
-Search by name. Sort by renders, time, or name. Filter to unnecessary renders only.
-
-Click a row to expand it. If `react-scan` sent prop, state, or context changes, they appear there. Current `react-scan` 0.5.x often sends an empty change list, so the row may show `No change details`.
-
-**Clear** empties the list. It does not stop scanning.
-
-## Settings
-
-Open **Settings** to change:
-
-- Enabled: turn page outlines on or off
-- Log renders: write renders to the console
-- Animation speed: `slow`, `fast`, or `off`
+1. Open the **React Scan** plugin.
+2. Click the inspect icon, then click a component in the app.
+3. The inspector shows why that component rendered and its tree.
+4. Click the bell for slowdown notifications.
+5. Use the outline toggle to turn page outlines on or off.
 
 ## Options
 
@@ -78,9 +70,7 @@ reactScanDevtoolsPlugin({
 | `enabled` | `true` | Start scanning when the factory runs |
 | `log` | `false` | Log renders to the console |
 | `animationSpeed` | `'fast'` | Outline animation speed |
-| `onRender` | none | Called after the plugin store updates |
-
-`showToolbar` is not a public option. The plugin always hides the `react-scan` toolbar.
+| `onRender` | none | Called for each render batch |
 
 If you call the factory twice, `scan()` still runs once. The first `onRender` you pass is the one that stays.
 
@@ -92,4 +82,4 @@ If you want the real plugin in every environment, import `@tanstack/react-scan-d
 
 ## Example
 
-See `examples/react/basic`. Click **Increment count** and open the React Scan tab.
+See `examples/react/basic`. Open the React Scan tab, click inspect, then click **Increment count**.

@@ -38,7 +38,7 @@ it('returns React Scan metadata and starts scan in development', async () => {
   expect(definition.id).toBe('react-scan')
   expect(scan).toHaveBeenCalledTimes(1)
   expect(scan).toHaveBeenCalledWith(
-    expect.objectContaining({ showToolbar: false }),
+    expect.objectContaining({ showToolbar: true }),
   )
 })
 

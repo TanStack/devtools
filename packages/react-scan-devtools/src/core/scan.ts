@@ -1,5 +1,5 @@
 import { scan, setOptions } from 'react-scan'
-import { applyRenders } from './store'
+import { expandReactScanToolbar, hideReactScanToolbar } from './host-toolbar'
 import { DEFAULT_PLUGIN_SETTINGS } from './types'
 import type { Options } from 'react-scan'
 import type { ReactScanDevtoolsOptions, ReactScanPluginSettings } from './types'
@@ -18,7 +18,6 @@ function composedOnRender(
   fiber: Parameters<NonNullable<Options['onRender']>>[0],
   renders: Parameters<NonNullable<Options['onRender']>>[1],
 ) {
-  applyRenders(renders)
   userOnRender?.(fiber, renders)
 }
 
@@ -42,7 +41,7 @@ function persistReactScanOptions(settings: ReactScanPluginSettings) {
         enabled: settings.enabled,
         log: settings.log,
         animationSpeed: settings.animationSpeed,
-        showToolbar: false,
+        showToolbar: true,
       }),
     )
   } catch {
@@ -70,20 +69,22 @@ export function startReactScan(
       options.animationSpeed ?? DEFAULT_PLUGIN_SETTINGS.animationSpeed,
   }
   persistReactScanOptions(currentSettings)
+  expandReactScanToolbar()
+  hideReactScanToolbar()
   // react-scan skips start() when enabled is false and the toolbar is hidden.
   // Always start, then pause if the user asked for enabled: false.
   scan({
     enabled: true,
     log: currentSettings.log,
     animationSpeed: currentSettings.animationSpeed,
-    showToolbar: false,
+    showToolbar: true,
     onRender: composedOnRender,
     ...(runtime.forceRunInProduction
       ? { dangerouslyForceRunInProduction: true }
       : {}),
   })
   if (!currentSettings.enabled) {
-    setOptions({ enabled: false, showToolbar: false })
+    setOptions({ enabled: false, showToolbar: true })
   }
 }
 
@@ -97,6 +98,6 @@ export function updateReactScanOptions(
   persistReactScanOptions(currentSettings)
   setOptions({
     ...options,
-    showToolbar: false,
+    showToolbar: true,
   })
 }

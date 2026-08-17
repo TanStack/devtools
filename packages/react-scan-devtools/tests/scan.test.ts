@@ -20,7 +20,7 @@ afterEach(() => {
 })
 
 describe('startReactScan', () => {
-  it('calls scan once with showToolbar false', async () => {
+  it('calls scan once with showToolbar true', async () => {
     const { startReactScan } = await import('../src/core/scan')
     startReactScan({ enabled: true, log: true })
     expect(scan).toHaveBeenCalledTimes(1)
@@ -28,7 +28,7 @@ describe('startReactScan', () => {
       expect.objectContaining({
         enabled: true,
         log: true,
-        showToolbar: false,
+        showToolbar: true,
         onRender: expect.any(Function),
       }),
     )
@@ -43,12 +43,12 @@ describe('startReactScan', () => {
     expect(scan).toHaveBeenCalledWith(
       expect.objectContaining({
         enabled: true,
-        showToolbar: false,
+        showToolbar: true,
       }),
     )
     expect(setOptions).toHaveBeenCalledWith({
       enabled: false,
-      showToolbar: false,
+      showToolbar: true,
     })
   })
 
@@ -64,7 +64,7 @@ describe('startReactScan', () => {
     ).toEqual(
       expect.objectContaining({
         enabled: true,
-        showToolbar: false,
+        showToolbar: true,
       }),
     )
   })
@@ -75,7 +75,7 @@ describe('startReactScan', () => {
     expect(scan).toHaveBeenCalledWith(
       expect.objectContaining({
         dangerouslyForceRunInProduction: true,
-        showToolbar: false,
+        showToolbar: true,
       }),
     )
   })
@@ -87,43 +87,16 @@ describe('startReactScan', () => {
     expect(scan).toHaveBeenCalledTimes(1)
   })
 
-  it('calls the user onRender after the store update', async () => {
+  it('calls the user onRender', async () => {
     const userOnRender = vi.fn()
     const { startReactScan } = await import('../src/core/scan')
-    const { clearRenderStore, getRenderSnapshot } =
-      await import('../src/core/store')
-    clearRenderStore()
     startReactScan({ onRender: userOnRender })
     const onRender = scan.mock.calls[0]?.[0]?.onRender as (
       fiber: unknown,
-      renders: Array<{
-        componentName: string
-        time: number
-        count: number
-        forget: boolean
-        changes: Array<never>
-        unnecessary: boolean
-        didCommit: boolean
-        fps: number
-        phase: number
-      }>,
+      renders: Array<never>,
     ) => void
-    const renders = [
-      {
-        phase: 2,
-        componentName: 'Box',
-        time: 1,
-        count: 1,
-        forget: false,
-        changes: [],
-        unnecessary: false,
-        didCommit: true,
-        fps: 60,
-      },
-    ]
-    onRender({}, renders)
-    expect(getRenderSnapshot()[0]?.name).toBe('Box')
-    expect(userOnRender).toHaveBeenCalledWith({}, renders)
+    onRender({}, [])
+    expect(userOnRender).toHaveBeenCalledWith({}, [])
   })
 
   it('keeps the first user onRender on a later start call', async () => {
@@ -141,14 +114,14 @@ describe('startReactScan', () => {
     expect(second).not.toHaveBeenCalled()
   })
 
-  it('forces showToolbar false on setOptions', async () => {
+  it('keeps showToolbar true on setOptions', async () => {
     const { startReactScan, updateReactScanOptions } =
       await import('../src/core/scan')
     startReactScan()
     updateReactScanOptions({ enabled: false })
     expect(setOptions).toHaveBeenCalledWith({
       enabled: false,
-      showToolbar: false,
+      showToolbar: true,
     })
   })
 

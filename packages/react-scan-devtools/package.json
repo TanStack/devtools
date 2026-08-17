@@ -61,9 +61,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@tanstack/devtools-ui": "workspace:*",
     "@tanstack/devtools-utils": "workspace:^",
-    "goober": "^2.1.16",
     "react-scan": "^0.5.7",
     "solid-js": "^1.9.9"
   },
