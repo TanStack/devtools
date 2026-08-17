@@ -94,7 +94,8 @@
     "@tanstack/solid-devtools": "workspace:*",
     "@tanstack/devtools-vite": "workspace:*",
     "@tanstack/svelte-devtools": "workspace:*",
-    "@tanstack/angular-devtools": "workspace:*"
+    "@tanstack/angular-devtools": "workspace:*",
+    "@tanstack/react-scan-devtools": "workspace:*"
   },
   "files": [
     "skills",

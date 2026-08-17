@@ -226,6 +226,25 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     tags: ['TanStack', 'a11y'],
   },
 
+  // React Scan
+  '@tanstack/react-scan-devtools': {
+    packageName: '@tanstack/react-scan-devtools',
+    title: 'React Scan',
+    description:
+      'Find React render problems. Live render counts, unnecessary renders, and scan settings.',
+    pluginImport: {
+      importName: 'reactScanDevtoolsPlugin',
+      type: 'function',
+    },
+    pluginId: 'react-scan',
+    docsUrl: 'https://tanstack.com/devtools/latest/docs/plugins/react-scan',
+    repoUrl: 'https://github.com/aidenybai/react-scan',
+    author: 'TanStack',
+    framework: 'react',
+    isNew: true,
+    tags: ['React', 'performance', 'renders'],
+  },
+
   // TanStack AI
   '@tanstack/react-ai-devtools': {
     packageName: '@tanstack/react-ai-devtools',

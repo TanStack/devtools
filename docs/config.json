@@ -206,6 +206,10 @@
             {
               "label": "a11y",
               "to": "framework/react/examples/a11y-devtools"
+            },
+            {
+              "label": "React Scan",
+              "to": "plugins/react-scan"
             }
           ]
         },
