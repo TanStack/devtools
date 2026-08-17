@@ -12,6 +12,13 @@ concurrency:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # Same cap as pr.yml. nx.json sets parallel: 5 for local machines.
+  # GitHub-hosted runners have far fewer cores/RAM, and each test:lib
+  # (vitest) / test:types (tsc) task spawns its own worker pool.
+  # Release runs `nx run-many` across every package, so unbounded
+  # parallelism oversubscribes the runner and flakes test:lib
+  # (5s timeouts, vitest worker RPC stalls).
+  NX_PARALLEL: 3
 
 permissions:
   contents: read

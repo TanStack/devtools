@@ -332,14 +332,18 @@ describe('devtools plugin', () => {
 
   describe('configureServer - onConsolePipe uses pre-wrap console methods', () => {
     let originalLog: typeof console.log
-    let beforeWrapSpy: ReturnType<typeof vi.fn>
-    let afterWrapSpy: ReturnType<typeof vi.fn>
+    // Vitest 4 types a bare `vi.fn()` as a constructor too. Give the spy
+    // the console.log signature so it can replace the live method.
+    const createLogSpy = () =>
+      vi.fn((..._data: Parameters<typeof console.log>) => {})
+    let beforeWrapSpy: ReturnType<typeof createLogSpy>
+    let afterWrapSpy: ReturnType<typeof createLogSpy>
 
     beforeEach(async () => {
       capturedOnConsolePipe = undefined
       originalLog = console.log
-      beforeWrapSpy = vi.fn()
-      afterWrapSpy = vi.fn()
+      beforeWrapSpy = createLogSpy()
+      afterWrapSpy = createLogSpy()
 
       console.log = beforeWrapSpy
 
