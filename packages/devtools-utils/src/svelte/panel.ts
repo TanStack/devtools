@@ -1,4 +1,5 @@
-import { onDestroy } from 'svelte'
+import DevtoolsPanel from './DevtoolsPanel.svelte'
+import NoOp from './NoOp.svelte'
 import type { Component } from 'svelte'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
@@ -13,27 +14,11 @@ export function createSveltePanel<
 >(
   CoreClass: new () => TCoreDevtoolsClass,
 ): [Component<TComponentProps>, Component<TComponentProps>] {
-  const Panel: Component<TComponentProps> = ((
-    anchor: any,
-    props: TComponentProps,
-  ) => {
-    const el = document.createElement('div')
-    el.style.height = '100%'
-    anchor.before(el)
-
-    const instance = new CoreClass()
-    instance.mount(el, props)
-
-    onDestroy(() => {
-      instance.unmount()
-      el.remove()
+  const Panel: Component<TComponentProps> = (internals, props) =>
+    DevtoolsPanel(internals, {
+      CoreClass,
+      pluginProps: props,
     })
 
-    return {}
-  }) as Component<TComponentProps>
-
-  const NoOpPanel: Component<TComponentProps> =
-    (() => ({})) as Component<TComponentProps>
-
-  return [Panel, NoOpPanel]
+  return [Panel, NoOp]
 }

@@ -1,7 +1,6 @@
-import { onDestroy } from 'svelte'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createSveltePanel } from '@tanstack/devtools-utils/svelte'
 import { TanStackDevtoolsSvelteAdapter } from '../src/devtools.svelte'
-import type { Component } from 'svelte'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 
 const { capturePlugins } = vi.hoisted(() => ({ capturePlugins: vi.fn() }))
@@ -24,17 +23,13 @@ describe('TanStackDevtoolsSvelteAdapter', () => {
   })
 
   it('unmounts a panel before rendering its replacement', () => {
+    const coreMount = vi.fn()
     const coreUnmount = vi.fn()
-    const Panel = ((anchor: { before: (node: Node) => void }) => {
-      const shell = document.createElement('div')
-      shell.dataset.devtoolsShell = ''
-      anchor.before(shell)
-      onDestroy(() => {
-        coreUnmount()
-        shell.remove()
-      })
-      return {}
-    }) as unknown as Component
+    class PanelCore {
+      mount = coreMount
+      unmount = coreUnmount
+    }
+    const [Panel] = createSveltePanel(PanelCore)
 
     const adapter = new TanStackDevtoolsSvelteAdapter()
     adapter.mount(document.createElement('div'), {
@@ -44,15 +39,17 @@ describe('TanStackDevtoolsSvelteAdapter', () => {
     const plugins = capturePlugins.mock
       .calls[0]![0] as Array<TanStackDevtoolsPlugin>
     const container = document.createElement('div')
-    plugins[0]!.render(container, { theme: 'dark', devtoolsOpen: true })
-    plugins[0]!.render(container, { theme: 'dark', devtoolsOpen: false })
+    for (const devtoolsOpen of [true, false, true, false, true]) {
+      plugins[0]!.render(container, { theme: 'dark', devtoolsOpen })
+    }
 
-    expect(container.querySelectorAll('[data-devtools-shell]')).toHaveLength(1)
-    expect(coreUnmount).toHaveBeenCalledOnce()
+    expect(container.children).toHaveLength(1)
+    expect(coreMount).toHaveBeenCalledTimes(5)
+    expect(coreUnmount).toHaveBeenCalledTimes(4)
 
     adapter.destroy()
 
     expect(container.children).toHaveLength(0)
-    expect(coreUnmount).toHaveBeenCalledTimes(2)
+    expect(coreUnmount).toHaveBeenCalledTimes(5)
   })
 })

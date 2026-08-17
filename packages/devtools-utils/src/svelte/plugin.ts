@@ -1,3 +1,4 @@
+import NoOp from './NoOp.svelte'
 import type { Component } from 'svelte'
 
 export function createSveltePlugin<
@@ -22,7 +23,7 @@ export function createSveltePlugin<
   function NoOpPlugin(props?: TComponentProps) {
     return {
       ...config,
-      component: (() => {}) as unknown as Component<any>,
+      component: NoOp,
       props,
     }
   }
