@@ -1,5 +1,6 @@
 import { flushSync, mount, unmount } from 'svelte'
 import { TanStackDevtoolsCore } from '@tanstack/devtools'
+import ComponentHost from './ComponentHost.svelte'
 import type { Component } from 'svelte'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
@@ -7,7 +8,7 @@ import type {
   TanStackDevtoolsSveltePlugin,
 } from './types'
 
-type MountedComponent = ReturnType<typeof mount>
+type MountedComponent = ReturnType<typeof ComponentHost>
 
 export class TanStackDevtoolsSvelteAdapter {
   private devtools: TanStackDevtoolsCore | null = null
@@ -27,10 +28,6 @@ export class TanStackDevtoolsSvelteAdapter {
 
   update(init: TanStackDevtoolsSvelteInit) {
     if (this.devtools) {
-      // Tear down the previously mounted plugin components before re-applying
-      // config. The core re-invokes `render`/`name` for the new plugin set, so
-      // without this the old Svelte instances are orphaned and leak.
-      this.destroyAllComponents()
       this.devtools.setConfig({
         config: init.config,
         eventBusConfig: init.eventBusConfig,
@@ -95,11 +92,15 @@ export class TanStackDevtoolsSvelteAdapter {
     container: HTMLElement,
     props: Record<string, unknown>,
   ) {
-    this.destroyComponentInContainer(container)
+    const mounted = this.mountedComponents.get(container)
+    if (mounted) {
+      flushSync(() => mounted.update(component, props))
+      return
+    }
 
-    const instance = mount(component, {
+    const instance = mount(ComponentHost, {
       target: container,
-      props,
+      props: { component, componentProps: props },
     })
     this.mountedComponents.set(container, instance)
     flushSync()

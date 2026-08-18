@@ -196,7 +196,7 @@ The Svelte adapter mounts the plugin component directly into the container and f
 <TanStackDevtools {plugins} />
 ```
 
-Internally, the adapter calls `mount(component, { target, props })` with `{ theme, devtoolsOpen, ...plugin.props }`. Before a repeated render, it unmounts the component associated with that container and then mounts the replacement. It also unmounts the active component when the plugin is destroyed. Both paths run the component's Svelte cleanup lifecycle.
+Internally, the adapter mounts a Svelte host component into the plugin container with `{ theme, devtoolsOpen, ...plugin.props }`. Repeated renders update that host's component and props, preserving the mounted plugin's state when its component identity is unchanged. The host is unmounted when the plugin is destroyed or the adapter shuts down, which runs the component's Svelte cleanup lifecycle.
 
 ### The Key Insight
 

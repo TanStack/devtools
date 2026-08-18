@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createSveltePanel } from '@tanstack/devtools-utils/svelte'
 import { TanStackDevtoolsSvelteAdapter } from '../src/devtools.svelte'
+import LifecyclePanel from './LifecyclePanel.svelte'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 
 const { capturePlugins } = vi.hoisted(() => ({ capturePlugins: vi.fn() }))
@@ -22,18 +22,20 @@ describe('TanStackDevtoolsSvelteAdapter', () => {
     capturePlugins.mockReset()
   })
 
-  it('unmounts a panel before rendering its replacement', () => {
-    const coreMount = vi.fn()
-    const coreUnmount = vi.fn()
-    class PanelCore {
-      mount = coreMount
-      unmount = coreUnmount
-    }
-    const [Panel] = createSveltePanel(PanelCore)
-
+  it('updates panel props without replacing the mounted component', () => {
+    const recordDestroy = vi.fn()
+    const recordMount = vi.fn()
+    const recordUpdate = vi.fn()
     const adapter = new TanStackDevtoolsSvelteAdapter()
     adapter.mount(document.createElement('div'), {
-      plugins: [{ id: 'test', name: 'Test', component: Panel }],
+      plugins: [
+        {
+          id: 'test',
+          name: 'Test',
+          component: LifecyclePanel,
+          props: { recordDestroy, recordMount, recordUpdate },
+        },
+      ],
     })
 
     const plugins = capturePlugins.mock
@@ -44,12 +46,25 @@ describe('TanStackDevtoolsSvelteAdapter', () => {
     }
 
     expect(container.children).toHaveLength(1)
-    expect(coreMount).toHaveBeenCalledTimes(5)
-    expect(coreUnmount).toHaveBeenCalledTimes(4)
+    expect(
+      container.firstElementChild?.getAttribute('data-devtools-open'),
+    ).toBe('true')
+    expect(recordMount).toHaveBeenCalledOnce()
+    expect(recordDestroy).not.toHaveBeenCalled()
+    expect(recordUpdate.mock.calls.map(([open]) => open)).toEqual([
+      true,
+      false,
+      true,
+      false,
+      true,
+    ])
 
-    adapter.destroy()
+    plugins[0]!.destroy?.('test')
 
     expect(container.children).toHaveLength(0)
-    expect(coreUnmount).toHaveBeenCalledTimes(5)
+    expect(recordDestroy).toHaveBeenCalledOnce()
+
+    adapter.destroy()
+    expect(recordDestroy).toHaveBeenCalledOnce()
   })
 })
