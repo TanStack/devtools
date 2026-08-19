@@ -1,4 +1,4 @@
-import { Show, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from 'solid-js/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
@@ -74,10 +74,7 @@ export default function DevTools() {
   const pip = createPiPWindow()
   let panelRef: HTMLDivElement | undefined
   const [isResizing, setIsResizing] = createSignal(false)
-  const { isCollapsed, setCollapsed } = createCollapsed()
-  // The fold flag outlives a single mount, so start every shell with the
-  // subheader showing rather than inheriting a fold from a previous instance.
-  onMount(() => setCollapsed(false))
+  const { isCollapsed } = createCollapsed()
   const [showMarketplace, setShowMarketplace] = createSignal(false)
   const themeOwner = Symbol('tanstack-devtools-theme')
 
@@ -120,20 +117,23 @@ export default function DevTools() {
     startEvent: MouseEvent,
   ) => {
     if (startEvent.button !== 0 || !panelElement) return
+    startEvent.preventDefault()
     setIsResizing(true)
-    const dragInfo = {
-      originalHeight: panelElement.getBoundingClientRect().height,
-      pageY: startEvent.pageY,
-    }
+    const originalHeight = panelElement.getBoundingClientRect().height
+    const startY = startEvent.clientY
+    const previousUserSelect = document.body.style.userSelect
+    document.body.style.userSelect = 'none'
     const run = (moveEvent: MouseEvent) => {
-      const delta = dragInfo.pageY - moveEvent.pageY
+      moveEvent.preventDefault()
+      const delta = startY - moveEvent.clientY
       const newHeight =
         settings().panelLocation === 'bottom'
-          ? dragInfo.originalHeight + delta
-          : dragInfo.originalHeight - delta
+          ? originalHeight + delta
+          : originalHeight - delta
       updateHeight(newHeight)
     }
     const stop = () => {
+      document.body.style.userSelect = previousUserSelect
       setIsResizing(false)
       document.removeEventListener('mousemove', run)
       document.removeEventListener('mouseup', stop)

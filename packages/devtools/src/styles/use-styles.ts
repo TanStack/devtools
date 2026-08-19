@@ -83,6 +83,31 @@ const spin = goober.keyframes`
 const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
   const semantic = resolveSemanticTheme(theme)
   const css = goober.css
+  // Core scrollers only. Do not put this on a selector that reaches into a
+  // plugin's own markup — plugins own the scrollbars inside their pane.
+  const thinScrollbars = `
+    scrollbar-width: thin;
+    scrollbar-color: ${semantic.color.border.control} transparent;
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: ${semantic.color.border.control};
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      background-color: ${semantic.color.text.muted};
+    }
+    &::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+  `
 
   return {
     seoWorkspace: css`
@@ -100,6 +125,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       min-height: 0;
       overflow-y: auto;
       overscroll-behavior: contain;
+      ${thinScrollbars}
     `,
     seoPreviewSection: css`
       display: flex;
@@ -639,7 +665,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     workbenchSecondaryTabs: (collapsed: boolean) => css`
       display: flex;
       align-items: center;
-      gap: ${semantic.gap.tight};
+      gap: ${semantic.gap.control};
       min-width: 0;
       box-sizing: border-box;
       padding-block: ${collapsed ? '0px' : '6px'};
@@ -658,8 +684,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       overflow-x: ${collapsed ? 'hidden' : 'auto'};
       overflow-y: hidden;
       white-space: nowrap;
-      scrollbar-width: thin;
-      transition: all 0.3s ease;
+      ${thinScrollbars}
+      transition: opacity 0.3s ease, height 0.3s ease, padding 0.3s ease,
+        border-color 0.3s ease;
       /* Tabs must not shift as the strip scrolls, but they still animate their
          own hover and selected states. */
       & > * {
@@ -775,36 +802,33 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       }
     `,
     mainCloseBtnDefault: css`
-      background: ${semantic.color.surface.brand};
-      color: ${semantic.color.text.primary};
-      width: 60px;
-      height: 60px;
+      /* The rainbow mark paints its own circle. Keep the button transparent
+         so a theme fill does not frame or wash over it. 56px matches the
+         trigger size before the square chip. */
+      background: transparent;
+      width: 56px;
+      height: 56px;
       justify-content: center;
-      border-radius: 14px;
-      /*
-       * Two inset layers carry the chip's finish so both can animate:
-       * a 1px edge ring, transparent at rest so it fades in on hover, and a
-       * full-bleed tint that lifts the brand fill off pitch black in dark mode
-       * (and off flat cream in light) without replacing it.
-       */
+      border-radius: 50%;
       box-shadow:
         inset 0 0 0 1px transparent,
-        inset 0 0 0 999px ${semantic.color.state.hover},
         ${semantic.shadow.sm};
-      transition: all 0.3s ease;
-      /* Sized by height with width following the emblem's own tall aspect, so
-         the mark fills the chip instead of being letterboxed inside a square. */
+      /* Never transition left/top: floating mode writes those inline on every
+         pointer move, and animating them makes the mark lag then overshoot. */
+      transition:
+        opacity 0.3s ease,
+        box-shadow 0.3s ease,
+        scale 0.3s ease;
       & > svg {
-        width: auto;
-        height: 48px;
+        display: block;
+        width: 100%;
+        height: 100%;
         outline: none;
-        transition: all 0.3s ease;
       }
       /*
-       * Hover keeps the brand fill: this chip floats over the user's page, so
-       * replacing the fill with a translucent state colour would make it
-       * vanish. Hover deepens the resting tint one step, brings in the edge
-       * ring, and scales the chip up a touch.
+       * Hover keeps the rainbow fill: this chip floats over the user's page,
+       * so a translucent overlay would muddy the gradient. Hover brings in
+       * the edge ring and scales the chip up a touch.
        *
        * It animates the scale property rather than a transform: floating mode
        * sets transform inline to drive the drag, so a transform here would be
@@ -813,23 +837,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       &:hover {
         box-shadow:
           inset 0 0 0 1px ${semantic.color.border.control},
-          inset 0 0 0 999px ${semantic.color.state.pressed},
           ${semantic.shadow.overlay};
         scale: 1.06;
-      }
-      &:hover > svg {
-        scale: 1.04;
       }
       &:active {
         scale: 0.98;
       }
       @media (prefers-reduced-motion: reduce) {
         transition-property: opacity;
-        & > svg {
-          transition: none;
-        }
         &:hover,
-        &:hover > svg,
         &:active {
           scale: 1;
         }
@@ -937,7 +953,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       min-width: 0;
       min-height: 0;
       overflow-y: auto;
+      overflow-x: hidden;
       overscroll-behavior: contain;
+      ${thinScrollbars}
+      background: ${semantic.color.surface.workspace};
+      border-radius: 0 0 ${semantic.radius.overlay} ${semantic.radius.overlay};
     `,
     pluginsEmptyState: css`
       display: flex;
@@ -995,7 +1015,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       min-width: 0;
       min-height: 0;
       overflow: hidden;
-      background: ${semantic.color.surface.workspace};
+      background: ${semantic.color.surface.brand};
     `,
     /**
      * Off-screen but still announced. Used for the live region that narrates
@@ -1017,17 +1037,17 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     pluginGroupTabs: css`
       display: flex;
       align-items: stretch;
-      gap: 2px;
+      gap: ${semantic.gap.tight};
       height: ${PLUGIN_GROUP_TAB_HEIGHT}px;
       min-width: 0;
-      padding-inline: 4px;
+      padding: ${semantic.space[1]};
       box-sizing: border-box;
       overflow-x: auto;
       overflow-y: hidden;
       white-space: nowrap;
-      scrollbar-width: thin;
-      background: ${semantic.color.surface.brand};
-      border-bottom: 1px solid ${semantic.color.state.pressed};
+      ${thinScrollbars}
+      background: ${semantic.color.surface.workspace};
+      border-radius: ${semantic.radius.overlay} ${semantic.radius.overlay} 0 0;
     `,
     /**
      * Presentational wrapper holding the two sibling controls of one tab. They
@@ -1041,9 +1061,12 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       flex: 0 0 auto;
       max-width: 200px;
       background: transparent;
+      border: 0;
+      border-radius: ${semantic.radius.control};
+      box-sizing: border-box;
       transition: background 0.2s ease;
       &[data-tsd-selected='true'] {
-        background: ${semantic.color.surface.workspace};
+        background: ${semantic.color.surface.brand};
       }
       &:hover:not([data-tsd-selected='true']) {
         background: ${semantic.color.state.hover};
@@ -1120,22 +1143,37 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
      */
     pluginSplitter: (dir: 'row' | 'col') => css`
       position: absolute;
-      z-index: 2;
-      background-color: transparent;
-      transition: background-color 0.2s ease;
+      z-index: 20;
+      box-sizing: border-box;
+      background: transparent;
       cursor: ${dir === 'row' ? 'col-resize' : 'row-resize'};
       touch-action: none;
-      &:hover,
-      &:focus-visible {
-        background-color: ${semantic.color.border.focus};
+      user-select: none;
+      pointer-events: auto;
+      &::after {
+        content: '';
+        position: absolute;
+        pointer-events: none;
+        background: transparent;
+        border-radius: 999px;
+        transition: background-color 0.15s ease;
+        ${dir === 'row'
+          ? 'top: 8px; bottom: 8px; left: 50%; width: 4px; transform: translateX(-50%);'
+          : 'left: 8px; right: 8px; top: 50%; height: 4px; transform: translateY(-50%);'}
+      }
+      &:hover::after,
+      &:focus-visible::after {
+        background: ${semantic.color.border.focus};
       }
       @media (prefers-reduced-motion: reduce) {
-        transition: none;
+        &::after {
+          transition: none;
+        }
       }
       @media (forced-colors: active) {
-        &:hover,
-        &:focus-visible {
-          background-color: Highlight;
+        &:hover::after,
+        &:focus-visible::after {
+          background: Highlight;
         }
       }
     `,
@@ -1300,6 +1338,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       box-sizing: border-box;
       overflow-y: auto;
       overscroll-behavior: contain;
+      ${thinScrollbars}
       padding: ${WORKBENCH_GUTTER}px;
       @media (max-width: 430px) {
         padding: ${WORKBENCH_GUTTER_NARROW}px;
@@ -1530,6 +1569,7 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       padding: ${WORKBENCH_GUTTER}px;
       overflow-y: auto;
       overscroll-behavior: contain;
+      ${thinScrollbars}
     `,
     pluginMarketplaceGrid: css`
       display: grid;

@@ -147,7 +147,7 @@ describe.each(['light', 'dark'] as const)(
         scrollPaddingInlineStart: `${WORKBENCH_GUTTER}px`,
         scrollPaddingInlineEnd: `${WORKBENCH_GUTTER}px`,
         // Adjacent selected tabs must not merge into one filled block.
-        gap: 4,
+        gap: 8,
       })
       // The strip is part of the cream chrome band, so it closes with a
       // hairline against the workspace surface underneath.

@@ -17,7 +17,9 @@ import {
   MAX_ACTIVE_PLUGINS,
   PANEL_CLOSE_THRESHOLD,
   PANEL_MAX_VIEWPORT_RATIO,
+  PANE_CARD_INSET,
   PLUGINS_STRIP_HEIGHT,
+  PLUGIN_SPLITTER_SIZE,
   WORKBENCH_GUTTER,
   WORKBENCH_HEADER_HEIGHT,
 } from '../src/utils/constants'
@@ -257,11 +259,18 @@ describe('workbench', { timeout: 30_000 }, () => {
       toJSON: () => ({}),
     })
     const separator = document.querySelector<HTMLElement>('[role="separator"]')!
-    const down = new MouseEvent('mousedown', { button: 0, bubbles: true })
-    Object.defineProperty(down, 'pageY', { value: 100 })
+    const down = new MouseEvent('mousedown', {
+      button: 0,
+      bubbles: true,
+      cancelable: true,
+      clientY: 100,
+    })
     separator.dispatchEvent(down)
-    const move = new MouseEvent('mousemove', { bubbles: true })
-    Object.defineProperty(move, 'pageY', { value: 101 })
+    const move = new MouseEvent('mousemove', {
+      bubbles: true,
+      cancelable: true,
+      clientY: 101,
+    })
     try {
       document.dispatchEvent(move)
       expect(
@@ -356,7 +365,6 @@ describe('workbench', { timeout: 30_000 }, () => {
       const outerPanel = document.querySelector<HTMLElement>(
         '[data-testid="tanstack-devtools-panel"]',
       )!
-      const storedBefore = localStorage.getItem(TANSTACK_DEVTOOLS_STATE)
       const toggle = () =>
         document.querySelector<HTMLButtonElement>(
           '[data-testid="workbench-collapse-toggle"]',
@@ -388,7 +396,12 @@ describe('workbench', { timeout: 30_000 }, () => {
       expect(toggle().getAttribute('aria-label')).toBe(
         'Show the plugin and section tabs',
       )
-      expect(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)).toBe(storedBefore)
+      const storedFolded = JSON.parse(
+        localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!,
+      )
+      expect(storedFolded.height).toBe(417)
+      expect(storedFolded.persistOpen).toBe(true)
+      expect(storedFolded.subheaderCollapsed).toBe(true)
 
       toggle().click()
       expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'false')
@@ -396,7 +409,10 @@ describe('workbench', { timeout: 30_000 }, () => {
       expect(strip).not.toHaveAttribute('aria-hidden')
       expect(outerPanel.style.height).toBe('417px')
       expect(document.querySelector('[data-plugin-mount]')).not.toBeNull()
-      expect(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)).toBe(storedBefore)
+      expect(
+        JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!)
+          .subheaderCollapsed,
+      ).toBe(false)
       expect(events).not.toContain('destroy:one')
     },
   )
@@ -524,6 +540,26 @@ describe('workbench', { timeout: 30_000 }, () => {
     } finally {
       eventBus.stop()
     }
+  })
+
+  it('keeps a folded subheader folded across a remount', async () => {
+    mountWorkbench([plugin('one')])
+    await Promise.resolve()
+    document
+      .querySelector<HTMLButtonElement>(
+        '[data-testid="workbench-collapse-toggle"]',
+      )!
+      .click()
+    expect(
+      document.querySelector('[data-testid="tanstack-devtools-panel"]'),
+    ).toHaveAttribute('data-subheader-collapsed', 'true')
+
+    disposers.pop()!()
+    mountWorkbench([plugin('one')])
+    await Promise.resolve()
+    expect(
+      document.querySelector('[data-testid="tanstack-devtools-panel"]'),
+    ).toHaveAttribute('data-subheader-collapsed', 'true')
   })
 
   it.each([
@@ -971,6 +1007,20 @@ describe('workbench', { timeout: 30_000 }, () => {
     expect(pane.parentElement).toBe(workspace)
   })
 
+  it('insets plugin tabs and panes as one rounded card with a shared gutter', () => {
+    mountWorkbench([plugin('one')])
+    const tabs = document.querySelector<HTMLElement>('[data-tsd-group-tabs]')!
+    const pane = document.querySelector<HTMLElement>('[data-plugin-mount]')!
+    expect(tabs.style.left).toBe(pane.style.left)
+    expect(tabs.style.width).toBe(pane.style.width)
+    expect(Number.parseFloat(tabs.style.left)).toBeGreaterThan(0)
+    expect(Number.parseFloat(pane.style.top)).toBeGreaterThan(
+      Number.parseFloat(tabs.style.top),
+    )
+    expect(getComputedStyle(pane).borderBottomLeftRadius).not.toBe('0px')
+    expect(getComputedStyle(tabs).borderTopLeftRadius).not.toBe('0px')
+  })
+
   it('keeps pane sizing on the core mount frame without clamping plugin-owned descendants', () => {
     const owned = plugin('owned-layout')
     owned.render = (mount) => {
@@ -1376,7 +1426,54 @@ describe('workbench', { timeout: 30_000 }, () => {
       expect(separator).toHaveAttribute('role', 'separator')
       expect(separator).toHaveAttribute('tabindex', '0')
       expect(separator).toHaveAttribute('aria-orientation', 'vertical')
+      expect(getComputedStyle(separator).backgroundColor).toBe(
+        'rgba(0, 0, 0, 0)',
+      )
     }
+  })
+
+  it('moves an existing pane gutter when a third plugin opens', () => {
+    const nativeRect = HTMLElement.prototype.getBoundingClientRect
+    const box = { width: 1674, height: 400 }
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(
+      function (this: HTMLElement) {
+        if (this.getAttribute('data-testid') === 'plugins-workspace') {
+          return {
+            x: 0,
+            y: 0,
+            top: 0,
+            right: box.width,
+            bottom: box.height,
+            left: 0,
+            width: box.width,
+            height: box.height,
+            toJSON: () => ({}),
+          }
+        }
+        return nativeRect.call(this)
+      },
+    )
+
+    mountWorkbench(['one', 'two', 'three'].map(plugin))
+    click('Plugin one')
+    click('Plugin two')
+    const first = document.querySelector<HTMLElement>(
+      '[data-testid="plugin-splitter"]',
+    )!
+    const padded = box.width - PANE_CARD_INSET * 2
+    expect(parseFloat(first.style.left)).toBeCloseTo(
+      (padded - PLUGIN_SPLITTER_SIZE) / 2,
+      5,
+    )
+
+    click('Plugin three')
+    // Index keeps this node alive. Its box must follow the new 3-pane
+    // geometry, not stay at the two-pane centre where the handle is then
+    // sitting over the middle card and the real gutter has nothing to grab.
+    expect(parseFloat(first.style.left)).toBeCloseTo(
+      (padded - PLUGIN_SPLITTER_SIZE * 2) / 3,
+      5,
+    )
   })
 
   it('keeps callback title resets isolated from the semantic control wrapper', () => {

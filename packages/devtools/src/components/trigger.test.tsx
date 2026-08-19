@@ -20,7 +20,10 @@ describe('Trigger', () => {
   })
 
   it('renders the trigger button with position/animation classes when not hidden', () => {
-    const { queryByLabelText } = renderTrigger({ position: 'bottom-right' })
+    const { queryByLabelText } = renderTrigger({
+      position: 'bottom-right',
+      triggerMode: 'fixed',
+    })
 
     const button = queryByLabelText('Open TanStack Devtools')
     expect(button).toBeInTheDocument()
@@ -30,6 +33,16 @@ describe('Trigger', () => {
     // classes, so the rendered class attribute must contain several classes.
     const classList = button?.getAttribute('class')?.split(/\s+/) ?? []
     expect(classList.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('paints the default trigger with the rainbow palm mark', () => {
+    const { queryByLabelText } = renderTrigger()
+
+    const svg = queryByLabelText('Open TanStack Devtools')?.querySelector('svg')
+    expect(svg).not.toBeNull()
+    expect(svg?.getAttribute('viewBox')).toBe('0 0 18 18')
+    expect(svg?.querySelector('circle')).not.toBeNull()
+    expect(svg?.querySelector('linearGradient')).not.toBeNull()
   })
 
   it('does not render the trigger button when triggerHidden is true', () => {

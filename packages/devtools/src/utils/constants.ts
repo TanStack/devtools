@@ -8,12 +8,18 @@
 export const MAX_ACTIVE_PLUGINS = 18
 
 /**
- * Height of a group's tab bar, along the top edge of the group's rect. Tall
- * enough for a 24px close target, which is the WCAG 2.5.8 minimum.
+ * Height of a group's tab bar, along the top edge of the group's rect. 4px of
+ * padding around the tabs (a small gutter from the card edge) plus a 24px
+ * close target, which is the WCAG 2.5.8 minimum.
  */
-export const PLUGIN_GROUP_TAB_HEIGHT = 30
-/** Thickness of the draggable gutter between two panes of a split. */
-export const PLUGIN_SPLITTER_SIZE = 6
+export const PLUGIN_GROUP_TAB_HEIGHT = 32
+/** Space between a pane card and the workspace edge, and between cards. */
+export const PANE_CARD_INSET = 8
+/**
+ * Thickness of the draggable gutter between two panes of a split. Matches
+ * `PANE_CARD_INSET` so the middle gap equals the outer gap.
+ */
+export const PLUGIN_SPLITTER_SIZE = 8
 /**
  * A pane smaller than this is not worth having. A drop that would breach it in
  * either axis becomes a stacked tab instead of a split, so the gesture always

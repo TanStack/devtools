@@ -52,7 +52,7 @@ export type DevtoolsStore = {
      * How the trigger is placed on screen.
      * - "fixed": anchored to one of the `position` corners/edges
      * - "floating": freely draggable, position persisted in local storage
-     * @default "fixed"
+     * @default "floating"
      */
     triggerMode: TriggerMode
     /**
@@ -123,6 +123,12 @@ export type DevtoolsStore = {
      */
     layout: LayoutNode | null
     persistOpen: boolean
+    /**
+     * Whether the secondary strip (plugin and SEO tabs) is folded behind the
+     * header. Kept in state so a reload does not steal that height back.
+     * @default false
+     */
+    subheaderCollapsed: boolean
   }
   plugins?: Array<TanStackDevtoolsPlugin>
 }
@@ -132,7 +138,7 @@ export const initialState: DevtoolsStore = {
     defaultOpen: false,
     hideUntilHover: false,
     position: 'bottom-right',
-    triggerMode: 'fixed',
+    triggerMode: 'floating',
     triggerCoords: undefined,
     panelLocation: 'bottom',
     openHotkey: ['Control', '~'],
@@ -154,5 +160,6 @@ export const initialState: DevtoolsStore = {
     height: 400,
     layout: null,
     persistOpen: false,
+    subheaderCollapsed: false,
   },
 }
