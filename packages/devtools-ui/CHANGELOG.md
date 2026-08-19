@@ -1,5 +1,11 @@
 # @tanstack/devtools-ui
 
+## 0.7.1
+
+### Patch Changes
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Give plugin tabs a small inset in a rounded card, keep pane gutters visible at rest, and theme the panel scrollbars.
+
 ## 0.7.0
 
 ### Minor Changes
