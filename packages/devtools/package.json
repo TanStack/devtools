@@ -67,6 +67,7 @@
     "build": "tsup"
   },
   "dependencies": {
+    "@neodrag/core": "3.0.0-next.11",
     "@neodrag/solid": "3.0.0-next.11",
     "@solid-primitives/event-listener": "^2.4.3",
     "@solid-primitives/keyboard": "^1.3.3",

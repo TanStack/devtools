@@ -1514,6 +1514,9 @@ importers:
 
   packages/devtools:
     dependencies:
+      '@neodrag/core':
+        specifier: 3.0.0-next.11
+        version: 3.0.0-next.11
       '@neodrag/solid':
         specifier: 3.0.0-next.11
         version: 3.0.0-next.11(@neodrag/core@3.0.0-next.11)(solid-js@1.9.12)
