@@ -428,6 +428,24 @@ export const resize = (
 }
 
 /**
+ * Apply a pointer drag to the layout as it was at pointer-down. `deltaPx` is
+ * the total movement from that start, not a per-frame increment. Always pass
+ * the snapshot: feeding the live tree a total delta compounds and the pane
+ * flies away from the cursor.
+ */
+export const resizeFromPointer = (
+  original: LayoutNode | null,
+  path: Path,
+  gutterIndex: number,
+  deltaPx: number,
+  extent: number,
+  minFraction = 0,
+): LayoutNode | null => {
+  if (extent <= 0) return original
+  return resize(original, path, gutterIndex, deltaPx / extent, minFraction)
+}
+
+/**
  * Rect per group, from a walk of the tree. Tabs in the same group share its
  * rect because only the active one is displayed.
  */

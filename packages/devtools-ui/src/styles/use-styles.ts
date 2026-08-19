@@ -683,6 +683,27 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         /* Keep a scroll gesture inside the devtools instead of chaining it on
            to the host page once this panel hits its end. */
         overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: ${semantic.color.border.control} transparent;
+        &::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        &::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: ${semantic.color.border.control};
+          border-radius: 999px;
+          border: 2px solid transparent;
+          background-clip: padding-box;
+        }
+        &::-webkit-scrollbar-thumb:hover {
+          background-color: ${semantic.color.text.muted};
+        }
+        &::-webkit-scrollbar-corner {
+          background: transparent;
+        }
         height: 100%;
         &::selection,
         & *::selection {

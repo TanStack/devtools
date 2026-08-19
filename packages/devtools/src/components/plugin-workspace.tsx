@@ -21,6 +21,7 @@ import { TANSTACK_DEVTOOLS } from '../utils/storage'
 import {
   MAX_ACTIVE_PLUGINS,
   MIN_PANE_SIZE,
+  PANE_CARD_INSET,
   PANE_DROP_EDGE_RATIO,
   PLUGIN_GROUP_TAB_HEIGHT,
   PLUGIN_SPLITTER_SIZE,
@@ -34,6 +35,7 @@ import {
   layoutRects,
   moveTab,
   resize,
+  resizeFromPointer,
   setTabs,
   singleGroup,
   splitAt,
@@ -44,6 +46,27 @@ import {
 import type { DropZone, Rect, SplitterHandle } from '../utils/layout-tree'
 
 type Box = { w: number; h: number }
+
+const insetRect = (rect: Rect, inset: number): Rect => ({
+  left: rect.left + inset,
+  top: rect.top + inset,
+  width: Math.max(rect.width - inset * 2, 0),
+  height: Math.max(rect.height - inset * 2, 0),
+})
+
+/** Widen the splitter so it fills the chrome between two cards. */
+const expandSplitterRect = (handle: SplitterHandle, extra: number): Rect =>
+  handle.dir === 'row'
+    ? {
+        ...handle.rect,
+        left: handle.rect.left - extra,
+        width: handle.rect.width + extra * 2,
+      }
+    : {
+        ...handle.rect,
+        top: handle.rect.top - extra,
+        height: handle.rect.height + extra * 2,
+      }
 /** What the pointer or keyboard is currently carrying. */
 type Held = { tabId: string } | null
 /**
@@ -83,7 +106,7 @@ const GroupTabBar = (props: {
   groupId: string
   tabs: Array<string>
   activeIndex: number
-  rect: Rect | undefined
+  rect: Rect | null
   heldTabId: string | null
   titleOf: (id: string) => string
   moveHintId: string
@@ -243,11 +266,30 @@ export const PluginWorkspace = (props: {
     measure()
   })
 
-  const groupRects = createMemo(() =>
-    layoutRects(layout(), box(), PLUGIN_SPLITTER_SIZE),
-  )
+  const paddedBox = createMemo(() => ({
+    w: Math.max(box().w - PANE_CARD_INSET * 2, 0),
+    h: Math.max(box().h - PANE_CARD_INSET * 2, 0),
+  }))
+
+  const shift = (rect: Rect): Rect => ({
+    ...rect,
+    left: rect.left + PANE_CARD_INSET,
+    top: rect.top + PANE_CARD_INSET,
+  })
+
+  const groupRects = createMemo(() => {
+    const raw = layoutRects(layout(), paddedBox(), PLUGIN_SPLITTER_SIZE)
+    return Object.fromEntries(
+      Object.entries(raw).map(([id, rect]) => [id, shift(rect)]),
+    )
+  })
   const handles = createMemo(() =>
-    splitterHandles(layout(), box(), PLUGIN_SPLITTER_SIZE),
+    splitterHandles(layout(), paddedBox(), PLUGIN_SPLITTER_SIZE).map(
+      (handle) => ({
+        ...handle,
+        rect: shift(handle.rect),
+      }),
+    ),
   )
   const groups = createMemo(() => allGroups(layout()))
 
@@ -265,15 +307,25 @@ export const PluginWorkspace = (props: {
     equals: (a, b) => a.length === b.length && a.every((id, i) => id === b[i]),
   })
 
+  /** The rounded card a group sits in, inset from the workspace chrome. */
+  const cardRect = (groupId: string): Rect | null =>
+    groupRects()[groupId] ?? null
+
+  const tabBarRect = (groupId: string): Rect | null => {
+    const card = cardRect(groupId)
+    if (!card) return null
+    return { ...card, height: PLUGIN_GROUP_TAB_HEIGHT }
+  }
+
   /** Panes sit under their group's tab bar, so the bar's height comes off the top. */
   const paneRect = (groupId: string): Rect | null => {
-    const rect = groupRects()[groupId]
-    if (!rect) return null
+    const card = cardRect(groupId)
+    if (!card) return null
     return {
-      left: rect.left,
-      top: rect.top + PLUGIN_GROUP_TAB_HEIGHT,
-      width: rect.width,
-      height: Math.max(rect.height - PLUGIN_GROUP_TAB_HEIGHT, 0),
+      left: card.left,
+      top: card.top + PLUGIN_GROUP_TAB_HEIGHT,
+      width: card.width,
+      height: Math.max(card.height - PLUGIN_GROUP_TAB_HEIGHT, 0),
     }
   }
 
@@ -347,7 +399,7 @@ export const PluginWorkspace = (props: {
     if (point.y <= rect.top + PLUGIN_GROUP_TAB_HEIGHT) {
       return { groupId, zone: 'center', willStack: true }
     }
-    const zone = zoneAt(point, rect, PANE_DROP_EDGE_RATIO)
+    const zone = zoneAt(point, paneRect(groupId) ?? rect, PANE_DROP_EDGE_RATIO)
     // A pane too small to split takes the tab as a stacked tab instead, so the
     // gesture always does something sensible rather than being refused.
     const willStack =
@@ -357,7 +409,7 @@ export const PluginWorkspace = (props: {
         groupId,
         zone,
         MIN_PANE_SIZE,
-        box(),
+        paddedBox(),
         PLUGIN_SPLITTER_SIZE,
       )
     return { groupId, zone, willStack }
@@ -505,26 +557,42 @@ export const PluginWorkspace = (props: {
 
   const startSplitterDrag = (handle: SplitterHandle, event: PointerEvent) => {
     if (event.button !== 0) return
+    event.preventDefault()
+    const target = event.currentTarget
+    if (target instanceof HTMLElement) {
+      target.setPointerCapture(event.pointerId)
+    }
     const start = handle.dir === 'row' ? event.clientX : event.clientY
+    const original = layout()
     const minFraction =
       handle.extent > 0
         ? (handle.dir === 'row' ? MIN_PANE_SIZE.w : MIN_PANE_SIZE.h) /
           handle.extent
         : 0
+    const previousUserSelect = document.body.style.userSelect
+    document.body.style.userSelect = 'none'
     const move = (moveEvent: PointerEvent) => {
+      moveEvent.preventDefault()
       const now = handle.dir === 'row' ? moveEvent.clientX : moveEvent.clientY
-      if (handle.extent <= 0) return
       setLayout(
-        resize(
-          layout(),
+        resizeFromPointer(
+          original,
           handle.path,
           handle.gutterIndex,
-          (now - start) / handle.extent,
+          now - start,
+          handle.extent,
           minFraction,
         ),
       )
     }
-    const up = () => {
+    const up = (upEvent: PointerEvent) => {
+      if (
+        target instanceof HTMLElement &&
+        target.hasPointerCapture(upEvent.pointerId)
+      ) {
+        target.releasePointerCapture(upEvent.pointerId)
+      }
+      document.body.style.userSelect = previousUserSelect
       document.removeEventListener('pointermove', move)
       document.removeEventListener('pointerup', up)
     }
@@ -650,9 +718,12 @@ export const PluginWorkspace = (props: {
     if (target === null) return null
     // The empty workspace: the pane will fill it, so highlight all of it.
     if (target.groupId === null) {
-      return { left: 0, top: 0, width: box().w, height: box().h }
+      return insetRect(
+        { left: 0, top: 0, width: box().w, height: box().h },
+        PANE_CARD_INSET,
+      )
     }
-    const rect = groupRects()[target.groupId]
+    const rect = cardRect(target.groupId)
     if (!rect) return null
     if (target.willStack) return rect
     const half = (value: number) => value / 2
@@ -691,7 +762,7 @@ export const PluginWorkspace = (props: {
               groupId={group.id}
               tabs={group.tabs}
               activeIndex={group.active}
-              rect={groupRects()[group.id]}
+              rect={tabBarRect(group.id)}
               heldTabId={held()?.tabId ?? null}
               titleOf={titleOf}
               moveHintId={moveHintId}
@@ -760,39 +831,46 @@ export const PluginWorkspace = (props: {
             mid-resize and left stale element references behind. Keying by
             position keeps the elements alive and just updates their values. */}
         <Index each={handles()}>
-          {(handle) => (
-            <div
-              role="separator"
-              tabIndex={0}
-              data-tsd-control
-              data-tsd-separator="plugin-pane"
-              data-testid="plugin-splitter"
-              aria-orientation={
-                handle().dir === 'row' ? 'vertical' : 'horizontal'
-              }
-              aria-label="Resize plugin panes"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(
-                ((handle().dir === 'row'
-                  ? handle().rect.left
-                  : handle().rect.top) /
-                  Math.max(handle().extent, 1)) *
-                  100,
-              )}
-              class={styles().pluginSplitter(handle().dir)}
-              style={{
-                left: `${handle().rect.left}px`,
-                top: `${handle().rect.top}px`,
-                width: `${handle().rect.width}px`,
-                height: `${handle().rect.height}px`,
-              }}
-              // Read through the accessor at gesture time, so a gutter that has
-              // been re-measured since render still moves the right sizes.
-              onPointerDown={(event) => startSplitterDrag(handle(), event)}
-              onKeyDown={(event) => resizeFromKeyboard(handle(), event)}
-            />
-          )}
+          {(handle) => {
+            // Accessor, not a snapshot: Index keeps this node for a given
+            // gutter index, so a const taken at mount would stay at the first
+            // geometry (two equal panes) after a third pane opens or the
+            // workspace is re-measured.
+            const rect = () => expandSplitterRect(handle(), PANE_CARD_INSET)
+            return (
+              <div
+                role="separator"
+                tabIndex={0}
+                data-tsd-control
+                data-tsd-separator="plugin-pane"
+                data-testid="plugin-splitter"
+                aria-orientation={
+                  handle().dir === 'row' ? 'vertical' : 'horizontal'
+                }
+                aria-label="Resize plugin panes"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(
+                  ((handle().dir === 'row'
+                    ? handle().rect.left
+                    : handle().rect.top) /
+                    Math.max(handle().extent, 1)) *
+                    100,
+                )}
+                class={styles().pluginSplitter(handle().dir)}
+                style={{
+                  left: `${rect().left}px`,
+                  top: `${rect().top}px`,
+                  width: `${rect().width}px`,
+                  height: `${rect().height}px`,
+                }}
+                // Read through the accessor at gesture time, so a gutter that has
+                // been re-measured since render still moves the right sizes.
+                onPointerDown={(event) => startSplitterDrag(handle(), event)}
+                onKeyDown={(event) => resizeFromKeyboard(handle(), event)}
+              />
+            )
+          }}
         </Index>
       </Show>
 

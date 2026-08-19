@@ -1,9 +1,4 @@
-import {
-  createMemo,
-  createSignal,
-  useContext as getContext,
-  onCleanup,
-} from 'solid-js'
+import { createMemo, useContext as getContext, onCleanup } from 'solid-js'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants.js'
 import { appendPane, closeTab, flattenTabs } from '../utils/layout-tree.js'
 import { DevtoolsContext } from './devtools-context.jsx'
@@ -117,20 +112,23 @@ export const createPersistOpen = () => {
 }
 
 /**
- * Whether the strip and destination content are collapsed behind the main
- * header. Deliberately not part of the persisted store: it is a momentary view
- * state, and a reload should bring the panel back in full.
- *
- * The shell mounts once per document, so one module-level signal is enough and
- * saves threading the toggle through every strip that hosts the control.
+ * Whether the secondary strip is folded behind the header. Lives on the
+ * persisted store so a reload keeps the height the user folded away.
  */
-const [collapsed, setCollapsed] = createSignal(false)
-
-export const createCollapsed = () => ({
-  isCollapsed: collapsed,
-  toggleCollapsed: () => setCollapsed((previous) => !previous),
-  setCollapsed,
-})
+export const createCollapsed = () => {
+  const { state, setState } = createDevtoolsState()
+  const isCollapsed = createMemo(() => state().subheaderCollapsed)
+  const setCollapsed = (value: boolean | ((previous: boolean) => boolean)) => {
+    const next =
+      typeof value === 'function' ? value(state().subheaderCollapsed) : value
+    setState({ subheaderCollapsed: next })
+  }
+  return {
+    isCollapsed,
+    toggleCollapsed: () => setCollapsed((previous) => !previous),
+    setCollapsed,
+  }
+}
 
 /**
  * Handing a drag from the Plugins strip over to the workspace.

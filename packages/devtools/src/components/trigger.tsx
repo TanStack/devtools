@@ -9,7 +9,7 @@ import {
 import clsx from 'clsx'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
-import { TanStackEmblem } from './tanstack-emblem'
+import { TanStackTriggerMark } from './tanstack-trigger-mark'
 import type { TriggerCoords } from '../context/devtools-store'
 import type { Accessor } from 'solid-js'
 
@@ -163,6 +163,7 @@ export const Trigger = (props: {
 
   const onPointerMove = (e: PointerEvent) => {
     if (!dragging) return
+    e.preventDefault()
     const el = buttonRef()
     if (!el) return
     const dx = e.clientX - startX
@@ -294,7 +295,10 @@ export const Trigger = (props: {
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerCancel}
       >
-        <Show when={settings().customTrigger} fallback={<TanStackEmblem />}>
+        <Show
+          when={settings().customTrigger}
+          fallback={<TanStackTriggerMark />}
+        >
           <div ref={setContainerRef} />
         </Show>
       </button>

@@ -24,6 +24,10 @@ const allowedMarkers = new Map([
     'semantic-color-exempt: source-highlight-alpha',
     /^src[\\/]components[\\/]source-inspector\.tsx$/,
   ],
+  [
+    'semantic-color-exempt: trigger-rainbow-mark',
+    /^src[\\/]components[\\/]tanstack-trigger-mark\.tsx$/,
+  ],
 ])
 const files = (path: string): Array<string> => {
   const entry = readdirSync(path, { withFileTypes: true })

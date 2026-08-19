@@ -80,9 +80,13 @@ test('dragging the gutter moves width from one pane to the other', async ({
 
   const afterDemo = (await dt.pane(DEMO).boundingBox())!.width
   const afterProbe = (await dt.pane(PROBE).boundingBox())!.width
-  expect(afterDemo).toBeGreaterThan(beforeDemo + 50)
+  const moved = afterDemo - beforeDemo
+  // The gutter must follow the pointer (~120px), not compound each move into
+  // a spring that flings the pane across the workspace.
+  expect(moved).toBeGreaterThan(80)
+  expect(moved).toBeLessThan(160)
   // One grows by exactly what the other loses.
-  expect(afterDemo - beforeDemo).toBeCloseTo(beforeProbe - afterProbe, 0)
+  expect(moved).toBeCloseTo(beforeProbe - afterProbe, 0)
   expect(afterDemo + afterProbe).toBeCloseTo(beforeDemo + beforeProbe, 0)
 })
 
