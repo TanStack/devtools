@@ -11,6 +11,7 @@ import {
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/react'
+import { reactScanDevtoolsPlugin } from '@tanstack/react-scan-devtools'
 import { A11yAuditFixture } from './a11y-audit-fixture'
 import { PackageJsonPanel } from './package-json-panel'
 
@@ -66,6 +67,7 @@ export default function DevtoolsExample() {
         }}
         config={{ sourceAction: 'copy-path', position: 'bottom-left' }}
         plugins={[
+          reactScanDevtoolsPlugin(),
           a11yDevtoolsPlugin(),
           {
             name: 'TanStack Query',
