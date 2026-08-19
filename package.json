@@ -84,7 +84,7 @@
     "tinyglobby": "^0.2.15",
     "typescript": "~5.9.2",
     "vite": "^8.0.0",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "@tanstack/devtools": "workspace:*",
