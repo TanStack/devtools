@@ -1,5 +1,13 @@
 # @tanstack/devtools-event-client
 
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [[`2df2e04`](https://github.com/TanStack/devtools/commit/2df2e04080cb5f8a46d11c0466ec4fc763095bc2)]:
+  - @tanstack/devtools-event-bus@0.4.3
+  - @tanstack/devtools-bundler-core@0.1.2
+
 ## 0.8.3
 
 ### Patch Changes

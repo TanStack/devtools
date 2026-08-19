@@ -1,5 +1,12 @@
 # @tanstack/devtools-a11y
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [[`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15)]:
+  - @tanstack/devtools-ui@0.7.1
+
 ## 0.2.0
 
 ### Minor Changes

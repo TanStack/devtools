@@ -1,5 +1,19 @@
 # @tanstack/devtools
 
+## 0.14.1
+
+### Patch Changes
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Persist the folded plugin strip across reloads so it does not steal height back on refresh.
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Use the rainbow palm favicon as the default trigger mark, default the trigger to floating, and make pane gutters follow the pointer instead of compounding each drag move.
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Give plugin tabs a small inset in a rounded card, keep pane gutters visible at rest, and theme the panel scrollbars.
+
+- Updated dependencies [[`2df2e04`](https://github.com/TanStack/devtools/commit/2df2e04080cb5f8a46d11c0466ec4fc763095bc2), [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15)]:
+  - @tanstack/devtools-event-bus@0.4.3
+  - @tanstack/devtools-ui@0.7.1
+
 ## 0.14.0
 
 ### Minor Changes

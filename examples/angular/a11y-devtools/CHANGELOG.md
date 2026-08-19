@@ -1,5 +1,13 @@
 # @tanstack/devtools-example-angular-a11y-devtools
 
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/angular-devtools@0.0.10
+  - @tanstack/devtools-a11y@0.2.1
+
 ## 0.0.8
 
 ### Patch Changes
