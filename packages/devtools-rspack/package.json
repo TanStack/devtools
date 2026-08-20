@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-rspack",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "TanStack Rspack plugin used to enhance the core devtools with additional functionalities",
   "author": "Tanner Linsley",
   "license": "MIT",

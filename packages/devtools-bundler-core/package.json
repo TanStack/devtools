@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-bundler-core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Framework-agnostic core shared by TanStack devtools bundler plugins",
   "author": "Tanner Linsley",
   "license": "MIT",
