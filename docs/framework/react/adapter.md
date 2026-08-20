@@ -28,7 +28,7 @@ Each plugin describes a tab in the devtools panel:
 ```ts
 type PluginRender =
   | JSX.Element
-  | ((el: HTMLElement, theme: 'dark' | 'light') => JSX.Element)
+  | ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => JSX.Element)
 
 type TanStackDevtoolsReactPlugin = {
   id?: string
@@ -38,7 +38,7 @@ type TanStackDevtoolsReactPlugin = {
 }
 ```
 
-- **`render`** can be a JSX element (simplest -- just pass `<YourPanel />`) or a function that receives the container element and current theme. The function form is useful when you need to access the raw DOM element or respond to theme changes.
+- **`render`** can be a JSX element (simplest -- just pass `<YourPanel />`) or a function that receives the container element and current `{ theme, devtoolsOpen }` props. The function form is useful when you need to access the raw DOM element or respond to plugin state changes.
 - **`name`** works the same way -- use a string for plain text, or JSX / a function for custom tab titles.
 - **`id`** is an optional unique identifier. If omitted, it is generated from the name.
 - **`defaultOpen`** marks the plugin as initially active when no other plugins are open.

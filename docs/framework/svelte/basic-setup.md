@@ -48,6 +48,6 @@ Import the desired devtools and provide them to the `TanStackDevtools` component
 <TanStackDevtools {plugins} />
 ```
 
-> Note: The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. Additional props can be provided via the `props` field and are passed to the component on mount.
+> Note: The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. Components receive the shared `theme` and `devtoolsOpen` props. Additional values from the plugin's `props` field are merged into the same object when the component mounts.
 
 Finally, add any additional configuration you desire to the `TanStackDevtools` component. More information can be found under the [TanStack Devtools Configuration](../../configuration) section.
