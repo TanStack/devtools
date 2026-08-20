@@ -1,5 +1,11 @@
 # @tanstack/svelte-devtools
 
+## 0.1.6
+
+### Patch Changes
+
+- [#502](https://github.com/TanStack/devtools/pull/502) [`f82de5f`](https://github.com/TanStack/devtools/commit/f82de5f6d22f894d9d3f5111258b72218864bb75) - Package the Svelte adapter as Svelte source, expose the Svelte export condition, and generate Svelte 5 component prop types without recompiling generated runtime code.
+
 ## 0.1.5
 
 ### Patch Changes
