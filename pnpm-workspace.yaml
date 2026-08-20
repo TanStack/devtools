@@ -3,6 +3,8 @@ linkWorkspacePackages: true
 preferWorkspacePackages: true
 blockExoticSubdeps: true
 trustPolicy: 'no-downgrade'
+trustPolicyExclude:
+  - 'chokidar@4.0.3' # transitive dependency of svelte-check; latest v4 with v5 available
 
 packages:
   - examples/**/*

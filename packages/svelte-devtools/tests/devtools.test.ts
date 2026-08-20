@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { TanStackDevtoolsSvelteAdapter } from '../src/devtools.svelte'
+import { TanStackDevtoolsSvelteAdapter } from '../src/devtools'
 import LifecyclePanel from './LifecyclePanel.svelte'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 

@@ -245,7 +245,7 @@ describe('JsonTree', () => {
     })
 
     it('renders a Date with a custom dateFormat', () => {
-      const date = new Date('2024-06-20T00:00:00Z')
+      const date = new Date(2024, 5, 20)
       const el = renderTree(date, { config: { dateFormat: 'YYYY-MM-DD' } })
       expect(el.textContent).toContain('2024-06-20')
     })
