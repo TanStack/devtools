@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-bus
 
+## 0.4.3
+
+### Patch Changes
+
+- [#500](https://github.com/TanStack/devtools/pull/500) [`2df2e04`](https://github.com/TanStack/devtools/commit/2df2e04080cb5f8a46d11c0466ec4fc763095bc2) - Honor explicit client connection options when bundlers inject event bus defaults.
+
 ## 0.4.2
 
 ### Patch Changes

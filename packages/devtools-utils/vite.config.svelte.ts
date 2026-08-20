@@ -1,9 +1,10 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { tanstackViteConfig } from '@tanstack/vite-config'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
 import packageJson from './package.json'
 
 const config = defineConfig({
-  plugins: [],
+  plugins: [svelte()],
   test: {
     name: packageJson.name,
     dir: './',

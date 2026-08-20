@@ -5,6 +5,8 @@ import packageJson from './package.json'
 
 const config = defineConfig({
   plugins: [svelte() as any],
+  resolve:
+    process.env.VITEST === 'true' ? { conditions: ['browser'] } : undefined,
   test: {
     name: packageJson.name,
     dir: './tests',

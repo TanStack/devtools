@@ -18,7 +18,8 @@ close it, so there is only ever one control for it.
   same zones as below. Dropping onto an empty workspace gives it the whole area.
 
 The strip folds itself away when everything is open, and comes back on its own the
-moment a plugin closes and returns to it.
+moment a plugin closes and returns to it. A fold you make with the pull tab is
+kept across reloads.
 
 ## Arranging panes
 
@@ -50,8 +51,9 @@ or bottom edge stack instead. Drag the panel taller first if you want rows.
 
 ## Resizing
 
-Drag the gutter between two panes. One pane grows by exactly what the other loses,
-and neither can shrink past a readable minimum.
+Each pane sits in a rounded card with a small gutter from the workspace edge.
+Drag between cards to resize: the resize line appears on hover. One pane grows
+by exactly what the other loses, and neither can shrink past a readable minimum.
 
 ## Keyboard
 

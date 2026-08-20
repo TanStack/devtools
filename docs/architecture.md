@@ -146,7 +146,7 @@ The devtools shell is a Solid.js application that renders the entire devtools UI
 - **`setConfig(config)`** -- Updates configuration and plugins at runtime. Plugins are reactive: adding or removing them updates the tab bar immediately.
 
 The shell renders:
-- A **trigger button** (the floating devtools toggle, customizable or replaceable)
+- A **trigger button** (the floating rainbow palm mark, customizable or replaceable)
 - A **resizable Workbench panel** (docked to the top or bottom of the viewport, resizable via pointer or keyboard)
 - A compact **36px TanStack Devtools header** with Plugins, Marketplace, SEO, and Settings destinations. The palm emblem is inline SVG, so it stays sharp and takes its colour from the theme.
 - A fixed-height **44px secondary strip** for plugin and SEO navigation. It scrolls horizontally when space is limited, and a pull tab on its bottom edge folds it away behind the header. Folding changes nothing else — the panel keeps its height and the destination content keeps running — so the tab is rendered only on the destinations that have a strip.
@@ -154,7 +154,7 @@ The shell renders:
 - A **settings panel** for theme, hotkeys, position, and other preferences
 - Up to three simultaneous **plugin mount frames**, divided into equal widths by static separators
 
-Settings and UI state (panel size, position, active tab, theme) are persisted in `localStorage` so they survive page reloads.
+Settings and UI state (panel size, position, active tab, theme, and whether the secondary strip is folded) are persisted in `localStorage` so they survive page reloads.
 
 The core shell owns the Workbench header, navigation, mount-frame geometry, separators, and surrounding light/dark surfaces. Each external plugin owns everything inside its mount target; core styling deliberately does not reach into plugin descendants. Detaching the Workbench uses a fixed `100vh` Picture-in-Picture layout and restores the stored docked height when reattached.
 
@@ -162,10 +162,10 @@ The core shell owns the Workbench header, navigation, mount-frame geometry, sepa
 
 Two rules keep the shell reading as one surface:
 
-- **Chrome versus canvas.** The header and every secondary strip paint the brand surface (cream in light mode, near-black in dark mode) and close with a translucent ink hairline. Destination content and plugin mount frames paint the workspace surface. A plugin pane can paint any colour it likes, so the separator between panes uses a mid-tone border that stays visible against both.
+- **Chrome versus canvas.** The header and every secondary strip paint the brand surface (cream in light mode, near-black in dark mode) and close with a translucent ink hairline. Destination content and plugin mount frames paint the workspace surface. A plugin pane can paint any colour it likes. The resize gutter between panes is invisible at rest and paints a line on hover or keyboard focus.
 - **One gutter.** `WORKBENCH_GUTTER` (16px, or `WORKBENCH_GUTTER_NARROW` at 12px below 430px) is the single inline gutter. The header, the strips, and each destination's content all start there, so the left edge is one column instead of three. `MainPanel withPadding` uses the same value.
 
-Colour comes from the semantic theme only. Raw hex values in core-owned source are rejected by `tests/semantic-color-usage.test.ts` unless they carry a narrow, path-scoped `semantic-color-exempt` marker — currently only third-party network marks and the source-inspector highlight alpha. Status colours (success, warning, error, info) mark real state; identity accents do not compete with them, so a card that is both featured and active keeps the neutral outline and lets its badge say which it is.
+Colour comes from the semantic theme only. Raw hex values in core-owned source are rejected by `tests/semantic-color-usage.test.ts` unless they carry a narrow, path-scoped `semantic-color-exempt` marker. The current exemptions are third-party network marks, the source-inspector highlight alpha, and the trigger rainbow mark. Status colours (success, warning, error, info) mark real state; identity accents do not compete with them, so a card that is both featured and active keeps the neutral outline and lets its badge say which it is.
 
 ### @tanstack/devtools-ui -- Component Library
 
@@ -190,15 +190,17 @@ This client is a singleton (`devtoolsEventClient`) used by both the core shell a
 Each framework adapter is a thin wrapper that bridges its framework's component model to the core Solid.js shell. The pattern is the same across all adapters:
 
 1. **Creates a `TanStackDevtoolsCore` instance** with the user's plugins and config.
-2. **Mounts it to a DOM element** using the framework's lifecycle hooks (`useEffect` in React, `onMounted` in Vue, `onMount` in Solid).
-3. **Converts framework-specific plugin definitions** into the core's DOM-based `render(el, theme)` interface. Each adapter defines its own plugin type (e.g. `TanStackDevtoolsReactPlugin`) that accepts framework-native components, then wraps them in a `render` callback that the core calls with a target DOM element and the current theme.
-4. **Uses the framework's portal/teleport mechanism** to render plugin components into the core's DOM containers:
+2. **Mounts it to a DOM element** using the framework's lifecycle APIs, such as `useEffect` in React, `onMounted` in Vue, `$effect` in Svelte, and `onMount` in Solid.
+3. **Converts framework-specific plugin definitions** into the core's DOM-based `render(el, props)` interface. Each adapter defines its own plugin type (e.g. `TanStackDevtoolsReactPlugin`) that accepts framework-native components, then wraps them in a `render` callback that the core calls with a target DOM element and `{ theme, devtoolsOpen }`.
+4. **Uses the framework's rendering API** to render plugin components into the core's DOM containers:
    - **React** -- `createPortal()` from `react-dom`
    - **Vue** -- `<Teleport :to="'#' + plugin.id" />`
    - **Solid** -- `<Portal mount={el} />`
    - **Preact** -- Same portal pattern as React
+   - **Svelte** -- `mount(component, { target: el, props })`
+   - **Angular** -- `createComponent()` with the container's environment injector
 
-The key insight: the core shell is always Solid.js, but your plugins run in **your** framework. A React plugin is a real React component rendered by React's `createPortal` into a DOM element that the Solid.js shell created. A Vue plugin is a real Vue component rendered by Vue's `<Teleport>`. The adapters bridge this gap so you never need to think about Solid.js unless you want to.
+The key insight: the core shell is always Solid.js, but your plugins run in **your** framework. Each adapter receives the same plugin props and renders a native framework component into a DOM element created by the Solid.js shell. The adapters bridge this gap so you never need to think about Solid.js unless you want to.
 
 ### What an adapter does NOT do
 

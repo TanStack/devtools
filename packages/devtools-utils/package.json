@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -88,6 +88,7 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.0.0",
     "@tanstack/devtools": "workspace:^",
     "svelte": "^5.0.0",
     "tsup": "^8.5.0",

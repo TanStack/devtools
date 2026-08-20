@@ -14,6 +14,7 @@ import {
   paneRects,
   repairLayout,
   resize,
+  resizeFromPointer,
   singleGroup,
   splitAt,
   splitterHandles,
@@ -350,6 +351,30 @@ describe('resize', () => {
     expect(resize(tree, [], 5, 0.1)).toEqual(tree)
     expect(resize(tree, [], 0, 0)).toEqual(tree)
     expect(resize(group('g0', ['a']), [], 0, 0.1)).toEqual(group('g0', ['a']))
+  })
+})
+
+describe('resizeFromPointer', () => {
+  it('applies total mouse travel to the snapshot so later moves do not compound', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b'])],
+      [0.5, 0.5],
+    )
+    const extent = 1000
+    const at20 = resizeFromPointer(tree, [], 0, 20, extent) as SplitNode
+    const at40 = resizeFromPointer(tree, [], 0, 40, extent) as SplitNode
+    expect(at20.sizes[0]).toBeCloseTo(0.52, 10)
+    expect(at40.sizes[0]).toBeCloseTo(0.54, 10)
+    // Feeding the live tree a total delta (the old drag loop) overshoots:
+    // 0.5 + 0.02, then that result + 0.04 = 0.56.
+    const compounded = resizeFromPointer(at20, [], 0, 40, extent) as SplitNode
+    expect(compounded.sizes[0]).toBeCloseTo(0.56, 10)
+  })
+
+  it('is a no-op when the split has no measurable extent', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    expect(resizeFromPointer(tree, [], 0, 20, 0)).toEqual(tree)
   })
 })
 

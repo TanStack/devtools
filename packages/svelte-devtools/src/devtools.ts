@@ -1,5 +1,6 @@
-import { mount, unmount } from 'svelte'
-import { PLUGIN_CONTAINER_ID, TanStackDevtoolsCore } from '@tanstack/devtools'
+import { flushSync, mount, unmount } from 'svelte'
+import { TanStackDevtoolsCore } from '@tanstack/devtools'
+import ComponentHost from './ComponentHost.svelte'
 import type { Component } from 'svelte'
 import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
@@ -7,14 +8,11 @@ import type {
   TanStackDevtoolsSveltePlugin,
 } from './types'
 
-type MountedComponent = ReturnType<typeof mount>
+type MountedComponent = ReturnType<typeof ComponentHost>
 
 export class TanStackDevtoolsSvelteAdapter {
   private devtools: TanStackDevtoolsCore | null = null
-  private mountedComponents: Array<{
-    instance: MountedComponent
-    containerId: string
-  }> = []
+  private mountedComponents = new Map<HTMLElement, MountedComponent>()
 
   mount(target: HTMLElement, init: TanStackDevtoolsSvelteInit) {
     const pluginsMap = this.getPluginsMap(init.plugins)
@@ -30,10 +28,6 @@ export class TanStackDevtoolsSvelteAdapter {
 
   update(init: TanStackDevtoolsSvelteInit) {
     if (this.devtools) {
-      // Tear down the previously mounted plugin components before re-applying
-      // config. The core re-invokes `render`/`name` for the new plugin set, so
-      // without this the old Svelte instances are orphaned and leak.
-      this.destroyAllComponents()
       this.devtools.setConfig({
         config: init.config,
         eventBusConfig: init.eventBusConfig,
@@ -60,26 +54,35 @@ export class TanStackDevtoolsSvelteAdapter {
   private convertPlugin(
     plugin: TanStackDevtoolsSveltePlugin,
   ): TanStackDevtoolsPlugin {
+    let panelContainer: HTMLElement | undefined
+
     return {
       id: plugin.id,
       defaultOpen: plugin.defaultOpen,
       name:
         typeof plugin.name === 'string'
           ? plugin.name
-          : (el, theme) => {
+          : (el, props) => {
               this.renderComponent(plugin.name as Component<any>, el, {
-                theme,
+                ...props,
                 ...(plugin.props ?? {}),
               })
             },
-      render: (el, theme) => {
+      render: (el, props) => {
+        if (panelContainer && panelContainer !== el) {
+          this.destroyComponentInContainer(panelContainer)
+        }
+        panelContainer = el
         this.renderComponent(plugin.component, el, {
-          theme,
+          ...props,
           ...(plugin.props ?? {}),
         })
       },
-      destroy: (pluginId) => {
-        this.destroyComponentsInContainer(`${PLUGIN_CONTAINER_ID}-${pluginId}`)
+      destroy: () => {
+        if (panelContainer) {
+          this.destroyComponentInContainer(panelContainer)
+          panelContainer = undefined
+        }
       },
     }
   }
@@ -89,29 +92,33 @@ export class TanStackDevtoolsSvelteAdapter {
     container: HTMLElement,
     props: Record<string, unknown>,
   ) {
-    const instance = mount(component, {
-      target: container,
-      props,
-    })
+    const mounted = this.mountedComponents.get(container)
+    if (mounted) {
+      flushSync(() => mounted.update(component, props))
+      return
+    }
 
-    const containerId = container.id
-    this.mountedComponents.push({ instance, containerId })
+    const instance = mount(ComponentHost, {
+      target: container,
+      props: { component, componentProps: props },
+    })
+    this.mountedComponents.set(container, instance)
+    flushSync()
   }
 
-  private destroyComponentsInContainer(containerId: string) {
-    this.mountedComponents = this.mountedComponents.filter((entry) => {
-      if (entry.containerId === containerId) {
-        unmount(entry.instance)
-        return false
-      }
-      return true
-    })
+  private destroyComponentInContainer(container: HTMLElement) {
+    const instance = this.mountedComponents.get(container)
+    if (!instance) return
+
+    this.mountedComponents.delete(container)
+    unmount(instance)
   }
 
   private destroyAllComponents() {
-    for (const entry of this.mountedComponents) {
-      unmount(entry.instance)
+    const instances = [...this.mountedComponents.values()]
+    this.mountedComponents.clear()
+    for (const instance of instances) {
+      unmount(instance)
     }
-    this.mountedComponents = []
   }
 }
