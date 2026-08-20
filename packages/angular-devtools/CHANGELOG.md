@@ -1,5 +1,12 @@
 # @tanstack/angular-devtools
 
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies [[`4ecd46e`](https://github.com/TanStack/devtools/commit/4ecd46e2f910fb41f6269927880a0e5c47baeecb)]:
+  - @tanstack/devtools@0.14.2
+
 ## 0.0.10
 
 ### Patch Changes

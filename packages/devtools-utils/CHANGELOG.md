@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.7.0
+
+### Minor Changes
+
+- [#504](https://github.com/TanStack/devtools/pull/504) [`f1584c7`](https://github.com/TanStack/devtools/commit/f1584c7db4df0a700448b482282fde3138079cc1) - Align Svelte panel construction and plugin metadata with the other framework factories, use compiled Svelte components to own panel and no-op lifecycles, forward shared plugin props through the Svelte adapter, and update mounted component props without resetting their state.
+
 ## 0.6.0
 
 ### Minor Changes

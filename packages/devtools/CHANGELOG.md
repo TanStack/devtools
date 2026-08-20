@@ -1,5 +1,11 @@
 # @tanstack/devtools
 
+## 0.14.2
+
+### Patch Changes
+
+- [#509](https://github.com/TanStack/devtools/pull/509) [`4ecd46e`](https://github.com/TanStack/devtools/commit/4ecd46e2f910fb41f6269927880a0e5c47baeecb) - Install Neodrag's required core peer dependency so consumers do not need to add it themselves.
+
 ## 0.14.1
 
 ### Patch Changes
