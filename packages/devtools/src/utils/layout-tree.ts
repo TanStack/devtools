@@ -427,6 +427,37 @@ export const resize = (
   return replace(tree, 0)
 }
 
+/** Evens out the two panes either side of a gutter, e.g. on splitter double-click. */
+export const resetSplit = (
+  tree: LayoutNode | null,
+  path: Path,
+  gutterIndex: number,
+): LayoutNode | null => {
+  const target = nodeAtPath(tree, path)
+  if (tree === null || target === null || !isSplit(target)) return tree
+  const before = target.sizes[gutterIndex]
+  const after = target.sizes[gutterIndex + 1]
+  if (before === undefined || after === undefined) return tree
+
+  const even = (before + after) / 2
+  if (Math.abs(before - even) < EPSILON && Math.abs(after - even) < EPSILON) {
+    return tree
+  }
+
+  const sizes = [...target.sizes]
+  sizes[gutterIndex] = even
+  sizes[gutterIndex + 1] = even
+
+  const replace = (node: LayoutNode, depth: number): LayoutNode => {
+    if (depth === path.length) return { ...(node as SplitNode), sizes }
+    const index = path[depth]!
+    const children = [...(node as SplitNode).children]
+    children[index] = replace(children[index]!, depth + 1)
+    return { ...(node as SplitNode), children }
+  }
+  return replace(tree, 0)
+}
+
 /**
  * Apply a pointer drag to the layout as it was at pointer-down. `deltaPx` is
  * the total movement from that start, not a per-frame increment. Always pass
