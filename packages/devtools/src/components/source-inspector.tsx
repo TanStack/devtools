@@ -92,7 +92,18 @@ export const SourceInspector = () => {
     })
   })
 
-  createEventListener(document, 'click', (e) => {
+  // Capture phase: an inspect click must not also activate what it landed on.
+  // In the bubble phase this runs after the framework has already dispatched
+  // its own click -- React's synthetic `onClick` has fired, a router link has
+  // navigated -- and `preventDefault()` cannot undo any of that; it only
+  // cancels the browser's own default action. Worse, an ancestor that calls
+  // `stopPropagation()` (every modal and dropdown that closes on an outside
+  // click) means this handler never runs at all, so inspecting inside one
+  // silently does nothing. Claiming the event first costs the page nothing:
+  // the handler returns immediately unless the inspect hotkey is held over an
+  // element carrying `data-tsd-source`, and it already performs the
+  // open-in-editor or copy itself rather than relying on anything downstream.
+  const onInspectClick = (e: MouseEvent) => {
     if (!highlightState.element) return
 
     // Snapshot the source before any signal writes: setDisabledAfterClick
@@ -117,7 +128,9 @@ export const SourceInspector = () => {
       baseUrl,
     )
     fetch(url).catch(() => {})
-  })
+  }
+
+  createEventListener(document, 'click', onInspectClick, { capture: true })
 
   const currentElementBoxStyles = createMemo(() => {
     if (highlightState.element) {
