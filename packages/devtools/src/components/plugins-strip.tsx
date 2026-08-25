@@ -90,13 +90,39 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
    * Fold the strip away once everything is open, and bring it back the moment a
    * plugin closes and returns to it. Only those two transitions are automatic, so
    * a deliberate fold or unfold in between is left alone.
+   *
+   * The first run only seeds the previous emptiness — it must not drive collapse.
+   * Plugins often register after mount (`setConfig` / `onSetPlugins`), and treating
+   * that empty→available jump as "a plugin returned" would force-expand a fold the
+   * user persisted across reload (#505).
+   *
+   * Auto-expand is also gated on having already seen a non-empty strip *or*
+   * registered plugins on the first snapshot (everything open → available empty,
+   * but plugins exist). That keeps "close one pane → strip comes back" after a
+   * remount, without unlocking the late-registration path above.
    */
-  createEffect((wasEmpty: boolean | undefined) => {
-    const isEmpty = available().length === 0
-    if (isEmpty && wasEmpty === false) setCollapsed(true)
-    if (!isEmpty && wasEmpty === true) setCollapsed(false)
-    return isEmpty
-  })
+  createEffect(
+    (
+      previous:
+        | { wasEmpty: boolean; mayAutoExpand: boolean }
+        | undefined,
+    ) => {
+      const isEmpty = available().length === 0
+      const mayAutoExpand =
+        Boolean(previous?.mayAutoExpand) ||
+        !isEmpty ||
+        (plugins() ?? []).length > 0
+
+      if (previous) {
+        if (isEmpty && !previous.wasEmpty) setCollapsed(true)
+        if (!isEmpty && previous.wasEmpty && previous.mayAutoExpand) {
+          setCollapsed(false)
+        }
+      }
+
+      return { wasEmpty: isEmpty, mayAutoExpand }
+    },
+  )
 
   return (
     <WorkbenchSecondaryTabs

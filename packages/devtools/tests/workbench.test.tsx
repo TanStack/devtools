@@ -562,6 +562,78 @@ describe('workbench', { timeout: 30_000 }, () => {
     ).toHaveAttribute('data-subheader-collapsed', 'true')
   })
 
+  it('keeps a persisted fold when plugins register after mount', async () => {
+    localStorage.setItem(
+      TANSTACK_DEVTOOLS_STATE,
+      JSON.stringify({
+        activeTab: 'plugins',
+        height: 400,
+        persistOpen: true,
+        subheaderCollapsed: true,
+        layout: null,
+      }),
+    )
+
+    let setPlugins:
+      | ((plugins: Array<TanStackDevtoolsPlugin>) => void)
+      | undefined
+    const host = document.body.appendChild(document.createElement('div'))
+    const dispose = render(
+      () =>
+        createComponent(DevtoolsProvider, {
+          plugins: [],
+          config: { defaultOpen: true } as TanStackDevtoolsConfig,
+          onSetPlugins: (setter) => {
+            setPlugins = setter
+          },
+          get children() {
+            return createComponent(PiPProvider, {
+              get children() {
+                return createComponent(DevTools, {})
+              },
+            })
+          },
+        }),
+      host,
+    )
+    disposers.push(dispose)
+
+    const panel = () =>
+      document.querySelector('[data-testid="tanstack-devtools-panel"]')!
+
+    expect(panel()).toHaveAttribute('data-subheader-collapsed', 'true')
+
+    setPlugins!([plugin('one'), plugin('two')])
+    await Promise.resolve()
+
+    // Late registration used to look like "a plugin returned to the strip" and
+    // force-expand a fold restored from localStorage (#505).
+    expect(panel()).toHaveAttribute('data-subheader-collapsed', 'true')
+    expect(
+      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!)
+        .subheaderCollapsed,
+    ).toBe(true)
+  })
+
+  it('still unfolds the strip when a pane closes after everything was open', async () => {
+    mountWorkbench([plugin('one'), plugin('two')])
+    await Promise.resolve()
+
+    // Open both so the strip becomes empty and auto-folds.
+    click('Plugin one')
+    click('Plugin two')
+    const panel = document.querySelector(
+      '[data-testid="tanstack-devtools-panel"]',
+    )!
+    expect(panel).toHaveAttribute('data-subheader-collapsed', 'true')
+
+    closePane('one')
+    expect(panel).toHaveAttribute('data-subheader-collapsed', 'false')
+    expect(
+      document.querySelector('[data-testid="plugins-strip"]'),
+    ).not.toHaveAttribute('data-collapsed')
+  })
+
   it.each([
     ['bottom', 'ArrowUp', 410],
     ['bottom', 'ArrowDown', 390],
