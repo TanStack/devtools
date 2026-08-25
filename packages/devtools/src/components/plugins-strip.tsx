@@ -94,7 +94,7 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
    * The first run only seeds the previous emptiness — it must not drive collapse.
    * Plugins often register after mount (`setConfig` / `onSetPlugins`), and treating
    * that empty→available jump as "a plugin returned" would force-expand a fold the
-   * user persisted across reload (#505).
+   * user persisted across reload (issue 505).
    *
    * Auto-expand is also gated on having already seen a non-empty strip *or*
    * registered plugins on the first snapshot (everything open → available empty,

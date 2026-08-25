@@ -607,7 +607,7 @@ describe('workbench', { timeout: 30_000 }, () => {
     await Promise.resolve()
 
     // Late registration used to look like "a plugin returned to the strip" and
-    // force-expand a fold restored from localStorage (#505).
+    // force-expand a fold restored from localStorage (issue 505).
     expect(panel()).toHaveAttribute('data-subheader-collapsed', 'true')
     expect(
       JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!)
