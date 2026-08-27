@@ -13,6 +13,7 @@ import {
   nextGroupId,
   paneRects,
   repairLayout,
+  resetSplit,
   resize,
   resizeFromPointer,
   singleGroup,
@@ -351,6 +352,64 @@ describe('resize', () => {
     expect(resize(tree, [], 5, 0.1)).toEqual(tree)
     expect(resize(tree, [], 0, 0)).toEqual(tree)
     expect(resize(group('g0', ['a']), [], 0, 0.1)).toEqual(group('g0', ['a']))
+  })
+})
+
+describe('resetSplit', () => {
+  it('evens out an unequal pair', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b'])],
+      [0.7, 0.3],
+    )
+    const next = resetSplit(tree, [], 0) as SplitNode
+    expect(next.sizes[0]).toBeCloseTo(0.5, 10)
+    expect(next.sizes[1]).toBeCloseTo(0.5, 10)
+    expectWellFormed(next)
+  })
+
+  it('only touches the gutter pair, leaving the rest alone', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b']), group('g2', ['c'])],
+      [0.1, 0.7, 0.2],
+    )
+    const next = resetSplit(tree, [], 0) as SplitNode
+    expect(next.sizes[0]).toBeCloseTo(0.4, 10)
+    expect(next.sizes[1]).toBeCloseTo(0.4, 10)
+    expect(next.sizes[2]).toBeCloseTo(0.2, 10)
+    expectWellFormed(next)
+  })
+
+  it('resets a nested split by path', () => {
+    const tree = split('row', [
+      group('g0', ['a']),
+      split('col', [group('g1', ['b']), group('g2', ['c'])], [0.8, 0.2]),
+    ])
+    const next = resetSplit(tree, [1], 0) as SplitNode
+    const inner = next.children[1] as SplitNode
+    expect(inner.sizes[0]).toBeCloseTo(0.5, 10)
+    expect(inner.sizes[1]).toBeCloseTo(0.5, 10)
+    // The outer split is untouched.
+    expect(next.sizes[0]).toBeCloseTo(0.5, 10)
+    expectWellFormed(next)
+  })
+
+  it('is a no-op when the pair is already even', () => {
+    const tree = split(
+      'row',
+      [group('g0', ['a']), group('g1', ['b'])],
+      [0.5, 0.5],
+    )
+    expect(resetSplit(tree, [], 0)).toEqual(tree)
+  })
+
+  it('is a no-op for a bad path or gutter', () => {
+    const tree = split('row', [group('g0', ['a']), group('g1', ['b'])])
+    expect(resetSplit(tree, [9], 0)).toEqual(tree)
+    expect(resetSplit(tree, [], 5)).toEqual(tree)
+    expect(resetSplit(group('g0', ['a']), [], 0)).toEqual(group('g0', ['a']))
+    expect(resetSplit(null, [], 0)).toBeNull()
   })
 })
 

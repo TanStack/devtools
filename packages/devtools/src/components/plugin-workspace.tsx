@@ -34,6 +34,7 @@ import {
   findGroupOfTab,
   layoutRects,
   moveTab,
+  resetSplit,
   resize,
   resizeFromPointer,
   setTabs,
@@ -600,6 +601,10 @@ export const PluginWorkspace = (props: {
     document.addEventListener('pointerup', up)
   }
 
+  const resetSplitterDrag = (handle: SplitterHandle) => {
+    setLayout(resetSplit(layout(), handle.path, handle.gutterIndex))
+  }
+
   const resizeFromKeyboard = (handle: SplitterHandle, event: KeyboardEvent) => {
     const step = event.shiftKey ? KEYBOARD_STEP_COARSE : KEYBOARD_STEP
     const grows =
@@ -867,6 +872,7 @@ export const PluginWorkspace = (props: {
                 // Read through the accessor at gesture time, so a gutter that has
                 // been re-measured since render still moves the right sizes.
                 onPointerDown={(event) => startSplitterDrag(handle(), event)}
+                onDblClick={() => resetSplitterDrag(handle())}
                 onKeyDown={(event) => resizeFromKeyboard(handle(), event)}
               />
             )
