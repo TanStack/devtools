@@ -3,10 +3,10 @@ import { createUniqueId } from 'solid-js'
 // The rainbow favicon paints its own colours so it stays readable on any host
 // page. These literals are the official dark-favicon stops, not theme tokens.
 const PALM_INK = '#171717' // semantic-color-exempt: trigger-rainbow-mark
-const RAINBOW_STOP_0 = '#FF5F5F' // semantic-color-exempt: trigger-rainbow-mark
-const RAINBOW_STOP_1 = '#FFA05C' // semantic-color-exempt: trigger-rainbow-mark
-const RAINBOW_STOP_2 = '#FFF27C' // semantic-color-exempt: trigger-rainbow-mark
-const RAINBOW_STOP_3 = '#74DCFF' // semantic-color-exempt: trigger-rainbow-mark
+export const RAINBOW_STOP_0 = '#FF5F5F' // semantic-color-exempt: trigger-rainbow-mark
+export const RAINBOW_STOP_1 = '#FFA05C' // semantic-color-exempt: trigger-rainbow-mark
+export const RAINBOW_STOP_2 = '#FFF27C' // semantic-color-exempt: trigger-rainbow-mark
+export const RAINBOW_STOP_3 = '#74DCFF' // semantic-color-exempt: trigger-rainbow-mark
 
 /**
  * The default trigger mark: the rainbow palm from the TanStack dark favicon,

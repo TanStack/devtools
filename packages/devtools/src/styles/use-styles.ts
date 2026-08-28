@@ -3,15 +3,27 @@ import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 import { createEffect, createSignal } from 'solid-js'
 import { createTheme } from '../context/use-devtools-context'
 import {
+  RAINBOW_STOP_0,
+  RAINBOW_STOP_1,
+  RAINBOW_STOP_2,
+  RAINBOW_STOP_3,
+} from '../components/tanstack-trigger-mark'
+import {
+  HOT_CORNER_MARK_SIZE,
   PLUGINS_STRIP_HEIGHT,
   PLUGIN_GROUP_TAB_HEIGHT,
+  TRIGGER_EDGE_TAB_LENGTH,
   WORKBENCH_GUTTER,
   WORKBENCH_GUTTER_NARROW,
   WORKBENCH_HEADER_HEIGHT,
 } from '../utils/constants'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 import type { Accessor } from 'solid-js'
-import type { DevtoolsStore } from '../context/devtools-store'
+import type {
+  DevtoolsStore,
+  TriggerCorner,
+  TriggerEdge,
+} from '../context/devtools-store'
 
 const WORKBENCH_GEOMETRY_STYLE_ID = 'tanstack-devtools-workbench-geometry'
 
@@ -71,6 +83,12 @@ const statusFadeIn = goober.keyframes`
   }
   to {
     opacity: 1;
+  }
+`
+
+const hotCornerIn = goober.keyframes`
+  from {
+    opacity: 0;
   }
 `
 
@@ -871,6 +889,91 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       touch-action: none;
       user-select: none;
     `,
+    hotCornerMark: (corner: TriggerCorner) => {
+      const vertical = corner.startsWith('top') ? 'top' : 'bottom'
+      const horizontal = corner.endsWith('left') ? 'left' : 'right'
+      const innerVertical = vertical === 'top' ? 'bottom' : 'top'
+      const innerHorizontal = horizontal === 'left' ? 'right' : 'left'
+      return css`
+        position: fixed;
+        ${vertical}: 0;
+        ${horizontal}: 0;
+        z-index: 99998;
+        width: ${HOT_CORNER_MARK_SIZE}px;
+        height: ${HOT_CORNER_MARK_SIZE}px;
+        pointer-events: none;
+        box-sizing: border-box;
+        /* A quarter disc hugging the corner: the two inner edges carry the
+           radius, so the mark reads as the arc the trigger will snap into. */
+        border-${innerVertical}-${innerHorizontal}-radius: 100%;
+        border-${innerVertical}: 2px solid ${semantic.color.border.focus};
+        border-${innerHorizontal}: 2px solid ${semantic.color.border.focus};
+        background: ${semantic.color.border.focus};
+        opacity: 0.32;
+        animation: ${hotCornerIn} 0.15s ease-out;
+        @media (prefers-reduced-motion: reduce) {
+          animation: none;
+        }
+      `
+    },
+    triggerEdgeTab: (edge: TriggerEdge, preview: boolean) => {
+      const vertical = edge === 'left' || edge === 'right'
+      return css`
+        position: fixed;
+        z-index: 99999;
+        ${edge === 'left' ? 'left: 0;' : ''}
+        ${edge === 'right' ? 'right: 0;' : ''}
+        ${edge === 'top' ? 'top: 0;' : ''}
+        ${edge === 'bottom' ? 'bottom: 0;' : ''}
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        ${vertical
+          ? `width: 18px; height: ${TRIGGER_EDGE_TAB_LENGTH}px;`
+          : `width: ${TRIGGER_EDGE_TAB_LENGTH}px; height: 18px;`}
+        padding: 0;
+        appearance: none;
+        background: linear-gradient(
+          to bottom,
+          ${RAINBOW_STOP_0} 0%,
+          ${RAINBOW_STOP_1} 34.4449%,
+          ${RAINBOW_STOP_2} 73.3354%,
+          ${RAINBOW_STOP_3} 100%
+        );
+        color: ${semantic.color.text.inverse};
+        border: 0;
+
+        ${vertical
+          ? `border-radius: 0 10px 10px 0;`
+          : `border-radius: 10px 10px 0px 0;`}
+        box-shadow: ${semantic.shadow.sm};
+        cursor: pointer;
+        transition:
+          opacity 0.25s ease-out,
+          scale 0.3s ease,
+          box-shadow 0.2s ease;
+        &:hover {
+          box-shadow: ${semantic.shadow.overlay};
+          scale: 1.06;
+        }
+        &:active {
+          scale: 0.98;
+        }
+        &:focus-visible {
+          outline: 2px solid ${semantic.color.border.focus};
+          outline-offset: -2px;
+        }
+        & > svg {
+          display: block;
+        }
+        ${preview
+          ? `
+              opacity: 0.6;
+              pointer-events: none;
+            `
+          : ''}
+      `
+    },
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
       const base = css`
         ${position === 'top-left'
