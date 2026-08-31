@@ -8,7 +8,9 @@ import {
   clamp,
   cornerAt,
   cornerCoords,
+  directionCorner,
   offScreenEdge,
+  quadrantCorner,
   stepAxis,
 } from './trigger'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
@@ -133,6 +135,43 @@ describe('hot corners', () => {
   })
 })
 
+describe('magnetic direction', () => {
+  it('reads a corner from the direction of a nudge alone', () => {
+    expect(directionCorner(-40, -40, null)).toBe('top-left')
+    expect(directionCorner(40, -40, null)).toBe('top-right')
+    expect(directionCorner(-40, 40, null)).toBe('bottom-left')
+    expect(directionCorner(40, 40, null)).toBe('bottom-right')
+  })
+
+  it('keeps the fallback when neither axis leaves the deadzone', () => {
+    expect(directionCorner(4, -4, 'bottom-left')).toBe('bottom-left')
+    expect(directionCorner(0, 0, null)).toBeNull()
+  })
+
+  it('ignores sideways wander on a long drag along one axis', () => {
+    expect(directionCorner(12, -200, 'bottom-left')).toBe('top-left')
+    expect(directionCorner(-12, -200, 'bottom-right')).toBe('top-right')
+    expect(directionCorner(200, 12, 'top-right')).toBe('top-right')
+    expect(directionCorner(200, -12, 'bottom-left')).toBe('bottom-right')
+  })
+
+  it('still reads a diagonal once the minor axis is deliberate', () => {
+    expect(directionCorner(120, -200, 'bottom-left')).toBe('top-right')
+    expect(directionCorner(-120, -200, 'bottom-right')).toBe('top-left')
+  })
+
+  it('falls back to the quadrant the trigger sits in', () => {
+    const size = { width: 56, height: 56 }
+    const viewport = { width: 1024, height: 768 }
+    expect(quadrantCorner({ x: 8, y: 8 }, size, viewport)).toBe('top-left')
+    expect(quadrantCorner({ x: 960, y: 8 }, size, viewport)).toBe('top-right')
+    expect(quadrantCorner({ x: 8, y: 704 }, size, viewport)).toBe('bottom-left')
+    expect(quadrantCorner({ x: 960, y: 704 }, size, viewport)).toBe(
+      'bottom-right',
+    )
+  })
+})
+
 describe('off screen edge', () => {
   const size = { width: 56, height: 56 }
   const viewport = { width: 1024, height: 768 }
@@ -217,6 +256,80 @@ describe('dragging a floating trigger into a corner', () => {
   })
 })
 
+describe('the drag tooltip', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    Element.prototype.setPointerCapture = vi.fn()
+    Element.prototype.releasePointerCapture = vi.fn()
+    Element.prototype.hasPointerCapture = vi.fn(() => false)
+  })
+
+  const drag = (el: Element, type: string, x: number, y: number) =>
+    el.dispatchEvent(
+      new PointerEvent(type, {
+        bubbles: true,
+        button: 0,
+        pointerId: 1,
+        clientX: x,
+        clientY: y,
+      }),
+    )
+
+  it('stays up when the pointer outruns the button mid-drag', () => {
+    const { getByLabelText, queryByText } = renderTrigger({
+      triggerMode: 'floating',
+    })
+    const button = getByLabelText('Open TanStack Devtools')
+
+    drag(button, 'pointerdown', 400, 400)
+    expect(queryByText(/Drag to move/)).not.toBeNull()
+
+    fireEvent.mouseLeave(button)
+    drag(button, 'pointermove', 700, 300)
+    expect(queryByText(/Drag to move/)).not.toBeNull()
+
+    drag(button, 'pointerup', 700, 300)
+    expect(queryByText(/Drag to move/)).toBeNull()
+  })
+
+  it('gets out of the way while the drag is still going', () => {
+    vi.useFakeTimers()
+    try {
+      const { getByLabelText, queryByText } = renderTrigger({
+        triggerMode: 'floating',
+      })
+      const button = getByLabelText('Open TanStack Devtools')
+
+      drag(button, 'pointerdown', 400, 400)
+      expect(queryByText(/Drag to move/)).not.toBeNull()
+
+      vi.advanceTimersByTime(1500)
+      expect(queryByText(/Drag to move/)).toBeNull()
+
+      drag(button, 'pointermove', 500, 400)
+      expect(queryByText(/Drag to move/)).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('still hides on hover-out when no drag is in flight', () => {
+    const { getByLabelText, queryByText } = renderTrigger({
+      triggerMode: 'floating',
+    })
+    const button = getByLabelText('Open TanStack Devtools')
+
+    drag(button, 'pointerdown', 400, 400)
+    drag(button, 'pointerup', 400, 400)
+    drag(button, 'pointerdown', 400, 400)
+    expect(queryByText(/Drag to move/)).not.toBeNull()
+
+    drag(button, 'pointercancel', 400, 400)
+    fireEvent.mouseLeave(button)
+    expect(queryByText(/Drag to move/)).toBeNull()
+  })
+})
+
 describe('escape during a trigger drag', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -269,8 +382,8 @@ describe('escape during a trigger drag', () => {
     const button = getByLabelText('Open TanStack Devtools')
 
     drag(button, 'pointerdown', 0, 0)
-    drag(button, 'pointermove', 2000, 2000)
-    drag(button, 'pointerup', 2000, 2000)
+    drag(button, 'pointermove', 1016, 760)
+    drag(button, 'pointerup', 1016, 760)
     expect(storedSettings().triggerCorner).toBe('bottom-right')
 
     drag(button, 'pointerdown', 1016, 760)
@@ -285,8 +398,8 @@ describe('escape during a trigger drag', () => {
     const button = getByLabelText('Open TanStack Devtools')
 
     drag(button, 'pointerdown', 0, 0)
-    drag(button, 'pointermove', 2000, 2000)
-    drag(button, 'pointerup', 2000, 2000)
+    drag(button, 'pointermove', 1016, 760)
+    drag(button, 'pointerup', 1016, 760)
 
     escape()
     expect(storedSettings().triggerCoords).toEqual({ x: 1016, y: 760 })
@@ -464,6 +577,26 @@ describe('dragging the trigger off screen', () => {
     expect(
       queryByLabelText('Show TanStack Devtools trigger'),
     ).not.toBeInTheDocument()
+  })
+
+  it('docks to the edge even when the release is also corner-hot', () => {
+    const { container, getByLabelText } = renderTrigger({
+      triggerMode: 'floating',
+    })
+    const button = getByLabelText('Open TanStack Devtools')
+
+    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointermove', 5000, 0)
+
+    expect(container.querySelector('[data-tsd-hot-corner]')).toBeNull()
+    expect(
+      getByLabelText('Show TanStack Devtools trigger'),
+    ).toBeInTheDocument()
+
+    drag(button, 'pointerup', 5000, 0)
+
+    expect(storedSettings().triggerEdge).toBe('right')
+    expect(storedSettings().triggerCorner).toBeUndefined()
   })
 
   it('keeps the trigger when the release never crosses the edge', () => {

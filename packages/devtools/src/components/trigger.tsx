@@ -14,6 +14,7 @@ import {
   HOT_CORNER_SNAP,
   TRIGGER_EDGE_TAB_LENGTH,
   TRIGGER_EDGE_TAB_PAD,
+  TRIGGER_TOOLTIP_MS,
 } from '../utils/constants'
 import { TanStackTriggerMark } from './tanstack-trigger-mark'
 import type {
@@ -28,6 +29,8 @@ const FRICTION = 0.95 // velocity retained each frame
 const RESTITUTION = 0.5 // velocity retained after a wall bounce
 const MIN_SPEED = 0.1 // px/frame below which the throw stops
 const DRAG_THRESHOLD = 4 // px of movement before a press counts as a drag
+const DIRECTION_DEADZONE = 8 // px below which a nudge has no directional intent
+const DIRECTION_AXIS_RATIO = 0.5 // an axis only reads as intent at half the dominant one
 const PADDING_RATIO = 0.5 // matches size[2] = --tsrd-font-size * 0.5
 
 type Bounds = { minX: number; minY: number; maxX: number; maxY: number }
@@ -54,6 +57,60 @@ export const cornerCoords = (
   x: clamp(corner.endsWith('left') ? b.minX : b.maxX, b.minX, b.maxX),
   y: clamp(corner.startsWith('top') ? b.minY : b.maxY, b.minY, b.maxY),
 })
+
+/**
+ * Magnetic-mode corner: which corner a nudge (dx, dy) points toward, from
+ * wherever the trigger currently sits. A tiny move is enough — the corner is
+ * read from the direction alone, not from distance to any actual corner.
+ *
+ * Intent is judged per axis relative to the dominant one, not against a flat
+ * pixel threshold: a long drag "up" always carries some sideways wander, and
+ * absolute thresholds read that wander as a deliberate horizontal move. An
+ * axis that falls short keeps whichever side of `fallback` it already had.
+ */
+export const directionCorner = (
+  dx: number,
+  dy: number,
+  fallback: TriggerCorner | null,
+  deadzone = DIRECTION_DEADZONE,
+): TriggerCorner | null => {
+  const ax = Math.abs(dx)
+  const ay = Math.abs(dy)
+  if (ax <= deadzone && ay <= deadzone) return fallback
+  const vertical =
+    ay > deadzone && ay >= ax * DIRECTION_AXIS_RATIO
+      ? dy < 0
+        ? 'top'
+        : 'bottom'
+      : (fallback?.startsWith('top') ?? false)
+        ? 'top'
+        : 'bottom'
+  const horizontal =
+    ax > deadzone && ax >= ay * DIRECTION_AXIS_RATIO
+      ? dx < 0
+        ? 'left'
+        : 'right'
+      : (fallback?.endsWith('left') ?? false)
+        ? 'left'
+        : 'right'
+  return `${vertical}-${horizontal}`
+}
+
+/**
+ * The corner of the viewport quadrant the trigger sits in — the magnetic
+ * fallback for an unpinned trigger, so an axis with no intent holds the side
+ * it is already on instead of always reading as right/bottom.
+ */
+export const quadrantCorner = (
+  { x, y }: TriggerCoords,
+  size: { width: number; height: number },
+  viewport: { width: number; height: number },
+): TriggerCorner => {
+  const vertical =
+    y + size.height / 2 < viewport.height / 2 ? 'top' : 'bottom'
+  const horizontal = x + size.width / 2 < viewport.width / 2 ? 'left' : 'right'
+  return `${vertical}-${horizontal}`
+}
 
 /**
  * Which viewport edge the trigger's centre has crossed, if any. Horizontal
@@ -142,6 +199,9 @@ export const Trigger = (props: {
     settings().triggerEdge ?? null,
   )
   const [hoverEdge, setHoverEdge] = createSignal<TriggerEdge | null>(null)
+  const [tooltipVisible, setTooltipVisible] = createSignal(false)
+  const [magneticMode, setMagneticMode] = createSignal(false)
+  const [shiftMagnetic, setShiftMagnetic] = createSignal(false)
   const styles = createStyles()
 
   const isFloating = createMemo(() => settings().triggerMode === 'floating')
@@ -149,6 +209,7 @@ export const Trigger = (props: {
   const shownEdge = createMemo(() =>
     isFloating() ? (dockedEdge() ?? hoverEdge()) : null,
   )
+  const magneticActive = createMemo(() => magneticMode() || shiftMagnetic())
 
   const buttonStyle = createMemo(() => {
     return clsx(
@@ -161,6 +222,7 @@ export const Trigger = (props: {
       !settings().customTrigger && styles().mainCloseBtnDefault,
       styles().mainCloseBtnAnimation(props.isOpen(), settings().hideUntilHover),
       isFloating() && styles().mainCloseBtnFloating,
+      isFloating() && magneticActive() && styles().mainCloseBtnMagnetic,
     )
   })
 
@@ -200,12 +262,44 @@ export const Trigger = (props: {
   let startPinnedCorner: TriggerCorner | null = null
   let holdTimer: ReturnType<typeof setTimeout> | undefined
   let snoozedCorner: TriggerCorner | null = null
+  let tooltipShowTimer: ReturnType<typeof setTimeout> | undefined
+  let tooltipHideTimer: ReturnType<typeof setTimeout> | undefined
 
   const cancelThrow = () => {
     if (raf !== undefined) {
       cancelAnimationFrame(raf)
       raf = undefined
     }
+  }
+
+  const hideTooltip = () => {
+    clearTimeout(tooltipShowTimer)
+    clearTimeout(tooltipHideTimer)
+    tooltipShowTimer = undefined
+    tooltipHideTimer = undefined
+    setTooltipVisible(false)
+  }
+
+  // Pointer capture keeps a drag alive after the pointer outruns the button,
+  // and an edge preview drops the button out of hit-testing entirely — both
+  // fire a hover-out that must not pull the tooltip out from under the drag.
+  const hideTooltipUnlessDragging = () => {
+    if (!dragging) hideTooltip()
+  }
+
+  // The hint reads once and then only blocks the view of the drag it explains.
+  const showTooltip = () => {
+    hideTooltip()
+    setTooltipVisible(true)
+    tooltipHideTimer = setTimeout(
+      () => setTooltipVisible(false),
+      TRIGGER_TOOLTIP_MS,
+    )
+  }
+
+  const scheduleTooltip = () => {
+    hideTooltip()
+    tooltipShowTimer = setTimeout(showTooltip, 400)
   }
 
   const cancelHold = () => {
@@ -266,6 +360,16 @@ export const Trigger = (props: {
     return vertical ? { top: `${pos}px` } : { left: `${pos}px` }
   }
 
+  // Where an axis with no directional intent falls back to: the corner the
+  // drag started pinned at, or failing that the quadrant it started in.
+  const magneticFallback = (el: HTMLElement) =>
+    startPinnedCorner ??
+    quadrantCorner(
+      { x: startPosX, y: startPosY },
+      el.getBoundingClientRect(),
+      { width: window.innerWidth, height: window.innerHeight },
+    )
+
   const pinTo = (corner: TriggerCorner, el: HTMLElement) => {
     setPinnedCorner(corner)
     setHotCorner(null)
@@ -291,8 +395,10 @@ export const Trigger = (props: {
       vx = 0
       vy = 0
       cancelHold()
+      hideTooltip()
       snoozedCorner = null
       setHoverEdge(null)
+      setShiftMagnetic(false)
       releaseCapture()
       setHotCorner(null)
       setPinnedCorner(startPinnedCorner)
@@ -302,6 +408,7 @@ export const Trigger = (props: {
     }
     if (raf !== undefined) {
       cancelThrow()
+      setShiftMagnetic(false)
       setHotCorner(null)
       persist()
       return true
@@ -311,6 +418,13 @@ export const Trigger = (props: {
 
   const startThrow = () => {
     cancelThrow()
+    // A throw keeps the corner its launch pointed at: friction shrinks the
+    // velocity every frame, so re-reading direction from it would end the
+    // throw on whatever rounding noise outlived the real motion.
+    const launched = buttonRef()
+    const thrownCorner = launched
+      ? directionCorner(vx, vy, magneticFallback(launched), 0)
+      : null
     const tick = () => {
       const el = buttonRef()
       const current = coords()
@@ -325,11 +439,12 @@ export const Trigger = (props: {
       vy = ny.vel
       const next = { x: nx.pos, y: ny.pos }
       setCoords(next)
-      setHotCorner(cornerAt(next, b))
+      setHotCorner(magneticActive() ? thrownCorner : cornerAt(next, b))
       if (Math.hypot(vx, vy) > MIN_SPEED) {
         raf = requestAnimationFrame(tick)
       } else {
         raf = undefined
+        setShiftMagnetic(false)
         const corner = hotCorner()
         if (corner) pinTo(corner, el)
         else persist()
@@ -345,6 +460,7 @@ export const Trigger = (props: {
     if (!el || !current) return
     cancelThrow()
     cancelHold()
+    showTooltip()
     snoozedCorner = null
     setHoverEdge(null)
     startPinnedCorner = pinnedCorner()
@@ -352,6 +468,7 @@ export const Trigger = (props: {
     setHotCorner(null)
     dragging = true
     moved = false
+    setShiftMagnetic(e.shiftKey)
     activePointer = e.pointerId
     el.setPointerCapture(e.pointerId)
     startX = e.clientX
@@ -369,6 +486,7 @@ export const Trigger = (props: {
   const onPointerMove = (e: PointerEvent) => {
     if (!dragging) return
     e.preventDefault()
+    setShiftMagnetic(e.shiftKey)
     const el = buttonRef()
     if (!el) return
     const dx = e.clientX - startX
@@ -388,8 +506,16 @@ export const Trigger = (props: {
       ),
     }
     setCoords(next)
-    setHoverEdge(moved ? edgeOffScreen(next, el) : null)
-    const corner = moved ? cornerAt(next, bounds(el)) : null
+    const edge = moved ? edgeOffScreen(next, el) : null
+    setHoverEdge(edge)
+    // An edge preview and a hot corner would both claim the release, and only
+    // the preview is on screen to say so — so past the edge, no corner.
+    const corner =
+      moved && !edge
+        ? magneticActive()
+          ? directionCorner(dx, dy, magneticFallback(el))
+          : cornerAt(next, bounds(el))
+        : null
     if (corner !== snoozedCorner) snoozedCorner = null
     const hot = snoozedCorner ? null : corner
     setHotCorner(hot)
@@ -410,6 +536,7 @@ export const Trigger = (props: {
     if (!dragging) return
     dragging = false
     cancelHold()
+    hideTooltip()
     snoozedCorner = null
     setHoverEdge(null)
     const el = buttonRef()
@@ -420,21 +547,24 @@ export const Trigger = (props: {
       vx = 0
       vy = 0
     }
-    // A corner wins over both hiding and throwing: the mark promised it would
-    // stick there. To hide at a corner, hold to snooze the corner first.
+    // Crossing an edge wins: that is the arrow tab the preview promised, and a
+    // corner cannot be hot out there. A corner in turn wins over a throw — the
+    // mark promised it would stick.
+    const current = coords()
+    if (el && current && moved) {
+      const edge = edgeOffScreen(current, el)
+      if (edge) {
+        hideToEdge(edge)
+        return
+      }
+    }
     const corner = hotCorner()
     if (corner && el) {
       pinTo(corner, el)
       return
     }
     setHotCorner(null)
-    const current = coords()
     if (el && current) {
-      const edge = edgeOffScreen(current, el)
-      if (moved && edge) {
-        hideToEdge(edge)
-        return
-      }
       // Released dangling past the padded bounds without crossing an edge:
       // slide back onto the screen before settling or throwing.
       const b = bounds(el)
@@ -446,6 +576,7 @@ export const Trigger = (props: {
     if (canThrow && moved && Math.hypot(vx, vy) > MIN_SPEED) {
       startThrow()
     } else {
+      setShiftMagnetic(false)
       persist()
     }
   }
@@ -497,6 +628,10 @@ export const Trigger = (props: {
     if (!isFloating()) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && cancelGesture()) event.stopPropagation()
+      if (event.altKey && event.key.toLowerCase() === 'm') {
+        setMagneticMode((v) => !v)
+        event.stopPropagation()
+      }
     }
     window.addEventListener('keydown', onKeyDown)
     onCleanup(() => window.removeEventListener('keydown', onKeyDown))
@@ -529,6 +664,7 @@ export const Trigger = (props: {
   onCleanup(() => {
     cancelThrow()
     cancelHold()
+    hideTooltip()
   })
 
   createEffect(() => {
@@ -566,7 +702,7 @@ export const Trigger = (props: {
         )}
       </Show>
       <Show when={!docked()}>
-        <Show when={isFloating() ? (hoverEdge() ? null : hotCorner()) : null}>
+        <Show when={isFloating() ? hotCorner() : null}>
           {(corner) => (
             <div
               aria-hidden="true"
@@ -601,6 +737,10 @@ export const Trigger = (props: {
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerCancel}
+          onMouseEnter={() => isFloating() && !dragging && scheduleTooltip()}
+          onMouseLeave={hideTooltipUnlessDragging}
+          onFocus={() => isFloating() && !dragging && scheduleTooltip()}
+          onBlur={hideTooltipUnlessDragging}
         >
           <Show
             when={settings().customTrigger}
@@ -609,6 +749,15 @@ export const Trigger = (props: {
             <div ref={setContainerRef} />
           </Show>
         </button>
+        <Show when={isFloating() && tooltipVisible()}>
+          <div aria-hidden="true" class={styles().triggerTooltip}>
+            Drag to move. Alt+M {magneticMode() ? 'disables' : 'enables'}{' '}
+            magnetic mode{magneticMode() ? ' (on)' : ''}, or hold Shift while
+            dragging — the smallest nudge then snaps to whichever corner
+            you're nudging toward. Hold still on a corner for 2s to disable
+            it. Drag off-screen to hide.
+          </div>
+        </Show>
       </Show>
     </Show>
   )

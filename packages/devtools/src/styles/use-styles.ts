@@ -2,12 +2,7 @@ import * as goober from 'goober'
 import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 import { createEffect, createSignal } from 'solid-js'
 import { createTheme } from '../context/use-devtools-context'
-import {
-  RAINBOW_STOP_0,
-  RAINBOW_STOP_1,
-  RAINBOW_STOP_2,
-  RAINBOW_STOP_3,
-} from '../components/tanstack-trigger-mark'
+import { TRIGGER_MARK_GRADIENT } from '../components/tanstack-trigger-mark'
 import {
   HOT_CORNER_MARK_SIZE,
   PLUGINS_STRIP_HEIGHT,
@@ -889,6 +884,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       touch-action: none;
       user-select: none;
     `,
+    mainCloseBtnMagnetic: css`
+      box-shadow:
+        0 0 0 2px ${semantic.color.border.focus},
+        ${semantic.shadow.sm};
+    `,
     hotCornerMark: (corner: TriggerCorner) => {
       const vertical = corner.startsWith('top') ? 'top' : 'bottom'
       const horizontal = corner.endsWith('left') ? 'left' : 'right'
@@ -933,19 +933,16 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
           : `width: ${TRIGGER_EDGE_TAB_LENGTH}px; height: 18px;`}
         padding: 0;
         appearance: none;
-        background: linear-gradient(
-          to bottom,
-          ${RAINBOW_STOP_0} 0%,
-          ${RAINBOW_STOP_1} 34.4449%,
-          ${RAINBOW_STOP_2} 73.3354%,
-          ${RAINBOW_STOP_3} 100%
-        );
+        background: ${TRIGGER_MARK_GRADIENT};
         color: ${semantic.color.text.inverse};
         border: 0;
-
-        ${vertical
+        ${edge === 'left'
           ? `border-radius: 0 10px 10px 0;`
-          : `border-radius: 10px 10px 0px 0;`}
+          : edge === 'right'
+            ? `border-radius: 10px 0 0 10px;`
+            : edge === 'top'
+              ? `border-radius: 0 0 10px 10px;`
+              : `border-radius: 10px 10px 0 0;`}
         box-shadow: ${semantic.shadow.sm};
         cursor: pointer;
         transition:
@@ -974,6 +971,28 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
           : ''}
       `
     },
+    triggerTooltip: css`
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100000;
+      max-width: 280px;
+      padding: 8px 12px;
+      border-radius: ${semantic.radius.control};
+      background: ${semantic.color.surface.elevated};
+      color: ${semantic.color.text.primary};
+      font-size: ${semantic.type.bodyXs.size};
+      line-height: ${semantic.type.bodyXs.lineHeight};
+      text-align: center;
+      box-shadow: ${semantic.shadow.overlay};
+      border: 1px solid ${semantic.color.border.decorative};
+      pointer-events: none;
+      animation: ${statusFadeIn} 0.15s ease;
+      @media (prefers-reduced-motion: reduce) {
+        animation: none;
+      }
+    `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
       const base = css`
         ${position === 'top-left'

@@ -53,8 +53,10 @@ export const HOT_CORNER_MARK_SIZE = 112
  * How long (ms) the floating trigger must be held still over a hot corner
  * before that corner is deactivated for the rest of the drag.
  */
-export const HOT_CORNER_HOLD_MS = 800
+export const HOT_CORNER_HOLD_MS = 2000
 /** Long side of the arrow tab docked on the edge the trigger was hidden off. */
 export const TRIGGER_EDGE_TAB_LENGTH = 44
 /** Minimum gap between the docked edge tab and the viewport ends. */
 export const TRIGGER_EDGE_TAB_PAD = 8
+/** How long (ms) the floating trigger's hint stays up before it gets out of the way. */
+export const TRIGGER_TOOLTIP_MS = 1500
