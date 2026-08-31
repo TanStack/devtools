@@ -35,7 +35,7 @@ The `config` object is mainly focused around user interaction with the devtools 
 { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right' }
 ```
 
-- `triggerMode` - How the trigger is placed. `'floating'` (the default) lets you drag the trigger anywhere on screen, and throw it: it glides with momentum and springs back off the edges. `'fixed'` anchors it to `position`. The floating spot is persisted in local storage.
+- `triggerMode` - How the trigger is placed. `'floating'` (the default) lets you drag the trigger anywhere on screen, and throw it: it glides with momentum and springs back off the edges. Drag it off any screen edge to hide it behind a slim arrow tab (click the tab to bring it back), and hold it still over a glowing corner for two seconds to drop it there without pinning. `'fixed'` anchors it to `position`. The floating spot is persisted in local storage.
 
 ```ts
 { triggerMode: 'fixed' | 'floating' }

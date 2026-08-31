@@ -41,3 +41,22 @@ export const WORKBENCH_GUTTER = 16
 export const WORKBENCH_GUTTER_NARROW = 12
 export const PANEL_CLOSE_THRESHOLD = 70
 export const PANEL_MAX_VIEWPORT_RATIO = 0.9
+
+/**
+ * How close (in px, per axis) the floating trigger has to be to a corner for
+ * that corner to go hot and pin the trigger on release.
+ */
+export const HOT_CORNER_SNAP = 72
+/** Size of the quarter-circle mark painted in a hot corner. */
+export const HOT_CORNER_MARK_SIZE = 112
+/**
+ * How long (ms) the floating trigger must be held still over a hot corner
+ * before that corner is deactivated for the rest of the drag.
+ */
+export const HOT_CORNER_HOLD_MS = 2000
+/** Long side of the arrow tab docked on the edge the trigger was hidden off. */
+export const TRIGGER_EDGE_TAB_LENGTH = 44
+/** Minimum gap between the docked edge tab and the viewport ends. */
+export const TRIGGER_EDGE_TAB_PAD = 8
+/** How long (ms) the floating trigger's hint stays up before it gets out of the way. */
+export const TRIGGER_TOOLTIP_MS = 1500
