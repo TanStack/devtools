@@ -282,14 +282,14 @@ describe('the drag tooltip', () => {
     const button = getByLabelText('Open TanStack Devtools')
 
     drag(button, 'pointerdown', 400, 400)
-    expect(queryByText(/Drag to move/)).not.toBeNull()
+    expect(queryByText(/Drag/)).not.toBeNull()
 
     fireEvent.mouseLeave(button)
     drag(button, 'pointermove', 700, 300)
-    expect(queryByText(/Drag to move/)).not.toBeNull()
+    expect(queryByText(/Drag/)).not.toBeNull()
 
     drag(button, 'pointerup', 700, 300)
-    expect(queryByText(/Drag to move/)).toBeNull()
+    expect(queryByText(/Drag/)).toBeNull()
   })
 
   it('gets out of the way while the drag is still going', () => {
@@ -301,13 +301,13 @@ describe('the drag tooltip', () => {
       const button = getByLabelText('Open TanStack Devtools')
 
       drag(button, 'pointerdown', 400, 400)
-      expect(queryByText(/Drag to move/)).not.toBeNull()
+      expect(queryByText(/Drag/)).not.toBeNull()
 
       vi.advanceTimersByTime(1500)
-      expect(queryByText(/Drag to move/)).toBeNull()
+      expect(queryByText(/Drag/)).toBeNull()
 
       drag(button, 'pointermove', 500, 400)
-      expect(queryByText(/Drag to move/)).toBeNull()
+      expect(queryByText(/Drag/)).toBeNull()
     } finally {
       vi.useRealTimers()
     }
@@ -322,11 +322,11 @@ describe('the drag tooltip', () => {
     drag(button, 'pointerdown', 400, 400)
     drag(button, 'pointerup', 400, 400)
     drag(button, 'pointerdown', 400, 400)
-    expect(queryByText(/Drag to move/)).not.toBeNull()
+    expect(queryByText(/Drag/)).not.toBeNull()
 
     drag(button, 'pointercancel', 400, 400)
     fireEvent.mouseLeave(button)
-    expect(queryByText(/Drag to move/)).toBeNull()
+    expect(queryByText(/Drag/)).toBeNull()
   })
 })
 

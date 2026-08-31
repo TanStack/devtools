@@ -977,21 +977,51 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 100000;
-      max-width: 280px;
-      padding: 8px 12px;
-      border-radius: ${semantic.radius.control};
-      background: ${semantic.color.surface.elevated};
+      max-width: 420px;
+      padding: 14px 18px;
+      border-radius: ${semantic.radius.group};
+      background: color-mix(
+        in srgb,
+        ${semantic.color.surface.elevated} 76%,
+        transparent
+      );
+      backdrop-filter: blur(12px) saturate(1.4);
       color: ${semantic.color.text.primary};
-      font-size: ${semantic.type.bodyXs.size};
-      line-height: ${semantic.type.bodyXs.lineHeight};
+      font-size: 13px;
+      line-height: 1.5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
       text-align: center;
       box-shadow: ${semantic.shadow.overlay};
       border: 1px solid ${semantic.color.border.decorative};
       pointer-events: none;
       animation: ${statusFadeIn} 0.15s ease;
+      @supports not (backdrop-filter: blur(1px)) {
+        background: ${semantic.color.surface.elevated};
+      }
       @media (prefers-reduced-motion: reduce) {
         animation: none;
       }
+    `,
+    triggerTooltipKeys: css`
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 30px;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid ${semantic.color.border.decorative};
+      border-bottom: 3px solid ${semantic.color.border.control};
+      border-radius: ${semantic.radius.control};
+      background: ${semantic.color.surface.subtle};
+      color: ${semantic.color.text.primary};
+      font-family: ${semantic.font.mono};
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1;
     `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
       const base = css`

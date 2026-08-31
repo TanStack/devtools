@@ -751,11 +751,10 @@ export const Trigger = (props: {
         </button>
         <Show when={isFloating() && tooltipVisible()}>
           <div aria-hidden="true" class={styles().triggerTooltip}>
-            Drag to move. Alt+M {magneticMode() ? 'disables' : 'enables'}{' '}
-            magnetic mode{magneticMode() ? ' (on)' : ''}, or hold Shift while
-            dragging — the smallest nudge then snaps to whichever corner
-            you're nudging toward. Hold still on a corner for 2s to disable
-            it. Drag off-screen to hide.
+            <kbd class={styles().triggerTooltipKeys}>Alt</kbd>+
+            <kbd class={styles().triggerTooltipKeys}>M</kbd> or{' '}
+            <kbd class={styles().triggerTooltipKeys}>Shift</kbd> to activate
+            magnetic mode
           </div>
         </Show>
       </Show>
