@@ -10,17 +10,17 @@
   },
   "dependencies": {
     "@tanstack/solid-devtools": "^0.8.12",
-    "@tanstack/solid-query": "^5.90.1",
-    "@tanstack/solid-query-devtools": "^5.90.1",
-    "@tanstack/solid-router": "^1.131.50",
-    "@tanstack/solid-router-devtools": "^1.131.50",
-    "solid-js": "^1.9.9"
+    "@tanstack/solid-query": "^5.102.8",
+    "@tanstack/solid-query-devtools": "^5.102.8",
+    "@tanstack/solid-router": "^1.170.30",
+    "@tanstack/solid-router-devtools": "^1.167.1",
+    "solid-js": "^1.9.15"
   },
   "devDependencies": {
     "@tanstack/devtools-vite": "0.8.5",
     "vite": "^8.0.0",
-    "vite-plugin-inspect": "11.3.3",
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-inspect": "11.4.1",
+    "vite-plugin-solid": "^2.11.14"
   },
   "browserslist": {
     "production": [
