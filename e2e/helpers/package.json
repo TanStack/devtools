@@ -16,9 +16,9 @@
     "react": "*"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0",
-    "@types/react": "^19.2.0",
-    "react": "^19.2.0",
-    "typescript": "~5.9.2"
+    "@playwright/test": "^1.63.0",
+    "@types/react": "^19.2.18",
+    "react": "^19.2.8",
+    "typescript": "~5.9.3"
   }
 }

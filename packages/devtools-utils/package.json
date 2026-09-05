@@ -88,12 +88,12 @@
     "node": ">=18"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^6.0.0",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tanstack/devtools": "workspace:^",
     "svelte": "^5.0.0",
-    "tsup": "^8.5.0",
+    "tsup": "^8.5.1",
     "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-solid": "^2.11.14"
   },
   "peerDependencies": {
     "@angular/core": ">=19.0.0",
