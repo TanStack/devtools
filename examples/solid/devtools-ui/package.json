@@ -11,13 +11,13 @@
   "dependencies": {
     "@tanstack/devtools-ui": "0.7.1",
     "@tanstack/solid-devtools": "^0.8.12",
-    "solid-js": "^1.9.9"
+    "solid-js": "^1.9.15"
   },
   "devDependencies": {
     "@tanstack/devtools-vite": "0.8.5",
     "vite": "^8.0.0",
-    "vite-plugin-inspect": "11.3.3",
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-inspect": "11.4.1",
+    "vite-plugin-solid": "^2.11.14"
   },
   "browserslist": {
     "production": [
