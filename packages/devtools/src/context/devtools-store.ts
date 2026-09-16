@@ -101,6 +101,32 @@ export type DevtoolsStore = {
      */
     sourceAction: 'ide-warp' | 'copy-path'
     /**
+     * Builds the URL that `sourceAction: "ide-warp"` requests, from the clicked
+     * element's `data-tsd-source` value. Return an absolute URL or a path; a path
+     * is resolved against the current origin.
+     *
+     * Only needed off Vite. The default targets `__tsd/open-source`, which
+     * `@tanstack/devtools-vite` serves — a host that injects `data-tsd-source`
+     * some other way (an SWC plugin under Next.js, say) has its own endpoint and
+     * usually its own parameter shape, so replacing the whole URL is what makes
+     * the feature reachable there at all.
+     *
+     * A function rather than a string on purpose: settings are persisted to local
+     * storage and take priority over this config on the next load, so a string
+     * would keep serving whatever the app was configured with the first time it
+     * ran. `JSON.stringify` drops functions, which keeps this key out of storage
+     * the same way `customTrigger` stays out.
+     *
+     * @default undefined
+     *
+     * Example:
+     * ```ts
+     *   openSourceUrl: (source) =>
+     *     `/api/open-editor?at=${encodeURIComponent(source)}`
+     * ```
+     */
+    openSourceUrl?: (source: string) => string | URL
+    /**
      * Whether the trigger should be completely hidden or not (you can still open with the hotkey)
      */
     triggerHidden?: boolean
@@ -152,6 +178,7 @@ export const initialState: DevtoolsStore = {
         ? 'dark'
         : 'light',
     sourceAction: 'ide-warp',
+    openSourceUrl: undefined,
     triggerHidden: false,
     customTrigger: undefined,
   },
