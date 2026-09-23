@@ -24,7 +24,15 @@ type TriggerPosition =
 
 type TriggerMode = 'fixed' | 'floating'
 type TriggerCoords = { x: number; y: number }
-export type { TriggerPosition, TriggerMode, TriggerCoords }
+type TriggerCorner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+type TriggerEdge = 'top' | 'bottom' | 'left' | 'right'
+export type {
+  TriggerPosition,
+  TriggerMode,
+  TriggerCoords,
+  TriggerCorner,
+  TriggerEdge,
+}
 
 type TriggerProps = {
   theme: TanStackDevtoolsTheme
@@ -62,6 +70,20 @@ export type DevtoolsStore = {
      * @default undefined
      */
     triggerCoords?: TriggerCoords
+    /**
+     * The corner the floating trigger is pinned to, if any. A pinned trigger is
+     * re-anchored to its corner on load and on resize, instead of having its
+     * stored coordinates clamped back into view.
+     * @default undefined
+     */
+    triggerCorner?: TriggerCorner
+    /**
+     * The screen edge the floating trigger was dragged off of to hide it.
+     * While set, the trigger is a slim tab docked to that edge. Clicking the
+     * tab opens the panel, and dragging it pulls the trigger back out.
+     * @default undefined
+     */
+    triggerEdge?: TriggerEdge
 
     /**
      * The location of the panel once it is open
@@ -167,6 +189,8 @@ export const initialState: DevtoolsStore = {
     position: 'bottom-right',
     triggerMode: 'floating',
     triggerCoords: undefined,
+    triggerCorner: undefined,
+    triggerEdge: undefined,
     panelLocation: 'bottom',
     openHotkey: ['Control', '~'],
     inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],

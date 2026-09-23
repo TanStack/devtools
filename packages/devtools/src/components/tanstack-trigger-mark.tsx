@@ -7,6 +7,9 @@ const RAINBOW_STOP_0 = '#FF5F5F' // semantic-color-exempt: trigger-rainbow-mark
 const RAINBOW_STOP_1 = '#FFA05C' // semantic-color-exempt: trigger-rainbow-mark
 const RAINBOW_STOP_2 = '#FFF27C' // semantic-color-exempt: trigger-rainbow-mark
 const RAINBOW_STOP_3 = '#74DCFF' // semantic-color-exempt: trigger-rainbow-mark
+// Exposed as a single opaque CSS value so the edge tab button (a plain DOM
+// element, not an SVG) can paint the same rainbow as its background.
+export const TRIGGER_MARK_GRADIENT = `linear-gradient(to bottom, ${RAINBOW_STOP_0} 0%, ${RAINBOW_STOP_1} 34.4449%, ${RAINBOW_STOP_2} 73.3354%, ${RAINBOW_STOP_3} 100%)` // semantic-color-exempt: trigger-rainbow-mark
 
 /**
  * The default trigger mark: the rainbow palm from the TanStack dark favicon,
