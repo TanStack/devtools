@@ -2,7 +2,7 @@ import { render } from '@solidjs/testing-library'
 import { createSignal } from 'solid-js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { DevtoolsProvider } from '../context/devtools-context'
-import { Trigger, clamp, stepAxis } from './trigger'
+import { Trigger, clamp, stepAxis, toPercent, toPixels } from './trigger'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 
 const renderTrigger = (config?: Partial<TanStackDevtoolsConfig>) => {
@@ -97,5 +97,27 @@ describe('throw physics', () => {
     expect(frames).toBeLessThan(10000)
     expect(pos).toBeGreaterThanOrEqual(0)
     expect(pos).toBeLessThanOrEqual(500)
+  })
+})
+
+describe('trigger percent position', () => {
+  it('maps the same percent to the same relative spot at any window size', () => {
+    // Free space 8..936 in a 1000px window: 100% is the far wall.
+    expect(toPixels(100, 8, 936)).toBe(936)
+    expect(toPixels(0, 8, 936)).toBe(8)
+    expect(toPixels(50, 8, 736)).toBe(372)
+  })
+
+  it('round-trips pixels through a percent', () => {
+    expect(toPixels(toPercent(500, 8, 936), 8, 936)).toBeCloseTo(500)
+  })
+
+  it('keeps the trigger inside the walls', () => {
+    expect(toPercent(2000, 8, 936)).toBe(100)
+    expect(toPercent(-50, 8, 936)).toBe(0)
+    expect(toPixels(250, 8, 936)).toBe(936)
+    // A window smaller than the trigger pins it to the start wall.
+    expect(toPercent(10, 8, 4)).toBe(0)
+    expect(toPixels(100, 8, 4)).toBe(8)
   })
 })
