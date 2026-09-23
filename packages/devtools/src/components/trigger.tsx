@@ -35,6 +35,14 @@ const PADDING_RATIO = 0.5 // matches size[2] = --tsrd-font-size * 0.5
 
 type Bounds = { minX: number; minY: number; maxX: number; maxY: number }
 
+// The visible viewport without scrollbars. `innerWidth`/`innerHeight` include
+// them, which put the trigger under a page scrollbar. Falls back to the inner
+// size where the root reports no layout (jsdom).
+const viewportWidth = () =>
+  document.documentElement.clientWidth || window.innerWidth
+const viewportHeight = () =>
+  document.documentElement.clientHeight || window.innerHeight
+
 export const clamp = (value: number, min: number, max: number) =>
   Math.max(min, Math.min(max, value))
 
@@ -251,8 +259,8 @@ export const Trigger = (props: {
     return {
       minX: pad,
       minY: pad,
-      maxX: window.innerWidth - el.offsetWidth - pad,
-      maxY: window.innerHeight - el.offsetHeight - pad,
+      maxX: viewportWidth() - el.offsetWidth - pad,
+      maxY: viewportHeight() - el.offsetHeight - pad,
     }
   }
 
@@ -364,14 +372,14 @@ export const Trigger = (props: {
     return offScreenEdge(
       c,
       { width: rect.width, height: rect.height },
-      { width: window.innerWidth, height: window.innerHeight },
+      { width: viewportWidth(), height: viewportHeight() },
     )
   }
 
   const edgeTabStyle = (edge: TriggerEdge) => {
     const vertical = edge === 'left' || edge === 'right'
     const current = coords()
-    const viewport = vertical ? window.innerHeight : window.innerWidth
+    const viewport = vertical ? viewportHeight() : viewportWidth()
     const max = Math.max(
       TRIGGER_EDGE_TAB_PAD,
       viewport - TRIGGER_EDGE_TAB_LENGTH - TRIGGER_EDGE_TAB_PAD,
@@ -395,8 +403,8 @@ export const Trigger = (props: {
   const magneticFallback = (el: HTMLElement) =>
     startPinnedCorner ??
     quadrantCorner({ x: startPosX, y: startPosY }, el.getBoundingClientRect(), {
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: viewportWidth(),
+      height: viewportHeight(),
     })
 
   const pinTo = (corner: TriggerCorner, el: HTMLElement) => {
@@ -526,12 +534,12 @@ export const Trigger = (props: {
       x: clamp(
         startPosX + dx,
         -rect.width / 2,
-        window.innerWidth - rect.width / 2,
+        viewportWidth() - rect.width / 2,
       ),
       y: clamp(
         startPosY + dy,
         -rect.height / 2,
-        window.innerHeight - rect.height / 2,
+        viewportHeight() - rect.height / 2,
       ),
     }
     setCoords(next)
