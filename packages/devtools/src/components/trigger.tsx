@@ -45,6 +45,17 @@ export const stepAxis = (
   return { pos: p, vel: v }
 }
 
+/**
+ * Convert one axis between pixels and a percent (0-100) of the free space
+ * between the two walls. The stored spot is a percent, so it maps back into
+ * view at any window size.
+ */
+export const toPercent = (pos: number, min: number, max: number) =>
+  max > min ? clamp(((pos - min) / (max - min)) * 100, 0, 100) : 0
+
+export const toPixels = (percent: number, min: number, max: number) =>
+  min + (Math.max(max, min) - min) * (clamp(percent, 0, 100) / 100)
+
 export const Trigger = (props: {
   isOpen: Accessor<boolean>
   setIsOpen: (isOpen: boolean) => void
@@ -52,9 +63,9 @@ export const Trigger = (props: {
   const { settings, setSettings } = createDevtoolsSettings()
   const [containerRef, setContainerRef] = createSignal<HTMLElement>()
   const [buttonRef, setButtonRef] = createSignal<HTMLButtonElement>()
-  const [coords, setCoords] = createSignal<TriggerCoords | null>(
-    settings().triggerCoords ?? null,
-  )
+  // On-screen pixels, used by drag and throw. The stored `triggerCoords` is a
+  // percent of the free space, see `persist` and `placeFromSettings`.
+  const [coords, setCoords] = createSignal<TriggerCoords | null>(null)
   const styles = createStyles()
 
   const isFloating = createMemo(() => settings().triggerMode === 'floating')
@@ -83,12 +94,13 @@ export const Trigger = (props: {
 
   const bounds = (el: HTMLElement) => {
     const pad = edgePadding(el)
-    const rect = el.getBoundingClientRect()
+    // offsetWidth/Height ignore the hover scale, so bounds do not change
+    // while the pointer is over the trigger.
     return {
       minX: pad,
       minY: pad,
-      maxX: window.innerWidth - rect.width - pad,
-      maxY: window.innerHeight - rect.height - pad,
+      maxX: window.innerWidth - el.offsetWidth - pad,
+      maxY: window.innerHeight - el.offsetHeight - pad,
     }
   }
 
@@ -113,7 +125,18 @@ export const Trigger = (props: {
     }
   }
 
-  const persist = () => setSettings({ triggerCoords: coords() ?? undefined })
+  const persist = () => {
+    const el = buttonRef()
+    const current = coords()
+    if (!el || !current) return
+    const b = bounds(el)
+    setSettings({
+      triggerCoords: {
+        x: toPercent(current.x, b.minX, b.maxX),
+        y: toPercent(current.y, b.minY, b.maxY),
+      },
+    })
+  }
 
   const startThrow = () => {
     cancelThrow()
@@ -217,42 +240,41 @@ export const Trigger = (props: {
     props.setIsOpen(!props.isOpen())
   }
 
-  // On going floating: seed coords from the button's current (fixed) position
-  // if there's no stored spot, otherwise clamp the restored spot into view
-  // (a saved position from a larger window must not load off-screen).
-  // Reads/writes coords untracked so this only runs on mode/ref changes.
+  // Place the trigger from its stored percent, or seed the percent from the
+  // button's current (fixed) position when there is no stored spot. Runs on
+  // going floating and on every window resize, so the trigger keeps the same
+  // relative spot and never ends up off-screen.
+  let seededSpot: TriggerCoords | undefined
+  const placeFromSettings = (el: HTMLElement) => {
+    const b = bounds(el)
+    let spot = settings().triggerCoords ?? seededSpot
+    if (!spot) {
+      const rect = el.getBoundingClientRect()
+      spot = seededSpot = {
+        x: toPercent(rect.left, b.minX, b.maxX),
+        y: toPercent(rect.top, b.minY, b.maxY),
+      }
+    }
+    setCoords({
+      x: toPixels(spot.x, b.minX, b.maxX),
+      y: toPixels(spot.y, b.minY, b.maxY),
+    })
+  }
+
+  // Reads settings untracked so this only runs on mode/ref changes.
   createEffect(() => {
     if (!isFloating()) return
     const el = buttonRef()
     if (!el) return
-    untrack(() => {
-      const current = coords()
-      if (!current) {
-        const rect = el.getBoundingClientRect()
-        setCoords({ x: rect.left, y: rect.top })
-        return
-      }
-      const b = bounds(el)
-      setCoords({
-        x: clamp(current.x, b.minX, b.maxX),
-        y: clamp(current.y, b.minY, b.maxY),
-      })
-    })
+    untrack(() => placeFromSettings(el))
   })
 
-  // Keep the trigger on screen when the window is resized.
   createEffect(() => {
     if (!isFloating()) return
     const onResize = () => {
       const el = buttonRef()
-      const current = coords()
-      if (!el || !current) return
-      const b = bounds(el)
-      setCoords({
-        x: clamp(current.x, b.minX, b.maxX),
-        y: clamp(current.y, b.minY, b.maxY),
-      })
-      persist()
+      // A throw in flight owns the position; it persists when it settles.
+      if (el && !dragging && raf === undefined) placeFromSettings(el)
     }
     window.addEventListener('resize', onResize)
     onCleanup(() => window.removeEventListener('resize', onResize))
