@@ -11,6 +11,7 @@ import Devtools from './setup'
 import { queryPlugin } from './plugin'
 import { Button } from './button'
 import { Feature } from './feature'
+import { WebMcpProof } from './webmcp-proof'
 import './example.css'
 
 const queryClient = new QueryClient({
@@ -180,6 +181,7 @@ function App() {
               accessibility fixture in one focused sandbox.
             </p>
           </header>
+          <WebMcpProof />
           <section
             className="example-card example-actions"
             aria-label="Example controls"

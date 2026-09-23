@@ -126,6 +126,13 @@ a {
   transform: scale(0.96);
 }
 
+.example-shell button:disabled {
+  border-color: #eeebd4;
+  background: #eeebd4;
+  color: #3e3529;
+  cursor: not-allowed;
+}
+
 .example-shell :focus-visible {
   outline: 3px solid #61adbf;
   outline-offset: 3px;

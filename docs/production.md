@@ -83,6 +83,32 @@ runtime behavior differs.
 
 This is independent of the Vite plugin's `removeDevtoolsOnBuild` option — the event client strips itself based on `NODE_ENV`, whether or not you use the Vite plugin.
 
+## WebMCP tools in production
+
+You search a production build for library WebMCP tools. The tools are not in that build.
+
+With the root import, libraries register those tools only in development.
+
+If the tools must stay registered in production, import `@tanstack/devtools-webmcp/production`.
+
+```ts
+import { registerDevtoolsTools } from '@tanstack/devtools-webmcp/production'
+```
+
+The import `@tanstack/devtools-webmcp/production` is always the real helper. The register call is the same as in [WebMCP Tools](./webmcp-tools).
+
+Use the root import for development.
+
+```ts
+import { registerDevtoolsTools } from '@tanstack/devtools-webmcp'
+```
+
+When `process.env.NODE_ENV` is `'development'`, the root import is the real helper. In every other environment, the root import is a no-op. An unset `NODE_ENV` is a no-op too.
+
+Bundlers remove the real helper. The tool objects stay in the library bundle. The no-op does not call the browser. The no-op does not keep the tools object.
+
+If you build an app, stop the search. The root import does not register these tools in that bundle.
+
 ## Where to install the Devtools
 
 If you are using the devtools in development only, you can install them as a development dependency and only import them in development builds. This is the default recommended way to use the devtools.
