@@ -56,6 +56,14 @@
     {
       "path": "packages/event-bus-client/dist/esm/plugin.js",
       "limit": "1.2 KB"
+    },
+    {
+      "path": "packages/devtools-webmcp/dist/esm/register.js",
+      "limit": "1.5 KB"
+    },
+    {
+      "path": "packages/devtools-webmcp/dist/esm/noop.js",
+      "limit": "250 B"
     }
   ],
   "devDependencies": {

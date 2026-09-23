@@ -1,0 +1,73 @@
+{
+  "name": "@tanstack/devtools-webmcp",
+  "version": "0.0.1",
+  "description": "A small helper a TanStack library uses to register development-only WebMCP tools.",
+  "author": "Tanner Linsley",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TanStack/devtools.git",
+    "directory": "packages/devtools-webmcp"
+  },
+  "homepage": "https://tanstack.com/devtools",
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/tannerlinsley"
+  },
+  "keywords": [
+    "devtools"
+  ],
+  "type": "module",
+  "types": "dist/esm/index.d.ts",
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.js",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
+      }
+    },
+    "./production": {
+      "import": {
+        "types": "./dist/esm/production.d.ts",
+        "default": "./dist/esm/production.js"
+      },
+      "require": {
+        "types": "./dist/cjs/production.d.cts",
+        "default": "./dist/cjs/production.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "intent": "./bin/intent.js"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "dist/",
+    "src",
+    "skills",
+    "bin"
+  ],
+  "scripts": {
+    "clean": "premove ./build ./dist",
+    "lint:fix": "eslint ./src --fix",
+    "test:eslint": "eslint ./src",
+    "test:lib": "vitest",
+    "test:lib:dev": "pnpm test:lib --watch",
+    "test:types": "tsc",
+    "test:build": "publint --strict",
+    "build": "vite build"
+  }
+}

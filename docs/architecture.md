@@ -231,6 +231,14 @@ Listens for `install-devtools` events from the devtools UI, runs the package man
 ### Connection injection (`@tanstack/devtools:connection-injection`)
 Replaces compile-time placeholders (`__TANSTACK_DEVTOOLS_PORT__`, `__TANSTACK_DEVTOOLS_HOST__`, `__TANSTACK_DEVTOOLS_PROTOCOL__`) in the event bus client code with the actual values from the running dev server, so the client automatically connects to the correct server.
 
+## WebMCP Tools
+
+`@tanstack/devtools-webmcp` registers WebMCP tools on the page. A browser agent calls those tools during development. The package has no runtime dependencies.
+
+The helper uses the browser `modelContext`. The helper does not join the event bus. These tools do not appear in a devtools panel.
+
+The steps are in [WebMCP Tools](./webmcp-tools).
+
 ## Data Flow
 
 To tie everything together, here is what happens when a plugin emits an event end-to-end:
