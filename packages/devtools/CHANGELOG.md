@@ -1,5 +1,19 @@
 # @tanstack/devtools
 
+## 0.15.0
+
+### Minor Changes
+
+- [#521](https://github.com/TanStack/devtools/pull/521) [`45f39ee`](https://github.com/TanStack/devtools/commit/45f39ee91e8b4c04c79226cb3171b5686b782b35) - Implement the hot corner feature for the trigger edge dock.
+
+### Patch Changes
+
+- [#515](https://github.com/TanStack/devtools/pull/515) [`02a67f1`](https://github.com/TanStack/devtools/commit/02a67f14ac6ae4569f9bb26f682467f599415210) - Reset splitter panes on double-click
+
+- [#517](https://github.com/TanStack/devtools/pull/517) [`589304f`](https://github.com/TanStack/devtools/commit/589304f46110a6f1b7370c8cfed97459e83f6069) - Add `openSourceUrl` to the devtools config so the source inspector's click can reach an editor endpoint other than the one `@tanstack/devtools-vite` serves.
+
+- [#529](https://github.com/TanStack/devtools/pull/529) [`dc61e1e`](https://github.com/TanStack/devtools/commit/dc61e1ea21a7fc57dfeab6ee6f212b57aea79447) - Keep the floating trigger at the same relative spot when the window size changes. The trigger now stores its spot as a percent of the free space, so it stays in its corner and never moves off-screen.
+
 ## 0.14.2
 
 ### Patch Changes
