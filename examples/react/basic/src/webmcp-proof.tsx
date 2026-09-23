@@ -112,10 +112,7 @@ export function WebMcpProof() {
     if (!active) {
       return
     }
-    const result = active.record.execute(
-      {},
-      { signal: active.record.signal },
-    )
+    const result = active.record.execute({}, { signal: active.record.signal })
     setStatus(`Tool result is ${JSON.stringify(result)}.`)
   }
 

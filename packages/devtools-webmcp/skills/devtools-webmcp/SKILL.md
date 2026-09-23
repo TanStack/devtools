@@ -1,6 +1,6 @@
 ---
 name: devtools-webmcp
-description: "Register WebMCP tools with registerDevtoolsTools from @tanstack/devtools-webmcp. Name rules, cleanup, replace behavior, root import, and the /production import."
+description: 'Register WebMCP tools with registerDevtoolsTools from @tanstack/devtools-webmcp. Name rules, cleanup, replace behavior, root import, and the /production import.'
 type: core
 library: '@tanstack/devtools-webmcp'
 library_version: '0.0.1'

@@ -58,9 +58,8 @@ describe('registerDevtoolsTools', () => {
     vi.stubEnv('NODE_ENV', 'development')
     vi.resetModules()
     // The re-import is required because NODE_ENV is read at module load.
-    const { registerDevtoolsTools: registerInDevelopment } = await import(
-      '../src'
-    )
+    const { registerDevtoolsTools: registerInDevelopment } =
+      await import('../src')
 
     const stop = registerInDevelopment({
       pluginId: 'tanstack.query',
