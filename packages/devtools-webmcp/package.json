@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-webmcp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A small helper a TanStack library uses to register development-only WebMCP tools.",
   "author": "Tanner Linsley",
   "license": "MIT",
