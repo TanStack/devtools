@@ -12,6 +12,8 @@ import {
   offScreenEdge,
   quadrantCorner,
   stepAxis,
+  toPercent,
+  toPixels,
 } from './trigger'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 
@@ -78,6 +80,7 @@ describe('throw physics', () => {
   it('advances position by velocity while inside the walls', () => {
     const { pos, vel } = stepAxis(100, 10, 0, 500)
     expect(pos).toBe(110)
+    expect(vel).toBeCloseTo(9.5) // 10 * FRICTION(0.95)
   })
 
   it('bounces and damps velocity at a wall', () => {
@@ -225,7 +228,7 @@ describe('dragging a floating trigger into a corner', () => {
     const button = getByLabelText('Open TanStack Devtools')
     const mark = () => container.querySelector('[data-tsd-hot-corner]')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 600, 400)
     expect(mark()).toBeNull()
 
@@ -237,19 +240,21 @@ describe('dragging a floating trigger into a corner', () => {
     drag(button, 'pointerup', 1016, 760)
     expect(mark()).toBeNull()
     expect(storedSettings().triggerCorner).toBe('bottom-right')
-    expect(storedSettings().triggerCoords).toEqual({ x: 1016, y: 760 })
+    expect(storedSettings().triggerCoords).toEqual({ x: 100, y: 100 })
   })
 
   it('drops the pin when the trigger is dragged back out of the corner', () => {
     const { getByLabelText } = renderTrigger({ triggerMode: 'floating' })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     drag(button, 'pointerup', 1016, 760)
     expect(storedSettings().triggerCorner).toBe('bottom-right')
 
     drag(button, 'pointerdown', 1016, 760)
+    drag(button, 'pointermove', 516, 400)
+    // Hold still before the release so it drops in place instead of throwing.
     drag(button, 'pointermove', 516, 400)
     drag(button, 'pointerup', 516, 400)
     expect(storedSettings().triggerCorner).toBeUndefined()
@@ -363,7 +368,7 @@ describe('escape during a trigger drag', () => {
     })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     expect(container.querySelector('[data-tsd-hot-corner]')).not.toBeNull()
 
@@ -381,7 +386,7 @@ describe('escape during a trigger drag', () => {
     const { getByLabelText } = renderTrigger({ triggerMode: 'floating' })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     drag(button, 'pointerup', 1016, 760)
     expect(storedSettings().triggerCorner).toBe('bottom-right')
@@ -390,19 +395,19 @@ describe('escape during a trigger drag', () => {
     drag(button, 'pointermove', 516, 400)
     escape()
     expect(storedSettings().triggerCorner).toBe('bottom-right')
-    expect(storedSettings().triggerCoords).toEqual({ x: 1016, y: 760 })
+    expect(storedSettings().triggerCoords).toEqual({ x: 100, y: 100 })
   })
 
   it('leaves a settled trigger alone', () => {
     const { getByLabelText } = renderTrigger({ triggerMode: 'floating' })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     drag(button, 'pointerup', 1016, 760)
 
     escape()
-    expect(storedSettings().triggerCoords).toEqual({ x: 1016, y: 760 })
+    expect(storedSettings().triggerCoords).toEqual({ x: 100, y: 100 })
     expect(storedSettings().triggerCorner).toBe('bottom-right')
   })
 })
@@ -441,7 +446,7 @@ describe('holding a drag on a hot corner', () => {
     const button = getByLabelText('Open TanStack Devtools')
     const mark = () => container.querySelector('[data-tsd-hot-corner]')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     expect(mark()).not.toBeNull()
 
@@ -462,7 +467,7 @@ describe('holding a drag on a hot corner', () => {
     const button = getByLabelText('Open TanStack Devtools')
     const mark = () => container.querySelector('[data-tsd-hot-corner]')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     vi.advanceTimersByTime(2000)
     expect(mark()).toBeNull()
@@ -485,7 +490,7 @@ describe('holding a drag on a hot corner', () => {
     const button = getByLabelText('Open TanStack Devtools')
     const mark = () => container.querySelector('[data-tsd-hot-corner]')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     vi.advanceTimersByTime(1500)
     drag(button, 'pointermove', 1020, 750)
@@ -502,7 +507,7 @@ describe('holding a drag on a hot corner', () => {
     const { getByLabelText } = renderTrigger({ triggerMode: 'floating' })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
     vi.advanceTimersByTime(1500)
     drag(button, 'pointerup', 1016, 760)
@@ -515,7 +520,7 @@ describe('holding a drag on a hot corner', () => {
     })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 2000, 2000)
     vi.advanceTimersByTime(2000)
     drag(button, 'pointerup', 2000, 2000)
@@ -523,9 +528,7 @@ describe('holding a drag on a hot corner', () => {
     expect(storedSettings().triggerCorner).toBeUndefined()
     expect(storedSettings().triggerEdge).toBe('right')
     expect(queryByLabelText('Open TanStack Devtools')).not.toBeInTheDocument()
-    expect(
-      getByLabelText('Show TanStack Devtools trigger'),
-    ).toBeInTheDocument()
+    expect(getByLabelText('Show TanStack Devtools trigger')).toBeInTheDocument()
   })
 })
 
@@ -557,12 +560,10 @@ describe('dragging the trigger off screen', () => {
     })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 5000, 400)
 
-    expect(
-      getByLabelText('Show TanStack Devtools trigger'),
-    ).toBeInTheDocument()
+    expect(getByLabelText('Show TanStack Devtools trigger')).toBeInTheDocument()
 
     drag(button, 'pointerup', 5000, 400)
 
@@ -585,13 +586,11 @@ describe('dragging the trigger off screen', () => {
     })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 5000, 0)
 
     expect(container.querySelector('[data-tsd-hot-corner]')).toBeNull()
-    expect(
-      getByLabelText('Show TanStack Devtools trigger'),
-    ).toBeInTheDocument()
+    expect(getByLabelText('Show TanStack Devtools trigger')).toBeInTheDocument()
 
     drag(button, 'pointerup', 5000, 0)
 
@@ -605,7 +604,7 @@ describe('dragging the trigger off screen', () => {
     })
     const button = getByLabelText('Open TanStack Devtools')
 
-    drag(button, 'pointerdown', 0, 0)
+    drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 5000, 400)
     drag(button, 'pointermove', 500, 400)
     drag(button, 'pointerup', 500, 400)
@@ -613,5 +612,27 @@ describe('dragging the trigger off screen', () => {
     expect(getByLabelText('Open TanStack Devtools')).toBeInTheDocument()
     expect(queryByLabelText('Show TanStack Devtools trigger')).toBeNull()
     expect(storedSettings().triggerEdge).toBeUndefined()
+  })
+})
+
+describe('trigger percent position', () => {
+  it('maps the same percent to the same relative spot at any window size', () => {
+    // Free space 8..936 in a 1000px window: 100% is the far wall.
+    expect(toPixels(100, 8, 936)).toBe(936)
+    expect(toPixels(0, 8, 936)).toBe(8)
+    expect(toPixels(50, 8, 736)).toBe(372)
+  })
+
+  it('round-trips pixels through a percent', () => {
+    expect(toPixels(toPercent(500, 8, 936), 8, 936)).toBeCloseTo(500)
+  })
+
+  it('keeps the trigger inside the walls', () => {
+    expect(toPercent(2000, 8, 936)).toBe(100)
+    expect(toPercent(-50, 8, 936)).toBe(0)
+    expect(toPixels(250, 8, 936)).toBe(936)
+    // A window smaller than the trigger pins it to the start wall.
+    expect(toPercent(10, 8, 4)).toBe(0)
+    expect(toPixels(100, 8, 4)).toBe(8)
   })
 })

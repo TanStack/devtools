@@ -64,8 +64,9 @@ export type DevtoolsStore = {
      */
     triggerMode: TriggerMode
     /**
-     * The persisted top-left coordinates (in px) of the floating trigger.
-     * Only used when `triggerMode` is "floating".
+     * The persisted spot of the floating trigger, as a percent (0-100) of the
+     * free space from the left and top edges. `{ x: 100, y: 100 }` is the
+     * bottom-right corner. Only used when `triggerMode` is "floating".
      * @default undefined
      */
     triggerCoords?: TriggerCoords
