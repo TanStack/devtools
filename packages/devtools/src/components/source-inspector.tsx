@@ -92,6 +92,21 @@ export const SourceInspector = () => {
     })
   })
 
+  const openSourceUrl = (source: string) => {
+    // A host that injects `data-tsd-source` without `@tanstack/devtools-vite`
+    // has no `__tsd/open-source` to answer, and usually its own parameter shape,
+    // so the whole URL is replaceable rather than just its base.
+    const buildUrl = settings().openSourceUrl
+    if (buildUrl) return new URL(buildUrl(source), location.origin)
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
+    return new URL(
+      `__tsd/open-source?source=${encodeURIComponent(source)}`,
+      baseUrl,
+    )
+  }
+
   createEventListener(document, 'click', (e) => {
     if (!highlightState.element) return
 
@@ -110,13 +125,7 @@ export const SourceInspector = () => {
       return
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
-    const url = new URL(
-      `__tsd/open-source?source=${encodeURIComponent(source)}`,
-      baseUrl,
-    )
-    fetch(url).catch(() => {})
+    fetch(openSourceUrl(source)).catch(() => {})
   })
 
   const currentElementBoxStyles = createMemo(() => {
