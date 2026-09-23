@@ -362,11 +362,6 @@ export const Trigger = (props: {
     persist()
   }
 
-  const restoreFromEdge = () => {
-    setDockedEdge(null)
-    persist()
-  }
-
   const edgeOffScreen = (c: TriggerCoords, el: HTMLElement) => {
     const rect = el.getBoundingClientRect()
     return offScreenEdge(
@@ -492,6 +487,12 @@ export const Trigger = (props: {
 
   const onPointerDown = (e: PointerEvent) => {
     if (!isFloating() || e.button !== 0) return
+    beginDrag(e)
+  }
+
+  // Starts a drag of the floating button from any pointer event. The docked
+  // tab also calls this, with a pointermove, when it is pulled off its edge.
+  const beginDrag = (e: PointerEvent) => {
     const el = buttonRef()
     const current = coords()
     if (!el || !current) return
@@ -518,6 +519,39 @@ export const Trigger = (props: {
     vx = 0
     vy = 0
     e.preventDefault()
+  }
+
+  // --- docked tab: a click opens the panel, a press and drag undocks ---
+  let tabPress: { x: number; y: number } | null = null
+
+  const onTabPointerDown = (e: PointerEvent) => {
+    if (!dockedEdge() || e.button !== 0) return
+    tabPress = { x: e.clientX, y: e.clientY }
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    e.preventDefault()
+  }
+
+  const onTabPointerMove = (e: PointerEvent) => {
+    if (!tabPress) return
+    const dx = e.clientX - tabPress.x
+    const dy = e.clientY - tabPress.y
+    if (Math.hypot(dx, dy) <= DRAG_THRESHOLD) return
+    tabPress = null
+    // Mounts the floating button (the tab unmounts), then centers it under
+    // the pointer and hands the drag to it. Pointer capture moves with it.
+    setDockedEdge(null)
+    const el = buttonRef()
+    if (!el) return
+    setCoords({
+      x: e.clientX - el.offsetWidth / 2,
+      y: e.clientY - el.offsetHeight / 2,
+    })
+    beginDrag(e)
+    moved = true
+  }
+
+  const onTabPointerUp = () => {
+    tabPress = null
   }
 
   const onPointerMove = (e: PointerEvent) => {
@@ -712,23 +746,43 @@ export const Trigger = (props: {
     <Show when={!settings().triggerHidden}>
       <Show when={shownEdge()}>
         {(edge) => (
-          // While docked this is the button that brings the trigger back;
-          // mid-drag (dockedEdge still null) it previews under the finger, so
-          // it must not swallow pointer events from the captured button.
+          // While docked this is the trigger: a click opens the panel and a
+          // press and drag pulls the trigger off the edge. Mid-drag
+          // (dockedEdge still null) it previews under the finger, so it must
+          // not swallow pointer events from the captured button.
           <button
             type="button"
             data-tsd-control
-            aria-label="Show TanStack Devtools trigger"
+            aria-label="Open TanStack Devtools (docked)"
             aria-hidden={dockedEdge() ? undefined : true}
             tabIndex={dockedEdge() ? undefined : -1}
             class={clsx(
-              styles().triggerEdgeTab(edge(), !dockedEdge()),
+              styles().triggerEdgeTab(
+                edge(),
+                !dockedEdge(),
+                !settings().customTrigger,
+              ),
               styles().mainCloseBtnAnimation(props.isOpen(), false),
             )}
             style={edgeTabStyle(edge())}
-            onClick={dockedEdge() ? restoreFromEdge : undefined}
+            onClick={
+              dockedEdge() ? () => props.setIsOpen(!props.isOpen()) : undefined
+            }
+            onPointerDown={onTabPointerDown}
+            onPointerMove={onTabPointerMove}
+            onPointerUp={onTabPointerUp}
+            onPointerCancel={onTabPointerUp}
           >
-            <EdgeTabChevron edge={edge()} />
+            <span data-tsd-edge-chevron>
+              <EdgeTabChevron edge={edge()} />
+            </span>
+            {/* A custom trigger renders into one container only, so the
+                hover reveal shows the default mark alone. */}
+            <Show when={!settings().customTrigger}>
+              <span data-tsd-edge-mark>
+                <TanStackTriggerMark />
+              </span>
+            </Show>
           </button>
         )}
       </Show>

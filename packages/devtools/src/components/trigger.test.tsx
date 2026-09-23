@@ -528,7 +528,9 @@ describe('holding a drag on a hot corner', () => {
     expect(storedSettings().triggerCorner).toBeUndefined()
     expect(storedSettings().triggerEdge).toBe('right')
     expect(queryByLabelText('Open TanStack Devtools')).not.toBeInTheDocument()
-    expect(getByLabelText('Show TanStack Devtools trigger')).toBeInTheDocument()
+    expect(
+      getByLabelText('Open TanStack Devtools (docked)'),
+    ).toBeInTheDocument()
   })
 })
 
@@ -554,7 +556,7 @@ describe('dragging the trigger off screen', () => {
   const storedSettings = () =>
     JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_SETTINGS) ?? '{}')
 
-  it('hides the trigger behind an arrow tab that brings it back', () => {
+  it('hides the trigger behind an edge tab that can be dragged back out', () => {
     const { getByLabelText, queryByLabelText } = renderTrigger({
       triggerMode: 'floating',
     })
@@ -563,7 +565,9 @@ describe('dragging the trigger off screen', () => {
     drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 5000, 400)
 
-    expect(getByLabelText('Show TanStack Devtools trigger')).toBeInTheDocument()
+    expect(
+      getByLabelText('Open TanStack Devtools (docked)'),
+    ).toBeInTheDocument()
 
     drag(button, 'pointerup', 5000, 400)
 
@@ -571,13 +575,45 @@ describe('dragging the trigger off screen', () => {
     expect(storedSettings().triggerEdge).toBe('right')
     expect(storedSettings().triggerCorner).toBeUndefined()
 
-    fireEvent.click(getByLabelText('Show TanStack Devtools trigger'))
+    const tab = getByLabelText('Open TanStack Devtools (docked)')
+    drag(tab, 'pointerdown', 1020, 400)
+    drag(tab, 'pointermove', 900, 400)
+
+    // The floating button takes over the same drag, under the pointer.
+    const undocked = getByLabelText('Open TanStack Devtools')
+    drag(undocked, 'pointermove', 800, 400)
+    drag(undocked, 'pointermove', 800, 400)
+    drag(undocked, 'pointerup', 800, 400)
 
     expect(storedSettings().triggerEdge).toBeUndefined()
-    expect(getByLabelText('Open TanStack Devtools')).toBeInTheDocument()
+    expect(undocked.style.left).toBe(`${800 - undocked.offsetWidth / 2}px`)
     expect(
-      queryByLabelText('Show TanStack Devtools trigger'),
+      queryByLabelText('Open TanStack Devtools (docked)'),
     ).not.toBeInTheDocument()
+  })
+
+  it('opens the panel on a click and stays docked', () => {
+    localStorage.setItem(
+      TANSTACK_DEVTOOLS_SETTINGS,
+      JSON.stringify({ triggerMode: 'floating', triggerEdge: 'right' }),
+    )
+    const setIsOpen = vi.fn()
+    const { getByLabelText } = render(() => (
+      <DevtoolsProvider>
+        <Trigger isOpen={() => false} setIsOpen={setIsOpen} />
+      </DevtoolsProvider>
+    ))
+    const tab = getByLabelText('Open TanStack Devtools (docked)')
+
+    // A press that barely moves is still a click, not a drag.
+    drag(tab, 'pointerdown', 1020, 400)
+    drag(tab, 'pointermove', 1018, 401)
+    drag(tab, 'pointerup', 1018, 401)
+    fireEvent.click(tab)
+
+    expect(setIsOpen).toHaveBeenCalledWith(true)
+    expect(tab).toBeInTheDocument()
+    expect(storedSettings().triggerEdge).toBe('right')
   })
 
   it('docks to the edge even when the release is also corner-hot', () => {
@@ -590,7 +626,9 @@ describe('dragging the trigger off screen', () => {
     drag(button, 'pointermove', 5000, 0)
 
     expect(container.querySelector('[data-tsd-hot-corner]')).toBeNull()
-    expect(getByLabelText('Show TanStack Devtools trigger')).toBeInTheDocument()
+    expect(
+      getByLabelText('Open TanStack Devtools (docked)'),
+    ).toBeInTheDocument()
 
     drag(button, 'pointerup', 5000, 0)
 
@@ -610,7 +648,7 @@ describe('dragging the trigger off screen', () => {
     drag(button, 'pointerup', 500, 400)
 
     expect(getByLabelText('Open TanStack Devtools')).toBeInTheDocument()
-    expect(queryByLabelText('Show TanStack Devtools trigger')).toBeNull()
+    expect(queryByLabelText('Open TanStack Devtools (docked)')).toBeNull()
     expect(storedSettings().triggerEdge).toBeUndefined()
   })
 })

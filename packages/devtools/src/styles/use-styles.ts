@@ -916,8 +916,15 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         }
       `
     },
-    triggerEdgeTab: (edge: TriggerEdge, preview: boolean) => {
+    triggerEdgeTab: (
+      edge: TriggerEdge,
+      preview: boolean,
+      expandable: boolean,
+    ) => {
       const vertical = edge === 'left' || edge === 'right'
+      // The thin side grows into the page on hover, so the tab stays glued to
+      // its edge while it reveals the mark.
+      const thickness = vertical ? 'width' : 'height'
       return css`
         position: fixed;
         z-index: 99999;
@@ -945,23 +952,57 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
               : `border-radius: 10px 10px 0 0;`}
         box-shadow: ${semantic.shadow.sm};
         cursor: pointer;
+        overflow: hidden;
+        touch-action: none;
+        user-select: none;
         transition:
           opacity 0.25s ease-out,
-          scale 0.3s ease,
+          ${thickness} 0.2s ease,
           box-shadow 0.2s ease;
-        &:hover {
+        &:hover,
+        &:focus-visible {
           box-shadow: ${semantic.shadow.overlay};
-          scale: 1.06;
-        }
-        &:active {
-          scale: 0.98;
+          ${expandable ? `${thickness}: ${TRIGGER_EDGE_TAB_LENGTH}px;` : ''}
         }
         &:focus-visible {
           outline: 2px solid ${semantic.color.border.focus};
           outline-offset: -2px;
         }
-        & > svg {
+        & > span {
+          position: absolute;
+          inset: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: opacity 0.2s ease;
+        }
+        & svg {
           display: block;
+        }
+        & > [data-tsd-edge-mark] {
+          opacity: 0;
+        }
+        & > [data-tsd-edge-mark] svg {
+          width: 30px;
+          height: 30px;
+        }
+        ${expandable
+          ? `
+              &:hover > [data-tsd-edge-chevron],
+              &:focus-visible > [data-tsd-edge-chevron] {
+                opacity: 0;
+              }
+              &:hover > [data-tsd-edge-mark],
+              &:focus-visible > [data-tsd-edge-mark] {
+                opacity: 1;
+              }
+            `
+          : ''}
+        @media (prefers-reduced-motion: reduce) {
+          transition: opacity 0.25s ease-out;
+          & > span {
+            transition: none;
+          }
         }
         ${preview
           ? `

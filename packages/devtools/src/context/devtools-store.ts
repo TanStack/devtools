@@ -79,8 +79,8 @@ export type DevtoolsStore = {
     triggerCorner?: TriggerCorner
     /**
      * The screen edge the floating trigger was dragged off of to hide it.
-     * While set, the trigger is replaced by an arrow tab docked to that edge;
-     * clicking the tab brings the trigger back.
+     * While set, the trigger is a slim tab docked to that edge. Clicking the
+     * tab opens the panel, and dragging it pulls the trigger back out.
      * @default undefined
      */
     triggerEdge?: TriggerEdge
