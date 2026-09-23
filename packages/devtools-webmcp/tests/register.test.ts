@@ -19,7 +19,7 @@ interface SeenTool {
     untrustedContentHint?: boolean
     consequentialHint?: boolean
   }
-  execute?: (input: unknown, options: { signal: AbortSignal }) => unknown
+  execute?: (input: unknown, options?: unknown) => unknown
 }
 
 interface RegisterCall {
@@ -153,7 +153,11 @@ describe('registerDevtoolsTools', () => {
   })
 
   it('registers the prefixed name on document.modelContext with debugging true', () => {
-    const execute = () => ({ queries: [] })
+    const receivedSignals: Array<AbortSignal> = []
+    const execute = (_input: unknown, options: { signal: AbortSignal }) => {
+      receivedSignals.push(options.signal)
+      return { queries: [] }
+    }
     const inputSchema = {
       type: 'object',
       properties: {
@@ -195,12 +199,19 @@ describe('registerDevtoolsTools', () => {
             consequentialHint: true,
             debugging: true,
           },
-          execute,
+          execute: expect.any(Function),
         },
         signal: expect.any(AbortSignal),
       },
     ])
-    expect(documentContext.calls[0]?.tool.execute).toBe(execute)
+    const registeredExecute = documentContext.calls[0]?.tool.execute
+    const registrationSignal = documentContext.calls[0]?.signal
+    expect(registeredExecute).not.toBe(execute)
+    registeredExecute?.({ queryHash: 'abc' })
+    expect(receivedSignals[0]).toBe(registrationSignal)
+    const invoke = new AbortController()
+    registeredExecute?.({ queryHash: 'def' }, { signal: invoke.signal })
+    expect(receivedSignals[1]).toBe(invoke.signal)
     expect(documentContext.calls[0]?.tool.inputSchema).toBe(inputSchema)
     expect(navigatorContext.calls).toEqual([])
   })

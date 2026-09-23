@@ -85,7 +85,7 @@ This is independent of the Vite plugin's `removeDevtoolsOnBuild` option — the 
 
 ## WebMCP tools in production
 
-You search a production build for library WebMCP tools. The tools are not in that build.
+You search a production build for registered library WebMCP tools. The root import does not register them.
 
 With the root import, libraries register those tools only in development.
 

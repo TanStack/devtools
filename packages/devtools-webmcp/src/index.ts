@@ -13,8 +13,6 @@ import { registerDevtoolsTools as registerDevtoolsToolsNoOp } from './noop'
  * `options.pluginId` is required. `options.instanceId` is optional.
  * The function returns a cleanup function. The caller removes the tools with that function.
  *
- * @param options - The plugin id, the optional instance id, and the tools to register.
- *
  * @example
  * ```ts
  * const stop = registerDevtoolsTools({

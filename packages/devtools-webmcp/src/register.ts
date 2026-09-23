@@ -17,7 +17,7 @@ interface WebMcpToolRegistration {
   description: string
   inputSchema?: Record<string, unknown>
   annotations: WebMcpToolAnnotations
-  execute: DevtoolsTool['execute']
+  execute: (input: unknown, browserArg?: unknown) => unknown | Promise<unknown>
 }
 
 interface RegisterableModelContext {
@@ -140,7 +140,27 @@ function toolSkipReason(name: string, fullName: string) {
   return undefined
 }
 
-function toRegistration(tool: DevtoolsTool, name: string) {
+function signalFrom(value: unknown, fallback: AbortSignal) {
+  if (typeof value !== 'object' || value === null) {
+    return fallback
+  }
+  if (!('signal' in value)) {
+    return fallback
+  }
+  if (!(value.signal instanceof AbortSignal)) {
+    return fallback
+  }
+  return value.signal
+}
+
+function wrapExecute(tool: DevtoolsTool, registrationSignal: AbortSignal) {
+  return (input: unknown, browserArg?: unknown) =>
+    tool.execute(input, {
+      signal: signalFrom(browserArg, registrationSignal),
+    })
+}
+
+function toRegistration(tool: DevtoolsTool, name: string, signal: AbortSignal) {
   const registration: WebMcpToolRegistration = {
     name,
     description: tool.description,
@@ -148,7 +168,7 @@ function toRegistration(tool: DevtoolsTool, name: string) {
       ...tool.annotations,
       debugging: true,
     },
-    execute: tool.execute,
+    execute: wrapExecute(tool, signal),
   }
   if (tool.title !== undefined) {
     registration.title = tool.title
@@ -199,9 +219,12 @@ function registerOne(
   signal: AbortSignal,
 ) {
   try {
-    const result = modelContext.registerTool(toRegistration(tool, fullName), {
-      signal,
-    })
+    const result = modelContext.registerTool(
+      toRegistration(tool, fullName, signal),
+      {
+        signal,
+      },
+    )
     watchRegistration(result, signal, fullName)
   } catch (error) {
     if (signal.aborted) {
@@ -244,8 +267,6 @@ function replaceRegistration(key: string) {
  * The previous cleanup function then does nothing.
  *
  * This function does not throw. It writes one `console.error` for each failure.
- *
- * @param options - The plugin id, the optional instance id, and the tools to register.
  *
  * @example
  * ```ts
