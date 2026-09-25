@@ -32,6 +32,7 @@ export class EventClient<TEventMap extends Record<string, any>> {
       this.#onConnected,
     )
   }
+
   // fired off right away and then at intervals
   #retryConnection = () => {
     if (this.#retryCount < this.#maxRetries) {
@@ -65,14 +66,19 @@ export class EventClient<TEventMap extends Record<string, any>> {
     debug = false,
     enabled = true,
     reconnectEveryMs = 300,
+    noServerEvents = false,
   }: {
     pluginId: string
     debug?: boolean
     reconnectEveryMs?: number
     enabled?: boolean
+    noServerEvents?: boolean
   }) {
+    const runningOnServer = typeof window === 'undefined'
+
     this.#pluginId = pluginId
-    this.#enabled = enabled
+    // disables events on server if noServerEvents is active, defaults to #enabled outside this environment
+    this.#enabled = enabled && !(noServerEvents && runningOnServer)
     this.#eventTarget = this.getGlobalTarget
     this.#debug = debug
     this.debugLog(' Initializing event subscription for plugin', this.#pluginId)
@@ -81,6 +87,11 @@ export class EventClient<TEventMap extends Record<string, any>> {
     this.#failedToConnect = false
     this.#connectIntervalId = null
     this.#connectEveryMs = reconnectEveryMs
+  }
+
+  // for debugging purposes
+  get isEnabled() {
+    return this.#enabled
   }
 
   private startConnectLoop() {
