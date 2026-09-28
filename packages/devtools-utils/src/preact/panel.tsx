@@ -36,12 +36,15 @@ export function createPreactPanel<
       if (devtools.current) return
       devtools.current = new CoreClass()
 
-      if (devToolRef.current) {
-        devtools.current.mount(devToolRef.current, props)
+      // The ref is already detached when the cleanup runs on unmount, so keep
+      // the element we mounted into around for the cleanup.
+      const el = devToolRef.current
+      if (el) {
+        devtools.current.mount(el, props)
       }
 
       return () => {
-        if (devToolRef.current) {
+        if (el) {
           devtools.current?.unmount()
           devtools.current = null
         }
