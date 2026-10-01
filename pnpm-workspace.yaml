@@ -4,6 +4,8 @@ preferWorkspacePackages: true
 blockExoticSubdeps: true
 trustPolicy: 'no-downgrade'
 trustPolicyExclude:
+  # Babel still uses this version; its registry integrity matches the existing lock.
+  - 'semver@6.3.1'
   - 'chokidar@4.0.3' # transitive dependency of svelte-check; latest v4 with v5 available
 
 packages:
