@@ -1,4 +1,5 @@
 import { EventEmitter } from 'node:events'
+import { resolve } from 'node:path'
 import { beforeEach, describe, expect, it, test, vi } from 'vitest'
 import {
   handleDevToolsRequest,
@@ -200,6 +201,7 @@ function createMockReq(url?: string) {
 
 function createMockRes() {
   return {
+    statusCode: 200,
     setHeader: vi.fn(),
     write: vi.fn(),
     end: vi.fn(),
@@ -261,20 +263,33 @@ describe('handleDevToolsRequest', () => {
     expect(next).not.toHaveBeenCalled()
   })
 
-  it('does nothing for __tsd/open-source when source is missing', () => {
+  it('keeps the absolute path of a source file outside cwd', () => {
+    // A monorepo package, or Vite run from another directory: the injected
+    // source is not under cwd, so it keeps its absolute path.
+    const file = normalizePath(resolve(process.cwd(), '../../package.json'))
+    const req = createMockReq(
+      `/__tsd/open-source?source=${encodeURIComponent(`${file}:1:1`)}`,
+    )
+    const res = createMockRes()
+
+    handleDevToolsRequest(req, res as any, next as any, cb as any)
+
+    expect(cb.mock.calls[0]?.[0].data.source).toBe(file)
+  })
+
+  it('answers 400 for __tsd/open-source when source is missing', () => {
     const req = createMockReq('/__tsd/open-source')
     const res = createMockRes()
 
     handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     expect(cb).not.toHaveBeenCalled()
-    expect(res.setHeader).not.toHaveBeenCalled()
-    expect(res.write).not.toHaveBeenCalled()
-    expect(res.end).not.toHaveBeenCalled()
+    expect(res.statusCode).toBe(400)
+    expect(res.end).toHaveBeenCalled()
     expect(next).not.toHaveBeenCalled()
   })
 
-  it('does nothing for __tsd/open-source when source is malformed', () => {
+  it('answers 400 for __tsd/open-source when source is malformed', () => {
     const malformed = encodeURIComponent('src/file.ts:abc:def')
     const req = createMockReq(`/__tsd/open-source?source=${malformed}`)
     const res = createMockRes()
@@ -282,9 +297,8 @@ describe('handleDevToolsRequest', () => {
     handleDevToolsRequest(req, res as any, next as any, cb as any)
 
     expect(cb).not.toHaveBeenCalled()
-    expect(res.setHeader).not.toHaveBeenCalled()
-    expect(res.write).not.toHaveBeenCalled()
-    expect(res.end).not.toHaveBeenCalled()
+    expect(res.statusCode).toBe(400)
+    expect(res.end).toHaveBeenCalled()
     expect(next).not.toHaveBeenCalled()
   })
 
