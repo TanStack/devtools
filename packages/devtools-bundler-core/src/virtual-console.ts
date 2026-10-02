@@ -251,6 +251,15 @@ export function generateConsolePipeCode(
           return;
         }
 
+        // Vite 8 \`server.forwardConsole\` prints browser console calls in the
+        // terminal as "[console.<level>] ...". Sending those back to the browser
+        // as server logs makes the browser log them again, and Vite forwards
+        // them again, without end.
+        if (isServer && args.length > 0 && typeof args[0] === 'string' &&
+            /\\[console\\.[a-z]+\\] /.test(args[0])) {
+          return;
+        }
+
         var safeArgs = args.map(function(arg) {
           try {
             return serializeConsoleArg(arg, [], 0);

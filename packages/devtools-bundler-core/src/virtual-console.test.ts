@@ -7,7 +7,29 @@ afterEach(() => {
   vi.useRealTimers()
   vi.unstubAllGlobals()
   delete (window as any).__TSD_CONSOLE_PIPE_INITIALIZED__
+  delete (globalThis as any).__TSD_SERVER_CONSOLE_PIPE_INITIALIZED__
 })
+
+function setupServerErrorConsolePipe() {
+  const originalError = console.error
+  const originalErrorMock = vi.fn()
+  const fetchMock = vi.fn().mockResolvedValue(undefined)
+
+  console.error = originalErrorMock
+  vi.stubGlobal('fetch', fetchMock)
+
+  // Shadow `window` so the generated code takes its server branch.
+  const code = generateConsolePipeCode(['error'], TEST_VITE_URL)
+  new Function('window', code)(undefined)
+
+  return {
+    fetchMock,
+    originalErrorMock,
+    restore: () => {
+      console.error = originalError
+    },
+  }
+}
 
 function setupWarnConsolePipe() {
   const originalWarn = console.warn
@@ -237,6 +259,37 @@ describe('virtual-console', () => {
       expect(body.entries[0].args[3]).toContain('... (1 more chars)')
       expect(body.entries[0].args[4]).toBe('[Uint8Array(1024)]')
       expect(body.entries[0].args[5].a.b.c.d.e.f).toBe('[MaxDepth]')
+    } finally {
+      restore()
+    }
+  })
+
+  test('does not send browser logs that Vite forwarded to the terminal back to the browser', async () => {
+    vi.useFakeTimers()
+
+    const { fetchMock, originalErrorMock, restore } =
+      setupServerErrorConsolePipe()
+
+    try {
+      // The shape of a Vite 8 `server.forwardConsole` line.
+      const forwarded =
+        '\x1b[2m9:27:59 PM\x1b[22m \x1b[36m\x1b[1m[vite]\x1b[22m\x1b[39m \x1b[2m(client)\x1b[22m \x1b[2m[console.error] \x1b[22m[Server] seed'
+
+      console.error(forwarded)
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(originalErrorMock).toHaveBeenCalledWith(forwarded)
+      expect(fetchMock).not.toHaveBeenCalled()
+
+      console.error('real server error')
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+      expect(getFirstFetchBody(fetchMock).entries[0]).toMatchObject({
+        level: 'error',
+        source: 'server',
+        args: ['real server error'],
+      })
     } finally {
       restore()
     }
