@@ -16,6 +16,9 @@ function App() {
         config={{
           theme: 'dark',
           requireUrlFlag: new URLSearchParams(location.search).has('gated'),
+          hideInAutomation: new URLSearchParams(location.search).has(
+            'automation-hidden',
+          ),
         }}
         plugins={[
           {

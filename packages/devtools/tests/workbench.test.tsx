@@ -203,6 +203,56 @@ afterEach(() => {
 })
 
 describe('workbench', { timeout: 30_000 }, () => {
+  describe('hideInAutomation', () => {
+    const devtoolsRoot = () =>
+      document.querySelector('[data-testid="tanstack_devtools"]')
+
+    beforeEach(() => {
+      // Playwright, Cypress, and Selenium set navigator.webdriver to true.
+      Object.defineProperty(navigator, 'webdriver', {
+        configurable: true,
+        value: true,
+      })
+    })
+
+    afterEach(() => {
+      delete (navigator as { webdriver?: boolean }).webdriver
+    })
+
+    it('does not render in an automated browser when hideInAutomation is set', () => {
+      mountWorkbench([plugin('one')], { hideInAutomation: true })
+
+      expect(devtoolsRoot()).toBeNull()
+      expect(events).toEqual([])
+    })
+
+    it('ignores the open hotkey while hidden in an automated browser', () => {
+      mountWorkbench([plugin('one')], {
+        hideInAutomation: true,
+        defaultOpen: false,
+      })
+
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: '~',
+          ctrlKey: true,
+          bubbles: true,
+        }),
+      )
+
+      const stored = JSON.parse(
+        localStorage.getItem(TANSTACK_DEVTOOLS_STATE) ?? '{}',
+      )
+      expect(stored.persistOpen).not.toBe(true)
+    })
+
+    it('still renders in an automated browser by default', () => {
+      mountWorkbench([plugin('one')])
+
+      expect(devtoolsRoot()?.childElementCount).toBeGreaterThan(0)
+    })
+  })
+
   it('keeps the secondary Plugins bar fixed-height without hover timers', () => {
     vi.useFakeTimers()
     expect({
