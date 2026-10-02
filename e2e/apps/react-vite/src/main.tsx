@@ -12,10 +12,24 @@ function App() {
     <>
       <h1>devtools e2e host</h1>
       <input data-testid="text-input" placeholder="type here" />
+      <button
+        data-testid="open-app-dialog"
+        onClick={() =>
+          document.querySelector<HTMLDialogElement>('#app-dialog')!.showModal()
+        }
+      >
+        open app dialog
+      </button>
+      <dialog id="app-dialog" data-testid="app-dialog">
+        <button data-testid="app-dialog-button">inside app dialog</button>
+      </dialog>
       <TanStackDevtools
         config={{
           theme: 'dark',
           requireUrlFlag: new URLSearchParams(location.search).has('gated'),
+          openAsModal: new URLSearchParams(location.search).has(
+            'open-as-modal',
+          ),
         }}
         plugins={[
           {
