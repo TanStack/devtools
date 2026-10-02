@@ -387,7 +387,7 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/solid-devtools
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.13
         version: 1.9.15
     devDependencies:
       '@playwright/test':
@@ -1378,7 +1378,7 @@ importers:
         specifier: ^0.8.13
         version: link:../../../packages/solid-devtools
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.13
         version: 1.9.15
     devDependencies:
       '@tanstack/devtools-vite':
@@ -1412,7 +1412,7 @@ importers:
         specifier: ^1.131.50
         version: 1.166.13(@tanstack/router-core@1.169.2)(@tanstack/solid-router@1.169.2(solid-js@1.9.15))(csstype@3.2.3)(solid-js@1.9.15)
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.13
         version: 1.9.15
     devDependencies:
       '@tanstack/devtools-vite':
@@ -1437,7 +1437,7 @@ importers:
         specifier: ^0.8.13
         version: link:../../../packages/solid-devtools
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.13
         version: 1.9.15
     devDependencies:
       '@tanstack/devtools-vite':
@@ -1462,7 +1462,7 @@ importers:
         specifier: ^0.8.13
         version: link:../../../packages/solid-devtools
       solid-js:
-        specifier: ^1.9.9
+        specifier: ^1.9.13
         version: 1.9.15
       vinxi:
         specifier: ^0.5.8
