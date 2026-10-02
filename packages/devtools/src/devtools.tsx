@@ -12,6 +12,7 @@ import {
   createTheme,
 } from './context/use-devtools-context'
 import { createDisableTabbing } from './hooks/use-disable-tabbing'
+import { createModalHost } from './hooks/use-modal-host'
 import { TANSTACK_DEVTOOLS } from './utils/storage'
 import { getHotkeyPermutations } from './utils/hotkey'
 import { Trigger } from './components/trigger'
@@ -150,6 +151,7 @@ export default function DevTools() {
     onCleanup(() => window.removeEventListener('keydown', onKeyDown))
   })
   createDisableTabbing(isOpen)
+  createModalHost(() => settings().openAsModal, rootEl, isOpen)
   createEffect(() => {
     const element = rootEl()
     if (element) {
