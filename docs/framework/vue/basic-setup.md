@@ -10,7 +10,7 @@ TanStack Devtools provides you with an easy-to-use and modular client that allow
 Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/vue-devtools) library. This will install the devtools core as well as provide you with the Vue-specific adapter.
 
 ```bash
-npm i @tanstack/vue-devtools
+npm i -D @tanstack/vue-devtools
 ```
 
 Next, in the root of your application, import the `TanStackDevtools` component from `@tanstack/vue-devtools` and add it to your template.
