@@ -8,7 +8,7 @@ The Angular adapter wraps `TanStackDevtoolsCore` in an Angular standalone compon
 ## Installation
 
 ```sh
-npm install @tanstack/angular-devtools
+npm install -D @tanstack/angular-devtools
 ```
 
 ## Component Inputs

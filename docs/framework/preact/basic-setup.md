@@ -10,7 +10,7 @@ TanStack devtools provides you with an easy to use and modular client that allow
 Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/preact-devtools) library, this will install the devtools core as well as provide you framework specific adapters.
 
 ```bash
-npm i @tanstack/preact-devtools
+npm i -D @tanstack/preact-devtools
 ```
 
 Next in the root of your application import the `TanStackDevtools` from the required framework adapter (in this case @tanstack/preact-devtools).

@@ -8,7 +8,7 @@ If you are using TanStack Devtools in a React application, we recommend using th
 ## Installation
 
 ```sh
-npm install @tanstack/react-devtools
+npm install -D @tanstack/react-devtools
 ```
 
 ## Component: TanStackDevtools
