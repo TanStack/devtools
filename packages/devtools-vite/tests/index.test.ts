@@ -166,6 +166,18 @@ describe('devtools plugin', () => {
       expect(result).toBeUndefined()
     })
 
+    it('should replace placeholders in Vite pre-bundled dependency chunks', () => {
+      const transform = connectionPlugin.transform as (
+        code: string,
+        id: string,
+      ) => string | undefined
+      const result = transform(
+        'const port = __TANSTACK_DEVTOOLS_PORT__',
+        '/app/node_modules/.vite/deps/BRS44MK7-KeTQTbh5.js?v=1a2b3c',
+      )
+      expect(result).toBe('const port = 4206')
+    })
+
     it('should return undefined for non-tanstack module IDs', () => {
       const transform = connectionPlugin.transform as (
         code: string,
