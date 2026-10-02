@@ -226,6 +226,26 @@ describe('workbench', { timeout: 30_000 }, () => {
       expect(events).toEqual([])
     })
 
+    it('ignores the open hotkey while hidden in an automated browser', () => {
+      mountWorkbench([plugin('one')], {
+        hideInAutomation: true,
+        defaultOpen: false,
+      })
+
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: '~',
+          ctrlKey: true,
+          bubbles: true,
+        }),
+      )
+
+      const stored = JSON.parse(
+        localStorage.getItem(TANSTACK_DEVTOOLS_STATE) ?? '{}',
+      )
+      expect(stored.persistOpen).not.toBe(true)
+    })
+
     it('still renders in an automated browser by default', () => {
       mountWorkbench([plugin('one')])
 

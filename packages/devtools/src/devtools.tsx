@@ -77,6 +77,9 @@ export default function DevTools() {
   const { isCollapsed } = createCollapsed()
   const [showMarketplace, setShowMarketplace] = createSignal(false)
   const themeOwner = Symbol('tanstack-devtools-theme')
+  // Playwright, Cypress, and Selenium set navigator.webdriver.
+  const hiddenInAutomation = () =>
+    settings().hideInAutomation && navigator.webdriver
 
   const updateHeight = (nextHeight: number) => {
     setHeight(nextHeight)
@@ -168,7 +171,8 @@ export default function DevTools() {
     }
     for (const permutation of getHotkeyPermutations(settings().openHotkey)) {
       createShortcut(permutation, () => {
-        if (!isEditableTarget(document.activeElement)) toggleOpen()
+        if (!hiddenInAutomation() && !isEditableTarget(document.activeElement))
+          toggleOpen()
       })
     }
   })
@@ -182,8 +186,7 @@ export default function DevTools() {
 
   return (
     <ThemeContextProvider theme={theme()}>
-      {/* Playwright, Cypress, and Selenium set navigator.webdriver. */}
-      <Show when={!(settings().hideInAutomation && navigator.webdriver)}>
+      <Show when={!hiddenInAutomation()}>
         <Portal mount={(pip().pipWindow ?? window).document.body}>
           <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
             <Show
