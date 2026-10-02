@@ -3,4 +3,4 @@
 '@tanstack/devtools-vite': patch
 ---
 
-Source injection no longer stops after the dev server parses a regex literal. Before this fix, one regex literal anywhere in the module graph made every later file get zero `data-tsd-source` attributes.
+Source injection no longer stops after the dev server parses a regex literal. Before this fix, a regex literal cached `value` as a child key of `Literal` nodes. Every later file with a string literal then threw during the walk and got zero `data-tsd-source` attributes.
