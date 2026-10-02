@@ -60,6 +60,11 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
       transform: {
+        // Run before the other plugins' transforms, also when devtools() is not
+        // first in the plugins array. A plugin that changes the code of one
+        // environment only would shift the lines and make the SSR and client
+        // locations differ, which breaks hydration.
+        order: 'pre',
         filter: {
           id: {
             exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
