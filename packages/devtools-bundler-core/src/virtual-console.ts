@@ -252,11 +252,11 @@ export function generateConsolePipeCode(
         }
 
         // Vite 8 \`server.forwardConsole\` prints browser console calls in the
-        // terminal as "[console.<level>] ...". Sending those back to the browser
-        // as server logs makes the browser log them again, and Vite forwards
-        // them again, without end.
+        // terminal as "<time> [vite] (client) [console.<level>] ...". Sending
+        // those back to the browser as server logs makes the browser log them
+        // again, and Vite forwards them again, without end.
         if (isServer && args.length > 0 && typeof args[0] === 'string' &&
-            /\\[console\\.[a-z]+\\] /.test(args[0])) {
+            /\\[vite\\].*\\(client\\).*\\[console\\.[a-z]+\\] /.test(args[0])) {
           return;
         }
 

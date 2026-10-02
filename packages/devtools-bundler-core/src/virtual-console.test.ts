@@ -281,14 +281,15 @@ describe('virtual-console', () => {
       expect(originalErrorMock).toHaveBeenCalledWith(forwarded)
       expect(fetchMock).not.toHaveBeenCalled()
 
-      console.error('real server error')
+      // A server log that only mentions the marker is still sent.
+      console.error('request hit [console.error] detail')
       await vi.advanceTimersByTimeAsync(100)
 
       expect(fetchMock).toHaveBeenCalledTimes(1)
       expect(getFirstFetchBody(fetchMock).entries[0]).toMatchObject({
         level: 'error',
         source: 'server',
-        args: ['real server error'],
+        args: ['request hit [console.error] detail'],
       })
     } finally {
       restore()
