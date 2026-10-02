@@ -32,7 +32,10 @@ export function forEachChild(node: Node, callback: (child: Node) => void) {
   const keys = getChildKeys(node)
   for (const key of keys) {
     const value = (node as any)[key]
-    if (value === null) continue
+    // Keys are cached from the first node of a type, so another node of the
+    // same type can hold a primitive there (a regex Literal has an object
+    // `value`, a string Literal has a string).
+    if (value === null || typeof value !== 'object') continue
     if (Array.isArray(value)) {
       for (const item of value) {
         if (typeof item === 'object' && item !== null && 'type' in item) {
