@@ -60,10 +60,11 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
       transform: {
-        // Run before the other plugins' transforms, also when devtools() is not
-        // first in the plugins array. A plugin that changes the code of one
-        // environment only would shift the lines and make the SSR and client
-        // locations differ, which breaks hydration.
+        // Run before the transforms of plugins without `order: 'pre'`, also when
+        // devtools() is not first in the plugins array. A plugin that changes
+        // the code of one environment only would shift the lines and make the
+        // SSR and client locations differ, which breaks hydration. An earlier
+        // plugin whose transform also has `order: 'pre'` still runs first.
         order: 'pre',
         filter: {
           id: {
