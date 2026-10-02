@@ -18,7 +18,8 @@
     "url": "https://github.com/sponsors/tannerlinsley"
   },
   "keywords": [
-    "devtools"
+    "devtools",
+    "tanstack-intent"
   ],
   "type": "module",
   "types": "dist/esm/index.d.ts",
@@ -47,9 +48,6 @@
     },
     "./package.json": "./package.json"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
@@ -57,8 +55,7 @@
   "files": [
     "dist/",
     "src",
-    "skills",
-    "bin"
+    "skills"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",
