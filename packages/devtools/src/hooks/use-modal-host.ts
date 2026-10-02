@@ -39,10 +39,12 @@ export function createModalHost(
     let home: Node | null = null
 
     const sync = () => {
-      const appModalOpen = Array.from(doc.querySelectorAll('dialog')).some(
-        (dialog) => dialog !== host && dialog.matches(':modal'),
-      )
-      if (isOpen() && appModalOpen) {
+      const wanted =
+        isOpen() &&
+        Array.from(doc.querySelectorAll('dialog')).some(
+          (dialog) => dialog !== host && dialog.matches(':modal'),
+        )
+      if (wanted) {
         if (host.open) return
         home = element.parentNode
         host.append(element)
@@ -55,10 +57,27 @@ export function createModalHost(
       }
     }
 
-    // `showModal()` and `close()` toggle the `open` attribute.
-    const observer = new MutationObserver(sync)
+    // `showModal()` and `close()` toggle the `open` attribute. Removing an open
+    // dialog from the page is a child list change instead.
+    const observer = new MutationObserver((records) => {
+      // An app dialog shown after the host goes on top of it. Showing the host
+      // again puts the host back on top.
+      const appModalShown = records.some(
+        (record) =>
+          record.type === 'attributes' &&
+          record.target !== host &&
+          (record.target as Element).matches('dialog:modal'),
+      )
+      if (host.open && appModalShown) {
+        host.close()
+        host.showModal()
+        return
+      }
+      sync()
+    })
     observer.observe(doc.documentElement, {
       subtree: true,
+      childList: true,
       attributeFilter: ['open'],
     })
     createEffect(() => {

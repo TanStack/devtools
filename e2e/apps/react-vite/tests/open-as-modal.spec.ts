@@ -73,6 +73,46 @@ test.describe('openAsModal', () => {
     ).toHaveCount(0)
   })
 
+  test('stays on top when the app opens another modal dialog', async ({
+    page,
+  }) => {
+    const dt = new DevtoolsPage(page)
+    await dt.goto('/?open-as-modal')
+    await expect(dt.trigger()).toBeVisible()
+    await page.getByTestId('open-app-dialog').click()
+    await pressOpenHotkey(page)
+    await dt.expectOpen()
+
+    await page.evaluate(() => {
+      const second = document.createElement('dialog')
+      second.textContent = 'second app dialog'
+      document.body.append(second)
+      second.showModal()
+    })
+
+    await expect.poll(() => closeButtonTakesClicks(page)).toBe(true)
+  })
+
+  test('releases the page when an open app dialog is removed', async ({
+    page,
+  }) => {
+    const dt = new DevtoolsPage(page)
+    await dt.goto('/?open-as-modal')
+    await expect(dt.trigger()).toBeVisible()
+    await page.getByTestId('open-app-dialog').click()
+    await pressOpenHotkey(page)
+    await dt.expectOpen()
+
+    // Removed without close(), as when a component unmounts.
+    await page.evaluate(() => document.querySelector('#app-dialog')!.remove())
+
+    await expect(
+      page.locator('dialog [data-testid="tanstack_devtools"]'),
+    ).toHaveCount(0)
+    await expect(page.getByTestId('text-input')).toBeEditable()
+    await page.getByTestId('text-input').fill('works')
+  })
+
   test('without the option, a modal app dialog blocks the panel', async ({
     page,
   }) => {
