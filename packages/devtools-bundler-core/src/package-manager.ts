@@ -1,4 +1,4 @@
-import { exec } from 'node:child_process'
+import { exec, execFile } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
@@ -68,24 +68,31 @@ export const addPluginToDevtools = (
   return result
 }
 /**
- * Gets the install command for the detected package manager
+ * Gets the install command and its arguments for the detected package manager
  */
 const getInstallCommand = (
   packageManager: string,
   packageName: string,
-): string => {
+): [string, Array<string>] => {
   switch (packageManager) {
     case 'yarn':
-      return `yarn add -D ${packageName}`
+      return ['yarn', ['add', '-D', packageName]]
     case 'pnpm':
-      return `pnpm add -D ${packageName}`
+      return ['pnpm', ['add', '-D', packageName]]
     case 'bun':
-      return `bun add -D ${packageName}`
+      return ['bun', ['add', '-D', packageName]]
     case 'npm':
     default:
-      return `npm install -D ${packageName}`
+      return ['npm', ['install', '-D', packageName]]
   }
 }
+
+/**
+ * An npm package name with an optional version, like `@scope/name@^1.2.3`.
+ * The name comes from an unauthenticated event bus message, so the pattern
+ * allows no shell syntax and no leading `-` (a CLI flag).
+ */
+const PACKAGE_SPEC = /^(@[a-z0-9][\w.~-]*\/)?[a-z0-9][\w.~-]*(@[\w.^~+-]+)?$/i
 
 export const installPackage = async (
   packageName: string,
@@ -93,9 +100,15 @@ export const installPackage = async (
   success: boolean
   error?: string
 }> => {
+  if (!PACKAGE_SPEC.test(packageName)) {
+    const error = `Invalid package name: ${JSON.stringify(packageName)}`
+    console.error(chalk.redBright(`[@tanstack/devtools-vite] ${error}`))
+    return { success: false, error }
+  }
+
   return new Promise((resolve) => {
     const packageManager = detectPackageManager()
-    const installCommand = getInstallCommand(packageManager, packageName)
+    const [command, args] = getInstallCommand(packageManager, packageName)
 
     console.log(
       chalk.blueBright(
@@ -103,7 +116,7 @@ export const installPackage = async (
       ),
     )
 
-    exec(installCommand, async (installError) => {
+    const onDone = async (installError: Error | null) => {
       if (installError) {
         console.error(
           chalk.redBright(
@@ -131,7 +144,15 @@ export const installPackage = async (
       })
 
       resolve({ success: true })
-    })
+    }
+
+    // Package managers are `.cmd` shims on Windows, which start only through
+    // a shell. PACKAGE_SPEC keeps shell syntax out of the command there.
+    if (process.platform === 'win32') {
+      exec([command, ...args].join(' '), onDone)
+    } else {
+      execFile(command, args, onDone)
+    }
   })
 }
 
