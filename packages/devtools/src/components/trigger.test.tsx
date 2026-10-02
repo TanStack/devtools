@@ -67,6 +67,23 @@ describe('Trigger', () => {
     const button = queryByLabelText('Open TanStack Devtools')
     expect(button).toBeInTheDocument()
   })
+
+  it('keeps currentTarget intact for document pointermove listeners added later', () => {
+    renderTrigger()
+
+    // A delegated Solid handler runs first and leaves currentTarget on <html>.
+    let currentTarget: EventTarget | null = null
+    const listener = (event: Event) => {
+      currentTarget = event.currentTarget
+    }
+    document.addEventListener('pointermove', listener)
+    document.body.dispatchEvent(
+      new PointerEvent('pointermove', { bubbles: true }),
+    )
+    document.removeEventListener('pointermove', listener)
+
+    expect(currentTarget).toBe(document)
+  })
 })
 
 describe('throw physics', () => {
