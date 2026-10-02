@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import fs from 'node:fs/promises'
 import { normalizePath } from './normalize-path'
 import type { IncomingMessage, ServerResponse } from 'node:http'
@@ -33,13 +34,10 @@ export const handleDevToolsRequest = (
   if (req.url?.includes('__tsd/open-source')) {
     const searchParams = new URLSearchParams(req.url.split('?')[1])
 
-    const source = searchParams.get('source')
-    if (!source) {
-      return
-    }
-
-    const parsed = parseOpenSourceParam(source)
+    const parsed = parseOpenSourceParam(searchParams.get('source') ?? '')
     if (!parsed) {
+      res.statusCode = 400
+      res.end()
       return
     }
     const { file, line, column } = parsed
@@ -48,7 +46,7 @@ export const handleDevToolsRequest = (
       type: 'open-source',
       routine: 'open-source',
       data: {
-        source: file ? normalizePath(`${process.cwd()}/${file}`) : undefined,
+        source: file ? resolveSourceFile(file) : undefined,
         line,
         column,
       },
@@ -131,6 +129,17 @@ export const handleDevToolsRequest = (
     res.write('OK')
     res.end()
   })
+}
+
+/**
+ * Injected sources are relative to cwd. A file outside cwd (a monorepo package,
+ * or Vite run from another directory) keeps its absolute path instead.
+ */
+const resolveSourceFile = (file: string) => {
+  const fromCwd = normalizePath(`${process.cwd()}/${file}`)
+  return existsSync(fromCwd) || !existsSync(file)
+    ? fromCwd
+    : normalizePath(file)
 }
 
 export const parseOpenSourceParam = (source: string) => {
