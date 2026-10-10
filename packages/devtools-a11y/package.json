@@ -102,6 +102,7 @@
     "goober": "^2.1.16"
   },
   "devDependencies": {
+    "preact": "^11.0.1",
     "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
