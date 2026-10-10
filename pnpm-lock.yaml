@@ -145,15 +145,15 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/preact-devtools
       preact:
-        specifier: ^10.28.0
-        version: 10.29.1
+        specifier: ^11.0.1
+        version: 11.0.1
     devDependencies:
       '@playwright/test':
         specifier: ^1.49.0
         version: 1.61.0
       '@preact/preset-vite':
         specifier: ^2.10.3
-        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 2.10.5(@babel/core@7.29.0)(preact@11.0.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@tanstack/devtools-vite':
         specifier: workspace:*
         version: link:../../../packages/devtools-vite
@@ -672,15 +672,15 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/preact-devtools
       preact:
-        specifier: ^10.28.0
-        version: 10.29.1
+        specifier: ^11.0.1
+        version: 11.0.1
       zod:
         specifier: ^4.3.5
         version: 4.4.3
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.3
-        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 2.10.5(@babel/core@7.29.0)(preact@11.0.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@tanstack/devtools-ui':
         specifier: 0.7.1
         version: link:../../../packages/devtools-ui
@@ -706,12 +706,12 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/preact-devtools
       preact:
-        specifier: ^10.28.0
-        version: 10.29.1
+        specifier: ^11.0.1
+        version: 11.0.1
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.3
-        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 2.10.5(@babel/core@7.29.0)(preact@11.0.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       vite:
         specifier: ^8.0.0
         version: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
@@ -882,7 +882,7 @@ importers:
         version: 0.8.2(@tanstack/ai@0.16.0)(@types/react@19.2.14)(react@19.2.6)
       '@tanstack/react-ai-devtools':
         specifier: latest
-        version: 0.2.31(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))
+        version: 0.2.31(@types/react@19.2.14)(csstype@3.2.3)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))
       '@tanstack/react-devtools':
         specifier: latest
         version: link:../../../packages/react-devtools
@@ -1584,9 +1584,6 @@ importers:
       goober:
         specifier: ^2.1.16
         version: 2.1.18(csstype@3.2.3)
-      preact:
-        specifier: '>=10.0.0'
-        version: 10.29.1
       react:
         specifier: '>=17.0.0'
         version: 19.2.6
@@ -1597,6 +1594,9 @@ importers:
         specifier: '>=3.2.0'
         version: 3.5.34(typescript@5.9.3)
     devDependencies:
+      preact:
+        specifier: ^11.0.1
+        version: 11.0.1
       vite-plugin-solid:
         specifier: ^2.11.11
         version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.12)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
@@ -1687,9 +1687,6 @@ importers:
       '@types/react':
         specifier: '>=17.0.0'
         version: 19.2.14
-      preact:
-        specifier: '>=10.0.0'
-        version: 10.29.1
       react:
         specifier: '>=17.0.0'
         version: 19.2.6
@@ -1706,6 +1703,9 @@ importers:
       '@tanstack/devtools':
         specifier: workspace:^
         version: link:../devtools
+      preact:
+        specifier: ^11.0.1
+        version: 11.0.1
       svelte:
         specifier: ^5.0.0
         version: 5.55.1(@typescript-eslint/types@8.58.0)
@@ -1770,13 +1770,13 @@ importers:
     devDependencies:
       '@preact/preset-vite':
         specifier: ^2.10.3
-        version: 2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 2.10.5(@babel/core@7.29.0)(preact@11.0.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       eslint-plugin-react-hooks:
         specifier: ^7.0.1
         version: 7.1.1(eslint@9.39.4(jiti@2.7.0))
       preact:
-        specifier: ^10.28.0
-        version: 10.29.1
+        specifier: ^11.0.1
+        version: 11.0.1
 
   packages/react-devtools:
     dependencies:
@@ -10355,8 +10355,13 @@ packages:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
 
-  preact@10.29.1:
-    resolution: {integrity: sha512-gQCLc/vWroE8lIpleXtdJhTFDogTdZG9AjMUpVkDf2iTCNwYNWA+u16dL41TqUDJO4gm2IgrcMv3uTpjd4Pwmg==}
+  preact@11.0.1:
+    resolution: {integrity: sha512-TNNwEq++jYNHy747LziCjPRVgEwnLSOIOAw/oYcjI3Tdnubx2EXtt76I0an8PATvUWtx/DX1kFIg1eFN+O/fkw==}
+    peerDependencies:
+      preact-render-to-string: '>=6.7.0'
+    peerDependenciesMeta:
+      preact-render-to-string:
+        optional: true
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -14887,12 +14892,12 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@preact/preset-vite@2.10.5(@babel/core@7.29.0)(preact@10.29.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
+  '@preact/preset-vite@2.10.5(@babel/core@7.29.0)(preact@11.0.1)(rollup@4.60.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-transform-react-jsx': 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-react-jsx-development': 7.27.1(@babel/core@7.29.0)
-      '@prefresh/vite': 2.4.12(preact@10.29.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      '@prefresh/vite': 2.4.12(preact@11.0.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@rollup/pluginutils': 5.3.0(rollup@4.60.1)
       babel-plugin-transform-hook-names: 1.0.2(@babel/core@7.29.0)
       debug: 4.4.3
@@ -14908,20 +14913,20 @@ snapshots:
 
   '@prefresh/babel-plugin@0.5.3': {}
 
-  '@prefresh/core@1.5.9(preact@10.29.1)':
+  '@prefresh/core@1.5.9(preact@11.0.1)':
     dependencies:
-      preact: 10.29.1
+      preact: 11.0.1
 
   '@prefresh/utils@1.2.1': {}
 
-  '@prefresh/vite@2.4.12(preact@10.29.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
+  '@prefresh/vite@2.4.12(preact@11.0.1)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@babel/core': 7.29.0
       '@prefresh/babel-plugin': 0.5.3
-      '@prefresh/core': 1.5.9(preact@10.29.1)
+      '@prefresh/core': 1.5.9(preact@11.0.1)
       '@prefresh/utils': 1.2.1
       '@rollup/pluginutils': 4.2.1
-      preact: 10.29.1
+      preact: 11.0.1
       vite: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - supports-color
@@ -15803,12 +15808,12 @@ snapshots:
     transitivePeerDependencies:
       - '@opentelemetry/api'
 
-  '@tanstack/ai-devtools-core@0.3.27(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.1)(react@19.2.6)(vue@3.5.34(typescript@5.9.3))':
+  '@tanstack/ai-devtools-core@0.3.27(@types/react@19.2.14)(csstype@3.2.3)(preact@11.0.1)(react@19.2.6)(vue@3.5.34(typescript@5.9.3))':
     dependencies:
       '@tanstack/ai': 0.16.0
       '@tanstack/ai-event-client': 0.3.0(@tanstack/ai@0.16.0)
       '@tanstack/devtools-ui': 0.5.1(csstype@3.2.3)(solid-js@1.9.12)
-      '@tanstack/devtools-utils': 0.4.0(@types/react@19.2.14)(preact@10.29.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/devtools-utils': 0.4.0(@types/react@19.2.14)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))
       goober: 2.1.18(csstype@3.2.3)
       solid-js: 1.9.12
     transitivePeerDependencies:
@@ -15890,10 +15895,10 @@ snapshots:
     transitivePeerDependencies:
       - csstype
 
-  '@tanstack/devtools-utils@0.4.0(@types/react@19.2.14)(preact@10.29.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))':
+  '@tanstack/devtools-utils@0.4.0(@types/react@19.2.14)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))':
     optionalDependencies:
       '@types/react': 19.2.14
-      preact: 10.29.1
+      preact: 11.0.1
       react: 19.2.6
       solid-js: 1.9.12
       vue: 3.5.34(typescript@5.9.3)
@@ -15980,10 +15985,10 @@ snapshots:
 
   '@tanstack/query-devtools@5.100.9': {}
 
-  '@tanstack/react-ai-devtools@0.2.31(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))':
+  '@tanstack/react-ai-devtools@0.2.31(@types/react@19.2.14)(csstype@3.2.3)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))':
     dependencies:
-      '@tanstack/ai-devtools-core': 0.3.27(@types/react@19.2.14)(csstype@3.2.3)(preact@10.29.1)(react@19.2.6)(vue@3.5.34(typescript@5.9.3))
-      '@tanstack/devtools-utils': 0.4.0(@types/react@19.2.14)(preact@10.29.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/ai-devtools-core': 0.3.27(@types/react@19.2.14)(csstype@3.2.3)(preact@11.0.1)(react@19.2.6)(vue@3.5.34(typescript@5.9.3))
+      '@tanstack/devtools-utils': 0.4.0(@types/react@19.2.14)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.12)(vue@3.5.34(typescript@5.9.3))
       '@types/react': 19.2.14
       react: 19.2.6
     transitivePeerDependencies:
@@ -21781,7 +21786,7 @@ snapshots:
 
   powershell-utils@0.1.0: {}
 
-  preact@10.29.1: {}
+  preact@11.0.1: {}
 
   prelude-ls@1.2.1: {}
 
