@@ -54,13 +54,13 @@
     "@tanstack/devtools-client": "workspace:*",
     "@tanstack/devtools-event-bus": "workspace:*",
     "chalk": "^5.6.2",
-    "launch-editor": "^2.14.1",
-    "magic-string": "^0.30.0",
-    "oxc-parser": "^0.120.0",
-    "picomatch": "^4.0.5"
+    "launch-editor": "^2.14.2",
+    "magic-string": "^0.30.21",
+    "oxc-parser": "^0.153.0",
+    "picomatch": "^4.0.7"
   },
   "devDependencies": {
-    "@types/picomatch": "^4.0.2",
-    "happy-dom": "^20.0.0"
+    "@types/picomatch": "^4.0.3",
+    "happy-dom": "^20.14.6"
   }
 }
