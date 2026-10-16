@@ -769,7 +769,10 @@ export const Trigger = (props: {
               dockedEdge() ? () => props.setIsOpen(!props.isOpen()) : undefined
             }
             onPointerDown={onTabPointerDown}
-            onPointerMove={onTabPointerMove}
+            // Native, not delegated: Solid's document-level pointermove handler
+            // leaves event.currentTarget on <html> for every later listener,
+            // which breaks libraries such as react-resizable-panels.
+            on:pointermove={onTabPointerMove}
             onPointerUp={onTabPointerUp}
             onPointerCancel={onTabPointerUp}
           >
@@ -819,7 +822,8 @@ export const Trigger = (props: {
             ...(hoverEdge() ? { opacity: 0, pointerEvents: 'none' } : {}),
           }}
           onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
+          // Native, not delegated, for the same reason as the edge tab above.
+          on:pointermove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerCancel}
           onMouseEnter={() => isFloating() && !dragging && scheduleTooltip()}
