@@ -58,6 +58,7 @@ Controls source injection -- the AST transform that adds `data-tsd-source` attri
 - `?raw` imports
 - `/dist/` paths
 - `/build/` paths
+- `.ts`, `.mts` and `.cts` files, which cannot contain JSX
 - `<Fragment>` and `<React.Fragment>` elements
 - Elements with `{...propsParam}` spread (where `propsParam` is the function's parameter name)
 
