@@ -24,6 +24,13 @@ function findPlugin(plugins: Array<Plugin>, name: string): Plugin | undefined {
   return plugins.find((p) => p.name === name)
 }
 
+// Helper to call a plugin's transform handler directly, without its filter
+function getTransform(plugin: Plugin) {
+  const hook = plugin.transform
+  const handler = typeof hook === 'function' ? hook : hook?.handler
+  return handler as unknown as (code: string, id: string) => string | undefined
+}
+
 // Helper to create a mock Vite server
 function createMockServer(
   options: {
@@ -87,10 +94,7 @@ describe('devtools plugin', () => {
     })
 
     it('should replace __TANSTACK_DEVTOOLS_PORT__ in matching modules', () => {
-      const transform = connectionPlugin.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin)
       const code = 'const port = __TANSTACK_DEVTOOLS_PORT__'
       const result = transform(
         code,
@@ -103,10 +107,7 @@ describe('devtools plugin', () => {
     })
 
     it('should replace __TANSTACK_DEVTOOLS_HOST__ in matching modules', () => {
-      const transform = connectionPlugin.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin)
       const code = 'const host = __TANSTACK_DEVTOOLS_HOST__'
       const result = transform(
         code,
@@ -119,10 +120,7 @@ describe('devtools plugin', () => {
     })
 
     it('should replace __TANSTACK_DEVTOOLS_PROTOCOL__ in matching modules', () => {
-      const transform = connectionPlugin.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin)
       const code = 'const protocol = __TANSTACK_DEVTOOLS_PROTOCOL__'
       const result = transform(
         code,
@@ -135,10 +133,7 @@ describe('devtools plugin', () => {
     })
 
     it('should replace all three placeholders in the same code', () => {
-      const transform = connectionPlugin.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin)
       const code = [
         'const port = __TANSTACK_DEVTOOLS_PORT__;',
         'const host = __TANSTACK_DEVTOOLS_HOST__;',
@@ -155,10 +150,7 @@ describe('devtools plugin', () => {
     })
 
     it('should return undefined for code without any placeholders', () => {
-      const transform = connectionPlugin.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin)
       const result = transform(
         'const x = 42',
         'node_modules/@tanstack/event-bus/dist/client.js',
@@ -167,10 +159,7 @@ describe('devtools plugin', () => {
     })
 
     it('should return undefined for non-tanstack module IDs', () => {
-      const transform = connectionPlugin.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin)
       const result = transform(
         'const port = __TANSTACK_DEVTOOLS_PORT__',
         'node_modules/some-other-package/index.js',
@@ -216,10 +205,7 @@ describe('devtools plugin', () => {
       await configureServer(server)
 
       // Now test the transform to verify protocol was set to 'https'
-      const transform = connectionPlugin!.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin!)
       const result = transform(
         'const protocol = __TANSTACK_DEVTOOLS_PROTOCOL__',
         'node_modules/@tanstack/event-bus/dist/client.js',
@@ -250,10 +236,7 @@ describe('devtools plugin', () => {
       ) => Promise<void>
       await configureServer(server)
 
-      const transform = connectionPlugin!.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin!)
       const result = transform(
         'const protocol = __TANSTACK_DEVTOOLS_PROTOCOL__',
         'node_modules/@tanstack/event-bus/dist/client.js',
@@ -284,10 +267,7 @@ describe('devtools plugin', () => {
       ) => Promise<void>
       await configureServer(server)
 
-      const transform = connectionPlugin!.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin!)
       const result = transform(
         'const host = __TANSTACK_DEVTOOLS_HOST__',
         'node_modules/@tanstack/event-bus/dist/client.js',
@@ -318,10 +298,7 @@ describe('devtools plugin', () => {
       ) => Promise<void>
       await configureServer(server)
 
-      const transform = connectionPlugin!.transform as (
-        code: string,
-        id: string,
-      ) => string | undefined
+      const transform = getTransform(connectionPlugin!)
       const result = transform(
         'const host = __TANSTACK_DEVTOOLS_HOST__',
         'node_modules/@tanstack/event-bus/dist/client.js',

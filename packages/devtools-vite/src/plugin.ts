@@ -52,6 +52,9 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
   let devtoolsHost: string | null = null
   let devtoolsProtocol: 'http' | 'https' | null = null
 
+  // Each transform hook has a `filter`, so Vite and Rolldown skip the modules
+  // its handler would ignore. The handlers keep their own checks, so Vite
+  // before 6.3, which ignores `filter`, behaves as before.
   return [
     {
       enforce: 'pre',
@@ -62,8 +65,17 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       transform: {
         filter: {
           id: {
-            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+            exclude: [
+              /node_modules/,
+              /\?raw/,
+              /\/dist\//,
+              /\/build\//,
+              // `.ts`, `.mts` and `.cts` files cannot contain JSX.
+              /\.[cm]?ts(?:$|\?)/,
+            ],
           },
+          // Every JSX element starts with `<`.
+          code: '<',
         },
         handler(code, id) {
           return addSourceToJsx(code, id, args?.injectSource?.ignore)
@@ -259,21 +271,27 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         )
       },
       enforce: 'pre',
-      transform(code, id) {
-        if (
-          id.includes('node_modules') ||
-          id.includes('?raw') ||
-          !TANSTACK_DEVTOOLS_PACKAGES.some((pkg) => code.includes(pkg))
-        )
-          return
-        const transform = removeDevtools(code, id)
-        if (!transform) return
-        if (logging) {
-          console.log(
-            `\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`,
+      transform: {
+        filter: {
+          id: { exclude: [/node_modules/, /\?raw/] },
+          code: [...TANSTACK_DEVTOOLS_PACKAGES],
+        },
+        handler(code, id) {
+          if (
+            id.includes('node_modules') ||
+            id.includes('?raw') ||
+            !TANSTACK_DEVTOOLS_PACKAGES.some((pkg) => code.includes(pkg))
           )
-        }
-        return transform
+            return
+          const transform = removeDevtools(code, id)
+          if (!transform) return
+          if (logging) {
+            console.log(
+              `\n${chalk.greenBright(`[@tanstack/devtools-vite]`)} Removed devtools code from: ${id.replace(normalizePath(process.cwd()), '')}\n`,
+            )
+          }
+          return transform
+        },
       },
     },
     {
@@ -523,6 +541,14 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
             exclude: [/node_modules/, /\/dist\//, /\?/],
           },
           code: {
+            // The root entry markers the handler looks for
+            include: [
+              /<html[\s>]/i,
+              'StartClient',
+              'hydrateRoot',
+              'createRoot',
+              'solid-js/web',
+            ],
             exclude: /__tsdConsolePipe/, // avoid transforming files that already contain the console pipe code
           },
         },
@@ -556,17 +582,24 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(config, { command }) {
         return config.mode === 'development' && command === 'serve'
       },
-      transform(code, id) {
-        // First pass: find where TanStackDevtools is imported
-        if (!devtoolsFileId && detectDevtoolsFile(code)) {
-          // Extract actual file path (remove query params)
-          const [filePath] = id.split('?')
-          if (filePath) {
-            devtoolsFileId = filePath
+      transform: {
+        filter: {
+          // The user's devtools setup is never an installed package.
+          id: { exclude: [/node_modules/] },
+          code: [...TANSTACK_DEVTOOLS_PACKAGES],
+        },
+        handler(code, id) {
+          // First pass: find where TanStackDevtools is imported
+          if (!devtoolsFileId && detectDevtoolsFile(code)) {
+            // Extract actual file path (remove query params)
+            const [filePath] = id.split('?')
+            if (filePath) {
+              devtoolsFileId = filePath
+            }
           }
-        }
 
-        return undefined
+          return undefined
+        },
       },
     },
     {
@@ -574,38 +607,44 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(config, { command }) {
         return config.mode === 'development' && command === 'serve'
       },
-      transform(code, id) {
-        // Only transform @tanstack packages that contain the connection placeholders
-        const hasPlaceholder =
-          code.includes('__TANSTACK_DEVTOOLS_PORT__') ||
-          code.includes('__TANSTACK_DEVTOOLS_HOST__') ||
-          code.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')
-        if (!hasPlaceholder) return
-        if (
-          !id.includes('@tanstack/devtools') &&
-          !id.includes('@tanstack/event-bus')
-        )
-          return
+      transform: {
+        filter: {
+          id: /@tanstack\/(?:devtools|event-bus)/,
+          code: /__TANSTACK_DEVTOOLS_(?:PORT|HOST|PROTOCOL)__/,
+        },
+        handler(code, id) {
+          // Only transform @tanstack packages that contain the connection placeholders
+          const hasPlaceholder =
+            code.includes('__TANSTACK_DEVTOOLS_PORT__') ||
+            code.includes('__TANSTACK_DEVTOOLS_HOST__') ||
+            code.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')
+          if (!hasPlaceholder) return
+          if (
+            !id.includes('@tanstack/devtools') &&
+            !id.includes('@tanstack/event-bus')
+          )
+            return
 
-        // Replace placeholders with actual values (or fallback defaults)
-        const portValue = devtoolsPort ?? 4206
-        const hostValue = devtoolsHost ?? 'localhost'
-        const protocolValue = devtoolsProtocol ?? 'http'
+          // Replace placeholders with actual values (or fallback defaults)
+          const portValue = devtoolsPort ?? 4206
+          const hostValue = devtoolsHost ?? 'localhost'
+          const protocolValue = devtoolsProtocol ?? 'http'
 
-        let result = code
-        result = result.replace(
-          /__TANSTACK_DEVTOOLS_PORT__/g,
-          String(portValue),
-        )
-        result = result.replace(
-          /__TANSTACK_DEVTOOLS_HOST__/g,
-          JSON.stringify(hostValue),
-        )
-        result = result.replace(
-          /__TANSTACK_DEVTOOLS_PROTOCOL__/g,
-          JSON.stringify(protocolValue),
-        )
-        return result
+          let result = code
+          result = result.replace(
+            /__TANSTACK_DEVTOOLS_PORT__/g,
+            String(portValue),
+          )
+          result = result.replace(
+            /__TANSTACK_DEVTOOLS_HOST__/g,
+            JSON.stringify(hostValue),
+          )
+          result = result.replace(
+            /__TANSTACK_DEVTOOLS_PROTOCOL__/g,
+            JSON.stringify(protocolValue),
+          )
+          return result
+        },
       },
     },
     {
@@ -613,13 +652,23 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       apply(config, { command }) {
         return config.mode === 'development' && command === 'serve'
       },
-      transform(code, id) {
-        if (id.includes('?')) return
-        return injectRuntimeBridge(
-          code,
-          id,
-          (this as any).environment?.name as string | undefined,
-        )
+      transform: {
+        // The modules `injectRuntimeBridge` accepts, outside a query.
+        filter: {
+          id: {
+            include: /devtools-event-client|event-bus-client/,
+            exclude: /\?/,
+          },
+          code: 'EventClient',
+        },
+        handler(code, id) {
+          if (id.includes('?')) return
+          return injectRuntimeBridge(
+            code,
+            id,
+            (this as any).environment?.name as string | undefined,
+          )
+        },
       },
     },
   ]

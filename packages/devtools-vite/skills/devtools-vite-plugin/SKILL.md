@@ -226,7 +226,7 @@ When the dev server is running, listens for events via `devtoolsEventClient`:
 - `bump-package-version` -- updates a package to a minimum version
 - `mounted` -- sends package.json and outdated deps to the UI
 
-Auto-detection of the devtools setup file: the `inject-plugin` sub-plugin scans transforms for files importing from `@tanstack/react-devtools`, `@tanstack/solid-devtools`, `@tanstack/vue-devtools`, etc., and stores the file ID.
+Auto-detection of the devtools setup file: the `inject-plugin` sub-plugin scans transformed modules outside `node_modules` for files importing from `@tanstack/react-devtools`, `@tanstack/solid-devtools`, `@tanstack/vue-devtools`, etc., and stores the file ID.
 
 **Source files:** `packages/devtools-vite/src/inject-plugin.ts`, `packages/devtools-vite/src/package-manager.ts`
 
