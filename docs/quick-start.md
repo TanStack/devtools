@@ -209,7 +209,7 @@ const plugins: TanStackDevtoolsVuePlugin[] = [
 Install the devtools:
 
 ```bash
-npm install @tanstack/svelte-devtools
+npm install -D @tanstack/svelte-devtools
 ```
 
 Add the `TanStackDevtools` component to the root of your application:
@@ -249,7 +249,7 @@ To add plugins, define them as an array and pass them via the `plugins` prop. Sv
 Install the devtools:
 
 ```bash
-npm install @tanstack/angular-devtools
+npm install -D @tanstack/angular-devtools
 ```
 
 Add the `TanStackDevtoolsComponent` to the root of your application:
