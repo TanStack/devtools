@@ -111,6 +111,13 @@ export type DevtoolsStore = {
      */
     urlFlag: string
     /**
+     * Whether to not render the dev tools in a browser driven by automation
+     * (Playwright, Cypress, Selenium), detected by `navigator.webdriver`.
+     * Keeps the dev tools out of end-to-end test selectors.
+     * @default false
+     */
+    hideInAutomation: boolean
+    /**
      * The theme of the dev tools
      * @default "dark"
      */
@@ -196,6 +203,7 @@ export const initialState: DevtoolsStore = {
     inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
+    hideInAutomation: false,
     theme:
       typeof window !== 'undefined' &&
       typeof window.matchMedia !== 'undefined' &&

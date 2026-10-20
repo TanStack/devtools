@@ -71,6 +71,12 @@ type KeyboardKey = ModifierKey | (string & {});
 { requireUrlFlag: boolean }
 ```
 
+- `hideInAutomation` - Does not render the devtools when a browser is driven by automation (Playwright, Cypress, Selenium). This keeps the devtools out of your end-to-end test selectors. The check uses `navigator.webdriver`. The default is `false`.
+
+```ts
+{ hideInAutomation: boolean }
+```
+
 - `triggerImage` - The image used for the dev tools trigger
 
 ```ts
