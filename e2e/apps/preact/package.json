@@ -12,13 +12,13 @@
   "dependencies": {
     "@tanstack/devtools-e2e": "workspace:*",
     "@tanstack/preact-devtools": "workspace:*",
-    "preact": "^11.0.1"
+    "preact": "^11.0.2"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0",
-    "@preact/preset-vite": "^2.10.3",
+    "@playwright/test": "^1.64.1",
+    "@preact/preset-vite": "^2.10.6",
     "@tanstack/devtools-vite": "workspace:*",
-    "typescript": "~5.9.2",
+    "typescript": "~5.9.3",
     "vite": "^8.0.0"
   }
 }
