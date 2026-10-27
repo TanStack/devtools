@@ -48,7 +48,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
   const { color, font, gap, radius, shadow, space, type } = theme
 
   return {
-    colors: { theme: themeName },
     root: css`
       height: 100%;
       display: flex;
@@ -97,34 +96,10 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
       flex-wrap: wrap;
       justify-content: flex-end;
     `,
-    primaryButton: css`
-      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
-      border-radius: ${radius.control};
-      cursor: pointer;
-    `,
-    primaryButtonDisabled: css`
-      cursor: not-allowed;
-      opacity: 0.7;
-    `,
-    button: css`
-      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
-      border-radius: ${radius.control};
-      cursor: pointer;
-    `,
     buttonRow: css`
       display: flex;
       gap: ${gap.tight};
       align-items: center;
-    `,
-    toggleOverlay: css`
-      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
-      border-radius: ${radius.control};
-      cursor: pointer;
-    `,
-    toggleOverlayOn: css`
-      background: ${color.status.success.subtleFill};
-      color: ${color.status.success.text};
-      border-color: ${color.status.success.border};
     `,
     statusBar: css`
       padding: ${space[2]} ${space[4]};
@@ -140,14 +115,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
     `,
     statusSpacer: css`
       flex: 1;
-    `,
-    smallLinkButton: css`
-      padding: ${space[1]} ${space[2]};
-      background: transparent;
-      color: ${color.text.link};
-      border: 1px solid ${color.border.control};
-      border-radius: ${radius.control};
-      cursor: pointer;
     `,
     content: css`
       flex: 1;
@@ -274,10 +241,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
       align-items: flex-start;
       gap: ${gap.section};
     `,
-    issueMain: css`
-      flex: 1;
-      min-width: 0;
-    `,
     issueSelectButton: css`
       flex: 1;
       min-width: 0;
@@ -369,15 +332,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
         border-color: ${color.state.selectionText};
       }
     `,
-    disableRule: css`
-      font-size: ${type.bodyXs.size};
-      color: ${color.text.muted};
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0;
-      font-weight: 600;
-    `,
     tags: css`
       display: flex;
       gap: ${gap.tight};
@@ -416,11 +370,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
       line-height: ${type.headingPane.lineHeight};
       font-weight: 700;
     `,
-    doneButton: css`
-      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
-      border-radius: ${radius.control};
-      cursor: pointer;
-    `,
     settingsContent: css`
       flex: 1;
       overflow-y: auto;
@@ -442,31 +391,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
       text-transform: uppercase;
       color: ${color.text.muted};
     `,
-    settingsRow: css`
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: ${space[2]} 0;
-      border-bottom: 1px solid ${color.border.decorative};
-      gap: ${gap.section};
-    `,
-    settingsRowTitle: css`
-      font-size: ${type.bodySm.size};
-      font-weight: 500;
-    `,
-    settingsRowDesc: css`
-      font-size: ${type.bodyXs.size};
-      color: ${color.text.muted};
-      margin-top: 2px;
-    `,
-    select: css`
-      padding: ${theme.padding.controlBlock} ${theme.padding.controlInline};
-      border: 1px solid ${color.border.control};
-      border-radius: ${radius.control};
-      background: ${color.surface.elevated};
-      color: ${color.text.primary};
-      font-size: ${type.bodyXs.size};
-    `,
     rulesHeaderRow: css`
       display: flex;
       align-items: center;
@@ -484,10 +408,6 @@ function createA11yPanelStyles(themeName: 'light' | 'dark') {
       gap: ${gap.control};
       margin-bottom: ${space[3]};
       flex-wrap: wrap;
-    `,
-    search: css`
-      flex: 1;
-      min-width: 180px;
     `,
     rulesList: css`
       border: 1px solid ${color.border.decorative};
