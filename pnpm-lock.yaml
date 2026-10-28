@@ -1588,7 +1588,7 @@ importers:
         specifier: '>=17.0.0'
         version: 19.2.6
       solid-js:
-        specifier: '>=1.9.7'
+        specifier: ^1.9.7
         version: 1.9.12
       vue:
         specifier: '>=3.2.0'
@@ -1691,7 +1691,7 @@ importers:
         specifier: '>=17.0.0'
         version: 19.2.6
       solid-js:
-        specifier: '>=1.9.7'
+        specifier: ^1.9.7
         version: 1.9.12
       vue:
         specifier: '>=3.2.0'
