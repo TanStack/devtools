@@ -35,13 +35,15 @@ export function createPreactPanel<
     useEffect(() => {
       if (devtools.current) return
       devtools.current = new CoreClass()
+      // Preact 11 clears the ref before this effect's cleanup runs.
+      const el = devToolRef.current
 
-      if (devToolRef.current) {
-        devtools.current.mount(devToolRef.current, props)
+      if (el) {
+        devtools.current.mount(el, props)
       }
 
       return () => {
-        if (devToolRef.current) {
+        if (el) {
           devtools.current?.unmount()
           devtools.current = null
         }

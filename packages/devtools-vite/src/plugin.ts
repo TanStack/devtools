@@ -60,6 +60,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
       transform: {
+        // Run before the transforms of plugins without `order: 'pre'`, also when
+        // devtools() is not first in the plugins array. A plugin that changes
+        // the code of one environment only would shift the lines and make the
+        // SSR and client locations differ, which breaks hydration. An earlier
+        // plugin whose transform also has `order: 'pre'` still runs first.
+        order: 'pre',
         filter: {
           id: {
             exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
@@ -581,9 +587,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           code.includes('__TANSTACK_DEVTOOLS_HOST__') ||
           code.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')
         if (!hasPlaceholder) return
+        // Vite pre-bundles npm installs into chunks under `.vite/deps*`, whose
+        // ids no longer name the package.
         if (
           !id.includes('@tanstack/devtools') &&
-          !id.includes('@tanstack/event-bus')
+          !id.includes('@tanstack/event-bus') &&
+          !id.includes('/.vite/deps')
         )
           return
 

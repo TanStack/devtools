@@ -140,7 +140,9 @@ export const transformAndInject = (
   const pluginType = injection.pluginImport?.type || 'jsx'
   const displayName = injection.pluginName
 
-  if (!importName) {
+  // The import name comes from an unauthenticated event bus message and is
+  // written into the user's source as code, so it must be an identifier.
+  if (!importName || !/^[A-Za-z_$][\w$]*$/.test(importName)) {
     return null
   }
 

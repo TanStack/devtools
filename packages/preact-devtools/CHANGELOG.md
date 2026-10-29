@@ -1,5 +1,11 @@
 # @tanstack/preact-devtools
 
+## 0.10.14
+
+### Patch Changes
+
+- [#551](https://github.com/TanStack/devtools/pull/551) [`e122872`](https://github.com/TanStack/devtools/commit/e1228726f96f1210fed434b1c9976f165ec8c046) - Plugins, titles and custom triggers now see the context of the app that renders `<TanStackDevtools>`, so a plugin like `<PreactQueryDevtoolsPanel />` finds its `QueryClientProvider`. They used to render in a separate root with no context.
+
 ## 0.10.13
 
 ### Patch Changes

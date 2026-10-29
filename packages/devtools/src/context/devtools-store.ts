@@ -118,6 +118,14 @@ export type DevtoolsStore = {
      */
     hideInAutomation: boolean
     /**
+     * Whether the open panel moves on top of a modal dialog of the app
+     * (`dialog.showModal()`), which otherwise makes the dev tools inert.
+     * While the panel is on top, the app dialog is inert. Open the panel with
+     * the open hotkey, because the trigger is inert while the dialog is open.
+     * @default false
+     */
+    openAsModal: boolean
+    /**
      * The theme of the dev tools
      * @default "dark"
      */
@@ -204,6 +212,7 @@ export const initialState: DevtoolsStore = {
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     hideInAutomation: false,
+    openAsModal: false,
     theme:
       typeof window !== 'undefined' &&
       typeof window.matchMedia !== 'undefined' &&

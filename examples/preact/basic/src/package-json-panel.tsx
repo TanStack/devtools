@@ -92,9 +92,9 @@ export const PackageJsonPanel = () => {
       style={{
         background: color,
         color: '#fff',
-        borderRadius: 4,
+        borderRadius: '4px',
         padding: '1px 4px',
-        fontSize: 11,
+        fontSize: '11px',
       }}
     >
       {text}
@@ -109,13 +109,13 @@ export const PackageJsonPanel = () => {
       onClick={onClick}
       style={{
         padding: '2px 6px',
-        borderRadius: 5,
+        borderRadius: '5px',
         border:
           variant === 'primary' ? '1px solid #6d28d9' : '1px solid transparent',
         cursor: 'pointer',
         background: variant === 'primary' ? '#7c3aed' : 'transparent',
         color: variant === 'primary' ? '#fff' : '#7c3aed',
-        fontSize: 12,
+        fontSize: '12px',
       }}
     >
       {label}
@@ -141,11 +141,11 @@ export const PackageJsonPanel = () => {
     const latest = info?.latest
     const dt = info ? diffType(current, latest) : null
     return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         <span>{current}</span>
         {dt && latest ? (
           <span
-            style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
           >
             <span style={{ opacity: 0.6 }}>→</span>
             {badge(`latest ${latest}`, diffColor[dt])}
@@ -166,7 +166,7 @@ export const PackageJsonPanel = () => {
       | undefined
     if (!info) return null
     return (
-      <div style={{ display: 'flex', gap: 6 }}>
+      <div style={{ display: 'flex', gap: '6px' }}>
         {btn('Wanted', () =>
           (devtoolsEventClient as any).emit('upgrade-dependency', {
             name,
@@ -205,7 +205,7 @@ export const PackageJsonPanel = () => {
     const { wantedList, latestList } = makeLists(names)
     if (wantedList.length === 0 && latestList.length === 0) return null
     return (
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {btn('All → wanted', () =>
           (devtoolsEventClient as any).emit('upgrade-dependencies-bulk', {
             list: wantedList,
@@ -234,7 +234,7 @@ export const PackageJsonPanel = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            gap: 6,
+            gap: '6px',
           }}
         >
           <h3 style={{ margin: 0, fontSize: 14 }}>{title}</h3>
@@ -285,9 +285,9 @@ export const PackageJsonPanel = () => {
 
   return (
     <div style={containerStyle}>
-      <h2 style={{ margin: '0 0 8px 0', fontSize: 16 }}>Package.json</h2>
+      <h2 style={{ margin: '0 0 8px 0', fontSize: '16px' }}>Package.json</h2>
       {packageJson ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={sectionStyle}>
             <h3 style={{ marginTop: 0, marginBottom: 6, fontSize: 14 }}>
               Package info

@@ -71,10 +71,17 @@ type KeyboardKey = ModifierKey | (string & {});
 { requireUrlFlag: boolean }
 ```
 
+<<<<<<< HEAD
 - `hideInAutomation` - Does not render the devtools when a browser is driven by automation (Playwright, Cypress, Selenium). This keeps the devtools out of your end-to-end test selectors. The check uses `navigator.webdriver`. The default is `false`.
 
 ```ts
 { hideInAutomation: boolean }
+=======
+- `openAsModal` - Moves the open panel on top of a modal dialog of your app. A dialog that you open with `dialog.showModal()` makes the rest of the page inert, the devtools included. While the panel is on top, your dialog is inert. Close the panel to use your dialog again. The trigger is inert while your dialog is open, so open the panel with the open hotkey. The default is `false`.
+
+```ts
+{ openAsModal: boolean }
+>>>>>>> origin/main
 ```
 
 - `triggerImage` - The image used for the dev tools trigger

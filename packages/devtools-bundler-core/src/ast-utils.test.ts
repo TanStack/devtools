@@ -44,6 +44,31 @@ describe('forEachChild', () => {
 
     expect(visited).toEqual([real])
   })
+
+  it('does not throw when a cached child key holds a primitive in a later node', () => {
+    // A regex literal has an object `value`, a string literal has a string
+    // `value`, and both share one type, so the cached keys include `value`.
+    const regexLiteral = {
+      type: 'ForEachSharedLiteral',
+      start: 0,
+      end: 6,
+      value: {},
+    } as unknown as Node
+    const stringLiteral = {
+      type: 'ForEachSharedLiteral',
+      start: 0,
+      end: 12,
+      value: 'use client',
+    } as unknown as Node
+
+    forEachChild(regexLiteral, () => {})
+
+    const visited: Array<Node> = []
+    expect(() =>
+      forEachChild(stringLiteral, (child) => visited.push(child)),
+    ).not.toThrow()
+    expect(visited).toEqual([])
+  })
 })
 
 describe('walk', () => {
