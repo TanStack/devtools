@@ -10,7 +10,7 @@ TanStack Devtools provides you with an easy-to-use and modular client that allow
 Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/angular-devtools) library. This will install the devtools core as well as provide you with the Angular-specific adapter.
 
 ```bash
-npm i @tanstack/angular-devtools
+npm i -D @tanstack/angular-devtools
 ```
 
 Next, in the root of your application, import the `TanStackDevtoolsComponent` from `@tanstack/angular-devtools` and add it to your template.

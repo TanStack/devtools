@@ -10,7 +10,7 @@ TanStack Devtools provides you with an easy-to-use and modular client that allow
 Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/svelte-devtools) library. This will install the devtools core as well as provide you with the Svelte-specific adapter.
 
 ```bash
-npm i @tanstack/svelte-devtools
+npm i -D @tanstack/svelte-devtools
 ```
 
 Next, in the root of your application, import the `TanStackDevtools` component from `@tanstack/svelte-devtools` and add it to your template.
