@@ -106,10 +106,6 @@
   },
   "files": [
     "skills",
-    "bin",
     "!skills/_artifacts"
-  ],
-  "bin": {
-    "intent": "./bin/intent.js"
-  }
+  ]
 }
