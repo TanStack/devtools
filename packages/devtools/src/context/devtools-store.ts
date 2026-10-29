@@ -111,6 +111,13 @@ export type DevtoolsStore = {
      */
     urlFlag: string
     /**
+     * Whether to not render the dev tools in a browser driven by automation
+     * (Playwright, Cypress, Selenium), detected by `navigator.webdriver`.
+     * Keeps the dev tools out of end-to-end test selectors.
+     * @default false
+     */
+    hideInAutomation: boolean
+    /**
      * Whether the open panel moves on top of a modal dialog of the app
      * (`dialog.showModal()`), which otherwise makes the dev tools inert.
      * While the panel is on top, the app dialog is inert. Open the panel with
@@ -204,6 +211,7 @@ export const initialState: DevtoolsStore = {
     inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
+    hideInAutomation: false,
     openAsModal: false,
     theme:
       typeof window !== 'undefined' &&

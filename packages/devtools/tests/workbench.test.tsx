@@ -6,7 +6,10 @@ import { DevtoolsProvider } from '../src/context/devtools-context'
 import { PiPProvider } from '../src/context/pip-context'
 import { PluginSectionComponent } from '../src/tabs/marketplace/plugin-section'
 import { flattenTabs } from '../src/utils/layout-tree'
-import { TANSTACK_DEVTOOLS_STATE } from '../src/utils/storage'
+import {
+  TANSTACK_DEVTOOLS_SETTINGS,
+  TANSTACK_DEVTOOLS_STATE,
+} from '../src/utils/storage'
 import {
   DEVTOOLS_FONT_STYLE_ID,
   DEVTOOLS_FORCED_COLORS_STYLE_ID,
@@ -203,6 +206,79 @@ afterEach(() => {
 })
 
 describe('workbench', { timeout: 30_000 }, () => {
+  describe('hideInAutomation', () => {
+    const devtoolsRoot = () =>
+      document.querySelector('[data-testid="tanstack_devtools"]')
+
+    beforeEach(() => {
+      // Playwright, Cypress, and Selenium set navigator.webdriver to true.
+      Object.defineProperty(navigator, 'webdriver', {
+        configurable: true,
+        value: true,
+      })
+    })
+
+    afterEach(() => {
+      delete (navigator as { webdriver?: boolean }).webdriver
+    })
+
+    it('does not render in an automated browser when hideInAutomation is set', () => {
+      mountWorkbench([plugin('one')], { hideInAutomation: true })
+
+      expect(devtoolsRoot()).toBeNull()
+      expect(events).toEqual([])
+    })
+
+    it('ignores the open hotkey while hidden in an automated browser', () => {
+      mountWorkbench([plugin('one')], {
+        hideInAutomation: true,
+        defaultOpen: false,
+      })
+
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: '~',
+          ctrlKey: true,
+          bubbles: true,
+        }),
+      )
+
+      const stored = JSON.parse(
+        localStorage.getItem(TANSTACK_DEVTOOLS_STATE) ?? '{}',
+      )
+      expect(stored.persistOpen).not.toBe(true)
+    })
+
+    it('uses the config over a stored hideInAutomation value', () => {
+      localStorage.setItem(
+        TANSTACK_DEVTOOLS_SETTINGS,
+        JSON.stringify({ hideInAutomation: false }),
+      )
+      mountWorkbench([plugin('one')], { hideInAutomation: true })
+
+      expect(devtoolsRoot()).toBeNull()
+    })
+
+    it('ignores Escape while hidden in an automated browser', () => {
+      localStorage.setItem(
+        TANSTACK_DEVTOOLS_STATE,
+        JSON.stringify({ persistOpen: true }),
+      )
+      mountWorkbench([plugin('one')], { hideInAutomation: true })
+
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+
+      const stored = JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!)
+      expect(stored.persistOpen).toBe(true)
+    })
+
+    it('still renders in an automated browser by default', () => {
+      mountWorkbench([plugin('one')])
+
+      expect(devtoolsRoot()?.childElementCount).toBeGreaterThan(0)
+    })
+  })
+
   it('keeps the secondary Plugins bar fixed-height without hover timers', () => {
     vi.useFakeTimers()
     expect({
