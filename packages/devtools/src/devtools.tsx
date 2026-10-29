@@ -148,7 +148,8 @@ export default function DevTools() {
 
   createEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen()) toggleOpen()
+      if (event.key === 'Escape' && isOpen() && !hiddenInAutomation())
+        toggleOpen()
     }
     window.addEventListener('keydown', onKeyDown)
     onCleanup(() => window.removeEventListener('keydown', onKeyDown))

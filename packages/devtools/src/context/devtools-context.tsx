@@ -204,6 +204,9 @@ export const getExistingStateFromStorage = (
       ...initialState.settings,
       ...config,
       ...settings,
+      // Not in the settings tab, so the config wins over a stored value.
+      hideInAutomation:
+        config?.hideInAutomation ?? initialState.settings.hideInAutomation,
     },
   }
   return state
