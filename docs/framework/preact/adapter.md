@@ -8,7 +8,7 @@ If you are using TanStack Devtools in a Preact application, we recommend using t
 ## Installation
 
 ```sh
-npm install @tanstack/preact-devtools
+npm install -D @tanstack/preact-devtools
 ```
 
 ## Preact Hooks

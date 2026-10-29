@@ -1,5 +1,11 @@
 # @tanstack/devtools-utils
 
+## 0.7.1
+
+### Patch Changes
+
+- [#551](https://github.com/TanStack/devtools/pull/551) [`e122872`](https://github.com/TanStack/devtools/commit/e1228726f96f1210fed434b1c9976f165ec8c046) - Unmount the devtools core when a Preact panel unmounts on Preact 11. Preact 11 clears refs before effect cleanups run, so the panel skipped `unmount()`.
+
 ## 0.7.0
 
 ### Minor Changes

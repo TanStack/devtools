@@ -5,6 +5,8 @@ id: installation
 
 You can install TanStack Devtools with any [NPM](https://npmjs.com) package manager.
 
+Install the devtools as a dev dependency (`-D`). If you want the devtools in production builds, read [Production Builds](#production-builds).
+
 Only install one of the following packages depending on your use case:
 
 ## React

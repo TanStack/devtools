@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-utils",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "TanStack Devtools utilities for creating your own devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -18,7 +18,8 @@
     "url": "https://github.com/sponsors/tannerlinsley"
   },
   "keywords": [
-    "devtools"
+    "devtools",
+    "tanstack-intent"
   ],
   "type": "module",
   "exports": {
@@ -80,9 +81,6 @@
     },
     "./package.json": "./package.json"
   },
-  "bin": {
-    "intent": "./bin/intent.js"
-  },
   "sideEffects": false,
   "engines": {
     "node": ">=18"
@@ -90,6 +88,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^6.0.0",
     "@tanstack/devtools": "workspace:^",
+    "preact": "^11.0.1",
     "svelte": "^5.0.0",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
@@ -100,7 +99,7 @@
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
-    "solid-js": ">=1.9.13",
+    "solid-js": "^1.9.13",
     "svelte": ">=5.0.0",
     "vue": ">=3.2.0"
   },
@@ -130,8 +129,7 @@
   "files": [
     "dist/",
     "src",
-    "skills",
-    "bin"
+    "skills"
   ],
   "scripts": {
     "clean": "premove ./build ./dist",

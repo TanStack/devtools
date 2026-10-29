@@ -71,6 +71,12 @@ type KeyboardKey = ModifierKey | (string & {});
 { requireUrlFlag: boolean }
 ```
 
+- `openAsModal` - Moves the open panel on top of a modal dialog of your app. A dialog that you open with `dialog.showModal()` makes the rest of the page inert, the devtools included. While the panel is on top, your dialog is inert. Close the panel to use your dialog again. The trigger is inert while your dialog is open, so open the panel with the open hotkey. The default is `false`.
+
+```ts
+{ openAsModal: boolean }
+```
+
 - `triggerImage` - The image used for the dev tools trigger
 
 ```ts

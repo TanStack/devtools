@@ -8,7 +8,7 @@ The Svelte adapter wraps `TanStackDevtoolsCore` in a Svelte 5 component, using S
 ## Installation
 
 ```sh
-npm install @tanstack/svelte-devtools
+npm install -D @tanstack/svelte-devtools
 ```
 
 ## Component Props
