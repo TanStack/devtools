@@ -1,5 +1,26 @@
 # @tanstack/devtools
 
+## 0.16.0
+
+### Minor Changes
+
+- [#549](https://github.com/TanStack/devtools/pull/549) [`8b3a032`](https://github.com/TanStack/devtools/commit/8b3a032c4709ecad6e3166c25627c326373d4142) - Add the `hideInAutomation` config option. When it is `true`, the devtools do not render in a browser that automation drives (Playwright, Cypress, Selenium), detected by `navigator.webdriver`. This keeps the devtools out of end-to-end test selectors. The default is `false`.
+
+- [#550](https://github.com/TanStack/devtools/pull/550) [`7b5f1ee`](https://github.com/TanStack/devtools/commit/7b5f1eef8b9ac990cb4604f93a499581e1f3a5fb) - Add the `openAsModal` config option. A dialog opened with `dialog.showModal()` makes the devtools inert. With this option, the open panel moves on top of such a dialog and takes input, and the app dialog is inert until the panel closes. Open the panel with the open hotkey while the dialog is open.
+
+### Patch Changes
+
+- [#544](https://github.com/TanStack/devtools/pull/544) [`f315fe8`](https://github.com/TanStack/devtools/commit/f315fe821b879bfadb1d38ce0d5c1c5ff3d8e988) - Listen to `pointermove` on the trigger buttons directly instead of through Solid's event delegation. The delegated document handler left `event.currentTarget` on `<html>` for every later `pointermove` listener, which broke libraries such as react-resizable-panels.
+
+- [#542](https://github.com/TanStack/devtools/pull/542) [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8) - Remove the `intent` bin from the published packages. It took over `node_modules/.bin/intent` from `@tanstack/intent` and imported the removed `@tanstack/intent/intent-library` subpath. The packages now have the `tanstack-intent` keyword, which current `@tanstack/intent` uses to find their skills.
+
+- [#543](https://github.com/TanStack/devtools/pull/543) [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037) - Require solid-js 1.9.13 or later. Our compiled output imports `use` from `solid-js/web`, and the server build of solid-js 1.9.12 and earlier does not export it. Before this fix, SSR apps with an older solid-js in their lockfile could not start the dev server.
+
+- [#557](https://github.com/TanStack/devtools/pull/557) [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355) - Cap the `solid-js` peer range at `^1`. The previous open-ended `>=` range would accept Solid 2.0.0 once it is released, but these packages are built against Solid 1 and do not work with Solid 2.
+
+- Updated dependencies [[`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037), [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355)]:
+  - @tanstack/devtools-ui@0.7.2
+
 ## 0.15.0
 
 ### Minor Changes

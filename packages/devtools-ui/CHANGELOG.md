@@ -1,5 +1,13 @@
 # @tanstack/devtools-ui
 
+## 0.7.2
+
+### Patch Changes
+
+- [#543](https://github.com/TanStack/devtools/pull/543) [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037) - Require solid-js 1.9.13 or later. Our compiled output imports `use` from `solid-js/web`, and the server build of solid-js 1.9.12 and earlier does not export it. Before this fix, SSR apps with an older solid-js in their lockfile could not start the dev server.
+
+- [#557](https://github.com/TanStack/devtools/pull/557) [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355) - Cap the `solid-js` peer range at `^1`. The previous open-ended `>=` range would accept Solid 2.0.0 once it is released, but these packages are built against Solid 1 and do not work with Solid 2.
+
 ## 0.7.1
 
 ### Patch Changes

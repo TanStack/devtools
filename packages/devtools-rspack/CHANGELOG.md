@@ -1,5 +1,16 @@
 # @tanstack/devtools-rspack
 
+## 0.1.4
+
+### Patch Changes
+
+- [#541](https://github.com/TanStack/devtools/pull/541) [`df1464c`](https://github.com/TanStack/devtools/commit/df1464cdca80efa98b98930790046828255624ef) - Fix "Go to Source" for files outside the current working directory, for example a package in a monorepo or Vite run from another directory. The editor got a path with the working directory added twice. Also answer a missing or malformed `source` with `400` instead of leaving the request pending.
+
+- [#545](https://github.com/TanStack/devtools/pull/545) [`d018c4c`](https://github.com/TanStack/devtools/commit/d018c4c99f3df90be0da57634f8bd883aa8efaa7) - Reject event bus requests to install a package when the name is not a valid npm package name. On macOS and Linux, run the package manager without a shell. Also reject a plugin import name that is not a JavaScript identifier, because it is written into your source file as code.
+
+- Updated dependencies [[`ed8b314`](https://github.com/TanStack/devtools/commit/ed8b314173bf2d5550e75c27dbe435e18dc49805), [`012421f`](https://github.com/TanStack/devtools/commit/012421fcc31b6d4284fdc6083af2b773246469be), [`df1464c`](https://github.com/TanStack/devtools/commit/df1464cdca80efa98b98930790046828255624ef), [`d018c4c`](https://github.com/TanStack/devtools/commit/d018c4c99f3df90be0da57634f8bd883aa8efaa7)]:
+  - @tanstack/devtools-bundler-core@0.1.4
+
 ## 0.1.3
 
 ### Patch Changes

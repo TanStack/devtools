@@ -1,5 +1,12 @@
 # @tanstack/devtools-e2e
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [[`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8)]:
+  - @tanstack/devtools-event-client@0.5.1
+
 ## 0.0.1
 
 ### Patch Changes
