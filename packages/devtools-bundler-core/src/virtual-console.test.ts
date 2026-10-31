@@ -177,6 +177,60 @@ describe('virtual-console', () => {
     }
   })
 
+  test.each([
+    {
+      name: 'renders %j as JSON through %s',
+      args: ['payload %j done', { ok: true }],
+      format: 'payload %s done',
+      values: ['{"ok":true}'],
+    },
+    {
+      name: 'keeps %j and %d in argument order',
+      args: ['%j took %dms', { id: 1 }, 20],
+      format: '%s took %dms',
+      values: ['{"id":1}', 20],
+    },
+    {
+      name: 'substitutes after an escaped percent pair',
+      args: ['%%%s', 'value'],
+      format: '%s%s',
+      values: ['%', 'value'],
+    },
+    {
+      name: 'keeps %%s as a literal percent followed by s',
+      args: ['%%s %s', 'value'],
+      format: '%ss %s',
+      values: ['%', 'value'],
+    },
+    {
+      name: 'collapses an escaped percent with no substitution',
+      args: ['100%% of', 'jobs'],
+      format: '100%s of',
+      values: ['%', 'jobs'],
+    },
+    {
+      name: 'leaves a substitution with no argument as literal text',
+      args: ['%s %s %%', 'value'],
+      format: '%s %s %s',
+      values: ['value', '%s', '%'],
+    },
+  ])('$name', ({ args, format, values }) => {
+    const { consoleMocks, eventSources, restore } = setupConsolePipe(['log'])
+
+    try {
+      dispatchServerEntries(eventSources[0]!, [{ level: 'log', args }])
+
+      expect(consoleMocks.log).toHaveBeenCalledWith(
+        SERVER_PREFIX + ' ' + format,
+        SERVER_PREFIX_STYLE,
+        SERVER_RESET_STYLE,
+        ...values,
+      )
+    } finally {
+      restore()
+    }
+  })
+
   test('preserves server log css format substitutions', () => {
     const { consoleMocks, eventSources, restore } = setupConsolePipe(['log'])
 

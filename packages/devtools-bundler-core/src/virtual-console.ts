@@ -318,7 +318,34 @@ export function generateConsolePipeCode(
     }
 
     function hasConsoleFormatSubstitution(arg) {
-      return typeof arg === 'string' && /(^|[^%])%[sdifocOj]/.test(arg);
+      return typeof arg === 'string' && /%[sdifocOj%]/.test(arg);
+    }
+
+    // Browser consoles do not support %j and do not reliably collapse %%, so
+    // both become %s with a ready-made value at the same argument position.
+    // Scanning left to right keeps %%s as a literal percent followed by "s".
+    function normalizeServerFormat(format, args) {
+      var normalizedArgs = [];
+      var nextArg = 0;
+      var normalizedFormat = format.replace(/%[sdifocOj%]/g, function(token) {
+        if (token === '%%') {
+          normalizedArgs.push('%');
+          return '%s';
+        }
+        if (nextArg >= args.length) {
+          // Node leaves a substitution with no argument as literal text.
+          normalizedArgs.push(token);
+          return '%s';
+        }
+        var arg = args[nextArg++];
+        if (token === '%j') {
+          normalizedArgs.push(JSON.stringify(arg));
+          return '%s';
+        }
+        normalizedArgs.push(arg);
+        return token;
+      });
+      return { format: normalizedFormat, args: normalizedArgs.concat(args.slice(nextArg)) };
     }
 
     function isEnhancedLogPrefix(arg) {
@@ -354,9 +381,10 @@ export function generateConsolePipeCode(
             var resetStyle = 'color: inherit;';
             var logMethod = originalConsole[entry.level] || originalConsole.log;
             if (shouldPreserveFormat) {
+              var normalized = normalizeServerFormat(transformedArgs[formatIndex], transformedArgs.slice(formatIndex + 1));
               logMethod.apply(
                 console,
-                [prefix + ' ' + transformedArgs.slice(0, formatIndex + 1).join(''), prefixStyle, resetStyle].concat(transformedArgs.slice(formatIndex + 1))
+                [prefix + ' ' + transformedArgs.slice(0, formatIndex).join('') + normalized.format, prefixStyle, resetStyle].concat(normalized.args)
               );
             } else {
               logMethod.apply(console, [prefix, prefixStyle, resetStyle].concat(transformedArgs));
