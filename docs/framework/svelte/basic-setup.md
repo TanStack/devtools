@@ -10,7 +10,7 @@ TanStack Devtools provides you with an easy-to-use and modular client that allow
 Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/svelte-devtools) library. This will install the devtools core as well as provide you with the Svelte-specific adapter.
 
 ```bash
-npm i @tanstack/svelte-devtools
+npm i -D @tanstack/svelte-devtools
 ```
 
 Next, in the root of your application, import the `TanStackDevtools` component from `@tanstack/svelte-devtools` and add it to your template.
@@ -48,6 +48,6 @@ Import the desired devtools and provide them to the `TanStackDevtools` component
 <TanStackDevtools {plugins} />
 ```
 
-> Note: The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. Additional props can be provided via the `props` field and are passed to the component on mount.
+> Note: The Svelte adapter uses `component` (a Svelte component reference) instead of `render` (a JSX element) in plugin definitions. Components receive the shared `theme` and `devtoolsOpen` props. Additional values from the plugin's `props` field are merged into the same object when the component mounts.
 
 Finally, add any additional configuration you desire to the `TanStackDevtools` component. More information can be found under the [TanStack Devtools Configuration](../../configuration) section.

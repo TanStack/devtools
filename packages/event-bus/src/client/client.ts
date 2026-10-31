@@ -89,18 +89,18 @@ export class ClientEventBus {
     this.#eventTarget.dispatchEvent(new CustomEvent('tanstack-connect-success'))
   }
   constructor({
-    port = 4206,
-    host = 'localhost',
-    protocol = 'http',
+    port = getDefaultPort(4206),
+    host = getDefaultHost('localhost'),
+    protocol = getDefaultProtocol('http'),
     debug = false,
     connectToServerBus = false,
   }: ClientEventBusConfig = {}) {
     this.#debug = debug
     this.#broadcastChannel = new BroadcastChannel('tanstack-devtools')
     this.#eventSource = null
-    this.#port = getDefaultPort(port)
-    this.#host = getDefaultHost(host)
-    this.#protocol = getDefaultProtocol(protocol)
+    this.#port = port
+    this.#host = host
+    this.#protocol = protocol
     this.#socket = null
     this.#connectToServerBus = connectToServerBus
     this.#eventTarget = this.getGlobalTarget()

@@ -1,5 +1,52 @@
 # @tanstack/devtools-example-angular-a11y-devtools
 
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies [[`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8), [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037), [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355)]:
+  - @tanstack/devtools-event-client@0.5.1
+  - @tanstack/devtools-a11y@0.2.3
+  - @tanstack/angular-devtools@0.0.13
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/angular-devtools@0.0.12
+
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools-a11y@0.2.2
+  - @tanstack/angular-devtools@0.0.11
+
+## 0.0.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/angular-devtools@0.0.10
+  - @tanstack/devtools-a11y@0.2.1
+
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`a46d1f5`](https://github.com/TanStack/devtools/commit/a46d1f59599c679a28208e6bba4b8d913b3ea8d2)]:
+  - @tanstack/devtools-a11y@0.2.0
+  - @tanstack/angular-devtools@0.0.9
+
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/angular-devtools@0.0.8
+
 ## 0.0.6
 
 ### Patch Changes

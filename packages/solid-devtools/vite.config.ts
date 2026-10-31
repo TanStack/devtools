@@ -5,7 +5,13 @@ import packageJson from './package.json'
 import type { Plugin } from 'vite'
 
 const config = defineConfig({
-  plugins: [solid() as any satisfies Plugin],
+  plugins: [
+    solid({
+      // Vitest 4's module runner treats `/@solid-refresh` as `file:///@solid-refresh`
+      // and throws. HMR is not used in tests.
+      hot: process.env.VITEST !== 'true',
+    }) as any satisfies Plugin,
+  ],
   test: {
     name: packageJson.name,
     dir: './tests',

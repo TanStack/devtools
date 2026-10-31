@@ -1,15 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { devtools } from '../src/plugin'
 import type { Plugin } from 'vite'
-import type * as Utils from '../src/utils'
+import type * as Core from '@tanstack/devtools-bundler-core'
 
 let capturedOnConsolePipe: ((entries: Array<any>) => void) | undefined
 
-vi.mock('../src/utils', async (importOriginal) => {
-  const actual = await importOriginal<typeof Utils>()
+vi.mock('@tanstack/devtools-bundler-core', async (importOriginal) => {
+  const actual = await importOriginal<typeof Core>()
   return {
     ...actual,
-    handleDevToolsViteRequest: vi.fn(
+    handleDevToolsRequest: vi.fn(
       (_req: any, _res: any, _next: any, handlers: any) => {
         if (typeof handlers === 'object' && handlers?.onConsolePipe) {
           capturedOnConsolePipe = handlers.onConsolePipe
@@ -164,6 +164,18 @@ describe('devtools plugin', () => {
         'node_modules/@tanstack/event-bus/dist/client.js',
       )
       expect(result).toBeUndefined()
+    })
+
+    it('should replace placeholders in Vite pre-bundled dependency chunks', () => {
+      const transform = connectionPlugin.transform as (
+        code: string,
+        id: string,
+      ) => string | undefined
+      const result = transform(
+        'const port = __TANSTACK_DEVTOOLS_PORT__',
+        '/app/node_modules/.vite/deps/BRS44MK7-KeTQTbh5.js?v=1a2b3c',
+      )
+      expect(result).toBe('const port = 4206')
     })
 
     it('should return undefined for non-tanstack module IDs', () => {
@@ -332,14 +344,18 @@ describe('devtools plugin', () => {
 
   describe('configureServer - onConsolePipe uses pre-wrap console methods', () => {
     let originalLog: typeof console.log
-    let beforeWrapSpy: ReturnType<typeof vi.fn>
-    let afterWrapSpy: ReturnType<typeof vi.fn>
+    // Vitest 4 types a bare `vi.fn()` as a constructor too. Give the spy
+    // the console.log signature so it can replace the live method.
+    const createLogSpy = () =>
+      vi.fn((..._data: Parameters<typeof console.log>) => {})
+    let beforeWrapSpy: ReturnType<typeof createLogSpy>
+    let afterWrapSpy: ReturnType<typeof createLogSpy>
 
     beforeEach(async () => {
       capturedOnConsolePipe = undefined
       originalLog = console.log
-      beforeWrapSpy = vi.fn()
-      afterWrapSpy = vi.fn()
+      beforeWrapSpy = createLogSpy()
+      afterWrapSpy = createLogSpy()
 
       console.log = beforeWrapSpy
 

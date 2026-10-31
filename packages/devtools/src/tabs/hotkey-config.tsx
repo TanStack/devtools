@@ -71,27 +71,38 @@ export const HotkeyConfig = (props: HotkeyConfigProps) => {
 
   return (
     <div class={styles().settingsGroup}>
-      <h4 style={{ margin: 0 }}>{props.description}</h4>
+      {/* `title` names the shortcut, `description` explains it — before, the
+          description was rendered as the heading and `title` went unused. */}
+      <h4 class={styles().hotkeyTitle}>{props.title}</h4>
+      <p class={styles().hotkeyDescription}>{props.description}</p>
       <div class={styles().settingsModifiers}>
         <Show keyed when={props.hotkey}>
-          {props.modifiers.map((modifier) => (
-            <Button
-              variant="success"
-              onclick={() => toggleModifier(modifier)}
-              outline={!props.hotkey.includes(modifier)}
-            >
-              {MODIFIER_DISPLAY_NAMES[modifier] || modifier}
-            </Button>
-          ))}
+          {props.modifiers.map((modifier) => {
+            const enabled = props.hotkey.includes(modifier)
+            return (
+              <Button
+                variant="secondary"
+                aria-pressed={enabled}
+                onclick={() => toggleModifier(modifier)}
+                outline={!enabled}
+              >
+                {MODIFIER_DISPLAY_NAMES[modifier] || modifier}
+              </Button>
+            )
+          })}
         </Show>
       </div>
       <Input
+        label="Key"
         description="Use '+' to combine keys (e.g., 'a+b' or 'd'). This will be used with the enabled modifiers from above"
         placeholder="a"
         value={getNonModifierValue()}
         onChange={handleKeyInput}
       />
-      Final shortcut is: {getDisplayHotkey()}
+      <p class={styles().hotkeyResult}>
+        Final shortcut is{' '}
+        <kbd class={styles().hotkeyResultKeys}>{getDisplayHotkey()}</kbd>
+      </p>
     </div>
   )
 }

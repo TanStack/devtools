@@ -1,5 +1,27 @@
 # @tanstack/devtools-utils
 
+## 0.7.2
+
+### Patch Changes
+
+- [#542](https://github.com/TanStack/devtools/pull/542) [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8) - Remove the `intent` bin from the published packages. It took over `node_modules/.bin/intent` from `@tanstack/intent` and imported the removed `@tanstack/intent/intent-library` subpath. The packages now have the `tanstack-intent` keyword, which current `@tanstack/intent` uses to find their skills.
+
+- [#543](https://github.com/TanStack/devtools/pull/543) [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037) - Require solid-js 1.9.13 or later. Our compiled output imports `use` from `solid-js/web`, and the server build of solid-js 1.9.12 and earlier does not export it. Before this fix, SSR apps with an older solid-js in their lockfile could not start the dev server.
+
+- [#557](https://github.com/TanStack/devtools/pull/557) [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355) - Cap the `solid-js` peer range at `^1`. The previous open-ended `>=` range would accept Solid 2.0.0 once it is released, but these packages are built against Solid 1 and do not work with Solid 2.
+
+## 0.7.1
+
+### Patch Changes
+
+- [#551](https://github.com/TanStack/devtools/pull/551) [`e122872`](https://github.com/TanStack/devtools/commit/e1228726f96f1210fed434b1c9976f165ec8c046) - Unmount the devtools core when a Preact panel unmounts on Preact 11. Preact 11 clears refs before effect cleanups run, so the panel skipped `unmount()`.
+
+## 0.7.0
+
+### Minor Changes
+
+- [#504](https://github.com/TanStack/devtools/pull/504) [`f1584c7`](https://github.com/TanStack/devtools/commit/f1584c7db4df0a700448b482282fde3138079cc1) - Align Svelte panel construction and plugin metadata with the other framework factories, use compiled Svelte components to own panel and no-op lifecycles, forward shared plugin props through the Svelte adapter, and update mounted component props without resetting their state.
+
 ## 0.6.0
 
 ### Minor Changes

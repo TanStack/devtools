@@ -4,6 +4,7 @@ import {
   createSignal,
   useContext as getContext,
 } from 'solid-js'
+import { ensureDevtoolsStyles } from '../styles/semantic-theme'
 import type { Accessor, JSX } from 'solid-js'
 
 export type TanStackDevtoolsTheme = 'light' | 'dark'
@@ -22,9 +23,16 @@ export const ThemeContextProvider = (props: {
   createEffect(() => {
     setTheme(props.theme)
   })
+  const [container, setContainer] = createSignal<HTMLSpanElement>()
+  createEffect(() => {
+    const element = container()
+    if (element) ensureDevtoolsStyles(element.ownerDocument)
+  })
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      {props.children}
+      <span ref={setContainer} style={{ display: 'contents' }}>
+        {props.children}
+      </span>
     </ThemeContext.Provider>
   )
 }

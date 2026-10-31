@@ -9,6 +9,12 @@ concurrency:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # nx.json sets parallel: 5 for local dev machines. GitHub-hosted runners have
+  # far fewer cores/RAM, and each test:lib (vitest) / test:types (tsc) task
+  # spawns its own worker pool. Running 5 such heavy tasks at once oversubscribes
+  # the runner and intermittently OOM-kills or stalls tasks, producing flaky
+  # failures that pass on re-run. Cap CI parallelism to keep tasks within budget.
+  NX_PARALLEL: 3
 
 permissions:
   contents: read
@@ -27,7 +33,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
       - name: Get base and head commits for `nx affected`
         uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4.4.0
         with:
@@ -46,7 +52,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
       - name: Build packages
         run: pnpm run build:all
       - name: Install Playwright Chromium
@@ -62,7 +68,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
       - name: Build Packages
         run: pnpm run build:all
       - name: Publish Previews
@@ -76,6 +82,6 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Tools
-        uses: TanStack/config/.github/setup@190f659075ff0845850e330883eb26d7ffd0671f # main
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
       - name: Changeset Preview
-        uses: TanStack/config/.github/changeset-preview@190f659075ff0845850e330883eb26d7ffd0671f # main
+        uses: TanStack/config/.github/changeset-preview@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main

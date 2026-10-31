@@ -8,6 +8,7 @@ import {
   useContext as getContext,
 } from 'solid-js'
 import { createStore } from 'solid-js/store'
+import { createTheme } from '@tanstack/devtools-ui'
 import { filterIssuesAboveThreshold, runAudit } from '../utils/ally-audit.utils'
 import { mergeConfig, saveConfig } from '../utils/config.utils'
 import { clearHighlights, highlightAllIssues } from '../utils/ui.utils'
@@ -25,6 +26,7 @@ import type { ParentComponent } from 'solid-js'
 //
 
 function createAllyValue() {
+  const { theme } = createTheme()
   const [config, setConfig] =
     createStore<Required<A11yPluginOptions>>(mergeConfig())
 
@@ -67,7 +69,8 @@ function createAllyValue() {
       return
     }
 
-    if (allyResult.state === 'done') highlightAllIssues(filteredIssues())
+    if (allyResult.state === 'done')
+      highlightAllIssues(filteredIssues(), theme())
   })
 
   createEffect(() => {
@@ -86,6 +89,7 @@ function createAllyValue() {
     config,
 
     allyResult,
+    theme,
   }
 }
 

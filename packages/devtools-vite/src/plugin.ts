@@ -1,109 +1,37 @@
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
-import { normalizePath } from 'vite'
 import chalk from 'chalk'
 import {
-  handleDevToolsViteRequest,
-  readPackageJson,
-  stripEnhancedLogPrefix,
-} from './utils'
-import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
-import { removeDevtools } from './remove-devtools'
-import { addSourceToJsx } from './inject-source'
-import { enhanceConsoleLog } from './enhance-logs'
-import { detectDevtoolsFile, injectPluginIntoFile } from './inject-plugin'
-import { TANSTACK_DEVTOOLS_PACKAGES } from './devtools-packages'
-import {
+  DEFAULT_EDITOR_CONFIG,
+  TANSTACK_DEVTOOLS_PACKAGES,
   addPluginToDevtools,
+  addSourceToJsx,
+  detectDevtoolsFile,
   emitOutdatedDeps,
-  installPackage,
-} from './package-manager'
-import { generateConsolePipeCode } from './virtual-console'
-import {
+  enhanceConsoleLog,
+  generateConsolePipeCode,
+  handleDevToolsRequest,
+  handleOpenSource,
+  injectPluginIntoFile,
   injectRuntimeBridge,
+  installPackage,
+  normalizePath,
+  readPackageJson,
+  removeDevtools,
+  stripEnhancedLogPrefix,
   wireRuntimeBridgeChannels,
-} from './runtime-bridge'
+} from '@tanstack/devtools-bundler-core'
+import type {
+  ConsoleLevel,
+  EditorConfig,
+  TanStackDevtoolsConfig,
+} from '@tanstack/devtools-bundler-core'
 import type { ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
-import type { EditorConfig } from './editor'
-import type {
-  HttpServerLike,
-  ServerEventBusConfig,
-} from '@tanstack/devtools-event-bus/server'
+import type { HttpServerLike } from '@tanstack/devtools-event-bus/server'
 
-export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
-
-export type TanStackDevtoolsViteConfig = {
-  /**
-   * Configuration for the editor integration. Defaults to opening in VS code
-   */
-  editor?: EditorConfig
-  /**
-   * The configuration options for the server event bus
-   */
-  eventBusConfig?: ServerEventBusConfig & {
-    /**
-     * Should the server event bus be enabled or not
-     * @default true
-     */
-    enabled?: boolean // defaults to true
-  }
-  /**
-   * Configuration for enhanced logging.
-   */
-  enhancedLogs?: {
-    /**
-     * Whether to enable enhanced logging.
-     * @default true
-     */
-    enabled: boolean
-  }
-  /**
-   * Whether to remove devtools from the production build.
-   * @default true
-   */
-  removeDevtoolsOnBuild?: boolean
-
-  /**
-   * Whether to log information to the console.
-   * @default true
-   */
-  logging?: boolean
-  /**
-   * Configuration for source injection.
-   */
-  injectSource?: {
-    /**
-     * Whether to enable source injection via data-tsd-source.
-     * @default true
-     */
-    enabled: boolean
-    /**
-     * List of files or patterns to ignore for source injection.
-     */
-    ignore?: {
-      files?: Array<string | RegExp>
-      components?: Array<string | RegExp>
-    }
-  }
-  /**
-   * Configuration for console piping between client and server.
-   * When enabled, console logs from the client will appear in the terminal,
-   * and server logs will appear in the browser console.
-   */
-  consolePiping?: {
-    /**
-     * Whether to enable console piping.
-     * @default true
-     */
-    enabled?: boolean
-    /**
-     * Which console methods to pipe.
-     * @default ['log', 'warn', 'error', 'info', 'debug']
-     */
-    levels?: Array<ConsoleLevel>
-  }
-}
+export type { ConsoleLevel } from '@tanstack/devtools-bundler-core'
+export type TanStackDevtoolsViteConfig = TanStackDevtoolsConfig
 
 export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
   config
@@ -132,6 +60,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
       transform: {
+        // Run before the transforms of plugins without `order: 'pre'`, also when
+        // devtools() is not first in the plugins array. A plugin that changes
+        // the code of one environment only would shift the lines and make the
+        // SSR and client locations differ, which breaks hydration. An earlier
+        // plugin whose transform also has `order: 'pre'` still runs first.
+        order: 'pre',
         filter: {
           id: {
             exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
@@ -250,7 +184,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         const consolePipingEnabled = consolePipingConfig.enabled ?? true
 
         server.middlewares.use((req, res, next) =>
-          handleDevToolsViteRequest(req, res, next, {
+          handleDevToolsRequest(req, res, next, {
             onOpenSource: (parsedData) => {
               const { data, routine } = parsedData
               if (routine === 'open-source') {
@@ -653,9 +587,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           code.includes('__TANSTACK_DEVTOOLS_HOST__') ||
           code.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')
         if (!hasPlaceholder) return
+        // Vite pre-bundles npm installs into chunks under `.vite/deps*`, whose
+        // ids no longer name the package.
         if (
           !id.includes('@tanstack/devtools') &&
-          !id.includes('@tanstack/event-bus')
+          !id.includes('@tanstack/event-bus') &&
+          !id.includes('/.vite/deps')
         )
           return
 

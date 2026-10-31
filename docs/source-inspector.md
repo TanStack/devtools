@@ -12,6 +12,8 @@ Two things are needed for the source inspector to work:
 - The `@tanstack/devtools-vite` plugin must be installed and running (dev server only)
 - Source injection must be enabled: `injectSource.enabled: true` (this is the default)
 
+Outside Vite, anything that injects the same `data-tsd-source` attribute drives the overlay just as well; see [Opening the File Somewhere Other Than Vite](#opening-the-file-somewhere-other-than-vite) for the click.
+
 The feature only works in development. In production builds, source attributes are not injected.
 
 ## How It Works
@@ -85,6 +87,35 @@ By default, clicking an inspected element opens the file in your editor. You can
 | `"copy-path"` | Copies the `filepath:line:column` string to the clipboard |
 
 This is useful in environments where the Vite dev server cannot reach your editor, or when you want to paste the path elsewhere.
+
+## Opening the File Somewhere Other Than Vite
+
+`"ide-warp"` requests `__tsd/open-source?source=<path:line:column>`, which the Vite plugin serves. If something else injects `data-tsd-source` — an SWC plugin under Next.js, for example — that endpoint does not exist, and the click appears to do nothing: the request 404s and the failure is swallowed.
+
+`openSourceUrl` replaces the whole URL, so the click can reach whatever endpoint your host does have. It receives the clicked element's `data-tsd-source` value and returns an absolute URL or a path:
+
+```ts
+<TanStackDevtools
+  config={{
+    openSourceUrl: (source) =>
+      `/api/open-editor?at=${encodeURIComponent(source)}`,
+  }}
+/>
+```
+
+The whole URL, not just its base, because a different host usually wants a different parameter shape. Next.js already serves its own editor endpoint, which takes the position split into three:
+
+```ts
+openSourceUrl: (source) => {
+  const [, file, line, column] = /^(.*):(\d+):(\d+)$/.exec(source) ?? []
+  const params = new URLSearchParams(
+    file ? { file, line1: line, column1: column } : { file: source },
+  )
+  return `/__nextjs_launch-editor?${params}`
+}
+```
+
+Leave it unset and the Vite endpoint is used, honouring `BASE_URL` as before. It is ignored under `sourceAction: "copy-path"`, which never makes a request.
 
 ## Editor Configuration
 

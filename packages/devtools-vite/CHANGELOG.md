@@ -1,5 +1,57 @@
 # @tanstack/devtools-event-client
 
+## 0.8.6
+
+### Patch Changes
+
+- [#539](https://github.com/TanStack/devtools/pull/539) [`ed8b314`](https://github.com/TanStack/devtools/commit/ed8b314173bf2d5550e75c27dbe435e18dc49805) - Source injection no longer stops after the dev server parses a regex literal. Before this fix, a regex literal cached `value` as a child key of `Literal` nodes. Every later file with a string literal then threw during the walk and got zero `data-tsd-source` attributes.
+
+- [#540](https://github.com/TanStack/devtools/pull/540) [`012421f`](https://github.com/TanStack/devtools/commit/012421fcc31b6d4284fdc6083af2b773246469be) - Stop the console pipe feedback loop with Vite 8 `server.forwardConsole`. The server side of the pipe no longer sends browser logs that Vite printed in the terminal back to the browser.
+
+- [#548](https://github.com/TanStack/devtools/pull/548) [`40f32e4`](https://github.com/TanStack/devtools/commit/40f32e4cda7bc4858f8a1fced7fef77fe87ea50b) - Run source injection before the transforms of other plugins (unless they also use `order: 'pre'`), also when `devtools()` is not first in the plugins array. Before this fix, a framework plugin that changed the code of only one environment shifted the line numbers, so `data-tsd-source` differed between SSR and client and caused hydration warnings.
+
+- [#541](https://github.com/TanStack/devtools/pull/541) [`df1464c`](https://github.com/TanStack/devtools/commit/df1464cdca80efa98b98930790046828255624ef) - Fix "Go to Source" for files outside the current working directory, for example a package in a monorepo or Vite run from another directory. The editor got a path with the working directory added twice. Also answer a missing or malformed `source` with `400` instead of leaving the request pending.
+
+- [#542](https://github.com/TanStack/devtools/pull/542) [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8) - Remove the `intent` bin from the published packages. It took over `node_modules/.bin/intent` from `@tanstack/intent` and imported the removed `@tanstack/intent/intent-library` subpath. The packages now have the `tanstack-intent` keyword, which current `@tanstack/intent` uses to find their skills.
+
+- [#545](https://github.com/TanStack/devtools/pull/545) [`d018c4c`](https://github.com/TanStack/devtools/commit/d018c4c99f3df90be0da57634f8bd883aa8efaa7) - Reject event bus requests to install a package when the name is not a valid npm package name. On macOS and Linux, run the package manager without a shell. Also reject a plugin import name that is not a JavaScript identifier, because it is written into your source file as code.
+
+- [#538](https://github.com/TanStack/devtools/pull/538) [`7cb0a8d`](https://github.com/TanStack/devtools/commit/7cb0a8d4ceeb314c4a6e5cb9bd7b3162ba7bfcf5) - Inject the event bus port, host, and protocol into Vite pre-bundled dependency chunks too. Before this fix, a client installed from npm kept the default port 4206 and could not connect when the server bus used another port.
+
+- Updated dependencies [[`ed8b314`](https://github.com/TanStack/devtools/commit/ed8b314173bf2d5550e75c27dbe435e18dc49805), [`012421f`](https://github.com/TanStack/devtools/commit/012421fcc31b6d4284fdc6083af2b773246469be), [`df1464c`](https://github.com/TanStack/devtools/commit/df1464cdca80efa98b98930790046828255624ef), [`d018c4c`](https://github.com/TanStack/devtools/commit/d018c4c99f3df90be0da57634f8bd883aa8efaa7)]:
+  - @tanstack/devtools-bundler-core@0.1.4
+
+## 0.8.5
+
+### Patch Changes
+
+- Updated dependencies [[`d337857`](https://github.com/TanStack/devtools/commit/d3378571fa56c8ab7a119c809a28d9a31adf9d81)]:
+  - @tanstack/devtools-bundler-core@0.1.3
+
+## 0.8.4
+
+### Patch Changes
+
+- Updated dependencies [[`2df2e04`](https://github.com/TanStack/devtools/commit/2df2e04080cb5f8a46d11c0466ec4fc763095bc2)]:
+  - @tanstack/devtools-event-bus@0.4.3
+  - @tanstack/devtools-bundler-core@0.1.2
+
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies [[`f4c35d2`](https://github.com/TanStack/devtools/commit/f4c35d29be14c88ff741a7104bf57900fae2299d)]:
+  - @tanstack/devtools-bundler-core@0.1.1
+
+## 0.8.2
+
+### Patch Changes
+
+- [#484](https://github.com/TanStack/devtools/pull/484) [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b) - Internal refactor: consume `@tanstack/devtools-bundler-core` for shared logic. No public API or behavior change.
+
+- Updated dependencies [[`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b), [`d6e9022`](https://github.com/TanStack/devtools/commit/d6e9022a8b59e86c377767d2f518f570d1d74e1b)]:
+  - @tanstack/devtools-bundler-core@0.1.0
+
 ## 0.8.1
 
 ### Patch Changes

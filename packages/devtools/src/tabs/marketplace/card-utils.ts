@@ -50,12 +50,13 @@ export const getBadgeClass = (card: PluginCard, styles: any): string => {
       return `${base} ${s.pluginMarketplaceCardBadgeInstall}`
     case 'add-to-devtools':
       return `${base} ${s.pluginMarketplaceCardBadgeAdd}`
+    // Active matches the green rule down the card's leading edge, so the two
+    // signals for "this one is running" agree instead of using two colours.
     case 'already-installed':
-      return `${base} ${s.pluginMarketplaceCardBadgeAdd}`
+      return `${base} ${s.pluginMarketplaceCardBadgeActive}`
     case 'bump-version':
-      return `${base} ${s.pluginMarketplaceCardBadgeRequires}`
     case 'version-mismatch':
-      return `${base} ${s.pluginMarketplaceCardBadgeRequires}`
+      return `${base} ${s.pluginMarketplaceCardBadgeBlocked}`
     case 'requires-package':
     case 'wrong-framework':
       return `${base} ${s.pluginMarketplaceCardBadgeRequires}`

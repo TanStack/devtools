@@ -43,8 +43,18 @@ export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
   return (
     <div class={styles().pluginMarketplaceSection}>
       <div
+        role="button"
+        tabIndex={0}
+        aria-expanded={!props.isCollapsed()}
+        data-tsd-control
         class={styles().pluginMarketplaceSectionHeader}
         onClick={props.onToggleCollapse}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            props.onToggleCollapse()
+          }
+        }}
       >
         <div class={styles().pluginMarketplaceSectionHeaderLeft}>
           <div
@@ -63,39 +73,46 @@ export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
       </div>
 
       <Show when={!props.isCollapsed()}>
-        <Show when={props.section.id === 'featured'}>
-          <div class={styles().pluginMarketplaceFeatureBanner}>
-            <div class={styles().pluginMarketplaceFeatureBannerContent}>
-              <h4 class={styles().pluginMarketplaceFeatureBannerTitle}>
-                <span class={styles().pluginMarketplaceFeatureBannerIcon}>
-                  <StarIcon />
-                </span>
-                Want to be featured here?
-              </h4>
-              <p class={styles().pluginMarketplaceFeatureBannerText}>
-                If you've built a plugin for TanStack Devtools and would like to
-                showcase it in the featured section, we'd love to hear from you!
-                Reach out to us to discuss partnership opportunities.
-              </p>
-              <a
-                href="mailto:partners+devtools@tanstack.com?subject=Featured%20Plugin%20Partnership%20Inquiry"
-                class={styles().pluginMarketplaceFeatureBannerButton}
-              >
-                <span class={styles().pluginMarketplaceFeatureBannerButtonIcon}>
-                  <MailIcon />
-                </span>
-                Contact Us
-              </a>
+        <div class={styles().pluginMarketplaceSectionContent}>
+          <Show when={props.section.id === 'featured'}>
+            <div class={styles().pluginMarketplaceFeatureBanner}>
+              <div class={styles().pluginMarketplaceFeatureBannerContent}>
+                <h4 class={styles().pluginMarketplaceFeatureBannerTitle}>
+                  <span class={styles().pluginMarketplaceFeatureBannerIcon}>
+                    <StarIcon />
+                  </span>
+                  Want to be featured here?
+                </h4>
+                <p class={styles().pluginMarketplaceFeatureBannerText}>
+                  If you've built a plugin for TanStack Devtools and would like
+                  to showcase it in the featured section, we'd love to hear from
+                  you! Reach out to us to discuss partnership opportunities.
+                </p>
+                <a
+                  href="mailto:partners+devtools@tanstack.com?subject=Featured%20Plugin%20Partnership%20Inquiry"
+                  class={styles().pluginMarketplaceFeatureBannerButton}
+                >
+                  <span
+                    class={styles().pluginMarketplaceFeatureBannerButtonIcon}
+                  >
+                    <MailIcon />
+                  </span>
+                  Contact Us
+                </a>
+              </div>
             </div>
-          </div>
-        </Show>
+          </Show>
 
-        <div class={styles().pluginMarketplaceGrid}>
-          <For each={props.section.cards}>
-            {(card) => (
-              <PluginCardComponent card={card} onAction={props.onCardAction} />
-            )}
-          </For>
+          <div class={styles().pluginMarketplaceGrid}>
+            <For each={props.section.cards}>
+              {(card) => (
+                <PluginCardComponent
+                  card={card}
+                  onAction={props.onCardAction}
+                />
+              )}
+            </For>
+          </div>
         </div>
       </Show>
     </div>

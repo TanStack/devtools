@@ -322,46 +322,53 @@ export const PluginMarketplace = () => {
   }
 
   return (
-    <div class={styles().pluginMarketplace}>
-      {/* Settings Panel */}
+    <div
+      class={styles().pluginMarketplace}
+      data-testid="plugin-marketplace"
+      data-tsd-surface
+    >
+      {/* The scroll region is separate from the shell so the settings drawer can
+          be positioned against the workbench instead of the whole viewport. */}
+      <div class={styles().pluginMarketplaceScroll}>
+        <MarketplaceHeader
+          searchInput={searchInput}
+          onSearchInput={handleSearchInput}
+          onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen())}
+          tags={getAllTags}
+          selectedTags={selectedTags}
+          onToggleTag={toggleTag}
+        />
+
+        <Show when={getFilteredSections().length > 0}>
+          <For each={getFilteredSections()}>
+            {(section) => (
+              <PluginSectionComponent
+                section={section}
+                isCollapsed={() => collapsedSections().has(section.id)}
+                onToggleCollapse={() => toggleSection(section.id)}
+                onCardAction={handleAction}
+              />
+            )}
+          </For>
+        </Show>
+
+        <Show when={getFilteredSections().length === 0}>
+          <div class={styles().pluginMarketplaceEmpty}>
+            <p class={styles().pluginMarketplaceEmptyText}>
+              {searchQuery()
+                ? `No plugins found matching "${searchQuery()}"`
+                : 'No additional plugins available. You have all compatible devtools installed and registered!'}
+            </p>
+          </div>
+        </Show>
+      </div>
+
       <SettingsPanel
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         showActivePlugins={showActivePlugins}
         setShowActivePlugins={setShowActivePlugins}
       />
-
-      <MarketplaceHeader
-        searchInput={searchInput}
-        onSearchInput={handleSearchInput}
-        onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen())}
-        tags={getAllTags}
-        selectedTags={selectedTags}
-        onToggleTag={toggleTag}
-      />
-
-      <Show when={getFilteredSections().length > 0}>
-        <For each={getFilteredSections()}>
-          {(section) => (
-            <PluginSectionComponent
-              section={section}
-              isCollapsed={() => collapsedSections().has(section.id)}
-              onToggleCollapse={() => toggleSection(section.id)}
-              onCardAction={handleAction}
-            />
-          )}
-        </For>
-      </Show>
-
-      <Show when={getFilteredSections().length === 0}>
-        <div class={styles().pluginMarketplaceEmpty}>
-          <p class={styles().pluginMarketplaceEmptyText}>
-            {searchQuery()
-              ? `No plugins found matching "${searchQuery()}"`
-              : 'No additional plugins available. You have all compatible devtools installed and registered!'}
-          </p>
-        </div>
-      </Show>
     </div>
   )
 }

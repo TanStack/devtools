@@ -7,6 +7,7 @@ import {
   onCleanup,
 } from 'solid-js'
 import { delegateEvents } from 'solid-js/web'
+import { ensureDevtoolsStyles } from '@tanstack/devtools-ui/internal'
 import type { Accessor, JSX } from 'solid-js'
 
 interface PiPProviderProps {
@@ -112,6 +113,7 @@ export const PiPProvider = (props: PiPProviderProps) => {
         pip.document.head.appendChild(link)
       }
     })
+    ensureDevtoolsStyles(pip.document)
     delegateEvents(
       [
         'focusin',

@@ -44,16 +44,16 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
   })
 
   return (
-    <div class={styles().settingsOverlay}>
-      <div class={styles().settingsHeader}>
+    <div class={styles().settingsOverlay} data-tsd-surface>
+      <div class={styles().settingsHeader} data-tsd-surface data-tsd-separator>
         <h3 class={styles().settingsTitle}>Settings</h3>
         <Button variant="secondary" outline onClick={props.onClose}>
           Done
         </Button>
       </div>
 
-      <div class={styles().settingsContent}>
-        <div class={styles().settingsSection}>
+      <div class={styles().settingsContent} data-tsd-surface>
+        <div class={styles().settingsSection} data-tsd-surface>
           <h4 class={styles().settingsSectionLabel}>General</h4>
           <div class={styles().settingsRowStack}>
             <Select<SeverityThreshold>
@@ -142,7 +142,7 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
             />
           </div>
 
-          <div class={styles().rulesList}>
+          <div class={styles().rulesList} data-tsd-surface>
             <For each={filteredRules()}>
               {(rule, idx) => {
                 const isDisabled = () => disabledRulesSet().has(rule.id)
@@ -158,6 +158,8 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
 
                 return (
                   <label
+                    data-tsd-surface
+                    data-tsd-separator={hasBorder() ? '' : undefined}
                     class={styles().ruleRow}
                     classList={{
                       [styles().ruleRowDisabled]: isDisabled(),
@@ -165,6 +167,8 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                     }}
                   >
                     <input
+                      data-tsd-control
+                      data-tsd-selected={!isDisabled() ? 'true' : undefined}
                       class={styles().ruleCheckbox}
                       type="checkbox"
                       checked={!isDisabled()}

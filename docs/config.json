@@ -14,6 +14,7 @@
         { "label": "Installation", "to": "installation" },
         { "label": "Configuration", "to": "configuration" },
         { "label": "Plugin Configuration", "to": "plugin-configuration" },
+        { "label": "Plugin Workspace", "to": "plugin-workspace" },
         { "label": "Vite Plugin", "to": "vite-plugin" },
         { "label": "Production", "to": "production" }
       ],
@@ -77,7 +78,8 @@
         { "label": "Building Custom Plugins", "to": "building-custom-plugins" },
         { "label": "Using devtools-utils", "to": "devtools-utils" },
         { "label": "Bidirectional Communication", "to": "bidirectional-communication" },
-        { "label": "Third-party Plugins", "to": "third-party-plugins" }
+        { "label": "Third-party Plugins", "to": "third-party-plugins" },
+        { "label": "WebMCP Tools", "to": "webmcp-tools" }
       ],
       "frameworks": [
         {

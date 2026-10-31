@@ -49,7 +49,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
     "@tanstack/devtools-event-client": "latest",
-    "@tanstack/devtools-vite": "0.8.1",
+    "@tanstack/devtools-vite": "0.8.6",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/react": "^16.2.0",
     "@types/node": "^22.15.2",
@@ -60,7 +60,7 @@
     "jsdom": "^27.0.0",
     "typescript": "~5.9.2",
     "vite": "^8.0.0",
-    "vitest": "^3.2.4",
+    "vitest": "^4.1.10",
     "web-vitals": "^5.1.0",
     "wrangler": "^4.40.3"
   }

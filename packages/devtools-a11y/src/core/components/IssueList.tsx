@@ -38,7 +38,7 @@ export function A11yIssueList(props: A11yIssueListProps) {
         ally.allyResult.audit &&
         ally.filteredIssues().length > 0
       ) {
-        highlightAllIssues(ally.filteredIssues())
+        highlightAllIssues(ally.filteredIssues(), ally.theme())
       }
 
       return
@@ -66,6 +66,7 @@ export function A11yIssueList(props: A11yIssueListProps) {
           highlightElement(selector, issue.impact, {
             showTooltip: true,
             ruleId: issue.ruleId,
+            theme: ally.theme(),
           })
         }
       } catch (error) {
@@ -75,8 +76,8 @@ export function A11yIssueList(props: A11yIssueListProps) {
   }
 
   return (
-    <div>
-      <div class={styles().summaryGrid}>
+    <div data-tsd-surface>
+      <div class={styles().summaryGrid} data-tsd-surface>
         <For each={IMPACTS}>
           {(impact) => {
             // Count issues from the reactive filteredIssues memo so counts update when config.threshold changes
@@ -88,6 +89,8 @@ export function A11yIssueList(props: A11yIssueListProps) {
 
             return (
               <button
+                data-tsd-control
+                data-tsd-selected={active() ? 'true' : undefined}
                 class={styles().summaryButton}
                 classList={{
                   [styles().summaryButtonActive(impact)]: active(),
@@ -124,7 +127,7 @@ export function A11yIssueList(props: A11yIssueListProps) {
 
           return (
             <Show when={shouldRender()}>
-              <div class={styles().section}>
+              <div class={styles().section} data-tsd-surface data-tsd-separator>
                 <h3 class={styles().sectionTitle(impact)}>
                   {SEVERITY_LABELS[impact]} ({issues().length})
                 </h3>

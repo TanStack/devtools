@@ -12,7 +12,7 @@
   "dependencies": {
     "@tanstack/devtools-e2e": "workspace:*",
     "@tanstack/preact-devtools": "workspace:*",
-    "preact": "^10.28.0"
+    "preact": "^11.0.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0",

@@ -1,5 +1,104 @@
 # @tanstack/devtools
 
+## 0.16.0
+
+### Minor Changes
+
+- [#549](https://github.com/TanStack/devtools/pull/549) [`8b3a032`](https://github.com/TanStack/devtools/commit/8b3a032c4709ecad6e3166c25627c326373d4142) - Add the `hideInAutomation` config option. When it is `true`, the devtools do not render in a browser that automation drives (Playwright, Cypress, Selenium), detected by `navigator.webdriver`. This keeps the devtools out of end-to-end test selectors. The default is `false`.
+
+- [#550](https://github.com/TanStack/devtools/pull/550) [`7b5f1ee`](https://github.com/TanStack/devtools/commit/7b5f1eef8b9ac990cb4604f93a499581e1f3a5fb) - Add the `openAsModal` config option. A dialog opened with `dialog.showModal()` makes the devtools inert. With this option, the open panel moves on top of such a dialog and takes input, and the app dialog is inert until the panel closes. Open the panel with the open hotkey while the dialog is open.
+
+### Patch Changes
+
+- [#544](https://github.com/TanStack/devtools/pull/544) [`f315fe8`](https://github.com/TanStack/devtools/commit/f315fe821b879bfadb1d38ce0d5c1c5ff3d8e988) - Listen to `pointermove` on the trigger buttons directly instead of through Solid's event delegation. The delegated document handler left `event.currentTarget` on `<html>` for every later `pointermove` listener, which broke libraries such as react-resizable-panels.
+
+- [#542](https://github.com/TanStack/devtools/pull/542) [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8) - Remove the `intent` bin from the published packages. It took over `node_modules/.bin/intent` from `@tanstack/intent` and imported the removed `@tanstack/intent/intent-library` subpath. The packages now have the `tanstack-intent` keyword, which current `@tanstack/intent` uses to find their skills.
+
+- [#543](https://github.com/TanStack/devtools/pull/543) [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037) - Require solid-js 1.9.13 or later. Our compiled output imports `use` from `solid-js/web`, and the server build of solid-js 1.9.12 and earlier does not export it. Before this fix, SSR apps with an older solid-js in their lockfile could not start the dev server.
+
+- [#557](https://github.com/TanStack/devtools/pull/557) [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355) - Cap the `solid-js` peer range at `^1`. The previous open-ended `>=` range would accept Solid 2.0.0 once it is released, but these packages are built against Solid 1 and do not work with Solid 2.
+
+- Updated dependencies [[`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037), [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355)]:
+  - @tanstack/devtools-ui@0.7.2
+
+## 0.15.0
+
+### Minor Changes
+
+- [#521](https://github.com/TanStack/devtools/pull/521) [`45f39ee`](https://github.com/TanStack/devtools/commit/45f39ee91e8b4c04c79226cb3171b5686b782b35) - Implement the hot corner feature for the trigger edge dock.
+
+### Patch Changes
+
+- [#515](https://github.com/TanStack/devtools/pull/515) [`02a67f1`](https://github.com/TanStack/devtools/commit/02a67f14ac6ae4569f9bb26f682467f599415210) - Reset splitter panes on double-click
+
+- [#517](https://github.com/TanStack/devtools/pull/517) [`589304f`](https://github.com/TanStack/devtools/commit/589304f46110a6f1b7370c8cfed97459e83f6069) - Add `openSourceUrl` to the devtools config so the source inspector's click can reach an editor endpoint other than the one `@tanstack/devtools-vite` serves.
+
+- [#529](https://github.com/TanStack/devtools/pull/529) [`dc61e1e`](https://github.com/TanStack/devtools/commit/dc61e1ea21a7fc57dfeab6ee6f212b57aea79447) - Keep the floating trigger at the same relative spot when the window size changes. The trigger now stores its spot as a percent of the free space, so it stays in its corner and never moves off-screen.
+
+## 0.14.2
+
+### Patch Changes
+
+- [#509](https://github.com/TanStack/devtools/pull/509) [`4ecd46e`](https://github.com/TanStack/devtools/commit/4ecd46e2f910fb41f6269927880a0e5c47baeecb) - Install Neodrag's required core peer dependency so consumers do not need to add it themselves.
+
+## 0.14.1
+
+### Patch Changes
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Persist the folded plugin strip across reloads so it does not steal height back on refresh.
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Use the rainbow palm favicon as the default trigger mark, default the trigger to floating, and make pane gutters follow the pointer instead of compounding each drag move.
+
+- [#510](https://github.com/TanStack/devtools/pull/510) [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15) - Give plugin tabs a small inset in a rounded card, keep pane gutters visible at rest, and theme the panel scrollbars.
+
+- Updated dependencies [[`2df2e04`](https://github.com/TanStack/devtools/commit/2df2e04080cb5f8a46d11c0466ec4fc763095bc2), [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15)]:
+  - @tanstack/devtools-event-bus@0.4.3
+  - @tanstack/devtools-ui@0.7.1
+
+## 0.14.0
+
+### Minor Changes
+
+- [#492](https://github.com/TanStack/devtools/pull/492) [`a46d1f5`](https://github.com/TanStack/devtools/commit/a46d1f59599c679a28208e6bba4b8d913b3ea8d2) - feat: arrange plugin panes in splits and stacked tabs, drag and resize them, and raise the limit to eighteen
+
+  The Plugins destination is now a workspace instead of a fixed row. Panes can sit side by side, above and below each other, or stacked as tabs in one group, and the arrangement is a tree that persists across reloads along with each pane's size and which tab is selected. Up to eighteen plugins can be open, up from three, because a stacked tab costs no space.
+
+  Drag a pane's tab onto the edge of another pane to split it, onto its middle to stack, or onto another tab bar to move it there. Drag the gutter between two panes to resize: one grows by exactly what the other loses, and neither can shrink below a readable minimum. Where the panel is too short to split without leaving an unreadable cell, the same drop becomes a stacked tab rather than being refused. The tab being carried follows the cursor, and a highlight shows where it will land.
+
+  The Plugins strip now lists only the plugins that are _not_ open, so each plugin has exactly one control: its strip entry while closed, its pane tab once open. Entries can be dragged out of the strip to place a pane exactly where you want it instead of appending it, including onto an empty workspace, where it takes the whole area. The strip folds itself away once everything is open and returns when a plugin closes.
+
+  Every one of those actions has a keyboard equivalent, because the pointer gestures are suppressed while the panel is detached into a picture-in-picture window. `Enter` picks a pane up, the arrow keys choose where it goes, `Enter` drops it and `Escape` puts it back; gutters take arrow keys, `Shift`-arrow and `Home`/`End`, the same pattern the whole-panel resizer already used. Picking up and dropping is announced to screen readers.
+
+  For plugin authors, two guarantees are now explicit. A pane's mount node is never removed from the document while the plugin is open, whatever the user does to the layout, so an `<iframe>` will not reload and a `<canvas>` will not lose its context. And `destroy` is called exactly once, when the plugin closes, before the node is detached — not when a pane is moved, resized, or hidden by navigating to another destination.
+
+  `state.activePlugins` in `localStorage` is superseded by `state.layout`. Existing state is migrated on first read, reopening as a single group in the order it recorded, and an arrangement that cannot be read is repaired rather than throwing: unknown plugin ids are dropped, empty groups close up, and a wholly unusable entry falls back to reopening whatever plugins it can still identify.
+
+- [#492](https://github.com/TanStack/devtools/pull/492) [`a46d1f5`](https://github.com/TanStack/devtools/commit/a46d1f59599c679a28208e6bba4b8d913b3ea8d2) - feat: apply TanStack branding and the compact Workbench layout across core, shared UI, and accessibility Devtools
+
+  The Workbench now separates chrome from canvas: the header and the secondary strips paint the brand surface and share one 16px gutter with the content below them. The palm emblem is inline SVG instead of a filtered raster, plugin destinations get a real empty state, and the Marketplace, SEO, and Settings destinations drop their competing accent colours in favour of the semantic theme.
+
+  The secondary strip gets a pull tab on its bottom edge that folds the strip away behind the header, leaving the panel height and the destination content untouched. It only appears on destinations that have a strip.
+
+  The SEO tab's `<head>` watcher no longer reports `<style>` tags. It observes attributes and character data across the whole `<head>` subtree, and a CSS-in-JS library rewrites a `<style>` tag there on every render — so an SEO analysis triggered a re-render, the re-render emitted CSS, and the CSS triggered another analysis. Stylesheets carry no SEO metadata, so they are filtered out.
+
+  Fixes along the way: the resize handle had grown to 24px and sat on top of the header, so a press aimed at a header button started a resize instead of clicking; the Marketplace settings drawer was `position: fixed` and covered the host page instead of the Workbench; the floating trigger lost its brand fill on hover and its transition was overridden away; the "New" ribbon on a plugin card overlapped the card icon; scroll gestures inside the panel chained on to the host page; and the hotkey editor showed each shortcut's description as its heading and never rendered its title.
+
+### Patch Changes
+
+- Updated dependencies [[`a46d1f5`](https://github.com/TanStack/devtools/commit/a46d1f59599c679a28208e6bba4b8d913b3ea8d2)]:
+  - @tanstack/devtools-ui@0.7.0
+
+## 0.13.0
+
+### Minor Changes
+
+- [#485](https://github.com/TanStack/devtools/pull/485) [`d061f0c`](https://github.com/TanStack/devtools/commit/d061f0cc3cd64101edd176ac097e2f0048035ac5) - Add a floating trigger mode. Set `triggerMode: 'floating'` (or choose it under
+  Settings → Trigger Mode) to drag the devtools trigger anywhere on screen with
+  the left mouse button. Releasing a drag with velocity throws it — it glides with
+  momentum and springs back off the screen edges. The trigger is always kept
+  within a padded, on-screen area (it can never end up off-screen) and its
+  position is persisted to local storage.
+
 ## 0.12.5
 
 ### Patch Changes

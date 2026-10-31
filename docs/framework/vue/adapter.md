@@ -8,7 +8,7 @@ The Vue adapter wraps `TanStackDevtoolsCore` in a Vue 3 component, using Vue's `
 ## Installation
 
 ```sh
-npm install @tanstack/vue-devtools
+npm install -D @tanstack/vue-devtools
 ```
 
 ## Component Props

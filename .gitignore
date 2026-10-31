@@ -60,3 +60,4 @@ vite.config.ts.timestamp-*
 .sonda
 *settings.local.json
 .claude/worktrees
+.agent/scratch/

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { render } from 'preact'
 import { TanStackDevtoolsCore } from '@tanstack/devtools'
-import type { JSX } from 'preact'
+import type { ComponentChildren, JSX } from 'preact'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
@@ -116,20 +116,38 @@ export interface TanStackDevtoolsPreactInit {
   eventBusConfig?: ClientEventBusConfig
 }
 
-// Simple portal component for Preact
-function Portal({
-  children,
-  container,
-}: {
-  children: JSX.Element
-  container: HTMLElement
-}) {
+// Hands the portal's context to the separate root, so plugins can read the app's providers.
+function ContextProvider(
+  this: { getChildContext?: () => object },
+  props: { context: object; children: ComponentChildren },
+) {
+  this.getChildContext = () => props.context
+  return props.children
+}
+
+// Core `createPortal` only exists in Preact 11, and `preact/compat` patches global options.
+function Portal(
+  {
+    children,
+    container,
+  }: {
+    children: JSX.Element
+    container: HTMLElement
+  },
+  context: object,
+) {
   useEffect(() => {
-    render(children, container)
+    render(
+      <ContextProvider context={context}>{children}</ContextProvider>,
+      container,
+    )
+  })
+
+  useEffect(() => {
     return () => {
       render(null, container)
     }
-  }, [children, container])
+  }, [container])
 
   return null
 }

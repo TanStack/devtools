@@ -1,4 +1,5 @@
 ---
+'@tanstack/devtools-bundler-core': patch
 '@tanstack/devtools-vite': patch
 ---
 

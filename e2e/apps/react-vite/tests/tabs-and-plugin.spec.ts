@@ -15,7 +15,7 @@ test('settings tab becomes active when clicked', async ({ page }) => {
   await dt.goto()
   await dt.openViaTrigger()
   await dt.tab('settings').click()
-  await expect(dt.tab('settings')).toHaveClass(/active/)
+  await expect(dt.tab('settings')).toHaveAttribute('data-tsd-selected', 'true')
 })
 
 test('plugins tab becomes active when clicked', async ({ page }) => {
@@ -24,5 +24,5 @@ test('plugins tab becomes active when clicked', async ({ page }) => {
   await dt.openViaTrigger()
   await dt.tab('settings').click()
   await dt.tab('plugins').click()
-  await expect(dt.tab('plugins')).toHaveClass(/active/)
+  await expect(dt.tab('plugins')).toHaveAttribute('data-tsd-selected', 'true')
 })

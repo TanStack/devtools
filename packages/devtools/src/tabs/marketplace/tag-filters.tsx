@@ -17,6 +17,10 @@ export const TagFilters = (props: TagFiltersProps) => {
         <For each={props.tags()}>
           {(tag) => (
             <button
+              type="button"
+              data-tsd-control
+              data-tsd-selected={props.selectedTags().has(tag)}
+              aria-pressed={props.selectedTags().has(tag)}
               class={styles().pluginMarketplaceTagButton}
               classList={{
                 [styles().pluginMarketplaceTagButtonActive]: props

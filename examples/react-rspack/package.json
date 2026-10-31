@@ -1,0 +1,22 @@
+{
+  "name": "react-rspack-example",
+  "private": true,
+  "scripts": {
+    "dev": "rspack serve",
+    "build": "rspack build --mode=production"
+  },
+  "dependencies": {
+    "@tanstack/devtools-rspack": "workspace:*",
+    "@tanstack/react-devtools": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@rspack/cli": "^1.5.0",
+    "@rspack/core": "^1.5.0",
+    "@rspack/dev-server": "^1.1.4",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.9.2"
+  }
+}

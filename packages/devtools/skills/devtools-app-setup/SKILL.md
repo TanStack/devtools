@@ -159,7 +159,7 @@ Pass a `config` prop to `TanStackDevtools` to set initial shell behavior. These 
 Storage keys used internally:
 
 - `tanstack_devtools_settings` -- persisted settings
-- `tanstack_devtools_state` -- persisted UI state (active tab, panel height, active plugins, persistOpen)
+- `tanstack_devtools_state` -- persisted UI state (active tab, panel height, layout, persistOpen, subheaderCollapsed)
 
 All config properties are optional. Defaults shown below:
 
@@ -168,7 +168,8 @@ All config properties are optional. Defaults shown below:
   config={{
     defaultOpen: false, // open panel on mount
     hideUntilHover: false, // hide trigger until mouse hover
-    position: 'bottom-right', // trigger position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right'
+    position: 'bottom-right', // used when triggerMode is 'fixed': 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right'
+    triggerMode: 'floating', // 'floating' (default, draggable) | 'fixed'
     panelLocation: 'bottom', // panel position: 'top' | 'bottom'
     openHotkey: ['Control', '~'],
     inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],

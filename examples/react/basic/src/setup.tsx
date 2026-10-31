@@ -10,6 +10,8 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/react'
+import { A11yAuditFixture } from './a11y-audit-fixture'
 import { PackageJsonPanel } from './package-json-panel'
 
 const rootRoute = createRootRoute({
@@ -62,8 +64,9 @@ export default function DevtoolsExample() {
         eventBusConfig={{
           connectToServerBus: true,
         }}
-        config={{ sourceAction: 'copy-path' }}
+        config={{ sourceAction: 'copy-path', position: 'bottom-left' }}
         plugins={[
+          a11yDevtoolsPlugin(),
           {
             name: 'TanStack Query',
             render: <ReactQueryDevtoolsPanel />,
@@ -88,6 +91,7 @@ export default function DevtoolsExample() {
         ]}
       />
       <RouterProvider router={router} />
+      {import.meta.env.DEV && <A11yAuditFixture />}
     </>
   )
 }

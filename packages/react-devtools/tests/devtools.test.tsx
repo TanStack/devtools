@@ -12,13 +12,17 @@ import type {
 // The real core does a full Solid DOM mount which is heavy in jsdom. Mock it
 // down to the methods the React adapter actually calls (constructor + mount +
 // unmount + setConfig), so we can drive the portal wiring in isolation.
-vi.mock('@tanstack/devtools', () => ({
-  TanStackDevtoolsCore: vi.fn().mockImplementation(() => ({
-    mount: vi.fn(),
-    unmount: vi.fn(),
-    setConfig: vi.fn(),
-  })),
-}))
+vi.mock('@tanstack/devtools', () => {
+  // Vitest 4 constructs mocks with `new`. Arrow functions are not constructors.
+  const TanStackDevtoolsCore = vi.fn(
+    class {
+      mount = vi.fn()
+      unmount = vi.fn()
+      setConfig = vi.fn()
+    },
+  )
+  return { TanStackDevtoolsCore }
+})
 
 const CoreMock = vi.mocked(TanStackDevtoolsCore)
 

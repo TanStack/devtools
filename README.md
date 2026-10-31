@@ -1,5 +1,19 @@
 <div align="center">
-  <img src="./media/header_devtools.png" >
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://tanstack.com/api/readme/devtools.png?theme=dark"
+    />
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://tanstack.com/api/readme/devtools.png"
+    />
+    <img
+      src="https://tanstack.com/api/readme/devtools.png"
+      alt="TanStack Devtools"
+      width="900"
+    />
+  </picture>
 </div>
 
 <br />
