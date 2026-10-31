@@ -283,7 +283,7 @@ export function generateConsolePipeCode(
   // CLIENT ONLY: Listen for server console logs via SSE
   if (!isServer) {
     // Transform server log args - strip ANSI codes and convert source paths to clickable URLs
-    function transformServerLogArgs(args) {
+    function transformServerLogArgs(args, preserveEmptyStrings) {
       var escChar = String.fromCharCode(27);
       var transformed = [];
       
@@ -306,7 +306,7 @@ export function generateConsolePipeCode(
             return window.location.origin + '/__tsd/open-source?source=' + encodeURIComponent(match);
           });
           
-          if (cleaned.trim()) {
+          if (preserveEmptyStrings || cleaned.trim()) {
             transformed.push(cleaned);
           }
         } else {
@@ -317,6 +317,54 @@ export function generateConsolePipeCode(
       return transformed;
     }
 
+    function hasConsoleFormatSubstitution(arg) {
+      return typeof arg === 'string' && /%[sdifocOj%]/.test(arg);
+    }
+
+    // Browser consoles do not support %j and do not reliably collapse %%, so
+    // both become %s with a ready-made value at the same argument position.
+    // Scanning left to right keeps %%s as a literal percent followed by "s".
+    function normalizeServerFormat(format, args) {
+      var normalizedArgs = [];
+      var nextArg = 0;
+      var normalizedFormat = format.replace(/%[sdifocOj%]/g, function(token) {
+        if (token === '%%') {
+          normalizedArgs.push('%');
+          return '%s';
+        }
+        if (nextArg >= args.length) {
+          // Node leaves a substitution with no argument as literal text.
+          normalizedArgs.push(token);
+          return '%s';
+        }
+        var arg = args[nextArg++];
+        if (token === '%j') {
+          normalizedArgs.push(JSON.stringify(arg));
+          return '%s';
+        }
+        normalizedArgs.push(arg);
+        return token;
+      });
+      return { format: normalizedFormat, args: normalizedArgs.concat(args.slice(nextArg)) };
+    }
+
+    function isEnhancedLogPrefix(arg) {
+      return typeof arg === 'string' &&
+        arg.indexOf('LOG') !== -1 &&
+        arg.indexOf(String.fromCharCode(10) + ' ' + String.fromCharCode(8594) + ' ') !== -1;
+    }
+
+    function getConsoleFormatIndex(args) {
+      var index = -1;
+      if (hasConsoleFormatSubstitution(args[0])) {
+        index = 0;
+      } else if (isEnhancedLogPrefix(args[0]) && hasConsoleFormatSubstitution(args[1])) {
+        index = 1;
+      }
+      // With nothing left to substitute, a sequence like 100%c is literal text.
+      return index !== -1 && args.length > index + 1 ? index : -1;
+    }
+
     var eventSource = new EventSource('/__tsd/console-pipe/sse');
     
     eventSource.onmessage = function(event) {
@@ -325,12 +373,22 @@ export function generateConsolePipeCode(
         if (data.entries) {
           for (var m = 0; m < data.entries.length; m++) {
             var entry = data.entries[m];
-            var transformedArgs = transformServerLogArgs(entry.args);
+            var formatIndex = getConsoleFormatIndex(entry.args);
+            var shouldPreserveFormat = formatIndex !== -1;
+            var transformedArgs = transformServerLogArgs(entry.args, shouldPreserveFormat);
             var prefix = '%c[Server]%c';
             var prefixStyle = 'color: #9333ea; font-weight: bold;';
             var resetStyle = 'color: inherit;';
             var logMethod = originalConsole[entry.level] || originalConsole.log;
-            logMethod.apply(console, [prefix, prefixStyle, resetStyle].concat(transformedArgs));
+            if (shouldPreserveFormat) {
+              var normalized = normalizeServerFormat(transformedArgs[formatIndex], transformedArgs.slice(formatIndex + 1));
+              logMethod.apply(
+                console,
+                [prefix + ' ' + transformedArgs.slice(0, formatIndex).join('') + normalized.format, prefixStyle, resetStyle].concat(normalized.args)
+              );
+            } else {
+              logMethod.apply(console, [prefix, prefixStyle, resetStyle].concat(transformedArgs));
+            }
           }
         }
       } catch (err) {
