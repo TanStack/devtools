@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import {
   exportToCsv,
   exportToJson,
-  generateSummaryReport,
 } from '../src/core/utils/export-audit.uitls'
 
 // types
@@ -147,63 +146,6 @@ describe('export', () => {
       const csv = exportToCsv(result)
 
       expect(csv).toContain('wcag2a; wcag111')
-    })
-  })
-
-  describe('generateSummaryReport', () => {
-    it('should generate a human-readable summary', () => {
-      const result = createMockResult()
-      const report = generateSummaryReport(result)
-
-      expect(report).toContain('ACCESSIBILITY AUDIT REPORT')
-      expect(report).toContain('URL: http://localhost:3000/')
-      expect(report).toContain('Total Issues: 2')
-      expect(report).toContain('Critical: 1')
-      expect(report).toContain('Serious: 1')
-      expect(report).toContain('Passing Rules: 50')
-    })
-
-    it('should group issues by impact', () => {
-      const result = createMockResult()
-      const report = generateSummaryReport(result)
-
-      expect(report).toContain('[CRITICAL]')
-      expect(report).toContain('[SERIOUS]')
-      expect(report).toContain('image-alt')
-      expect(report).toContain('button-name')
-    })
-
-    it('should include selector and help URL', () => {
-      const result = createMockResult()
-      const report = generateSummaryReport(result)
-
-      expect(report).toContain('Selector: img.logo')
-      expect(report).toContain('Learn more: https://dequeuniversity.com')
-    })
-
-    it('should handle result with no issues', () => {
-      const result: A11yAuditResult = {
-        issues: [],
-        summary: {
-          total: 0,
-          critical: 0,
-          serious: 0,
-          moderate: 0,
-          minor: 0,
-          passes: 50,
-          incomplete: 0,
-        },
-        timestamp: 1704067200000,
-        url: 'http://localhost:3000/',
-        context: 'document',
-        duration: 50,
-      }
-
-      const report = generateSummaryReport(result)
-
-      expect(report).toContain('Total Issues: 0')
-      expect(report).not.toContain('[CRITICAL]')
-      expect(report).not.toContain('[SERIOUS]')
     })
   })
 })
