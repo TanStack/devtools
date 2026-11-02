@@ -303,6 +303,29 @@ const PLUGIN_REGISTRY: Record<string, PluginMetadata> = {
     isNew: true,
     tags: ['TanStack', 'React', 'Inertia', 'Laravel'],
   },
+
+  // Danilo Britto — Zustand Inspector
+  'zustand-inspector': {
+    packageName: 'zustand-inspector',
+    title: 'Zustand Inspector',
+    description:
+      'Inspect Zustand stores: lossless time travel, state diffs, per-action cost, async calls, and persist/redux middleware views.',
+    requires: {
+      packageName: 'zustand',
+      minVersion: '5.0.0',
+    },
+    pluginImport: {
+      importName: 'zustandInspectorDevtoolsPlugin',
+      type: 'function',
+    },
+    pluginId: 'zustand-inspector',
+    docsUrl: 'https://github.com/dbritto-dev/zustand-inspector#readme',
+    repoUrl: 'https://github.com/dbritto-dev/zustand-inspector',
+    author: 'Danilo Britto (@dbritto-dev)',
+    framework: 'other',
+    isNew: true,
+    tags: ['Zustand', 'State', 'Time Travel'],
+  },
 }
 
 /**
