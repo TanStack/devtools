@@ -1,5 +1,3 @@
-import clientOnly from './client-only'
+import { clientOnly } from '@solidjs/web'
 
-export const TanStackDevtools = clientOnly(() =>
-  import('./core').then((m) => m),
-)
+export const TanStackDevtools = clientOnly(() => import('./core'))

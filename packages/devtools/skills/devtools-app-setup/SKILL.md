@@ -100,7 +100,7 @@ npm install -D @tanstack/solid-devtools @tanstack/devtools-vite
 ```
 
 ```tsx
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import App from './App'

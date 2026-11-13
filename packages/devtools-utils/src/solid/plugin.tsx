@@ -1,6 +1,6 @@
-/** @jsxImportSource solid-js - we use Solid.js as JSX here */
+/** @jsxImportSource @solidjs/web - we use Solid.js as JSX here */
 
-import type { JSX } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 import type { DevtoolsPanelProps } from './panel'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 

@@ -1,6 +1,13 @@
-import { Show, createEffect, createSignal, onCleanup } from 'solid-js'
+import {
+  Show,
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  untrack,
+} from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
-import { Portal } from 'solid-js/web'
+import { Portal } from '@solidjs/web'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import {
@@ -70,7 +77,7 @@ export default function DevTools() {
   const { persistOpen, setPersistOpen } = createPersistOpen()
   const [rootEl, setRootEl] = createSignal<HTMLDivElement>()
   const [isOpen, setIsOpen] = createSignal(
-    settings().defaultOpen || persistOpen(),
+    untrack(() => settings().defaultOpen || persistOpen()),
   )
   const pip = createPiPWindow()
   let panelRef: HTMLDivElement | undefined
@@ -95,17 +102,16 @@ export default function DevTools() {
     devtoolsEventClient.emit('trigger-toggled', { isOpen: newState })
   }
 
-  createEffect(() => {
-    const unsubscribe = devtoolsEventClient.on('trigger-toggled', (event) => {
+  onCleanup(
+    devtoolsEventClient.on('trigger-toggled', (event) => {
       if (pip().pipWindow) return
       const payload = event.payload as unknown as { isOpen: boolean }
       if (payload.isOpen !== isOpen()) {
         setIsOpen(payload.isOpen)
         setPersistOpen(payload.isOpen)
       }
-    })
-    onCleanup(unsubscribe)
-  })
+    }),
+  )
 
   // Only the plugins and SEO destinations have a secondary strip. The collapse
   // tab folds that strip away and nothing else — the header, the panel height
@@ -146,18 +152,15 @@ export default function DevTools() {
     document.addEventListener('mouseup', stop)
   }
 
-  createEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && isOpen() && !hiddenInAutomation())
-        toggleOpen()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    onCleanup(() => window.removeEventListener('keydown', onKeyDown))
-  })
+  const onEscape = (event: KeyboardEvent) => {
+    if (event.key === 'Escape' && isOpen() && !hiddenInAutomation())
+      toggleOpen()
+  }
+  window.addEventListener('keydown', onEscape)
+  onCleanup(() => window.removeEventListener('keydown', onEscape))
   createDisableTabbing(isOpen)
   createModalHost(() => settings().openAsModal, rootEl, isOpen)
-  createEffect(() => {
-    const element = rootEl()
+  createEffect(rootEl, (element) => {
     if (element) {
       element.style.setProperty(
         '--tsrd-font-size',
@@ -165,27 +168,40 @@ export default function DevTools() {
       )
     }
   })
-  createEffect(() => {
-    const isEditableTarget = (element: Element | null) => {
-      if (!element || !(element instanceof HTMLElement)) return false
-      if (element.isContentEditable) return true
-      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)) return true
-      return element.getAttribute('role') === 'textbox'
-    }
-    for (const permutation of getHotkeyPermutations(settings().openHotkey)) {
-      createShortcut(permutation, () => {
-        if (!hiddenInAutomation() && !isEditableTarget(document.activeElement))
-          toggleOpen()
-      })
-    }
+  const isEditableTarget = (element: Element | null) => {
+    if (!element || !(element instanceof HTMLElement)) return false
+    if (element.isContentEditable) return true
+    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)) return true
+    return element.getAttribute('role') === 'textbox'
+  }
+  // A memo owns what it creates, so changing the hotkey disposes the old
+  // shortcuts before registering the new ones.
+  createMemo(() => {
+    const permutations = getHotkeyPermutations(settings().openHotkey)
+    untrack(() => {
+      for (const permutation of permutations) {
+        createShortcut(permutation, () => {
+          if (
+            !hiddenInAutomation() &&
+            !isEditableTarget(document.activeElement)
+          )
+            toggleOpen()
+        })
+      }
+    })
   })
 
   const { theme } = createTheme()
-  createEffect(() => {
-    const activeDocument = pip().pipWindow?.document ?? document
-    setDocumentTheme(activeDocument, themeOwner, theme())
-    onCleanup(() => clearDocumentTheme(activeDocument, themeOwner))
-  })
+  createEffect(
+    () => ({
+      activeDocument: pip().pipWindow?.document ?? document,
+      theme: theme(),
+    }),
+    ({ activeDocument, theme: activeTheme }) => {
+      setDocumentTheme(activeDocument, themeOwner, activeTheme)
+      return () => clearDocumentTheme(activeDocument, themeOwner)
+    },
+  )
 
   return (
     <ThemeContextProvider theme={theme()}>

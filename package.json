@@ -51,7 +51,7 @@
   "size-limit": [
     {
       "path": "packages/devtools/dist/index.js",
-      "limit": "67 KB"
+      "limit": "85 KB"
     },
     {
       "path": "packages/event-bus-client/dist/esm/plugin.js",
@@ -67,10 +67,13 @@
     }
   ],
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-typescript": "^7.27.1",
     "@changesets/changelog-github": "^0.7.0",
     "@changesets/cli": "^2.30.0",
     "@faker-js/faker": "^9.9.0",
     "@size-limit/preset-small-lib": "^11.2.0",
+    "@solidjs/babel-plugin": "^2.0.0-rc.21",
     "@tanstack/eslint-config": "0.3.2",
     "@tanstack/intent": "^0.0.14",
     "@tanstack/typedoc-config": "0.3.3",
@@ -90,6 +93,7 @@
     "sherif": "^1.7.0",
     "size-limit": "^11.2.0",
     "tinyglobby": "^0.2.15",
+    "tsup": "^8.5.0",
     "typescript": "~5.9.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.10"

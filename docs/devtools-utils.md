@@ -210,7 +210,7 @@ const [MyPlugin, NoOpPlugin] = createSolidPlugin({
 
 ### createSolidPanel
 
-Solid also provides a class-based panel factory. It uses `createSignal` and `onMount`/`onCleanup` instead of React hooks:
+Solid also provides a class-based panel factory. It creates the core instance once, mounts it in `onSettled`, and unmounts it from the cleanup that `onSettled` returns:
 
 ```ts
 import { createSolidPanel } from '@tanstack/devtools-utils/solid'

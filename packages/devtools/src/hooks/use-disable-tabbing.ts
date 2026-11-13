@@ -20,9 +20,9 @@ const recursivelyChangeTabIndex = (
  * the devtools are closed.
  */
 export const createDisableTabbing = (isOpen: () => boolean) => {
-  createEffect(() => {
+  createEffect(isOpen, (open) => {
     const el = document.getElementById(TANSTACK_DEVTOOLS)
     if (!el) return
-    recursivelyChangeTabIndex(el, !isOpen())
+    recursivelyChangeTabIndex(el, !open)
   })
 }

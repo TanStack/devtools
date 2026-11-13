@@ -1,5 +1,5 @@
 import { createEffect, createSignal } from 'solid-js'
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { JsonTree, ThemeContextProvider } from '@tanstack/devtools-ui'
 
 import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
@@ -25,8 +25,8 @@ function App() {
     darkThemeMq.matches ? 'dark' : 'light',
   )
 
-  createEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme())
+  createEffect(theme, (value) => {
+    document.documentElement.setAttribute('data-theme', value)
   })
 
   const toggleTheme = () => {

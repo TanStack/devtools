@@ -6,13 +6,7 @@ import type { LayoutNode } from '../utils/layout-tree.js'
 import type { DevtoolsStore } from './devtools-store.js'
 
 const createDevtoolsContext = () => {
-  const context = getContext(DevtoolsContext)
-  if (context === undefined) {
-    throw new Error(
-      'createDevtoolsContext must be used within a ShellContextProvider',
-    )
-  }
-  return context
+  return getContext(DevtoolsContext)
 }
 
 export function createTheme() {
@@ -36,7 +30,7 @@ export const createPlugins = () => {
    * time, and without this every unrelated store write would look like a change
    * and re-run each plugin's `render`.
    */
-  const activePlugins = createMemo(() => flattenTabs(store.state.layout), [], {
+  const activePlugins = createMemo(() => flattenTabs(store.state.layout), {
     equals: (a, b) => a.length === b.length && a.every((id, i) => id === b[i]),
   })
   const layout = createMemo(() => store.state.layout)

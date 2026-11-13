@@ -1,5 +1,4 @@
-import { createEffect, createMemo, createSignal } from 'solid-js'
-import { createStore } from 'solid-js/store'
+import { createEffect, createMemo, createSignal, createStore } from 'solid-js'
 import { createElementSize } from '@solid-primitives/resize-observer'
 import { useKeyDownList as getKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
@@ -17,7 +16,7 @@ export const SourceInspector = () => {
 
   const [highlightState, setHighlightState] = createStore(highlightStateInit())
   const resetHighlight = () => {
-    setHighlightState(highlightStateInit())
+    setHighlightState(() => highlightStateInit())
   }
 
   const [nameTagRef, setNameTagRef] = createSignal<HTMLDivElement | null>(null)
@@ -25,7 +24,10 @@ export const SourceInspector = () => {
 
   const [mousePosition, setMousePosition] = createStore({ x: 0, y: 0 })
   createEventListener(document, 'mousemove', (e) => {
-    setMousePosition({ x: e.clientX, y: e.clientY })
+    setMousePosition((position) => {
+      position.x = e.clientX
+      position.y = e.clientY
+    })
   })
 
   const downList = getKeyDownList()
@@ -36,61 +38,58 @@ export const SourceInspector = () => {
     return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
   })
 
-  createEffect(() => {
-    if (!isHighlightingKeysHeld()) {
-      setDisabledAfterClick(false)
-    }
+  createEffect(isHighlightingKeysHeld, (held) => {
+    if (!held) setDisabledAfterClick(false)
   })
 
   const isActive = createMemo(
     () => isHighlightingKeysHeld() && !disabledAfterClick(),
   )
 
-  createEffect(() => {
-    if (isActive()) {
-      document.body.style.cursor = 'pointer'
-    } else {
-      document.body.style.cursor = ''
-    }
+  createEffect(isActive, (active) => {
+    document.body.style.cursor = active ? 'pointer' : ''
   })
 
-  createEffect(() => {
-    if (!isActive()) {
-      resetHighlight()
-      return
-    }
+  createEffect(
+    () => (isActive() ? { x: mousePosition.x, y: mousePosition.y } : null),
+    (point) => {
+      if (!point) {
+        resetHighlight()
+        return
+      }
 
-    const target = document.elementFromPoint(mousePosition.x, mousePosition.y)
+      const target = document.elementFromPoint(point.x, point.y)
 
-    if (!(target instanceof HTMLElement)) {
-      resetHighlight()
-      return
-    }
+      if (!(target instanceof HTMLElement)) {
+        resetHighlight()
+        return
+      }
 
-    if (target === highlightState.element) {
-      return
-    }
+      if (target === highlightState.element) {
+        return
+      }
 
-    const dataSource = target.getAttribute('data-tsd-source')
-    if (!dataSource) {
-      resetHighlight()
-      return
-    }
+      const dataSource = target.getAttribute('data-tsd-source')
+      if (!dataSource) {
+        resetHighlight()
+        return
+      }
 
-    const rect = target.getBoundingClientRect()
-    const bounding = {
-      width: rect.width,
-      height: rect.height,
-      left: rect.left,
-      top: rect.top,
-    }
+      const rect = target.getBoundingClientRect()
+      const bounding = {
+        width: rect.width,
+        height: rect.height,
+        left: rect.left,
+        top: rect.top,
+      }
 
-    setHighlightState({
-      element: target,
-      bounding,
-      dataSource,
-    })
-  })
+      setHighlightState(() => ({
+        element: target,
+        bounding,
+        dataSource,
+      }))
+    },
+  )
 
   const openSourceUrl = (source: string) => {
     // A host that injects `data-tsd-source` without `@tanstack/devtools-vite`

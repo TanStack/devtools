@@ -1,5 +1,5 @@
-import { lazy } from 'solid-js'
-import { Portal, render } from 'solid-js/web'
+import { Show, createComponent, createSignal, untrack } from 'solid-js'
+import { Portal, render } from '@solidjs/web'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import { DevtoolsProvider } from './context/devtools-context'
 import { PiPProvider } from './context/pip-context'
@@ -7,6 +7,7 @@ import type {
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
 } from './context/devtools-context'
+import type { Component } from 'solid-js'
 import type { ClientEventBusConfig } from '@tanstack/devtools-event-bus/client'
 
 interface MountOptions {
@@ -30,7 +31,10 @@ export function mountDevtools(options: MountOptions): MountResult {
   const eventBus = new ClientEventBus(eventBusConfig)
   eventBus.start()
 
-  const Devtools = lazy(() => import('./devtools'))
+  // Loaded by hand rather than with `lazy`, which would need a `Loading`
+  // boundary to keep the root from waiting on the chunk.
+  const [devtools, setDevtools] = createSignal<Component>()
+  void import('./devtools').then((mod) => setDevtools(() => mod.default))
 
   const dispose = render(
     () => (
@@ -41,7 +45,10 @@ export function mountDevtools(options: MountOptions): MountResult {
       >
         <PiPProvider>
           <Portal mount={el}>
-            <Devtools />
+            {/* Set once, when the chunk arrives. */}
+            <Show when={devtools()}>
+              {(Shell) => createComponent(untrack(Shell), {})}
+            </Show>
           </Portal>
         </PiPProvider>
       </DevtoolsProvider>

@@ -8,7 +8,7 @@ import {
   PANEL_CLOSE_THRESHOLD,
   PANEL_MAX_VIEWPORT_RATIO,
 } from '../utils/constants'
-import type { JSX } from 'solid-js/jsx-runtime'
+import type { JSX } from '@solidjs/web'
 
 export const ContentPanel = (props: {
   ref: (el: HTMLDivElement | undefined) => void
@@ -66,7 +66,7 @@ export const ContentPanel = (props: {
           aria-valuemin={PANEL_CLOSE_THRESHOLD}
           aria-valuemax={maxHeight()}
           aria-valuenow={clampedHeight()}
-          tabIndex={0}
+          tabindex={0}
           onKeyDown={resizeWithKeyboard}
         />
       ) : null}

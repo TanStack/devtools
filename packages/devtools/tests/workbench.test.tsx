@@ -1,5 +1,5 @@
-import { createComponent } from 'solid-js'
-import { render } from 'solid-js/web'
+import { createComponent, flush } from 'solid-js'
+import { render } from '@solidjs/web'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import DevTools from '../src/devtools'
 import { DevtoolsProvider } from '../src/context/devtools-context'
@@ -419,6 +419,7 @@ describe('workbench', { timeout: 30_000 }, () => {
 
     width = 991
     observerCallback!([], {} as ResizeObserver)
+    flush()
     expect(outerPanel.style.inlineSize).toBe('991px')
 
     disposers.pop()!()
@@ -567,24 +568,30 @@ describe('workbench', { timeout: 30_000 }, () => {
       { default: EventDrivenDevTools },
       { DevtoolsProvider: EventDrivenDevtoolsProvider },
       { PiPProvider: EventDrivenPiPProvider },
+      // `resetModules` gives these imports their own copy of Solid, so render
+      // and flush with that copy rather than the one the setup file flushes.
+      { createComponent: createEventDriven, flush: flushEventDriven },
+      { render: renderEventDriven },
     ] = await Promise.all([
       import('../src/devtools'),
       import('../src/context/devtools-context'),
       import('../src/context/pip-context'),
+      import('solid-js'),
+      import('@solidjs/web'),
     ])
     const eventBus = new ClientEventBus()
     eventBus.start()
     try {
       const host = document.body.appendChild(document.createElement('div'))
-      const dispose = render(
+      const dispose = renderEventDriven(
         () =>
-          createComponent(EventDrivenDevtoolsProvider, {
+          createEventDriven(EventDrivenDevtoolsProvider, {
             plugins: [plugin('one')],
             config: { defaultOpen: true } as TanStackDevtoolsConfig,
             get children() {
-              return createComponent(EventDrivenPiPProvider, {
+              return createEventDriven(EventDrivenPiPProvider, {
                 get children() {
-                  return createComponent(EventDrivenDevTools, {})
+                  return createEventDriven(EventDrivenDevTools, {})
                 },
               })
             },
@@ -600,6 +607,7 @@ describe('workbench', { timeout: 30_000 }, () => {
       )!
 
       collapse.click()
+      flushEventDriven()
       expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
 
       window.dispatchEvent(
@@ -611,6 +619,7 @@ describe('workbench', { timeout: 30_000 }, () => {
           },
         }),
       )
+      flushEventDriven()
 
       expect(outerPanel).toHaveAttribute('data-subheader-collapsed', 'true')
     } finally {
@@ -704,6 +713,7 @@ describe('workbench', { timeout: 30_000 }, () => {
     expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('host')
 
     popup.dispatchEvent(new Event('pagehide'))
+    flush()
     expect(document.documentElement.dataset.tanstackDevtoolsTheme).toBe('dark')
   })
 

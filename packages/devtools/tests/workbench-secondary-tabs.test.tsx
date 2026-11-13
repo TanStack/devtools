@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { createSignal } from 'solid-js'
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { afterEach, describe, expect, it } from 'vitest'
 import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
 import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'

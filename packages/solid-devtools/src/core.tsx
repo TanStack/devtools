@@ -2,12 +2,15 @@ import { TanStackDevtoolsCore } from '@tanstack/devtools'
 import {
   createEffect,
   createMemo,
-  createSignal,
+  createRoot,
+  getOwner,
   onCleanup,
-  onMount,
+  onSettled,
+  runWithOwner,
+  untrack,
 } from 'solid-js'
-import { Portal } from 'solid-js/web'
-import type { JSX } from 'solid-js'
+import { Portal } from '@solidjs/web'
+import type { JSX } from '@solidjs/web'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
@@ -22,16 +25,6 @@ type SolidPluginRender =
       el: HTMLDivElement | HTMLHeadingElement,
       props: TanStackDevtoolsPluginProps,
     ) => JSX.Element)
-const convertRender = (
-  el: HTMLDivElement | HTMLHeadingElement,
-  Component: SolidPluginRender,
-  props: TanStackDevtoolsPluginProps,
-) => (
-  <Portal mount={el}>
-    {typeof Component === 'function' ? Component(el, props) : Component}
-  </Portal>
-)
-
 export type TanStackDevtoolsSolidPlugin = Omit<
   TanStackDevtoolsPlugin,
   'render' | 'name'
@@ -117,76 +110,85 @@ export interface TanStackDevtoolsInit {
   eventBusConfig?: ClientEventBusConfig
 }
 
-export default function SolidDevtoolsCore({
-  config,
-  plugins,
-  eventBusConfig,
-}: TanStackDevtoolsInit) {
+export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
+  // The shell calls `render`, `name` and `customTrigger` from its own
+  // effects, which own nothing in Solid 2 (and may run on another copy of
+  // Solid). Each mount node gets a root owned by this component instead: a
+  // new call replaces the node's previous root, and unmounting disposes them
+  // all.
+  const owner = getOwner()
+  const mounts = new Map<Element, () => void>()
+  const mountInto = (el: Element, content: () => JSX.Element) => {
+    mounts.get(el)?.()
+    runWithOwner(owner, () =>
+      createRoot((dispose) => {
+        mounts.set(el, dispose)
+        return <Portal mount={el}>{content()}</Portal>
+      }),
+    )
+  }
+  onCleanup(() => {
+    for (const dispose of mounts.values()) dispose()
+    mounts.clear()
+  })
+  const convertRender = (
+    el: HTMLDivElement | HTMLHeadingElement,
+    Component: SolidPluginRender,
+    renderProps: TanStackDevtoolsPluginProps,
+  ) =>
+    mountInto(el, () =>
+      typeof Component === 'function' ? Component(el, renderProps) : Component,
+    )
+
   // Convert plugins to the format expected by the core
   const pluginsMap = createMemo<Array<TanStackDevtoolsPlugin> | undefined>(() =>
-    plugins?.map((plugin) => ({
+    props.plugins?.map((plugin) => ({
       ...plugin,
       name:
         typeof plugin.name === 'string'
           ? plugin.name
           : // The check above confirms that `plugin.name` is of Render type
-            (el, props) =>
-              convertRender(el, plugin.name as SolidPluginRender, props),
-      render: (el: HTMLDivElement, props: TanStackDevtoolsPluginProps) =>
-        convertRender(el, plugin.render, props),
+            (el, renderProps) =>
+              convertRender(el, plugin.name as SolidPluginRender, renderProps),
+      render: (el: HTMLDivElement, renderProps: TanStackDevtoolsPluginProps) =>
+        convertRender(el, plugin.render, renderProps),
     })),
   )
 
-  const convertTrigger = (el: HTMLElement, props: TriggerProps) => {
-    const Trigger = config?.customTrigger
-
-    return (
-      <Portal mount={el}>
-        {typeof Trigger === 'function' ? Trigger(el, props) : Trigger}
-      </Portal>
+  const convertTrigger = (el: HTMLElement, triggerProps: TriggerProps) => {
+    const Trigger = props.config?.customTrigger
+    mountInto(el, () =>
+      typeof Trigger === 'function' ? Trigger(el, triggerProps) : Trigger,
     )
   }
-  const [devtools] = createSignal(
-    new TanStackDevtoolsCore({
-      config: {
-        ...config,
-        customTrigger: config?.customTrigger
-          ? (el, props) => convertTrigger(el, props)
-          : undefined,
-      },
-      eventBusConfig,
-      plugins: pluginsMap(),
-    }),
-  )
+  const shellConfig = (): Partial<TanStackDevtoolsConfig> => ({
+    ...props.config,
+    customTrigger: props.config?.customTrigger
+      ? (el, triggerProps) => convertTrigger(el, triggerProps)
+      : undefined,
+  })
+  const devtools = new TanStackDevtoolsCore({
+    config: untrack(shellConfig),
+    eventBusConfig: untrack(() => props.eventBusConfig),
+    plugins: untrack(pluginsMap),
+  })
   let devToolRef: HTMLDivElement | undefined
 
-  createEffect(() => {
-    devtools().setConfig({
-      config: {
-        ...config,
-        customTrigger: config?.customTrigger
-          ? (el, props) => convertTrigger(el, props)
-          : undefined,
-      },
-    })
+  createEffect(shellConfig, (config) => {
+    devtools.setConfig({ config })
   })
 
   // Update plugins when they change
-  createEffect(() => {
-    const currentPlugins = pluginsMap()
+  createEffect(pluginsMap, (currentPlugins) => {
     if (currentPlugins) {
-      devtools().setConfig({ plugins: currentPlugins })
+      devtools.setConfig({ plugins: currentPlugins })
     }
   })
 
-  onMount(() => {
-    if (devToolRef) {
-      devtools().mount(devToolRef)
-
-      onCleanup(() => {
-        devtools().unmount()
-      })
-    }
+  onSettled(() => {
+    if (!devToolRef) return
+    devtools.mount(devToolRef)
+    return () => devtools.unmount()
   })
   return <div style={{ position: 'absolute' }} ref={devToolRef} />
 }

@@ -9,7 +9,7 @@
   ],
   "compilerOptions": {
     "types": ["vite/client"],
-    "jsxImportSource": "solid-js",
+    "jsxImportSource": "@solidjs/web",
     "jsx": "preserve"
   }
 }

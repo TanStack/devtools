@@ -1,4 +1,5 @@
-import { createComponent, createEffect, createRoot, useContext } from 'solid-js'
+import { render } from '@solidjs/testing-library'
+import { createComponent, createEffect, flush, useContext } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants'
 import { flattenTabs } from '../utils/layout-tree'
@@ -409,27 +410,30 @@ describe('provider resilience', () => {
 
   it('reactively replaces plugins through the existing onSetPlugins callback', async () => {
     let replace!: (plugins: Array<TanStackDevtoolsPlugin>) => void
-    let ids: Array<string> = []
-    const dispose = createRoot((disposeRoot) => {
+    let ids: ReadonlyArray<string> = []
+    const { unmount } = render(() =>
       createComponent(DevtoolsProvider, {
         plugins: [{ name: 'Old', render: () => {} }],
         onSetPlugins: (setter) => {
           replace = setter
         },
         get children() {
-          const context = useContext(DevtoolsContext)!
-          createEffect(() => {
-            ids = context.store.plugins?.map((entry) => entry.id!) ?? []
-          })
+          const context = useContext(DevtoolsContext)
+          createEffect(
+            () => context.store.plugins?.map((entry) => entry.id!) ?? [],
+            (next) => {
+              ids = next
+            },
+          )
           return null
         },
-      })
-      return disposeRoot
-    })
-    await Promise.resolve()
+      }),
+    )
+    flush()
     expect(ids).toEqual(['old-0'])
     replace([{ name: 'New', render: () => {} }])
+    flush()
     expect(ids).toEqual(['new-0'])
-    dispose()
+    unmount()
   })
 })

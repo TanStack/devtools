@@ -1,4 +1,4 @@
-import { createEffect, createSignal, createUniqueId } from 'solid-js'
+import { createSignal, createUniqueId } from 'solid-js'
 import { createStyles } from '../styles/use-styles'
 
 interface SelectOption<T extends string | number> {
@@ -16,17 +16,11 @@ interface SelectProps<T extends string | number> {
 
 export function Select<T extends string | number>(props: SelectProps<T>) {
   const styles = createStyles()
-  const [selected, setSelected] = createSignal(
-    props.value ?? props.options[0]?.value,
+  const [selected, setSelected] = createSignal<T | undefined>(
+    () => props.value ?? props.options[0]?.value,
   )
   const id = createUniqueId()
   const descriptionId = `${id}-description`
-
-  createEffect(() => {
-    if (props.value !== undefined) {
-      setSelected(() => props.value)
-    }
-  })
 
   const handleChange = (e: Event) => {
     const value = (e.target as HTMLSelectElement).value

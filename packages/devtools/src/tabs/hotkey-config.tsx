@@ -82,8 +82,8 @@ export const HotkeyConfig = (props: HotkeyConfigProps) => {
             return (
               <Button
                 variant="secondary"
-                aria-pressed={enabled}
-                onclick={() => toggleModifier(modifier)}
+                aria-pressed={enabled ? 'true' : 'false'}
+                onClick={() => toggleModifier(modifier)}
                 outline={!enabled}
               >
                 {MODIFIER_DISPLAY_NAMES[modifier] || modifier}

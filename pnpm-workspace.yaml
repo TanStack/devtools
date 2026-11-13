@@ -5,12 +5,18 @@ blockExoticSubdeps: true
 trustPolicy: 'no-downgrade'
 trustPolicyExclude:
   - 'chokidar@4.0.3' # transitive dependency of svelte-check; latest v4 with v5 available
+  - 'undici-types@6.21.0' # transitive dependency of @types/node 22; types only (same exclusion as TanStack/ai)
+  - 'semver@5.7.2 || 6.3.1' # transitive dependencies of Babel, already in the lockfile
+  - 'rxjs@7.8.2' # already in the lockfile; an earlier-published 8.0 alpha had provenance
+  - 'solid-js@1.9.17' # Solid 1 for examples on the published adapters; released after a provenance-signed 2.0 RC
 
 packages:
   - examples/**/*
   - packages/*
   - e2e/apps/*
   - e2e/helpers
+  # SolidStart 1 example; it stays on the published Solid 1 adapter.
+  - '!examples/solid/start'
 
 # Explicit allowlist of packages whose install scripts may run. pnpm 11
 # refuses to run any postinstall by default; declaring them here is the

@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 
 import { For, Show } from 'solid-js'
 import { Button, createTheme } from '@tanstack/devtools-ui'
@@ -24,10 +24,12 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
 
   return (
     <article
-      class={styles().issueCard}
-      classList={{
-        [styles().issueCardSelected]: props.selected,
-      }}
+      class={[
+        styles().issueCard,
+        {
+          [styles().issueCardSelected]: props.selected,
+        },
+      ]}
       data-tsd-surface
       data-tsd-selected={props.selected ? 'true' : undefined}
     >
@@ -35,11 +37,13 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
         <button
           type="button"
           data-tsd-control
-          class={styles().issueSelectButton}
-          classList={{
-            [styles().issueSelectButtonSelected]: props.selected,
-          }}
-          aria-pressed={props.selected}
+          class={[
+            styles().issueSelectButton,
+            {
+              [styles().issueSelectButtonSelected]: props.selected,
+            },
+          ]}
+          aria-pressed={props.selected ? 'true' : 'false'}
           onClick={props.onSelect}
         >
           <div class={styles().issueTitleRow}>
@@ -61,10 +65,12 @@ export function A11yIssueCard(props: A11yIssueCardProps) {
 
         <div class={styles().issueAside}>
           <a
-            class={styles().helpLink}
-            classList={{
-              [styles().helpLinkSelected]: props.selected,
-            }}
+            class={[
+              styles().helpLink,
+              {
+                [styles().helpLinkSelected]: props.selected,
+              },
+            ]}
             href={props.issue.helpUrl}
             target="_blank"
             rel="noopener noreferrer"

@@ -9,18 +9,19 @@
     "test:types": "tsc"
   },
   "dependencies": {
+    "@solidjs/web": "^2.0.0-rc.21",
     "@tanstack/solid-devtools": "^0.8.14",
-    "@tanstack/solid-query": "^5.90.1",
-    "@tanstack/solid-query-devtools": "^5.90.1",
-    "@tanstack/solid-router": "^1.131.50",
-    "@tanstack/solid-router-devtools": "^1.131.50",
-    "solid-js": "^1.9.13"
+    "@tanstack/solid-query": "^6.0.0-rc.5",
+    "@tanstack/solid-query-devtools": "^6.0.0-rc.5",
+    "@tanstack/solid-router": "^2.0.0-rc.10",
+    "@tanstack/solid-router-devtools": "^2.0.0-rc.8",
+    "solid-js": "^2.0.0-rc.21"
   },
   "devDependencies": {
+    "@solidjs/vite-plugin": "^3.0.0-next.57",
     "@tanstack/devtools-vite": "0.8.6",
     "vite": "^8.0.0",
-    "vite-plugin-inspect": "11.3.3",
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-inspect": "11.3.3"
   },
   "browserslist": {
     "production": [

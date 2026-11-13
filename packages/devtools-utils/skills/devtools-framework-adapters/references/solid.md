@@ -56,8 +56,8 @@ A `readonly [Plugin, NoOpPlugin]` tuple:
 
 ```tsx
 // packages/devtools-utils/src/solid/plugin.tsx
-/** @jsxImportSource solid-js */
-import type { JSX } from 'solid-js'
+/** @jsxImportSource @solidjs/web */
+import type { JSX } from '@solidjs/web'
 import type { DevtoolsPanelProps } from './panel'
 
 export function createSolidPlugin({
@@ -148,17 +148,17 @@ Where `ClassType` is `ReturnType<typeof constructCoreClass>[0]` -- a class with 
 
 - **`Panel`** -- A Solid component that:
   - Creates a `<div style={{ height: '100%' }}>` with a ref.
-  - Instantiates `CoreClass` immediately via `createSignal`.
-  - Calls `core.mount(el, props.theme ?? 'dark')` inside `onMount`.
-  - Calls `core.unmount()` via `onCleanup` (nested inside `onMount`).
+  - Instantiates `CoreClass` once, when the component is created.
+  - Calls `core.mount(el, props)` inside `onSettled`.
+  - Calls `core.unmount()` from the cleanup that `onSettled` returns.
 - **`NoOpPanel`** -- Renders `<></>`.
 
 ### Source
 
 ```tsx
 // packages/devtools-utils/src/solid/panel.tsx
-/** @jsxImportSource solid-js */
-import { createSignal, onCleanup, onMount } from 'solid-js'
+/** @jsxImportSource @solidjs/web */
+import { onSettled } from 'solid-js'
 import type { ClassType } from './class'
 
 export function createSolidPanel<
@@ -166,14 +166,12 @@ export function createSolidPanel<
 >(CoreClass: ClassType) {
   function Panel(props: TComponentProps) {
     let devToolRef: HTMLDivElement | undefined
-    const [devtools] = createSignal(new CoreClass())
-    onMount(() => {
+    const devtools = new CoreClass()
+    onSettled(() => {
       if (devToolRef) {
-        devtools().mount(devToolRef, props?.theme ?? 'dark')
+        devtools.mount(devToolRef, props)
       }
-      onCleanup(() => {
-        devtools().unmount()
-      })
+      return () => devtools.unmount()
     })
     return <div style={{ height: '100%' }} ref={devToolRef} />
   }
@@ -267,8 +265,8 @@ const [DevtoolsCore, NoOpDevtoolsCore] = constructCoreClass(
 
 3. **Default theme is `'dark'`.** If `props.theme` is undefined, the panel defaults to `'dark'`.
 
-4. **`onCleanup` is nested inside `onMount`.** In `createSolidPanel`, cleanup is registered inside `onMount`, which is the Solid idiom for pairing mount/unmount lifecycle.
+4. **Unmount is the cleanup `onSettled` returns.** Solid 2 replaces `onMount` with `onSettled`, and `onCleanup` cannot be registered inside it, so `createSolidPanel` returns the unmount from `onSettled`.
 
-5. **Core class instantiation is eager.** `createSignal(new CoreClass())` runs immediately when the Panel component is created, not lazily. The actual `mount` call happens in `onMount`.
+5. **Core class instantiation is eager.** `new CoreClass()` runs immediately when the Panel component is created, not lazily. The actual `mount` call happens in `onSettled`.
 
 6. **`constructCoreClass` handles async import abort.** If `unmount()` is called while the dynamic import is still in flight, the mount is aborted cleanly. No need to handle this manually.
