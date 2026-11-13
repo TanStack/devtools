@@ -44,8 +44,8 @@ export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
     <div class={styles().pluginMarketplaceSection}>
       <div
         role="button"
-        tabIndex={0}
-        aria-expanded={!props.isCollapsed()}
+        tabindex={0}
+        aria-expanded={props.isCollapsed() ? 'false' : 'true'}
         data-tsd-control
         class={styles().pluginMarketplaceSectionHeader}
         onClick={props.onToggleCollapse}
@@ -58,11 +58,13 @@ export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
       >
         <div class={styles().pluginMarketplaceSectionHeaderLeft}>
           <div
-            class={styles().pluginMarketplaceSectionChevron}
-            classList={{
-              [styles().pluginMarketplaceSectionChevronCollapsed]:
-                props.isCollapsed(),
-            }}
+            class={[
+              styles().pluginMarketplaceSectionChevron,
+              {
+                [styles().pluginMarketplaceSectionChevronCollapsed]:
+                  props.isCollapsed(),
+              },
+            ]}
           >
             <ChevronDownIcon />
           </div>

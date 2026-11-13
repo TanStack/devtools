@@ -96,21 +96,22 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@solidjs/web": "^2.0.0-rc.21",
     "@tanstack/devtools-ui": "workspace:*",
     "@tanstack/devtools-utils": "workspace:^",
     "axe-core": "^4.10.0",
-    "goober": "^2.1.16"
+    "goober": "^2.1.16",
+    "solid-js": "^2.0.0-rc.21"
   },
   "devDependencies": {
-    "preact": "^11.0.1",
-    "vite-plugin-solid": "^2.11.11"
+    "@solidjs/vite-plugin": "^3.0.0-next.57",
+    "preact": "^11.0.1"
   },
   "peerDependencies": {
     "@angular/core": ">=19.0.0",
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
-    "solid-js": "^1.9.13",
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
@@ -118,9 +119,6 @@
       "optional": true
     },
     "react": {
-      "optional": true
-    },
-    "solid-js": {
       "optional": true
     },
     "vue": {

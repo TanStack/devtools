@@ -2,7 +2,7 @@ import { afterEach, describe, expect, expectTypeOf, it } from 'vitest'
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { createComponent } from 'solid-js'
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import {
   Button,
   Checkbox,

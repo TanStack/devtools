@@ -1,30 +1,24 @@
 import clsx from 'clsx'
+import { omit } from 'solid-js'
 import { createStyles } from '../styles/use-styles'
-import type { JSX } from 'solid-js/jsx-runtime'
+import type { JSX } from '@solidjs/web'
 
-export function Header({
-  children,
-  class: className,
-  ...rest
-}: JSX.IntrinsicElements['header']) {
+export function Header(props: JSX.IntrinsicElements['header']) {
   const styles = createStyles()
+  const rest = omit(props, 'children', 'class')
   return (
     <header
       data-tsd-surface
       data-tsd-separator
-      class={clsx(styles().header.row, 'tsqd-header', className)}
+      class={clsx(styles().header.row, 'tsqd-header', props.class)}
       {...rest}
     >
-      {children}
+      {props.children}
     </header>
   )
 }
 
-export function HeaderLogo({
-  children,
-  flavor,
-  onClick,
-}: {
+export function HeaderLogo(props: {
   children: JSX.Element
   flavor: {
     light: string
@@ -38,13 +32,15 @@ export function HeaderLogo({
       <button
         data-tsd-control
         class={clsx(styles().header.logo)}
-        onClick={onClick}
+        onClick={props.onClick}
       >
         <span class={clsx(styles().header.tanstackLogo)}>TANSTACK</span>
         <span
-          class={clsx(styles().header.flavorLogo(flavor.light, flavor.dark))}
+          class={clsx(
+            styles().header.flavorLogo(props.flavor.light, props.flavor.dark),
+          )}
         >
-          {children}
+          {props.children}
         </span>
       </button>
     </div>

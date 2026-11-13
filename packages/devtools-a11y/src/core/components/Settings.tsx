@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 
 import { For, Show, createMemo, createSignal } from 'solid-js'
 import { Button, Input, Select } from '@tanstack/devtools-ui'
@@ -67,7 +67,9 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'minor', label: 'Minor' },
               ]}
               onChange={(value: string) => {
-                setConfig('threshold', value as SeverityThreshold)
+                setConfig((c) => {
+                  c.threshold = value as SeverityThreshold
+                })
               }}
             />
             <Select<RuleSetPreset>
@@ -84,7 +86,9 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 { value: 'all', label: 'All Rules' },
               ]}
               onChange={(value: string) => {
-                setConfig('ruleSet', value as RuleSetPreset)
+                setConfig((c) => {
+                  c.ruleSet = value as RuleSetPreset
+                })
               }}
             />
           </div>
@@ -101,7 +105,11 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
               <Button
                 variant="success"
                 outline
-                onClick={() => setConfig('disabledRules', [])}
+                onClick={() =>
+                  setConfig((c) => {
+                    c.disabledRules = []
+                  })
+                }
               >
                 Enable All
               </Button>
@@ -110,10 +118,9 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                 variant="danger"
                 outline
                 onClick={() =>
-                  setConfig(
-                    'disabledRules',
-                    availableRules().map((rule) => rule.id),
-                  )
+                  setConfig((c) => {
+                    c.disabledRules = availableRules().map((rule) => rule.id)
+                  })
                 }
               >
                 Disable All
@@ -160,11 +167,13 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                   <label
                     data-tsd-surface
                     data-tsd-separator={hasBorder() ? '' : undefined}
-                    class={styles().ruleRow}
-                    classList={{
-                      [styles().ruleRowDisabled]: isDisabled(),
-                      [styles().ruleRowBorder]: hasBorder(),
-                    }}
+                    class={[
+                      styles().ruleRow,
+                      {
+                        [styles().ruleRowDisabled]: isDisabled(),
+                        [styles().ruleRowBorder]: hasBorder(),
+                      },
+                    ]}
                   >
                     <input
                       data-tsd-control
@@ -173,11 +182,13 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                       type="checkbox"
                       checked={!isDisabled()}
                       onChange={() =>
-                        setConfig('disabledRules', (rules) => {
+                        setConfig((c) => {
                           if (disabledRulesSet().has(rule.id)) {
-                            return rules.filter((id) => id !== rule.id)
+                            c.disabledRules = c.disabledRules.filter(
+                              (id) => id !== rule.id,
+                            )
                           } else {
-                            return [...rules, rule.id]
+                            c.disabledRules.push(rule.id)
                           }
                         })
                       }
@@ -185,10 +196,12 @@ export function A11ySettingsOverlay(props: A11ySettingsOverlayProps) {
                     <div class={styles().ruleInfo}>
                       <div class={styles().ruleTop}>
                         <span
-                          class={styles().ruleId}
-                          classList={{
-                            [styles().ruleIdDisabled]: isDisabled(),
-                          }}
+                          class={[
+                            styles().ruleId,
+                            {
+                              [styles().ruleIdDisabled]: isDisabled(),
+                            },
+                          ]}
                         >
                           {rule.id}
                         </span>

@@ -20,13 +20,15 @@ export const TagFilters = (props: TagFiltersProps) => {
               type="button"
               data-tsd-control
               data-tsd-selected={props.selectedTags().has(tag)}
-              aria-pressed={props.selectedTags().has(tag)}
-              class={styles().pluginMarketplaceTagButton}
-              classList={{
-                [styles().pluginMarketplaceTagButtonActive]: props
-                  .selectedTags()
-                  .has(tag),
-              }}
+              aria-pressed={props.selectedTags().has(tag) ? 'true' : 'false'}
+              class={[
+                styles().pluginMarketplaceTagButton,
+                {
+                  [styles().pluginMarketplaceTagButtonActive]: props
+                    .selectedTags()
+                    .has(tag),
+                },
+              ]}
               onClick={() => props.onToggleTag(tag)}
             >
               {tag}

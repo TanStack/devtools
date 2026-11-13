@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 
 import { constructCoreClass } from '@tanstack/devtools-utils/solid'
 

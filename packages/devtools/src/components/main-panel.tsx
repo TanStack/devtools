@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { createEffect, createSignal, onCleanup } from 'solid-js'
+import { createEffect, createSignal, untrack } from 'solid-js'
 import {
   createDevtoolsSettings,
   createHeight,
@@ -8,7 +8,8 @@ import { createStyles } from '../styles/use-styles'
 import { TANSTACK_DEVTOOLS } from '../utils/storage'
 import { createPiPWindow } from '../context/pip-context'
 import { CollapseToggle } from './workbench-secondary-tabs'
-import type { Accessor, JSX } from 'solid-js'
+import type { Accessor } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 
 export const MainPanel = (props: {
   isOpen: Accessor<boolean>
@@ -31,10 +32,9 @@ export const MainPanel = (props: {
       targetWindow.innerWidth
     )
   }
-  const [clientWidth, setClientWidth] = createSignal(readClientWidth())
+  const [clientWidth, setClientWidth] = createSignal(untrack(readClientWidth))
 
-  createEffect(() => {
-    const targetWindow = panelWindow()
+  createEffect(panelWindow, (targetWindow) => {
     if (!targetWindow) return
     const targetRoot = targetWindow.document.documentElement
     const syncClientWidth = () => {
@@ -51,10 +51,10 @@ export const MainPanel = (props: {
       ? new ResizeObserverConstructor(syncClientWidth)
       : null
     resizeObserver?.observe(targetRoot)
-    onCleanup(() => {
+    return () => {
       targetWindow.removeEventListener('resize', syncClientWidth)
       resizeObserver?.disconnect()
-    })
+    }
   })
 
   const isAttached = () => pip().pipWindow === null

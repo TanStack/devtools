@@ -1,5 +1,6 @@
 import { defineConfig } from 'tsup'
 import { generateTsupOptions, parsePresetOptions } from 'tsup-preset-solid'
+import { withSolidV2 } from '../../scripts/tsup-solid-v2'
 
 const preset_options = {
   entries: {
@@ -13,7 +14,7 @@ const preset_options = {
 
 export default defineConfig(() => {
   const parsed_data = parsePresetOptions(preset_options)
-  const tsup_options = generateTsupOptions(parsed_data)
+  const tsup_options = withSolidV2(generateTsupOptions(parsed_data))
 
   return tsup_options.map((option) => ({
     ...option,

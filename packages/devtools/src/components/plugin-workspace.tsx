@@ -1,15 +1,15 @@
 import {
   For,
-  Index,
   Show,
   createEffect,
   createMemo,
   createSignal,
+  flush,
   onCleanup,
 } from 'solid-js'
-import { Portal } from 'solid-js/web'
+import { Portal } from '@solidjs/web'
 import { PackageIcon, X } from '@tanstack/devtools-ui/icons'
-import { createSortable } from '@neodrag/solid/sortable'
+import { createSortable } from '../utils/create-sortable'
 import {
   createPlugins,
   createStripDrag,
@@ -168,7 +168,7 @@ const GroupTabBar = (props: {
                 data-tsd-group-tab
                 data-testid={`plugin-tab-${tabId}`}
                 data-tsd-control
-                aria-pressed={index() === props.activeIndex}
+                aria-pressed={index() === props.activeIndex ? 'true' : 'false'}
                 aria-describedby={props.moveHintId}
                 class={styles().pluginGroupTab}
                 onPointerDown={(event) => props.onPointerDown(tabId, event)}
@@ -210,8 +210,10 @@ export const PluginWorkspace = (props: {
   const { theme } = createTheme()
   const styles = createStyles()
 
+  // Written from a pane's cleanup, which runs inside Solid's disposal.
   const [pluginRefs, setPluginRefs] = createSignal(
     new Map<string, HTMLDivElement>(),
+    { ownedWrite: true },
   )
   const [box, setBox] = createSignal<Box>({ w: 0, h: 0 })
   const [held, setHeld] = createSignal<Held>(null)
@@ -244,15 +246,18 @@ export const PluginWorkspace = (props: {
     setBox({ w: rect.width, h: rect.height })
   }
 
+  // Refs own nothing in Solid 2, so the observer is torn down from here.
+  let workspaceObserver: ResizeObserver | undefined
+  onCleanup(() => workspaceObserver?.disconnect())
   const registerWorkspace = (el: HTMLDivElement) => {
     workspaceEl = el
     measure()
     const Observer = (globalThis as { ResizeObserver?: typeof ResizeObserver })
       .ResizeObserver
     if (!Observer) return
-    const observer = new Observer(measure)
-    observer.observe(el)
-    onCleanup(() => observer.disconnect())
+    workspaceObserver?.disconnect()
+    workspaceObserver = new Observer(measure)
+    workspaceObserver.observe(el)
   }
 
   /**
@@ -261,11 +266,10 @@ export const PluginWorkspace = (props: {
    * for a panel that only slid out of sight, so mounting hidden would otherwise
    * leave the box at its initial value for good.
    */
-  createEffect(() => {
-    props.visible
-    props.isOpen
-    measure()
-  })
+  createEffect(
+    () => [props.visible, props.isOpen],
+    () => measure(),
+  )
 
   const paddedBox = createMemo(() => ({
     w: Math.max(box().w - PANE_CARD_INSET * 2, 0),
@@ -304,7 +308,7 @@ export const PluginWorkspace = (props: {
    * changes when a plugin opens or closes, which inserts or removes a node
    * anyway. Rearranging the layout leaves every existing node untouched.
    */
-  const paneOrder = createMemo(() => [...activePlugins()].sort(), [], {
+  const paneOrder = createMemo(() => [...activePlugins()].sort(), {
     equals: (a, b) => a.length === b.length && a.every((id, i) => id === b[i]),
   })
 
@@ -346,15 +350,22 @@ export const PluginWorkspace = (props: {
 
   // Hand each plugin its mount node. Re-runs when the theme or open state
   // changes, which is the documented contract for `render`.
-  createEffect(() => {
-    for (const pluginId of activePlugins()) {
-      const plugin = pluginById(pluginId)
-      const ref = pluginRefs().get(pluginId)
-      if (plugin && ref) {
-        plugin.render(ref, { theme: theme(), devtoolsOpen: props.isOpen })
+  createEffect(
+    () => {
+      const renderProps = { theme: theme(), devtoolsOpen: props.isOpen }
+      const refs = pluginRefs()
+      return activePlugins().map((pluginId) => ({
+        render: pluginById(pluginId)?.render,
+        ref: refs.get(pluginId),
+        renderProps,
+      }))
+    },
+    (mounts) => {
+      for (const { render, ref, renderProps } of mounts) {
+        if (render && ref) render(ref, renderProps)
       }
-    }
-  })
+    },
+  )
 
   const clearDrag = () => {
     setHeld(null)
@@ -369,17 +380,15 @@ export const PluginWorkspace = (props: {
    * of the host page for the duration of the drag. The devtools must not restyle
    * the page they are inspecting.
    */
-  createEffect(() => {
-    const host = workspaceEl?.closest<HTMLElement>(`#${TANSTACK_DEVTOOLS}`)
-    if (!host) return
-    const className = styles().pluginDraggingCursor
-    if (previewAt() === null) {
-      host.classList.remove(className)
-      return
-    }
-    host.classList.add(className)
-    onCleanup(() => host.classList.remove(className))
-  })
+  createEffect(
+    () => (previewAt() === null ? null : styles().pluginDraggingCursor),
+    (className) => {
+      const host = workspaceEl?.closest<HTMLElement>(`#${TANSTACK_DEVTOOLS}`)
+      if (!host || className === null) return
+      host.classList.add(className)
+      return () => host.classList.remove(className)
+    },
+  )
 
   /**
    * `aria-grabbed` is deprecated, so the state of a move is narrated through a
@@ -522,6 +531,8 @@ export const PluginWorkspace = (props: {
     }
 
     measure()
+    // `aim` below reads the rects the new box feeds, before the next flush.
+    flush()
     setHeld({ tabId: pluginId })
     setPreviewAt(startPoint)
     const aim = (point: { x: number; y: number }) =>
@@ -830,14 +841,14 @@ export const PluginWorkspace = (props: {
           }}
         </For>
 
-        {/* `Index`, not `For`: `splitterHandles` returns fresh objects on every
+        {/* Unkeyed `For`: `splitterHandles` returns fresh objects on every
             re-measure, so a keyed `For` destroyed and rebuilt every gutter
             whenever the geometry changed. That threw away keyboard focus
             mid-resize and left stale element references behind. Keying by
             position keeps the elements alive and just updates their values. */}
-        <Index each={handles()}>
+        <For each={handles()} keyed={false}>
           {(handle) => {
-            // Accessor, not a snapshot: Index keeps this node for a given
+            // Accessor, not a snapshot: an unkeyed For keeps this node for a given
             // gutter index, so a const taken at mount would stay at the first
             // geometry (two equal panes) after a third pane opens or the
             // workspace is re-measured.
@@ -845,7 +856,7 @@ export const PluginWorkspace = (props: {
             return (
               <div
                 role="separator"
-                tabIndex={0}
+                tabindex={0}
                 data-tsd-control
                 data-tsd-separator="plugin-pane"
                 data-testid="plugin-splitter"
@@ -877,7 +888,7 @@ export const PluginWorkspace = (props: {
               />
             )
           }}
-        </Index>
+        </For>
       </Show>
 
       {/* Outside the "has panes" branch on purpose: dropping onto an empty

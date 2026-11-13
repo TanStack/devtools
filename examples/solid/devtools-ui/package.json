@@ -9,15 +9,16 @@
     "test:types": "tsc"
   },
   "dependencies": {
+    "@solidjs/web": "^2.0.0-rc.21",
     "@tanstack/devtools-ui": "0.7.2",
     "@tanstack/solid-devtools": "^0.8.14",
-    "solid-js": "^1.9.13"
+    "solid-js": "^2.0.0-rc.21"
   },
   "devDependencies": {
+    "@solidjs/vite-plugin": "^3.0.0-next.57",
     "@tanstack/devtools-vite": "0.8.6",
     "vite": "^8.0.0",
-    "vite-plugin-inspect": "11.3.3",
-    "vite-plugin-solid": "^2.11.11"
+    "vite-plugin-inspect": "11.3.3"
   },
   "browserslist": {
     "production": [

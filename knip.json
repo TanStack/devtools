@@ -7,11 +7,10 @@
       "entry": ["scripts/generate-docs.ts", "scripts/verify-links.ts"]
     },
     "packages/devtools-a11y": {
-      "ignoreDependencies": ["solid-js", "@angular/core"]
+      "ignoreDependencies": ["@angular/core"]
     },
-
     "packages/devtools-utils": {
-      "ignoreDependencies": ["react", "solid-js", "svelte", "@types/react"],
+      "ignoreDependencies": ["react", "svelte", "@types/react"],
       "entry": [
         "**/vite.config.solid.ts",
         "**/src/solid/**",
@@ -27,9 +26,6 @@
     },
     "packages/devtools-ui": {
       "entry": ["**/tests/**/*.ts"]
-    },
-    "packages/solid-devtools": {
-      "ignore": ["**/core.tsx"]
     },
     "packages/angular-devtools": {
       "ignoreDependencies": ["tslib"],

@@ -11,6 +11,8 @@ If you are using TanStack Devtools in a Solid application, we recommend using th
 npm install -D @tanstack/solid-devtools
 ```
 
+`@tanstack/solid-devtools` requires Solid 2 (`solid-js` and `@solidjs/web` 2.0.0-rc.21 or later). Solid 1 apps stay on `@tanstack/solid-devtools` 0.8.x.
+
 ## Solid Hooks
 
 TODO

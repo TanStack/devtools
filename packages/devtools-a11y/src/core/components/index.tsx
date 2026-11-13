@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { AllyProvider } from '../contexts/allyContext'
 import { Shell } from './Shell'

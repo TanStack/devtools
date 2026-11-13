@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { createSignal } from 'solid-js'
+import { createSignal, flush } from 'solid-js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { Select, ThemeContextProvider } from '@tanstack/devtools-ui'
 import { DevtoolsProvider } from '../context/devtools-context'
@@ -31,7 +31,10 @@ const renderSettingsTab = (config?: Partial<TanStackDevtoolsConfig>) => {
 
   return {
     ...result,
-    setSettings: (s: Partial<DevtoolsStore['settings']>) => setSettings(s),
+    setSettings: (s: Partial<DevtoolsStore['settings']>) => {
+      setSettings(s)
+      flush()
+    },
   }
 }
 

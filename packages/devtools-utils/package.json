@@ -86,25 +86,33 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@solidjs/babel-plugin": "^2.0.0-rc.21",
+    "@solidjs/vite-plugin": "^3.0.0-next.57",
+    "@solidjs/web": "^2.0.0-rc.21",
     "@sveltejs/vite-plugin-svelte": "^6.0.0",
     "@tanstack/devtools": "workspace:^",
     "preact": "^11.0.1",
+    "solid-js": "^2.0.0-rc.21",
     "svelte": "^5.0.0",
     "tsup": "^8.5.0",
-    "tsup-preset-solid": "^2.2.0",
-    "vite-plugin-solid": "^2.11.11"
+    "tsup-preset-solid": "^2.2.0"
   },
   "peerDependencies": {
     "@angular/core": ">=19.0.0",
+    "@solidjs/web": ">=2.0.0-rc.21 <3.0.0",
     "@types/react": ">=17.0.0",
     "preact": ">=10.0.0",
     "react": ">=17.0.0",
-    "solid-js": "^1.9.13",
+    "solid-js": ">=2.0.0-rc.21 <3.0.0",
     "svelte": ">=5.0.0",
     "vue": ">=3.2.0"
   },
   "peerDependenciesMeta": {
     "@angular/core": {
+      "optional": true
+    },
+    "@solidjs/web": {
       "optional": true
     },
     "@types/react": {

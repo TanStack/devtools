@@ -81,7 +81,7 @@ Event names are suffixes only. The `pluginId` is prepended automatically: `'stor
 ### Step 2: Build the Solid.js Panel Component
 
 ```tsx
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 import { createSignal, onCleanup, For } from 'solid-js'
 import {
   MainPanel,

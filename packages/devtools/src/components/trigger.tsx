@@ -3,6 +3,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  flush,
   onCleanup,
   untrack,
 } from 'solid-js'
@@ -16,6 +17,7 @@ import {
   TRIGGER_EDGE_TAB_PAD,
   TRIGGER_TOOLTIP_MS,
 } from '../utils/constants'
+import { nativeListener } from '../utils/native-listener'
 import { TanStackTriggerMark } from './tanstack-trigger-mark'
 import type {
   TriggerCoords,
@@ -210,11 +212,11 @@ export const Trigger = (props: {
   // percent of the free space, see `persist` and `placeFromSettings`.
   const [coords, setCoords] = createSignal<TriggerCoords | null>(null)
   const [pinnedCorner, setPinnedCorner] = createSignal<TriggerCorner | null>(
-    settings().triggerCorner ?? null,
+    untrack(() => settings().triggerCorner ?? null),
   )
   const [hotCorner, setHotCorner] = createSignal<TriggerCorner | null>(null)
   const [dockedEdge, setDockedEdge] = createSignal<TriggerEdge | null>(
-    settings().triggerEdge ?? null,
+    untrack(() => settings().triggerEdge ?? null),
   )
   const [hoverEdge, setHoverEdge] = createSignal<TriggerEdge | null>(null)
   const [tooltipVisible, setTooltipVisible] = createSignal(false)
@@ -338,6 +340,9 @@ export const Trigger = (props: {
   }
 
   const persist = () => {
+    // Callers set the signals this reads in the same handler, and Solid 2
+    // applies writes on flush.
+    flush()
     const el = buttonRef()
     const current = coords()
     const b = el && bounds(el)
@@ -477,6 +482,7 @@ export const Trigger = (props: {
       } else {
         raf = undefined
         setShiftMagnetic(false)
+        flush()
         const corner = hotCorner()
         if (corner) pinTo(corner, el)
         else persist()
@@ -540,12 +546,14 @@ export const Trigger = (props: {
     // Mounts the floating button (the tab unmounts), then centers it under
     // the pointer and hands the drag to it. Pointer capture moves with it.
     setDockedEdge(null)
+    flush()
     const el = buttonRef()
     if (!el) return
     setCoords({
       x: e.clientX - el.offsetWidth / 2,
       y: e.clientY - el.offsetHeight / 2,
     })
+    flush()
     beginDrag(e)
     moved = true
   }
@@ -693,15 +701,15 @@ export const Trigger = (props: {
 
   // Runs on going floating and on coming back from an edge dock. Reads
   // settings untracked so this only runs on mode/ref/dock changes.
-  createEffect(() => {
-    if (!isFloating() || dockedEdge()) return
-    const el = buttonRef()
-    if (!el) return
-    untrack(() => placeFromSettings(el))
-  })
+  createEffect(
+    () => (isFloating() && !dockedEdge() ? buttonRef() : undefined),
+    (el) => {
+      if (el) untrack(() => placeFromSettings(el))
+    },
+  )
 
-  createEffect(() => {
-    if (!isFloating()) return
+  createEffect(isFloating, (floating) => {
+    if (!floating) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && cancelGesture()) event.stopPropagation()
       if (event.altKey && event.key.toLowerCase() === 'm') {
@@ -710,20 +718,22 @@ export const Trigger = (props: {
       }
     }
     window.addEventListener('keydown', onKeyDown)
-    onCleanup(() => window.removeEventListener('keydown', onKeyDown))
+    return () => window.removeEventListener('keydown', onKeyDown)
   })
 
   // Keep the trigger at the same relative spot when the window is resized.
-  createEffect(() => {
-    if (!isFloating()) return
+  createEffect(isFloating, (floating) => {
+    if (!floating) return
     const onResize = () => {
       if (dockedEdge()) return
       const el = buttonRef()
       // A drag or throw in flight owns the position; it persists when it ends.
-      if (el && !dragging && raf === undefined) placeFromSettings(el)
+      if (el && !dragging && raf === undefined) {
+        untrack(() => placeFromSettings(el))
+      }
     }
     window.addEventListener('resize', onResize)
-    onCleanup(() => window.removeEventListener('resize', onResize))
+    return () => window.removeEventListener('resize', onResize)
   })
 
   onCleanup(() => {
@@ -732,15 +742,16 @@ export const Trigger = (props: {
     hideTooltip()
   })
 
-  createEffect(() => {
-    const triggerComponent = settings().customTrigger
-    const el = containerRef()
-    if (triggerComponent && el) {
-      triggerComponent(el, {
-        theme: settings().theme,
-      })
-    }
-  })
+  createEffect(
+    () => ({
+      triggerComponent: settings().customTrigger,
+      el: containerRef(),
+      theme: settings().theme,
+    }),
+    ({ triggerComponent, el, theme }) => {
+      if (triggerComponent && el) triggerComponent(el, { theme })
+    },
+  )
 
   return (
     <Show when={!settings().triggerHidden}>
@@ -754,8 +765,8 @@ export const Trigger = (props: {
             type="button"
             data-tsd-control
             aria-label="Open TanStack Devtools (docked)"
-            aria-hidden={dockedEdge() ? undefined : true}
-            tabIndex={dockedEdge() ? undefined : -1}
+            aria-hidden={dockedEdge() ? undefined : 'true'}
+            tabindex={dockedEdge() ? undefined : -1}
             class={clsx(
               styles().triggerEdgeTab(
                 edge(),
@@ -769,10 +780,8 @@ export const Trigger = (props: {
               dockedEdge() ? () => props.setIsOpen(!props.isOpen()) : undefined
             }
             onPointerDown={onTabPointerDown}
-            // Native, not delegated: Solid's document-level pointermove handler
-            // leaves event.currentTarget on <html> for every later listener,
-            // which breaks libraries such as react-resizable-panels.
-            on:pointermove={onTabPointerMove}
+            // Native, not delegated, see `nativeListener`.
+            ref={nativeListener('pointermove', onTabPointerMove)}
             onPointerUp={onTabPointerUp}
             onPointerCancel={onTabPointerUp}
           >
@@ -800,7 +809,7 @@ export const Trigger = (props: {
           )}
         </Show>
         <button
-          ref={setButtonRef}
+          ref={[setButtonRef, nativeListener('pointermove', onPointerMove)]}
           type="button"
           data-tsd-control
           aria-label="Open TanStack Devtools"
@@ -822,8 +831,6 @@ export const Trigger = (props: {
             ...(hoverEdge() ? { opacity: 0, pointerEvents: 'none' } : {}),
           }}
           onPointerDown={onPointerDown}
-          // Native, not delegated, for the same reason as the edge tab above.
-          on:pointermove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerCancel}
           onMouseEnter={() => isFloating() && !dragging && scheduleTooltip()}

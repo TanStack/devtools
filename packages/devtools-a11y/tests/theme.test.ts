@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { extname, join, relative } from 'node:path'
 import { createComponent } from 'solid-js'
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { afterEach, describe, expect, it } from 'vitest'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'

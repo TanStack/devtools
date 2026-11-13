@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js - we use Solid.js as JSX here */
+/** @jsxImportSource @solidjs/web - we use Solid.js as JSX here */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { constructCoreClass } from './class'
 

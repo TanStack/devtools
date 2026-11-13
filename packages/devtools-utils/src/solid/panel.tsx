@@ -1,6 +1,6 @@
-/** @jsxImportSource solid-js - we use Solid.js as JSX here */
+/** @jsxImportSource @solidjs/web - we use Solid.js as JSX here */
 
-import { createSignal, onCleanup, onMount } from 'solid-js'
+import { onSettled } from 'solid-js'
 import type { ClassType } from './class'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
@@ -11,14 +11,12 @@ export function createSolidPanel<TComponentProps extends DevtoolsPanelProps>(
 ) {
   function Panel(props: TComponentProps) {
     let devToolRef: HTMLDivElement | undefined
-    const [devtools] = createSignal(new CoreClass())
-    onMount(() => {
+    const devtools = new CoreClass()
+    onSettled(() => {
       if (devToolRef) {
-        devtools().mount(devToolRef, props)
+        devtools.mount(devToolRef, props)
       }
-      onCleanup(() => {
-        devtools().unmount()
-      })
+      return () => devtools.unmount()
     })
 
     return <div style={{ height: '100%' }} ref={devToolRef} />

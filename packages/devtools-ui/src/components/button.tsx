@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { createStyles } from '../styles/use-styles'
 
 // types
-import type { JSX } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 
 export type ButtonVariant =
   | 'primary'

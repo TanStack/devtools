@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { render } from 'solid-js/web'
+import { flush } from 'solid-js'
+import { render } from '@solidjs/web'
 import { JsonTree } from '../src/components/tree'
 import { ThemeContextProvider } from '../src/components/theme'
 
@@ -77,6 +78,8 @@ describe('JsonTree', () => {
       )!
       copy.click()
       await Promise.resolve()
+      // The clipboard promise settles after the click's flush.
+      flush()
       expect(copy.getAttribute('data-copy-state')).toBe('SuccessCopy')
       expect(copy.querySelector('path')?.getAttribute('stroke')).toBe(
         'currentColor',
@@ -88,6 +91,8 @@ describe('JsonTree', () => {
       )[1]!
       second.click()
       await Promise.resolve()
+      // The clipboard promise settles after the click's flush.
+      flush()
       expect(second.getAttribute('data-copy-state')).toBe('ErrorCopy')
       expect(second.querySelector('path')?.getAttribute('stroke')).toBe(
         'currentColor',

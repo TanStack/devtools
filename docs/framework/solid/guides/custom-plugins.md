@@ -139,7 +139,7 @@ This step follows what's shown in [basic-setup](../basic-setup) for a more docum
 
 index.tsx
 ```tsx
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 import { DevtoolPanel } from './DevtoolPanel'
 

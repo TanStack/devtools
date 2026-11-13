@@ -1,4 +1,4 @@
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 
 // devtool imports
 import { TanStackDevtools } from '@tanstack/solid-devtools'

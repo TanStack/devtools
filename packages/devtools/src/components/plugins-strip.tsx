@@ -1,4 +1,4 @@
-import { For, createEffect, createMemo } from 'solid-js'
+import { For, createEffect, createMemo, untrack } from 'solid-js'
 import {
   createCollapsed,
   createDevtoolsState,
@@ -91,12 +91,13 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
    * plugin closes and returns to it. Only those two transitions are automatic, so
    * a deliberate fold or unfold in between is left alone.
    */
-  createEffect((wasEmpty: boolean | undefined) => {
-    const isEmpty = available().length === 0
-    if (isEmpty && wasEmpty === false) setCollapsed(true)
-    if (!isEmpty && wasEmpty === true) setCollapsed(false)
-    return isEmpty
-  })
+  createEffect(
+    () => available().length === 0,
+    (isEmpty, wasEmpty) => {
+      if (isEmpty && wasEmpty === false) setCollapsed(true)
+      if (!isEmpty && wasEmpty === true) setCollapsed(false)
+    },
+  )
 
   return (
     <WorkbenchSecondaryTabs
@@ -107,27 +108,24 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
         {(plugin) => {
           let heading: HTMLHeadingElement | undefined
 
-          const renderName = () => {
+          const nameProps = () => ({
+            name: plugin.name,
+            theme: theme(),
+            devtoolsOpen: props.isOpen(),
+          })
+          const renderName = ({
+            name,
+            ...renderProps
+          }: ReturnType<typeof nameProps>) => {
             if (!heading) return
-            if (typeof plugin.name === 'string') {
-              heading.textContent = plugin.name
+            if (typeof name === 'string') {
+              heading.textContent = name
             } else {
-              plugin.name(heading, {
-                theme: theme(),
-                devtoolsOpen: props.isOpen(),
-              })
+              name(heading, renderProps)
             }
           }
-          let nameMounted = false
-          createEffect(() => {
-            theme()
-            props.isOpen()
-            if (!nameMounted) {
-              nameMounted = true
-              return
-            }
-            renderName()
-          })
+          // The ref renders the name first; this re-renders it on change.
+          createEffect(nameProps, renderName, { defer: true })
 
           return (
             <WorkbenchSecondaryTab
@@ -148,7 +146,7 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
                 id={`${PLUGIN_TITLE_CONTAINER_ID}-${plugin.id}`}
                 ref={(element) => {
                   heading = element
-                  renderName()
+                  renderName(untrack(nameProps))
                 }}
                 style={
                   typeof plugin.name === 'function'

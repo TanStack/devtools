@@ -120,7 +120,7 @@ npm install -D @tanstack/solid-devtools @tanstack/devtools-vite
 Add the `TanStackDevtools` component using Solid's `render(() => ...)` pattern:
 
 ```tsx
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 
 import App from './App'
@@ -136,7 +136,7 @@ render(() => (
 To add plugins, pass them via the `plugins` prop:
 
 ```tsx
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'
