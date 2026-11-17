@@ -6,7 +6,7 @@ import type { TanStackDevtoolsPlugin } from '@tanstack/devtools'
 import type {
   TanStackDevtoolsSvelteInit,
   TanStackDevtoolsSveltePlugin,
-} from './types'
+} from './types.js'
 
 type MountedComponent = ReturnType<typeof ComponentHost>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte'
   import { TanStackDevtoolsSvelteAdapter } from './devtools.js'
-  import type { TanStackDevtoolsSvelteInit } from './types'
+  import type { TanStackDevtoolsSvelteInit } from './types.js'
 
   let { plugins, config, eventBusConfig }: TanStackDevtoolsSvelteInit = $props()
 
