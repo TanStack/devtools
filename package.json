@@ -51,7 +51,7 @@
   "size-limit": [
     {
       "path": "packages/devtools/dist/index.js",
-      "limit": "85 KB"
+      "limit": "86 KB"
     },
     {
       "path": "packages/event-bus-client/dist/esm/plugin.js",
@@ -73,7 +73,7 @@
     "@changesets/cli": "^2.30.0",
     "@faker-js/faker": "^9.9.0",
     "@size-limit/preset-small-lib": "^11.2.0",
-    "@solidjs/babel-plugin": "^2.0.0-rc.21",
+    "@solidjs/babel-plugin": "^2.0.0",
     "@tanstack/eslint-config": "0.3.2",
     "@tanstack/intent": "^0.0.14",
     "@tanstack/typedoc-config": "0.3.3",
