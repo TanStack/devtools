@@ -1690,9 +1690,6 @@ importers:
       react:
         specifier: '>=17.0.0'
         version: 19.2.6
-      solid-js:
-        specifier: ^1.9.13
-        version: 1.9.17
       vue:
         specifier: '>=3.2.0'
         version: 3.5.34(typescript@5.9.3)
@@ -1706,6 +1703,9 @@ importers:
       preact:
         specifier: ^11.0.1
         version: 11.0.1
+      solid-js:
+        specifier: ^1.9.13
+        version: 1.9.17
       svelte:
         specifier: ^5.0.0
         version: 5.55.1(@typescript-eslint/types@8.58.0)

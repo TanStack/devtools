@@ -89,6 +89,7 @@
     "@sveltejs/vite-plugin-svelte": "^6.0.0",
     "@tanstack/devtools": "workspace:^",
     "preact": "^11.0.1",
+    "solid-js": "^1.9.13",
     "svelte": "^5.0.0",
     "tsup": "^8.5.0",
     "tsup-preset-solid": "^2.2.0",
