@@ -1,19 +1,21 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { render } from 'preact'
 import { TanStackDevtoolsCore } from '@tanstack/devtools'
-import type { JSX } from 'preact'
+import type { ComponentChildren, JSX } from 'preact'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
   TanStackDevtoolsPlugin,
+  TanStackDevtoolsPluginProps,
+  TanStackDevtoolsTheme,
 } from '@tanstack/devtools'
 
 type PluginRender =
   | JSX.Element
-  | ((el: HTMLElement, theme: 'dark' | 'light') => JSX.Element)
+  | ((el: HTMLElement, props: TanStackDevtoolsPluginProps) => JSX.Element)
 
 type TriggerProps = {
-  theme: 'dark' | 'light'
+  theme: TanStackDevtoolsTheme
 }
 
 type TriggerRender =
@@ -114,20 +116,38 @@ export interface TanStackDevtoolsPreactInit {
   eventBusConfig?: ClientEventBusConfig
 }
 
-// Simple portal component for Preact
-function Portal({
-  children,
-  container,
-}: {
-  children: JSX.Element
-  container: HTMLElement
-}) {
+// Hands the portal's context to the separate root, so plugins can read the app's providers.
+function ContextProvider(
+  this: { getChildContext?: () => object },
+  props: { context: object; children: ComponentChildren },
+) {
+  this.getChildContext = () => props.context
+  return props.children
+}
+
+// Core `createPortal` only exists in Preact 11, and `preact/compat` patches global options.
+function Portal(
+  {
+    children,
+    container,
+  }: {
+    children: JSX.Element
+    container: HTMLElement
+  },
+  context: object,
+) {
   useEffect(() => {
-    render(children, container)
+    render(
+      <ContextProvider context={context}>{children}</ContextProvider>,
+      container,
+    )
+  })
+
+  useEffect(() => {
     return () => {
       render(null, container)
     }
-  }, [children, container])
+  }, [container])
 
   return null
 }
@@ -140,10 +160,10 @@ const convertRender = (
       | ((prev: Record<string, JSX.Element>) => Record<string, JSX.Element>),
   ) => void,
   e: HTMLElement,
-  theme: 'dark' | 'light',
+  props: TanStackDevtoolsPluginProps,
 ) => {
   const element =
-    typeof Component === 'function' ? Component(e, theme) : Component
+    typeof Component === 'function' ? Component(e, props) : Component
 
   setComponents((prev) => ({
     ...prev,

@@ -1,5 +1,52 @@
 # @tanstack/devtools-event-client
 
+## 0.5.1
+
+### Patch Changes
+
+- [#542](https://github.com/TanStack/devtools/pull/542) [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8) - Remove the `intent` bin from the published packages. It took over `node_modules/.bin/intent` from `@tanstack/intent` and imported the removed `@tanstack/intent/intent-library` subpath. The packages now have the `tanstack-intent` keyword, which current `@tanstack/intent` uses to find their skills.
+
+## 0.5.0
+
+### Minor Changes
+
+- [#471](https://github.com/TanStack/devtools/pull/471) [`b1ac893`](https://github.com/TanStack/devtools/commit/b1ac893a7dc6d5b75df0a3a12e56468451656232) - The root export of `@tanstack/devtools-event-client` now resolves to a no-op
+  outside development (`process.env.NODE_ENV !== 'development'`), so the real
+  `EventClient` is tree-shaken out of production bundles by default.
+
+  If you want devtools events to keep working in production, import the real
+  client from the new `@tanstack/devtools-event-client/production` subpath, which
+  always ships the real implementation. The public API is identical between the
+  two imports.
+
+## 0.4.4
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+## 0.4.3
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.4.2
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
 ## 0.4.1
 
 ### Patch Changes

@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps {
-  theme?: 'light' | 'dark'
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
 /**
  * Creates a React component that dynamically imports and mounts a devtools panel. SSR friendly.
@@ -22,9 +21,9 @@ export interface DevtoolsPanelProps {
  * ```
  */
 export function createReactPanel<
-  TComponentProps extends DevtoolsPanelProps | undefined,
+  TComponentProps extends TanStackDevtoolsPluginProps,
   TCoreDevtoolsClass extends {
-    mount: (el: HTMLElement, theme: 'light' | 'dark') => void
+    mount: (el: HTMLElement, props: TanStackDevtoolsPluginProps) => void
     unmount: () => void
   },
 >(CoreClass: new () => TCoreDevtoolsClass) {
@@ -36,7 +35,7 @@ export function createReactPanel<
       devtools.current = new CoreClass()
 
       if (devToolRef.current) {
-        devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
+        devtools.current.mount(devToolRef.current, props)
       }
 
       return () => {
@@ -45,7 +44,7 @@ export function createReactPanel<
           devtools.current = null
         }
       }
-    }, [props?.theme])
+    }, [props])
 
     return <div style={{ height: '100%' }} ref={devToolRef} />
   }

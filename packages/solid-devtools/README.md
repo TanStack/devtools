@@ -1,3 +1,20 @@
+<div align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://tanstack.com/api/readme/devtools.png?framework=solid&theme=dark"
+    />
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://tanstack.com/api/readme/devtools.png?framework=solid"
+    />
+    <img
+      src="https://tanstack.com/api/readme/devtools.png?framework=solid"
+      alt="TanStack Solid Devtools"
+      width="900"
+    />
+  </picture>
+</div>
 # @tanstack/solid-devtools
 
 This package is still under active development and might have breaking changes in the future. Please use it with caution.

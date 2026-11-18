@@ -1,11 +1,12 @@
 import { createUniqueId } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 
 export function TanStackLogo() {
   const id = createUniqueId()
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <svg
+      data-tsd-surface
       class={styles().logo}
       xmlns="http://www.w3.org/2000/svg"
       enable-background="new 0 0 634 633"

@@ -1,5 +1,153 @@
 # @tanstack/preact-devtools
 
+## 0.10.15
+
+### Patch Changes
+
+- Updated dependencies [[`8b3a032`](https://github.com/TanStack/devtools/commit/8b3a032c4709ecad6e3166c25627c326373d4142), [`f315fe8`](https://github.com/TanStack/devtools/commit/f315fe821b879bfadb1d38ce0d5c1c5ff3d8e988), [`7b5f1ee`](https://github.com/TanStack/devtools/commit/7b5f1eef8b9ac990cb4604f93a499581e1f3a5fb), [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8), [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037), [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355)]:
+  - @tanstack/devtools@0.16.0
+
+## 0.10.14
+
+### Patch Changes
+
+- [#551](https://github.com/TanStack/devtools/pull/551) [`e122872`](https://github.com/TanStack/devtools/commit/e1228726f96f1210fed434b1c9976f165ec8c046) - Plugins, titles and custom triggers now see the context of the app that renders `<TanStackDevtools>`, so a plugin like `<PreactQueryDevtoolsPanel />` finds its `QueryClientProvider`. They used to render in a separate root with no context.
+
+## 0.10.13
+
+### Patch Changes
+
+- Updated dependencies [[`02a67f1`](https://github.com/TanStack/devtools/commit/02a67f14ac6ae4569f9bb26f682467f599415210), [`589304f`](https://github.com/TanStack/devtools/commit/589304f46110a6f1b7370c8cfed97459e83f6069), [`dc61e1e`](https://github.com/TanStack/devtools/commit/dc61e1ea21a7fc57dfeab6ee6f212b57aea79447), [`45f39ee`](https://github.com/TanStack/devtools/commit/45f39ee91e8b4c04c79226cb3171b5686b782b35)]:
+  - @tanstack/devtools@0.15.0
+
+## 0.10.12
+
+### Patch Changes
+
+- Updated dependencies [[`4ecd46e`](https://github.com/TanStack/devtools/commit/4ecd46e2f910fb41f6269927880a0e5c47baeecb)]:
+  - @tanstack/devtools@0.14.2
+
+## 0.10.11
+
+### Patch Changes
+
+- Updated dependencies [[`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15), [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15), [`cf8e678`](https://github.com/TanStack/devtools/commit/cf8e67875cca6d7e59ebb41db3fdbf98225b0c15)]:
+  - @tanstack/devtools@0.14.1
+
+## 0.10.10
+
+### Patch Changes
+
+- Updated dependencies [[`a46d1f5`](https://github.com/TanStack/devtools/commit/a46d1f59599c679a28208e6bba4b8d913b3ea8d2), [`a46d1f5`](https://github.com/TanStack/devtools/commit/a46d1f59599c679a28208e6bba4b8d913b3ea8d2)]:
+  - @tanstack/devtools@0.14.0
+
+## 0.10.9
+
+### Patch Changes
+
+- Updated dependencies [[`d061f0c`](https://github.com/TanStack/devtools/commit/d061f0cc3cd64101edd176ac097e2f0048035ac5)]:
+  - @tanstack/devtools@0.13.0
+
+## 0.10.8
+
+### Patch Changes
+
+- Updated dependencies [[`ea3c674`](https://github.com/TanStack/devtools/commit/ea3c6749b07f4328f1c9cb352c05135aa773a22f)]:
+  - @tanstack/devtools@0.12.5
+
+## 0.10.7
+
+### Patch Changes
+
+- Updated dependencies [[`cc8c81b`](https://github.com/TanStack/devtools/commit/cc8c81b9e2e26596dc27a87bba6954b3821145a7)]:
+  - @tanstack/devtools@0.12.4
+
+## 0.10.6
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+- Updated dependencies [[`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685)]:
+  - @tanstack/devtools@0.12.3
+
+## 0.10.5
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/devtools@0.12.2
+
+## 0.10.4
+
+### Patch Changes
+
+- Updated dependencies [[`5ac65f8`](https://github.com/TanStack/devtools/commit/5ac65f80592c00c5d11605d86cef0576ea35db75)]:
+  - @tanstack/devtools@0.12.1
+
+## 0.10.3
+
+### Patch Changes
+
+- Updated dependencies [[`58e66f5`](https://github.com/TanStack/devtools/commit/58e66f5a2680537d0552d75c7e17d6ded62446f3)]:
+  - @tanstack/devtools@0.12.0
+
+## 0.10.2
+
+### Patch Changes
+
+- Updated dependencies [[`aa32769`](https://github.com/TanStack/devtools/commit/aa32769932b2443a91f123f3213d687f35810d4b)]:
+  - @tanstack/devtools@0.11.2
+
+## 0.10.1
+
+### Patch Changes
+
+- Updated dependencies [[`e89cff4`](https://github.com/TanStack/devtools/commit/e89cff4b4e5953d66bac76567161dc7314d13850), [`e04bb11`](https://github.com/TanStack/devtools/commit/e04bb11becc87c1014d78fdda57eb810cdd16adf)]:
+  - @tanstack/devtools@0.11.1
+
+## 0.10.0
+
+### Minor Changes
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
+### Patch Changes
+
+- Updated dependencies [[`7c33985`](https://github.com/TanStack/devtools/commit/7c339855988d03896cb42d00eeb555750a3a1aff), [`40db560`](https://github.com/TanStack/devtools/commit/40db560c00a3c5da9d5f98e138e8f59a2619f6ff)]:
+  - @tanstack/devtools@0.11.0
+
+## 0.9.18
+
+### Patch Changes
+
+- Updated dependencies [[`1451124`](https://github.com/TanStack/devtools/commit/1451124c079c0bd0fecf7bdf47b87a67f3780b23)]:
+  - @tanstack/devtools@0.10.14
+
+## 0.9.17
+
+### Patch Changes
+
+- Updated dependencies [[`644bcb3`](https://github.com/TanStack/devtools/commit/644bcb3ec5faa374f37882282eb01a37611ed0e2)]:
+  - @tanstack/devtools@0.10.13
+
+## 0.9.16
+
+### Patch Changes
+
+- Updated dependencies [[`0dfc04a`](https://github.com/TanStack/devtools/commit/0dfc04ab7ed3c770f7fbf7c7cb8f636403e1cf91)]:
+  - @tanstack/devtools@0.10.12
+
 ## 0.9.15
 
 ### Patch Changes

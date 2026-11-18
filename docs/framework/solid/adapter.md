@@ -8,7 +8,7 @@ If you are using TanStack Devtools in a Solid application, we recommend using th
 ## Installation
 
 ```sh
-npm install @tanstack/solid-devtools
+npm install -D @tanstack/solid-devtools
 ```
 
 ## Solid Hooks

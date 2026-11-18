@@ -1,5 +1,75 @@
 # @tanstack/devtools-utils
 
+## 0.7.2
+
+### Patch Changes
+
+- [#542](https://github.com/TanStack/devtools/pull/542) [`9c58288`](https://github.com/TanStack/devtools/commit/9c58288d01882cac321ac176b3b664ac94a3ccf8) - Remove the `intent` bin from the published packages. It took over `node_modules/.bin/intent` from `@tanstack/intent` and imported the removed `@tanstack/intent/intent-library` subpath. The packages now have the `tanstack-intent` keyword, which current `@tanstack/intent` uses to find their skills.
+
+- [#543](https://github.com/TanStack/devtools/pull/543) [`bbe529a`](https://github.com/TanStack/devtools/commit/bbe529ad6420c44cc56f01d14c3d660cd367f037) - Require solid-js 1.9.13 or later. Our compiled output imports `use` from `solid-js/web`, and the server build of solid-js 1.9.12 and earlier does not export it. Before this fix, SSR apps with an older solid-js in their lockfile could not start the dev server.
+
+- [#557](https://github.com/TanStack/devtools/pull/557) [`f4ca00c`](https://github.com/TanStack/devtools/commit/f4ca00c9e856ac954be11bfbcdbc94d33aca7355) - Cap the `solid-js` peer range at `^1`. The previous open-ended `>=` range would accept Solid 2.0.0 once it is released, but these packages are built against Solid 1 and do not work with Solid 2.
+
+## 0.7.1
+
+### Patch Changes
+
+- [#551](https://github.com/TanStack/devtools/pull/551) [`e122872`](https://github.com/TanStack/devtools/commit/e1228726f96f1210fed434b1c9976f165ec8c046) - Unmount the devtools core when a Preact panel unmounts on Preact 11. Preact 11 clears refs before effect cleanups run, so the panel skipped `unmount()`.
+
+## 0.7.0
+
+### Minor Changes
+
+- [#504](https://github.com/TanStack/devtools/pull/504) [`f1584c7`](https://github.com/TanStack/devtools/commit/f1584c7db4df0a700448b482282fde3138079cc1) - Align Svelte panel construction and plugin metadata with the other framework factories, use compiled Svelte components to own panel and no-op lifecycles, forward shared plugin props through the Svelte adapter, and update mounted component props without resetting their state.
+
+## 0.6.0
+
+### Minor Changes
+
+- [#366](https://github.com/TanStack/devtools/pull/366) [`d7c5a93`](https://github.com/TanStack/devtools/commit/d7c5a93710d61ed31dedccc627b74551ea97da7e) - feat: add Svelte 5 adapter and devtools-utils Svelte factories
+
+## 0.5.1
+
+### Patch Changes
+
+- [#466](https://github.com/TanStack/devtools/pull/466) [`73983a7`](https://github.com/TanStack/devtools/commit/73983a7d7e8eaa8800322f476130df3ed4329685) - Fix the plugin marketplace rendering empty ("No additional plugins available")
+  when it should list installable plugins.
+  - The client event bus no longer silently drops events emitted while its
+    WebSocket is still connecting. Such events are now queued and flushed once
+    the socket opens, so the marketplace's `mounted` request reliably reaches the
+    server bus.
+  - The marketplace now re-requests `package.json` every time it is opened and
+    retries until the data arrives, so re-opening always re-fetches the plugin
+    list.
+  - Added TanStack AI Devtools (`@tanstack/react-ai-devtools`) to the plugin
+    marketplace registry.
+
+## 0.5.0
+
+### Minor Changes
+
+- Adds Angular adapter and utility functions ([#431](https://github.com/TanStack/devtools/pull/431))
+
+## 0.4.0
+
+### Minor Changes
+
+- Extract devtools-ui from devtools-utils to avoid theme miss-match ([#386](https://github.com/TanStack/devtools/pull/386))
+
+- Change the way props are passed to the plugins ([#319](https://github.com/TanStack/devtools/pull/319))
+
+## 0.3.4
+
+### Patch Changes
+
+- Include skills/ directory in npm publish so `npx @tanstack/intent install` can discover them ([#379](https://github.com/TanStack/devtools/pull/379))
+
+## 0.3.3
+
+### Patch Changes
+
+- Add @tanstack/intent agent skills for AI coding agents ([#377](https://github.com/TanStack/devtools/pull/377))
+
 ## 0.3.2
 
 ### Patch Changes

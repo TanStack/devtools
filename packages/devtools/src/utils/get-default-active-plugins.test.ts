@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { MAX_ACTIVE_PLUGINS } from './constants'
 import { getDefaultActivePlugins } from './get-default-active-plugins'
 import type { PluginWithId } from './get-default-active-plugins'
 
@@ -68,7 +69,7 @@ describe('getDefaultActivePlugins', () => {
     expect(result).toEqual(['plugin1', 'plugin3'])
   })
 
-  it('should limit defaultOpen plugins to MAX_ACTIVE_PLUGINS (3)', () => {
+  it('should limit defaultOpen plugins to MAX_ACTIVE_PLUGINS', () => {
     const plugins: Array<PluginWithId> = [
       {
         id: 'plugin1',
@@ -93,9 +94,12 @@ describe('getDefaultActivePlugins', () => {
     ]
 
     const result = getDefaultActivePlugins(plugins)
-    // Should only return first 3
-    expect(result).toEqual(['plugin1', 'plugin2', 'plugin3'])
-    expect(result.length).toBe(3)
+    // Pinned to the constant, so raising the cap cannot make this pass by
+    // accident the way a hardcoded 3 did.
+    expect(result).toEqual(
+      plugins.slice(0, MAX_ACTIVE_PLUGINS).map((plugin) => plugin.id),
+    )
+    expect(result.length).toBeLessThanOrEqual(MAX_ACTIVE_PLUGINS)
   })
 
   it('should activate exactly MAX_ACTIVE_PLUGINS when that many have defaultOpen', () => {
@@ -160,7 +164,7 @@ describe('getDefaultActivePlugins', () => {
     expect(result).toEqual(['only-plugin'])
   })
 
-  it('should stop at MAX_ACTIVE_PLUGINS limit when 5 plugins have defaultOpen: true', () => {
+  it('should stop at MAX_ACTIVE_PLUGINS limit when more plugins have defaultOpen: true', () => {
     const plugins: Array<PluginWithId> = [
       {
         id: 'plugin1',
@@ -185,10 +189,25 @@ describe('getDefaultActivePlugins', () => {
     ]
 
     const result = getDefaultActivePlugins(plugins)
-    // Should only activate the first 3, plugin4 and plugin5 should be ignored
-    expect(result).toEqual(['plugin1', 'plugin2', 'plugin3'])
-    expect(result.length).toBe(3)
-    expect(result).not.toContain('plugin4')
-    expect(result).not.toContain('plugin5')
+    // Fewer plugins here than the cap allows, so all of them open. The cap is
+    // exercised by the test above, against the constant.
+    expect(result).toEqual([
+      'plugin1',
+      'plugin2',
+      'plugin3',
+      'plugin4',
+      'plugin5',
+    ])
+    expect(result.length).toBeLessThanOrEqual(MAX_ACTIVE_PLUGINS)
+  })
+
+  it('never returns more than MAX_ACTIVE_PLUGINS however many ask to open', () => {
+    const plugins: Array<PluginWithId> = Array.from(
+      { length: MAX_ACTIVE_PLUGINS + 4 },
+      (_, index) => ({ id: `plugin${index}`, defaultOpen: true }),
+    )
+    const result = getDefaultActivePlugins(plugins)
+    expect(result).toHaveLength(MAX_ACTIVE_PLUGINS)
+    expect(result).not.toContain(`plugin${MAX_ACTIVE_PLUGINS}`)
   })
 })

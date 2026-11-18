@@ -1,5 +1,5 @@
-import { createSignal } from 'solid-js'
-import { useStyles } from '../styles/use-styles'
+import { createSignal, createUniqueId } from 'solid-js'
+import { createStyles } from '../styles/use-styles'
 
 interface CheckboxProps {
   label?: string
@@ -9,8 +9,9 @@ interface CheckboxProps {
 }
 
 export function Checkbox(props: CheckboxProps) {
-  const styles = useStyles()
+  const styles = createStyles()
   const [isChecked, setIsChecked] = createSignal(props.checked || false)
+  const descriptionId = `${createUniqueId()}-description`
 
   const handleChange = (e: Event) => {
     const checked = (e.target as HTMLInputElement).checked
@@ -22,8 +23,11 @@ export function Checkbox(props: CheckboxProps) {
     <div class={styles().checkboxContainer}>
       <label class={styles().checkboxWrapper}>
         <input
+          data-tsd-control
+          data-tsd-selected={isChecked() ? 'true' : undefined}
+          aria-describedby={props.description ? descriptionId : undefined}
           type="checkbox"
-          checked={isChecked()}
+          checked={props.checked ?? isChecked()}
           class={styles().checkbox}
           onInput={handleChange}
         />
@@ -32,7 +36,7 @@ export function Checkbox(props: CheckboxProps) {
             <span class={styles().checkboxLabel}>{props.label}</span>
           )}
           {props.description && (
-            <span class={styles().checkboxDescription}>
+            <span id={descriptionId} class={styles().checkboxDescription}>
               {props.description}
             </span>
           )}

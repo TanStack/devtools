@@ -1,5 +1,5 @@
 import { For, Show } from 'solid-js'
-import { useStyles } from '../../styles/use-styles'
+import { createStyles } from '../../styles/use-styles'
 import type { Accessor } from 'solid-js'
 
 interface TagFiltersProps {
@@ -9,7 +9,7 @@ interface TagFiltersProps {
 }
 
 export const TagFilters = (props: TagFiltersProps) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
     <Show when={props.tags().length > 0}>
@@ -17,6 +17,10 @@ export const TagFilters = (props: TagFiltersProps) => {
         <For each={props.tags()}>
           {(tag) => (
             <button
+              type="button"
+              data-tsd-control
+              data-tsd-selected={props.selectedTags().has(tag)}
+              aria-pressed={props.selectedTags().has(tag)}
               class={styles().pluginMarketplaceTagButton}
               classList={{
                 [styles().pluginMarketplaceTagButtonActive]: props

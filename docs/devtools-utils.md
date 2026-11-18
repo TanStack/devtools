@@ -21,7 +21,7 @@ interface DevtoolsPanelProps {
 }
 ```
 
-> The Vue variant additionally accepts `'system'` as a theme value.
+> The Vue and Svelte variants additionally accept `'system'` as a theme value.
 
 Import it from the framework-specific subpath:
 
@@ -37,6 +37,12 @@ import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/preact'
 
 // Vue
 import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/vue'
+
+// Svelte
+import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/svelte'
+
+// Angular
+import type { DevtoolsPanelProps } from '@tanstack/devtools-utils/angular'
 ```
 
 ## React
@@ -71,7 +77,7 @@ const [MyPlugin, NoOpPlugin] = createReactPlugin({
 
 The returned tuple contains two factory functions:
 
-- **`Plugin()`** -- returns a plugin object with `name`, `id`, `defaultOpen`, and a `render` function that renders your `Component` with the current theme.
+- **`Plugin()`** -- returns a plugin object with `name`, `id`, `defaultOpen`, and a `render` function that renders your `Component` with the current plugin props.
 - **`NoOpPlugin()`** -- returns a plugin object with the same metadata but a `render` function that renders an empty fragment. Use this for production builds where you want to strip devtools out.
 
 A common pattern for tree-shaking:
@@ -84,15 +90,15 @@ const ActivePlugin = process.env.NODE_ENV === 'development' ? MyPlugin : NoOpPlu
 
 ### createReactPanel
 
-For library authors shipping a class-based devtools core that exposes `mount(el, theme)` and `unmount()` methods. This factory wraps that class in a React component that handles mounting into a `div`, passing the theme, and cleaning up on unmount.
+For library authors shipping a class-based devtools core that exposes `mount(el, props)` and `unmount()` methods. This factory wraps that class in a React component that handles mounting into a `div`, passing the complete plugin props, and cleaning up on unmount.
 
 **Signature:**
 
 ```ts
 function createReactPanel<
-  TComponentProps extends DevtoolsPanelProps | undefined,
+  TComponentProps extends DevtoolsPanelProps,
   TCoreDevtoolsClass extends {
-    mount: (el: HTMLElement, theme: 'light' | 'dark') => void
+    mount: (el: HTMLElement, props: DevtoolsPanelProps) => void
     unmount: () => void
   },
 >(CoreClass: new () => TCoreDevtoolsClass): readonly [Panel, NoOpPanel]
@@ -101,10 +107,13 @@ function createReactPanel<
 **Usage:**
 
 ```tsx
-import { createReactPanel } from '@tanstack/devtools-utils/react'
+import {
+  createReactPanel,
+  type DevtoolsPanelProps,
+} from '@tanstack/devtools-utils/react'
 
 class MyDevtoolsCore {
-  mount(el: HTMLElement, theme: 'light' | 'dark') {
+  mount(el: HTMLElement, props: DevtoolsPanelProps) {
     // render your devtools UI into el
   }
   unmount() {
@@ -123,9 +132,9 @@ const [MyPlugin, NoOpPlugin] = createReactPlugin({
 
 The returned `Panel` component:
 - Creates a `div` with `height: 100%` and stores a ref to it.
-- Instantiates `CoreClass` on mount and calls `core.mount(el, theme)`.
+- Instantiates `CoreClass` on mount and calls `core.mount(el, props)`.
 - Calls `core.unmount()` on cleanup.
-- Re-mounts when the `theme` prop changes.
+- Re-mounts when the plugin props change.
 
 `NoOpPanel` renders an empty fragment and does nothing.
 
@@ -251,6 +260,101 @@ const [MyPanel, NoOpPanel] = createVuePanel(MyDevtoolsCore)
 ```
 
 The panel component accepts `theme` and `devtoolsProps` as props. It mounts the core instance into a `div` element on `onMounted` and calls `unmount()` on `onUnmounted`.
+
+## Svelte
+
+### createSveltePlugin
+
+The Svelte factory takes the plugin metadata and Svelte component in a configuration object.
+
+**Signature:**
+
+```ts
+function createSveltePlugin<TComponentProps extends Record<string, any>>(
+  config: {
+    name: string
+    id?: string
+    defaultOpen?: boolean
+    Component: Component<TComponentProps>
+  },
+): readonly [Plugin, NoOpPlugin]
+```
+
+**Usage:**
+
+```ts
+import { createSveltePlugin } from '@tanstack/devtools-utils/svelte'
+import MyStorePanel from './MyStorePanel.svelte'
+
+const [MyPlugin, NoOpPlugin] = createSveltePlugin({
+  Component: MyStorePanel,
+  name: 'My Store',
+  id: 'my-store',
+  defaultOpen: true,
+})
+```
+
+The returned functions:
+
+- **`Plugin(props?)`** -- returns the plugin metadata, component, and forwarded props.
+- **`NoOpPlugin(props?)`** -- preserves the plugin metadata and props but replaces the component with one that renders nothing visible.
+
+Both accept an optional `props` object that gets forwarded to the component on mount.
+
+### createSveltePanel
+
+For class-based devtools cores, Svelte provides `createSveltePanel`. It creates a wrapper that handles mounting and unmounting the core class:
+
+```ts
+import { createSveltePanel } from '@tanstack/devtools-utils/svelte'
+
+const [MyPanel, NoOpPanel] = createSveltePanel(MyDevtoolsCore)
+```
+
+The panel constructs the core without arguments. It creates a `div` element, passes the complete `{ theme, devtoolsOpen }` plugin props to `mount()`, and registers `unmount()` with Svelte's component cleanup lifecycle.
+
+## Angular
+
+### createAngularPlugin
+
+The Angular factory takes a `name` string and an Angular component class as separate arguments, similar to the Vue API.
+
+**Signature:**
+
+```ts
+function createAngularPlugin(
+  name: string,
+  component: Type<any>,
+): readonly [Plugin, NoOpPlugin]
+```
+
+**Usage:**
+
+```ts
+import { createAngularPlugin } from '@tanstack/devtools-utils/angular'
+import { MyStorePanelComponent } from './my-store-panel.component'
+
+const [MyPlugin, NoOpPlugin] = createAngularPlugin('My Store', MyStorePanelComponent)
+```
+
+The returned functions:
+
+- **`Plugin(inputs?)`** -- returns `{ name, component, inputs }` where `component` is your Angular component class.
+- **`NoOpPlugin(inputs?)`** -- returns `{ name, component: NoOpComponent, inputs }` where the component is an empty standalone component (renders nothing visible).
+
+Both accept an optional `inputs` object that gets forwarded to the component via `setInput()`.
+
+### createAngularPanel
+
+For class-based devtools cores, Angular provides `createAngularPanel`. It creates a standalone Angular component that handles mounting and unmounting the core class:
+
+```ts
+import { createAngularPanel } from '@tanstack/devtools-utils/angular'
+
+const [MyPanel, NoOpPanel] = createAngularPanel(MyDevtoolsCore)
+```
+
+The panel component accepts `theme` and `devtoolsProps` as signal inputs. It mounts the core instance into a `div` element using `afterNextRender` and calls `unmount()` via `DestroyRef.onDestroy`.
 
 ## When to Use Factories vs Manual Plugin Objects
 

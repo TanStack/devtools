@@ -1,14 +1,14 @@
 import { createEffect, createMemo, createSignal } from 'solid-js'
 import { createStore } from 'solid-js/store'
 import { createElementSize } from '@solid-primitives/resize-observer'
-import { useKeyDownList } from '@solid-primitives/keyboard'
+import { useKeyDownList as getKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
 
-import { useDevtoolsSettings } from '../context/use-devtools-context'
+import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { isHotkeyCombinationPressed } from '../utils/hotkey'
 
 export const SourceInspector = () => {
-  const { settings } = useDevtoolsSettings()
+  const { settings } = createDevtoolsSettings()
   const highlightStateInit = () => ({
     element: null as HTMLElement | null,
     bounding: { width: 0, height: 0, left: 0, top: 0 },
@@ -28,7 +28,9 @@ export const SourceInspector = () => {
     setMousePosition({ x: e.clientX, y: e.clientY })
   })
 
-  const downList = useKeyDownList()
+  const downList = getKeyDownList()
+
+  const [disabledAfterClick, setDisabledAfterClick] = createSignal(false)
 
   const isHighlightingKeysHeld = createMemo(() => {
     return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
@@ -36,6 +38,24 @@ export const SourceInspector = () => {
 
   createEffect(() => {
     if (!isHighlightingKeysHeld()) {
+      setDisabledAfterClick(false)
+    }
+  })
+
+  const isActive = createMemo(
+    () => isHighlightingKeysHeld() && !disabledAfterClick(),
+  )
+
+  createEffect(() => {
+    if (isActive()) {
+      document.body.style.cursor = 'pointer'
+    } else {
+      document.body.style.cursor = ''
+    }
+  })
+
+  createEffect(() => {
+    if (!isActive()) {
       resetHighlight()
       return
     }
@@ -72,22 +92,40 @@ export const SourceInspector = () => {
     })
   })
 
+  const openSourceUrl = (source: string) => {
+    // A host that injects `data-tsd-source` without `@tanstack/devtools-vite`
+    // has no `__tsd/open-source` to answer, and usually its own parameter shape,
+    // so the whole URL is replaceable rather than just its base.
+    const buildUrl = settings().openSourceUrl
+    if (buildUrl) return new URL(buildUrl(source), location.origin)
+
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const baseUrl = new URL(import.meta.env?.BASE_URL ?? '/', location.origin)
+    return new URL(
+      `__tsd/open-source?source=${encodeURIComponent(source)}`,
+      baseUrl,
+    )
+  }
+
   createEventListener(document, 'click', (e) => {
     if (!highlightState.element) return
+
+    // Snapshot the source before any signal writes: setDisabledAfterClick
+    // below flips isActive, which causes the highlight effect to run
+    // resetHighlight() and clear dataSource before we reach the reads below.
+    const source = highlightState.dataSource
 
     window.getSelection()?.removeAllRanges()
     e.preventDefault()
     e.stopPropagation()
+    setDisabledAfterClick(true)
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const baseUrl = new URL(import.meta?.env?.BASE_URL ?? '/', location.origin)
-    const url = new URL(
-      `__tsd/open-source?source=${encodeURIComponent(
-        highlightState.dataSource,
-      )}`,
-      baseUrl,
-    )
-    fetch(url).catch(() => {})
+    if (settings().sourceAction === 'copy-path') {
+      navigator.clipboard.writeText(source).catch(() => {})
+      return
+    }
+
+    fetch(openSourceUrl(source)).catch(() => {})
   })
 
   const currentElementBoxStyles = createMemo(() => {
@@ -99,7 +137,7 @@ export const SourceInspector = () => {
         left: `${highlightState.bounding.left}px`,
         top: `${highlightState.bounding.top}px`,
 
-        'background-color': 'oklch(55.4% 0.046 257.417 /0.25)',
+        'background-color': 'oklch(55.4% 0.046 257.417 /0.25)', // semantic-color-exempt: source-highlight-alpha
         transition: 'all 0.05s linear',
         position: 'fixed' as const,
         'z-index': 9999,
@@ -134,7 +172,7 @@ export const SourceInspector = () => {
         position: 'fixed' as const,
         left: `${left}px`,
         top: `${top}px`,
-        'background-color': 'oklch(55.4% 0.046 257.417 /0.80)',
+        'background-color': 'oklch(55.4% 0.046 257.417 /0.80)', // semantic-color-exempt: source-highlight-alpha
         color: 'white',
         padding: '2px 4px',
         fontSize: '12px',

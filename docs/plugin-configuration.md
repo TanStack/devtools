@@ -4,8 +4,6 @@ id: plugin-configuration
 ---
  
 
-# Plugin Configuration
-
 You can configure TanStack Devtools plugins by passing them as an array to the `plugins` prop of the `TanStackDevtools` component.
 
 Each plugin can have the following configuration options:

@@ -130,6 +130,8 @@ describe('getBadgeClass', () => {
     pluginMarketplaceCardBadge: 'badge',
     pluginMarketplaceCardBadgeInstall: 'badge-install',
     pluginMarketplaceCardBadgeAdd: 'badge-add',
+    pluginMarketplaceCardBadgeActive: 'badge-active',
+    pluginMarketplaceCardBadgeBlocked: 'badge-blocked',
     pluginMarketplaceCardBadgeRequires: 'badge-requires',
   })
 
@@ -148,19 +150,19 @@ describe('getBadgeClass', () => {
     expect(getBadgeClass(card, mockStyles)).toBe('badge badge-add')
   })
 
-  it('should return add badge class for already-installed', () => {
+  it('should return active badge class for already-installed', () => {
     const card = createMockCard({ actionType: 'already-installed' })
-    expect(getBadgeClass(card, mockStyles)).toBe('badge badge-add')
+    expect(getBadgeClass(card, mockStyles)).toBe('badge badge-active')
   })
 
-  it('should return requires badge class for bump-version', () => {
+  it('should return blocked badge class for bump-version', () => {
     const card = createMockCard({ actionType: 'bump-version' })
-    expect(getBadgeClass(card, mockStyles)).toBe('badge badge-requires')
+    expect(getBadgeClass(card, mockStyles)).toBe('badge badge-blocked')
   })
 
-  it('should return requires badge class for version-mismatch', () => {
+  it('should return blocked badge class for version-mismatch', () => {
     const card = createMockCard({ actionType: 'version-mismatch' })
-    expect(getBadgeClass(card, mockStyles)).toBe('badge badge-requires')
+    expect(getBadgeClass(card, mockStyles)).toBe('badge badge-blocked')
   })
 
   it('should return requires badge class for requires-package', () => {

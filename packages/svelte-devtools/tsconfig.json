@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {},
+  "include": [
+    "src",
+    "tests",
+    "eslint.config.js",
+    "vite.config.ts",
+    "**/*.svelte"
+  ],
+  "exclude": ["node_modules", "dist"]
+}

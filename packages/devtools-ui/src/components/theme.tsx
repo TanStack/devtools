@@ -1,33 +1,46 @@
-import { createContext, createEffect, createSignal, useContext } from 'solid-js'
+import {
+  createContext,
+  createEffect,
+  createSignal,
+  useContext as getContext,
+} from 'solid-js'
+import { ensureDevtoolsStyles } from '../styles/semantic-theme'
 import type { Accessor, JSX } from 'solid-js'
 
-export type Theme = 'light' | 'dark'
+export type TanStackDevtoolsTheme = 'light' | 'dark'
 
 type ThemeContextValue = {
-  theme: Accessor<Theme>
-  setTheme: (theme: Theme) => void
+  theme: Accessor<TanStackDevtoolsTheme>
+  setTheme: (theme: TanStackDevtoolsTheme) => void
 }
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
 export const ThemeContextProvider = (props: {
   children: JSX.Element
-  theme: Theme
+  theme: TanStackDevtoolsTheme
 }) => {
-  const [theme, setTheme] = createSignal<Theme>(props.theme)
+  const [theme, setTheme] = createSignal<TanStackDevtoolsTheme>(props.theme)
   createEffect(() => {
     setTheme(props.theme)
   })
+  const [container, setContainer] = createSignal<HTMLSpanElement>()
+  createEffect(() => {
+    const element = container()
+    if (element) ensureDevtoolsStyles(element.ownerDocument)
+  })
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>
-      {props.children}
+      <span ref={setContainer} style={{ display: 'contents' }}>
+        {props.children}
+      </span>
     </ThemeContext.Provider>
   )
 }
 
-export function useTheme() {
-  const context = useContext(ThemeContext)
+export function createTheme() {
+  const context = getContext(ThemeContext)
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeContextProvider')
+    throw new Error('createTheme must be used within a ThemeContextProvider')
   }
 
   return context

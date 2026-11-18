@@ -2,10 +2,6 @@ name: PR
 
 on:
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'media/**'
-      - '**/*.md'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
@@ -13,6 +9,12 @@ concurrency:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  # nx.json sets parallel: 5 for local dev machines. GitHub-hosted runners have
+  # far fewer cores/RAM, and each test:lib (vitest) / test:types (tsc) task
+  # spawns its own worker pool. Running 5 such heavy tasks at once oversubscribes
+  # the runner and intermittently OOM-kills or stalls tasks, producing flaky
+  # failures that pass on re-run. Cap CI parallelism to keep tasks within budget.
+  NX_PARALLEL: 3
 
 permissions:
   contents: read
@@ -21,42 +23,65 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
       - name: Setup Tools
-        uses: tanstack/config/.github/setup@main
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
       - name: Get base and head commits for `nx affected`
-        uses: nrwl/nx-set-shas@v4.4.0
+        uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # v4.4.0
         with:
           main-branch-name: main
       - name: Run Checks
         run: pnpm run test:pr
+  e2e:
+    name: E2e
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Setup Tools
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
+      - name: Build packages
+        run: pnpm run build:all
+      - name: Install Playwright Chromium
+        run: pnpm --filter @tanstack/devtools-e2e-react-vite exec playwright install --with-deps chromium
+      - name: Run e2e
+        run: pnpm run test:e2e
   preview:
     name: Preview
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0
+          persist-credentials: false
       - name: Setup Tools
-        uses: tanstack/config/.github/setup@main
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
       - name: Build Packages
         run: pnpm run build:all
       - name: Publish Previews
-        run: pnpx pkg-pr-new publish --pnpm './packages/*' --template './examples/*/*'
-  provenance:
-    name: Provenance
+        run: pnpx pkg-pr-new@0.0.71 publish --pnpm './packages/*' --template './examples/*/*'
+  version-preview:
+    name: Version Preview
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 0
-      - name: Check Provenance
-        uses: danielroe/provenance-action@v0.1.1
-        with:
-          fail-on-downgrade: true
+          persist-credentials: false
+      - name: Setup Tools
+        uses: TanStack/config/.github/setup@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main
+      - name: Changeset Preview
+        uses: TanStack/config/.github/changeset-preview@2903e4f30d417cfcb5a5ba5a9dc24a4dd4a75f2c # main

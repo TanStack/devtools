@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useStyles } from '../styles/use-styles'
+import { createStyles } from '../styles/use-styles'
 import type { JSX } from 'solid-js/jsx-runtime'
 
 export function Header({
@@ -7,9 +7,11 @@ export function Header({
   class: className,
   ...rest
 }: JSX.IntrinsicElements['header']) {
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <header
+      data-tsd-surface
+      data-tsd-separator
       class={clsx(styles().header.row, 'tsqd-header', className)}
       {...rest}
     >
@@ -30,10 +32,14 @@ export function HeaderLogo({
   }
   onClick?: JSX.EventHandler<HTMLButtonElement, MouseEvent>
 }) {
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <div class={styles().header.logoAndToggleContainer}>
-      <button class={clsx(styles().header.logo)} onClick={onClick}>
+      <button
+        data-tsd-control
+        class={clsx(styles().header.logo)}
+        onClick={onClick}
+      >
         <span class={clsx(styles().header.tanstackLogo)}>TANSTACK</span>
         <span
           class={clsx(styles().header.flavorLogo(flavor.light, flavor.dark))}

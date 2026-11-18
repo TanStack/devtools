@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/devtools-client",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "description": "TanStack Devtools client that is used to interact with the event system produced by the Devtools.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -10,6 +10,9 @@
     "directory": "packages/devtools-client"
   },
   "homepage": "https://tanstack.com/devtools",
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tannerlinsley"

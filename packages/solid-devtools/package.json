@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/solid-devtools",
-  "version": "0.7.30",
+  "version": "0.8.14",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Solid application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -10,6 +10,9 @@
     "directory": "packages/solid-devtools"
   },
   "homepage": "https://tanstack.com/devtools",
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tannerlinsley"
@@ -51,10 +54,10 @@
     "@tanstack/devtools": "workspace:*"
   },
   "devDependencies": {
-    "solid-js": "^1.9.9",
-    "vite-plugin-solid": "^2.11.8"
+    "solid-js": "^1.9.13",
+    "vite-plugin-solid": "^2.11.11"
   },
   "peerDependencies": {
-    "solid-js": "^1.9.7"
+    "solid-js": "^1.9.13"
   }
 }

@@ -3,10 +3,11 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 
 // css
-import { css, useStyles } from '../styles/use-styles'
+import { createStyles, css } from '../styles/use-styles'
 
 // icons
 import { CopiedCopier, Copier, ErrorCopier } from './icons'
+import { createTheme } from './theme'
 
 // utils
 import type { CollapsiblePaths } from '../utils/deep-keys'
@@ -49,14 +50,17 @@ function JsonValue(props: {
 
   config?: { dateFormat?: string }
 }) {
-  const styles = useStyles()
+  const styles = createStyles()
 
   return (
-    <span class={styles().tree.valueContainer(props.isRoot ?? false)}>
+    <span
+      data-tsd-surface={props.isRoot ? '' : undefined}
+      class={styles().tree.valueContainer(props.isRoot ?? false)}
+    >
       {props.keyName &&
         typeof props.value !== 'object' &&
         !Array.isArray(props.value) && (
-          <span class={styles().tree.valueKey}>
+          <span data-tsd-syntax="property" class={styles().tree.valueKey}>
             &quot;{props.keyName}&quot;:{' '}
           </span>
         )}
@@ -64,35 +68,47 @@ function JsonValue(props: {
       {(() => {
         if (typeof props.value === 'string') {
           return (
-            <span class={styles().tree.valueString}>
+            <span data-tsd-syntax="string" class={styles().tree.valueString}>
               &quot;{props.value}&quot;
             </span>
           )
         }
 
         if (typeof props.value === 'number') {
-          return <span class={styles().tree.valueNumber}>{props.value}</span>
+          return (
+            <span data-tsd-syntax="number" class={styles().tree.valueNumber}>
+              {String(props.value)}
+            </span>
+          )
         }
 
         if (typeof props.value === 'boolean') {
           return (
-            <span class={styles().tree.valueBoolean}>
+            <span data-tsd-syntax="keyword" class={styles().tree.valueBoolean}>
               {String(props.value)}
             </span>
           )
         }
 
         if (props.value === null) {
-          return <span class={styles().tree.valueNull}>null</span>
+          return (
+            <span data-tsd-syntax="keyword" class={styles().tree.valueNull}>
+              null
+            </span>
+          )
         }
 
         if (props.value === undefined) {
-          return <span class={styles().tree.valueNull}>undefined</span>
+          return (
+            <span data-tsd-syntax="keyword" class={styles().tree.valueNull}>
+              undefined
+            </span>
+          )
         }
 
         if (typeof props.value === 'function') {
           return (
-            <span class={styles().tree.valueFunction}>
+            <span data-tsd-syntax="keyword" class={styles().tree.valueFunction}>
               {String(props.value)}
             </span>
           )
@@ -135,7 +151,11 @@ function JsonValue(props: {
           <CopyButton value={props.value} />
         </div>
       )}
-      {props.isLastKey || props.isRoot ? '' : <span>,</span>}
+      {props.isLastKey || props.isRoot ? (
+        ''
+      ) : (
+        <span data-tsd-syntax="punctuation">,</span>
+      )}
     </span>
   )
 }
@@ -150,7 +170,7 @@ const ArrayValue = (props: {
   path: string
   config?: { dateFormat?: string }
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   const [expanded, setExpanded] = createSignal(
     props.depth <= props.defaultExpansionDepth &&
@@ -161,12 +181,17 @@ const ArrayValue = (props: {
     return (
       <span class={styles().tree.expanderContainer}>
         {props.keyName && (
-          <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+          <span
+            data-tsd-syntax="property"
+            class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+          >
             &quot;{props.keyName}&quot;:{' '}
           </span>
         )}
 
-        <span class={styles().tree.valueBraces}>[]</span>
+        <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+          []
+        </span>
       </span>
     )
   }
@@ -184,6 +209,7 @@ const ArrayValue = (props: {
             e.stopImmediatePropagation()
             setExpanded(!expanded())
           }}
+          data-tsd-syntax="property"
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
           &quot;{props.keyName}&quot;:{' '}
@@ -191,10 +217,15 @@ const ArrayValue = (props: {
         </span>
       )}
 
-      <span class={styles().tree.valueBraces}>[</span>
+      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+        [
+      </span>
 
       <Show when={expanded()}>
-        <span class={styles().tree.expandedLine(Boolean(props.keyName))}>
+        <span
+          data-tsd-separator={props.keyName ? '' : undefined}
+          class={styles().tree.expandedLine(Boolean(props.keyName))}
+        >
           <For each={props.value}>
             {(item, i) => {
               const isLastKey = i() === props.value.length - 1
@@ -217,6 +248,7 @@ const ArrayValue = (props: {
 
       <Show when={!expanded()}>
         <span
+          data-tsd-syntax="comment"
           onClick={(e) => {
             e.stopPropagation()
             e.stopImmediatePropagation()
@@ -227,7 +259,9 @@ const ArrayValue = (props: {
           {`...`}
         </span>
       </Show>
-      <span class={styles().tree.valueBraces}>]</span>
+      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+        ]
+      </span>
     </span>
   )
 }
@@ -242,7 +276,7 @@ const ObjectValue = (props: {
   path: string
   config?: { dateFormat?: string }
 }) => {
-  const styles = useStyles()
+  const styles = createStyles()
 
   const [expanded, setExpanded] = createSignal(
     props.depth <= props.defaultExpansionDepth &&
@@ -256,12 +290,15 @@ const ObjectValue = (props: {
     return (
       <span class={styles().tree.expanderContainer}>
         {props.keyName && (
-          <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+          <span
+            data-tsd-syntax="property"
+            class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+          >
             &quot;{props.keyName}&quot;:{' '}
           </span>
         )}
 
-        <span class={styles().tree.valueBraces}>
+        <span data-tsd-syntax="string" class={styles().tree.valueBraces}>
           {dayjs(props.value).format(
             props.config?.dateFormat ? props.config.dateFormat : 'DDMMMYY',
           )}
@@ -274,12 +311,17 @@ const ObjectValue = (props: {
     return (
       <span class={styles().tree.expanderContainer}>
         {props.keyName && (
-          <span class={clsx(styles().tree.valueKey, styles().tree.collapsible)}>
+          <span
+            data-tsd-syntax="property"
+            class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+          >
             &quot;{props.keyName}&quot;:{' '}
           </span>
         )}
 
-        <span class={styles().tree.valueBraces}>{'{}'}</span>
+        <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+          {'{}'}
+        </span>
       </span>
     )
   }
@@ -300,6 +342,7 @@ const ObjectValue = (props: {
             e.stopImmediatePropagation()
             setExpanded(!expanded())
           }}
+          data-tsd-syntax="property"
           class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
         >
           &quot;{props.keyName}&quot;:{' '}
@@ -307,10 +350,15 @@ const ObjectValue = (props: {
         </span>
       )}
 
-      <span class={styles().tree.valueBraces}>{'{'}</span>
+      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+        {'{'}
+      </span>
 
       <Show when={expanded()}>
-        <span class={styles().tree.expandedLine(Boolean(props.keyName))}>
+        <span
+          data-tsd-separator={props.keyName ? '' : undefined}
+          class={styles().tree.expandedLine(Boolean(props.keyName))}
+        >
           <For each={keys}>
             {(k) => (
               <>
@@ -333,6 +381,7 @@ const ObjectValue = (props: {
 
       <Show when={!expanded()}>
         <span
+          data-tsd-syntax="comment"
           onClick={(e) => {
             e.stopPropagation()
             e.stopImmediatePropagation()
@@ -344,7 +393,9 @@ const ObjectValue = (props: {
         </span>
       </Show>
 
-      <span class={styles().tree.valueBraces}>{'}'}</span>
+      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+        {'}'}
+      </span>
     </span>
   )
 }
@@ -352,11 +403,14 @@ const ObjectValue = (props: {
 type CopyState = 'NoCopy' | 'SuccessCopy' | 'ErrorCopy'
 
 const CopyButton = (props: { value: unknown }) => {
-  const styles = useStyles()
+  const styles = createStyles()
+  const { theme } = createTheme()
   const [copyState, setCopyState] = createSignal<CopyState>('NoCopy')
 
   return (
     <button
+      data-tsd-control
+      data-copy-state={copyState()}
       class={styles().tree.actionButton}
       title="Copy object to clipboard"
       aria-label={`${
@@ -395,10 +449,14 @@ const CopyButton = (props: { value: unknown }) => {
           <Copier />
         </Match>
         <Match when={copyState() === 'SuccessCopy'}>
-          <CopiedCopier theme={'dark'} />
+          <span class={styles().tree.actionSuccess}>
+            <CopiedCopier theme={theme()} />
+          </span>
         </Match>
         <Match when={copyState() === 'ErrorCopy'}>
-          <ErrorCopier />
+          <span class={styles().tree.actionError}>
+            <ErrorCopier />
+          </span>
         </Match>
       </Switch>
     </button>
@@ -406,10 +464,21 @@ const CopyButton = (props: { value: unknown }) => {
 }
 
 const Expander = (props: { expanded: boolean; onClick: () => void }) => {
-  const styles = useStyles()
+  const styles = createStyles()
   return (
     <span
+      data-tsd-control
+      role="button"
+      tabIndex={0}
+      aria-expanded={props.expanded}
+      aria-label={props.expanded ? 'Collapse value' : 'Expand value'}
       onClick={props.onClick}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          props.onClick()
+        }
+      }}
       class={clsx(
         styles().tree.expander,
         css`

@@ -1,6 +1,6 @@
 {
   "name": "@tanstack/preact-devtools",
-  "version": "0.9.15",
+  "version": "0.10.15",
   "description": "TanStack Devtools is a set of tools for building advanced devtools for your Preact application.",
   "author": "Tanner Linsley",
   "license": "MIT",
@@ -10,6 +10,9 @@
     "directory": "packages/preact-devtools"
   },
   "homepage": "https://tanstack.com/devtools",
+  "bugs": {
+    "url": "https://github.com/TanStack/devtools/issues"
+  },
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tannerlinsley"
@@ -51,9 +54,9 @@
     "@tanstack/devtools": "workspace:*"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.10.2",
+    "@preact/preset-vite": "^2.10.3",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "preact": "^10.28.0"
+    "preact": "^11.0.1"
   },
   "peerDependencies": {
     "preact": ">=10.0.0"

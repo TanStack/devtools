@@ -1,0 +1,30 @@
+{
+  "name": "@tanstack/devtools-e2e-angular",
+  "nx": {
+    "name": "devtools-e2e-angular"
+  },
+  "private": true,
+  "scripts": {
+    "dev": "ng serve --port 4180",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@angular/common": "^21.2.0",
+    "@angular/compiler": "^21.2.0",
+    "@angular/core": "^21.2.0",
+    "@angular/forms": "^21.2.0",
+    "@angular/platform-browser": "^21.2.0",
+    "@angular/router": "^21.2.0",
+    "@tanstack/angular-devtools": "workspace:*",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^21.2.0",
+    "@angular/cli": "^21.2.0",
+    "@angular/compiler-cli": "^21.2.0",
+    "@playwright/test": "^1.49.0",
+    "@tanstack/devtools-e2e": "workspace:*",
+    "typescript": "~5.9.2"
+  }
+}

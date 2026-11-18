@@ -5,6 +5,8 @@ id: installation
 
 You can install TanStack Devtools with any [NPM](https://npmjs.com) package manager.
 
+Install the devtools as a dev dependency (`-D`). If you want the devtools in production builds, read [Production Builds](#production-builds).
+
 Only install one of the following packages depending on your use case:
 
 ## React
@@ -47,6 +49,34 @@ npm install -D @tanstack/devtools-vite
 ```
 
 TanStack Devtools is compatible with Vue 3+
+
+## Svelte
+
+```sh
+npm install -D @tanstack/svelte-devtools
+```
+
+The Vite plugin (`@tanstack/devtools-vite`) is optional for Svelte — it enables additional features like source inspection and console piping but isn't required for basic usage.
+
+```sh
+npm install -D @tanstack/devtools-vite
+```
+
+TanStack Devtools is compatible with Svelte 5+
+
+## Angular
+
+```sh
+npm install -D @tanstack/angular-devtools
+```
+
+The Vite plugin (`@tanstack/devtools-vite`) is optional for Angular — it enables additional features like source inspection and console piping but isn't required for basic usage.
+
+```sh
+npm install -D @tanstack/devtools-vite
+```
+
+TanStack Devtools is compatible with Angular 19+
 
 ## Vanilla JS
 

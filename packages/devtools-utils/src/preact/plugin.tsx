@@ -2,6 +2,7 @@
 
 import type { JSX } from 'preact'
 import type { DevtoolsPanelProps } from './panel'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
 export function createPreactPlugin({
   Component,
@@ -15,15 +16,15 @@ export function createPreactPlugin({
   function Plugin() {
     return {
       ...config,
-      render: (_el: HTMLElement, theme: 'light' | 'dark') => (
-        <Component theme={theme} />
+      render: (_el: HTMLElement, props: TanStackDevtoolsPluginProps) => (
+        <Component {...props} />
       ),
     }
   }
   function NoOpPlugin() {
     return {
       ...config,
-      render: (_el: HTMLElement, _theme: 'light' | 'dark') => <></>,
+      render: (_el: HTMLElement, _props: TanStackDevtoolsPluginProps) => <></>,
     }
   }
   return [Plugin, NoOpPlugin] as const

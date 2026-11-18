@@ -1,7 +1,7 @@
 import { For, Show, createSignal, onCleanup, onMount } from 'solid-js'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
-import { usePlugins } from '../context/use-devtools-context'
-import { useStyles } from '../styles/use-styles'
+import { createPlugins } from '../context/use-devtools-context'
+import { createStyles } from '../styles/use-styles'
 import { PluginSectionComponent } from './marketplace/plugin-section'
 import { SettingsPanel } from './marketplace/settings-panel'
 import { MarketplaceHeader } from './marketplace/marketplace-header'
@@ -15,8 +15,8 @@ import type { PackageJson } from '@tanstack/devtools-client'
 import type { PluginCard, PluginSection } from './marketplace/types'
 
 export const PluginMarketplace = () => {
-  const styles = useStyles()
-  const { plugins } = usePlugins()
+  const styles = createStyles()
+  const { plugins } = createPlugins()
   const [pluginSections, setPluginSections] = createSignal<
     Array<PluginSection>
   >([])
@@ -189,14 +189,35 @@ export const PluginMarketplace = () => {
       },
     )
 
+    // Request the current package.json every time the marketplace opens.
+    // The `mounted` -> `package-json-read` round-trip is only triggered here,
+    // but the event can be dropped if the event bus WebSocket isn't connected
+    // yet when we emit (it is sent without queueing). When that happens the
+    // marketplace stays stuck on the empty "all installed" state. Retry until
+    // the package.json actually arrives so re-opening always re-fetches.
+    const requestPackageJson = () =>
+      devtoolsEventClient.emit('mounted', undefined)
+
+    let refetchAttempts = 0
+    const refetchInterval = setInterval(() => {
+      if (currentPackageJson() || refetchAttempts >= 10) {
+        clearInterval(refetchInterval)
+        return
+      }
+      refetchAttempts++
+      requestPackageJson()
+    }, 400)
+
     onCleanup(() => {
       cleanupJsonRead()
       cleanupJsonUpdated()
       cleanupDevtoolsInstalled()
       cleanupPluginAdded()
+      clearInterval(refetchInterval)
     })
-    // Emit mounted event to trigger package.json read
-    devtoolsEventClient.emit('mounted', undefined)
+
+    // Kick off the initial request immediately on open.
+    requestPackageJson()
   })
 
   const updatePluginCards = (pkg: PackageJson | null) => {
@@ -301,46 +322,53 @@ export const PluginMarketplace = () => {
   }
 
   return (
-    <div class={styles().pluginMarketplace}>
-      {/* Settings Panel */}
+    <div
+      class={styles().pluginMarketplace}
+      data-testid="plugin-marketplace"
+      data-tsd-surface
+    >
+      {/* The scroll region is separate from the shell so the settings drawer can
+          be positioned against the workbench instead of the whole viewport. */}
+      <div class={styles().pluginMarketplaceScroll}>
+        <MarketplaceHeader
+          searchInput={searchInput}
+          onSearchInput={handleSearchInput}
+          onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen())}
+          tags={getAllTags}
+          selectedTags={selectedTags}
+          onToggleTag={toggleTag}
+        />
+
+        <Show when={getFilteredSections().length > 0}>
+          <For each={getFilteredSections()}>
+            {(section) => (
+              <PluginSectionComponent
+                section={section}
+                isCollapsed={() => collapsedSections().has(section.id)}
+                onToggleCollapse={() => toggleSection(section.id)}
+                onCardAction={handleAction}
+              />
+            )}
+          </For>
+        </Show>
+
+        <Show when={getFilteredSections().length === 0}>
+          <div class={styles().pluginMarketplaceEmpty}>
+            <p class={styles().pluginMarketplaceEmptyText}>
+              {searchQuery()
+                ? `No plugins found matching "${searchQuery()}"`
+                : 'No additional plugins available. You have all compatible devtools installed and registered!'}
+            </p>
+          </div>
+        </Show>
+      </div>
+
       <SettingsPanel
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         showActivePlugins={showActivePlugins}
         setShowActivePlugins={setShowActivePlugins}
       />
-
-      <MarketplaceHeader
-        searchInput={searchInput}
-        onSearchInput={handleSearchInput}
-        onSettingsClick={() => setIsSettingsOpen(!isSettingsOpen())}
-        tags={getAllTags}
-        selectedTags={selectedTags}
-        onToggleTag={toggleTag}
-      />
-
-      <Show when={getFilteredSections().length > 0}>
-        <For each={getFilteredSections()}>
-          {(section) => (
-            <PluginSectionComponent
-              section={section}
-              isCollapsed={() => collapsedSections().has(section.id)}
-              onToggleCollapse={() => toggleSection(section.id)}
-              onCardAction={handleAction}
-            />
-          )}
-        </For>
-      </Show>
-
-      <Show when={getFilteredSections().length === 0}>
-        <div class={styles().pluginMarketplaceEmpty}>
-          <p class={styles().pluginMarketplaceEmptyText}>
-            {searchQuery()
-              ? `No plugins found matching "${searchQuery()}"`
-              : 'No additional plugins available. You have all compatible devtools installed and registered!'}
-          </p>
-        </div>
-      </Show>
     </div>
   )
 }

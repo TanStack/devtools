@@ -1,3 +1,20 @@
+<div align="center">
+  <picture>
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://tanstack.com/api/readme/devtools.png?framework=preact&theme=dark"
+    />
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://tanstack.com/api/readme/devtools.png?framework=preact"
+    />
+    <img
+      src="https://tanstack.com/api/readme/devtools.png?framework=preact"
+      alt="TanStack Preact Devtools"
+      width="900"
+    />
+  </picture>
+</div>
 # @tanstack/preact-devtools
 
 This package is still under active development and might have breaking changes in the future. Please use it with caution.

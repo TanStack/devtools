@@ -209,7 +209,7 @@ The Vite plugin is composed of several sub-plugins, each handling a specific con
 ```mermaid
 graph TD
     vite["@tanstack/devtools-vite"]
-    vite --> source["Source Injection<br/><i>Babel → data-tsd-source attrs</i>"]
+    vite --> source["Source Injection<br/><i>AST → data-tsd-source attrs</i>"]
     vite --> server["Server Event Bus<br/><i>WebSocket + SSE transport</i>"]
     vite --> strip["Production Stripping<br/><i>Remove devtools on build</i>"]
     vite --> pipe["Console Piping<br/><i>Client ↔ Server logs</i>"]
@@ -220,7 +220,7 @@ graph TD
 
 ### Go to Source
 
-The "Go to Source" feature lets you click on any element in your browser and open its source file in your editor at the exact line where it's defined. It works by injecting `data-tsd-source` attributes into your components via a Babel transformation during development. These attributes encode the file path and line number of each element.
+The "Go to Source" feature lets you click on any element in your browser and open its source file in your editor at the exact line where it's defined. It works by injecting `data-tsd-source` attributes into your components via an AST transformation during development. These attributes encode the file path and line number of each element.
 
 To use it, activate the source inspector by holding the inspect hotkey (default: Shift+Alt+Ctrl/Meta). An overlay will highlight elements under your cursor and display their source location. Clicking on a highlighted element opens the corresponding file in your editor at the exact line, powered by `launch-editor` under the hood.
 

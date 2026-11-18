@@ -1,104 +1,37 @@
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { ServerEventBus } from '@tanstack/devtools-event-bus/server'
-import { normalizePath } from 'vite'
 import chalk from 'chalk'
 import {
-  handleDevToolsViteRequest,
-  readPackageJson,
-  stripEnhancedLogPrefix,
-} from './utils'
-import { DEFAULT_EDITOR_CONFIG, handleOpenSource } from './editor'
-import { removeDevtools } from './remove-devtools'
-import { addSourceToJsx } from './inject-source'
-import { enhanceConsoleLog } from './enhance-logs'
-import { detectDevtoolsFile, injectPluginIntoFile } from './inject-plugin'
-import {
+  DEFAULT_EDITOR_CONFIG,
+  TANSTACK_DEVTOOLS_PACKAGES,
   addPluginToDevtools,
+  addSourceToJsx,
+  detectDevtoolsFile,
   emitOutdatedDeps,
+  enhanceConsoleLog,
+  generateConsolePipeCode,
+  handleDevToolsRequest,
+  handleOpenSource,
+  injectPluginIntoFile,
+  injectRuntimeBridge,
   installPackage,
-} from './package-manager'
-import { generateConsolePipeCode } from './virtual-console'
+  normalizePath,
+  readPackageJson,
+  removeDevtools,
+  stripEnhancedLogPrefix,
+  wireRuntimeBridgeChannels,
+} from '@tanstack/devtools-bundler-core'
+import type {
+  ConsoleLevel,
+  EditorConfig,
+  TanStackDevtoolsConfig,
+} from '@tanstack/devtools-bundler-core'
 import type { ServerResponse } from 'node:http'
 import type { Plugin } from 'vite'
-import type { EditorConfig } from './editor'
-import type {
-  HttpServerLike,
-  ServerEventBusConfig,
-} from '@tanstack/devtools-event-bus/server'
+import type { HttpServerLike } from '@tanstack/devtools-event-bus/server'
 
-export type ConsoleLevel = 'log' | 'warn' | 'error' | 'info' | 'debug'
-
-export type TanStackDevtoolsViteConfig = {
-  /**
-   * Configuration for the editor integration. Defaults to opening in VS code
-   */
-  editor?: EditorConfig
-  /**
-   * The configuration options for the server event bus
-   */
-  eventBusConfig?: ServerEventBusConfig & {
-    /**
-     * Should the server event bus be enabled or not
-     * @default true
-     */
-    enabled?: boolean // defaults to true
-  }
-  /**
-   * Configuration for enhanced logging.
-   */
-  enhancedLogs?: {
-    /**
-     * Whether to enable enhanced logging.
-     * @default true
-     */
-    enabled: boolean
-  }
-  /**
-   * Whether to remove devtools from the production build.
-   * @default true
-   */
-  removeDevtoolsOnBuild?: boolean
-
-  /**
-   * Whether to log information to the console.
-   * @default true
-   */
-  logging?: boolean
-  /**
-   * Configuration for source injection.
-   */
-  injectSource?: {
-    /**
-     * Whether to enable source injection via data-tsd-source.
-     * @default true
-     */
-    enabled: boolean
-    /**
-     * List of files or patterns to ignore for source injection.
-     */
-    ignore?: {
-      files?: Array<string | RegExp>
-      components?: Array<string | RegExp>
-    }
-  }
-  /**
-   * Configuration for console piping between client and server.
-   * When enabled, console logs from the client will appear in the terminal,
-   * and server logs will appear in the browser console.
-   */
-  consolePiping?: {
-    /**
-     * Whether to enable console piping.
-     * @default true
-     */
-    enabled?: boolean
-    /**
-     * Which console methods to pipe.
-     * @default ['log', 'warn', 'error', 'info', 'debug']
-     */
-    levels?: Array<ConsoleLevel>
-  }
-}
+export type { ConsoleLevel } from '@tanstack/devtools-bundler-core'
+export type TanStackDevtoolsViteConfig = TanStackDevtoolsConfig
 
 export const defineDevtoolsConfig = (config: TanStackDevtoolsViteConfig) =>
   config
@@ -127,6 +60,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         return config.mode === 'development' && injectSourceConfig.enabled
       },
       transform: {
+        // Run before the transforms of plugins without `order: 'pre'`, also when
+        // devtools() is not first in the plugins array. A plugin that changes
+        // the code of one environment only would shift the lines and make the
+        // SSR and client locations differ, which breaks hydration. An earlier
+        // plugin whose transform also has `order: 'pre'` still runs first.
+        order: 'pre',
         filter: {
           id: {
             exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
@@ -195,6 +134,15 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           })
           // start() now handles EADDRINUSE and returns the actual port
           devtoolsPort = await bus.start()
+          if ((server as any).environments) {
+            const teardownBridge = wireRuntimeBridgeChannels(
+              server as unknown as Parameters<
+                typeof wireRuntimeBridgeChannels
+              >[0],
+              () => globalThis.__TANSTACK_EVENT_TARGET__,
+            )
+            server.httpServer?.on('close', teardownBridge)
+          }
         }
 
         server.middlewares.use((req, _res, next) => {
@@ -223,6 +171,10 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           await editor.open(path, lineNum, columnNum)
         }
 
+        const originalConsole = Object.fromEntries(
+          consolePipingLevels.map((l) => [l, console[l].bind(console)]),
+        ) as Partial<Record<ConsoleLevel, typeof console.log>>
+
         // SSE clients for broadcasting server logs to browser
         const sseClients: Array<{
           res: ServerResponse
@@ -232,7 +184,7 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         const consolePipingEnabled = consolePipingConfig.enabled ?? true
 
         server.middlewares.use((req, res, next) =>
-          handleDevToolsViteRequest(req, res, next, {
+          handleDevToolsRequest(req, res, next, {
             onOpenSource: (parsedData) => {
               const { data, routine } = parsedData
               if (routine === 'open-source') {
@@ -248,7 +200,11 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
                   onConsolePipe: (entries) => {
                     for (const entry of entries) {
                       const prefix = chalk.cyan('[Client]')
-                      const logMethod = console[entry.level as ConsoleLevel]
+                      const logMethod =
+                        originalConsole[entry.level as ConsoleLevel] ??
+                        // log exists in consolePipingLevels
+                        originalConsole.log!
+
                       const cleanedArgs = stripEnhancedLogPrefix(
                         entry.args,
                         (loc) => chalk.gray(loc),
@@ -310,17 +266,10 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       },
       enforce: 'pre',
       transform(code, id) {
-        const devtoolPackages = [
-          '@tanstack/react-devtools',
-          '@tanstack/preact-devtools',
-          '@tanstack/solid-devtools',
-          '@tanstack/vue-devtools',
-          '@tanstack/devtools',
-        ]
         if (
           id.includes('node_modules') ||
           id.includes('?raw') ||
-          !devtoolPackages.some((pkg) => code.includes(pkg))
+          !TANSTACK_DEVTOOLS_PACKAGES.some((pkg) => code.includes(pkg))
         )
           return
         const transform = removeDevtools(code, id)
@@ -538,6 +487,30 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
         }
       },
     },
+    // Enhanced logs must run BEFORE console-pipe-transform: the latter
+    // prepends a multi-line IIFE to root entry files, which would shift
+    // every line number computed by the oxc-parser AST and produce
+    // "Go to Source" links pointing past the end of the user's file.
+    {
+      name: '@tanstack/devtools:better-console-logs',
+      enforce: 'pre',
+      apply(config) {
+        return config.mode === 'development' && enhancedLogsConfig.enabled
+      },
+      transform: {
+        filter: {
+          id: {
+            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
+          },
+          code: {
+            include: 'console.',
+          },
+        },
+        handler(code, id) {
+          return enhanceConsoleLog(code, id, port)
+        },
+      },
+    },
     // Inject console piping code into entry files (both client and server)
     {
       name: '@tanstack/devtools:console-pipe-transform',
@@ -585,26 +558,6 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
       },
     },
     {
-      name: '@tanstack/devtools:better-console-logs',
-      enforce: 'pre',
-      apply(config) {
-        return config.mode === 'development' && enhancedLogsConfig.enabled
-      },
-      transform: {
-        filter: {
-          id: {
-            exclude: [/node_modules/, /\?raw/, /\/dist\//, /\/build\//],
-          },
-          code: {
-            include: 'console.',
-          },
-        },
-        handler(code, id) {
-          return enhanceConsoleLog(code, id, port)
-        },
-      },
-    },
-    {
       name: '@tanstack/devtools:inject-plugin',
       apply(config, { command }) {
         return config.mode === 'development' && command === 'serve'
@@ -634,9 +587,12 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           code.includes('__TANSTACK_DEVTOOLS_HOST__') ||
           code.includes('__TANSTACK_DEVTOOLS_PROTOCOL__')
         if (!hasPlaceholder) return
+        // Vite pre-bundles npm installs into chunks under `.vite/deps*`, whose
+        // ids no longer name the package.
         if (
           !id.includes('@tanstack/devtools') &&
-          !id.includes('@tanstack/event-bus')
+          !id.includes('@tanstack/event-bus') &&
+          !id.includes('/.vite/deps')
         )
           return
 
@@ -659,6 +615,20 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
           JSON.stringify(protocolValue),
         )
         return result
+      },
+    },
+    {
+      name: '@tanstack/devtools:runtime-bridge',
+      apply(config, { command }) {
+        return config.mode === 'development' && command === 'serve'
+      },
+      transform(code, id) {
+        if (id.includes('?')) return
+        return injectRuntimeBridge(
+          code,
+          id,
+          (this as any).environment?.name as string | undefined,
+        )
       },
     },
   ]

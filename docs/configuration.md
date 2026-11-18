@@ -29,10 +29,16 @@ The `config` object is mainly focused around user interaction with the devtools 
 { hideUntilHover: boolean }
 ```
 
-- `position` - The position of the TanStack devtools trigger
+- `position` - The position of the TanStack devtools trigger (used when `triggerMode` is `'fixed'`)
 
 ```ts
 { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right' }
+```
+
+- `triggerMode` - How the trigger is placed. `'floating'` (the default) lets you drag the trigger anywhere on screen, and throw it: it glides with momentum and springs back off the edges. Drag it off any screen edge to dock it as a slim tab. Hover the tab to show the TanStack mark, click it to open the panel, or drag it to pull the trigger back out, and hold it still over a glowing corner for two seconds to drop it there without pinning. `'fixed'` anchors it to `position`. The floating spot is persisted in local storage.
+
+```ts
+{ triggerMode: 'fixed' | 'floating' }
 ```
 
 - `panelLocation` - The location of the devtools panel
@@ -63,6 +69,18 @@ type KeyboardKey = ModifierKey | (string & {});
 
 ```ts
 { requireUrlFlag: boolean }
+```
+
+- `hideInAutomation` - Does not render the devtools when a browser is driven by automation (Playwright, Cypress, Selenium). This keeps the devtools out of your end-to-end test selectors. The check uses `navigator.webdriver`. The default is `false`.
+
+```ts
+{ hideInAutomation: boolean }
+```
+
+- `openAsModal` - Moves the open panel on top of a modal dialog of your app. A dialog that you open with `dialog.showModal()` makes the rest of the page inert, the devtools included. While the panel is on top, your dialog is inert. Close the panel to use your dialog again. The trigger is inert while your dialog is open, so open the panel with the open hotkey. The default is `false`.
+
+```ts
+{ openAsModal: boolean }
 ```
 
 - `triggerImage` - The image used for the dev tools trigger

@@ -4,6 +4,9 @@
   "nxCloudId": "68d74dda9d18071f643ecda4",
   "useInferencePlugins": false,
   "parallel": 5,
+  "tui": {
+    "enabled": false
+  },
   "namedInputs": {
     "sharedGlobals": [
       "{workspaceRoot}/.nvmrc",

@@ -1,5 +1,6 @@
 import { ReactQueryDevtoolsPanel } from '@tanstack/react-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+
 import {
   Link,
   Outlet,
@@ -9,6 +10,8 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { a11yDevtoolsPlugin } from '@tanstack/devtools-a11y/react'
+import { A11yAuditFixture } from './a11y-audit-fixture'
 import { PackageJsonPanel } from './package-json-panel'
 
 const rootRoute = createRootRoute({
@@ -61,7 +64,9 @@ export default function DevtoolsExample() {
         eventBusConfig={{
           connectToServerBus: true,
         }}
+        config={{ sourceAction: 'copy-path', position: 'bottom-left' }}
         plugins={[
+          a11yDevtoolsPlugin(),
           {
             name: 'TanStack Query',
             render: <ReactQueryDevtoolsPanel />,
@@ -71,9 +76,14 @@ export default function DevtoolsExample() {
             render: <TanStackRouterDevtoolsPanel router={router} />,
           },
           {
+            name: 'TanStack Router',
+            render: <TanStackRouterDevtoolsPanel router={router} />,
+          },
+          {
             name: 'Package.json',
             render: () => <PackageJsonPanel />,
           },
+
           /* {
       name: "The actual app",
       render: <iframe style={{ width: '100%', height: '100%' }} src="http://localhost:3005" />,
@@ -81,6 +91,7 @@ export default function DevtoolsExample() {
         ]}
       />
       <RouterProvider router={router} />
+      {import.meta.env.DEV && <A11yAuditFixture />}
     </>
   )
 }

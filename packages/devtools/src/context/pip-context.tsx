@@ -3,10 +3,11 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  useContext as getContext,
   onCleanup,
-  useContext,
 } from 'solid-js'
 import { delegateEvents } from 'solid-js/web'
+import { ensureDevtoolsStyles } from '@tanstack/devtools-ui/internal'
 import type { Accessor, JSX } from 'solid-js'
 
 interface PiPProviderProps {
@@ -112,6 +113,7 @@ export const PiPProvider = (props: PiPProviderProps) => {
         pip.document.head.appendChild(link)
       }
     })
+    ensureDevtoolsStyles(pip.document)
     delegateEvents(
       [
         'focusin',
@@ -164,11 +166,11 @@ export const PiPProvider = (props: PiPProviderProps) => {
   )
 }
 
-export const usePiPWindow = () => {
+export const createPiPWindow = () => {
   const context = createMemo(() => {
-    const ctx = useContext(PiPContext)
+    const ctx = getContext(PiPContext)
     if (!ctx) {
-      throw new Error('usePiPWindow must be used within a PiPProvider')
+      throw new Error('createPiPWindow must be used within a PiPProvider')
     }
     return ctx()
   })

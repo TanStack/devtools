@@ -1,0 +1,23 @@
+{
+  "name": "@tanstack/devtools-e2e-vue",
+  "nx": {
+    "name": "devtools-e2e-vue"
+  },
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 4178 --strictPort",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@tanstack/devtools-e2e": "workspace:*",
+    "@tanstack/vue-devtools": "workspace:*",
+    "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "~5.9.2",
+    "vite": "^8.0.0"
+  }
+}

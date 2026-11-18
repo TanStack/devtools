@@ -1,10 +1,9 @@
 /** @jsxImportSource preact */
 
 import { useEffect, useRef } from 'preact/hooks'
+import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
-export interface DevtoolsPanelProps {
-  theme?: 'light' | 'dark'
-}
+export interface DevtoolsPanelProps extends TanStackDevtoolsPluginProps {}
 
 /**
  * Creates a Preact component that dynamically imports and mounts a devtools panel. SSR friendly.
@@ -24,9 +23,9 @@ export interface DevtoolsPanelProps {
  * ```
  */
 export function createPreactPanel<
-  TComponentProps extends DevtoolsPanelProps | undefined,
+  TComponentProps extends DevtoolsPanelProps,
   TCoreDevtoolsClass extends {
-    mount: (el: HTMLElement, theme: 'light' | 'dark') => void
+    mount: (el: HTMLElement, props: TanStackDevtoolsPluginProps) => void
     unmount: () => void
   },
 >(CoreClass: new () => TCoreDevtoolsClass) {
@@ -36,18 +35,20 @@ export function createPreactPanel<
     useEffect(() => {
       if (devtools.current) return
       devtools.current = new CoreClass()
+      // Preact 11 clears the ref before this effect's cleanup runs.
+      const el = devToolRef.current
 
-      if (devToolRef.current) {
-        devtools.current.mount(devToolRef.current, props?.theme ?? 'dark')
+      if (el) {
+        devtools.current.mount(el, props)
       }
 
       return () => {
-        if (devToolRef.current) {
+        if (el) {
           devtools.current?.unmount()
           devtools.current = null
         }
       }
-    }, [props?.theme])
+    }, [props])
 
     return <div style={{ height: '100%' }} ref={devToolRef} />
   }

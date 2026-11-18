@@ -226,7 +226,7 @@ describe('groupIntoSections', () => {
     expect(sections).toHaveLength(2) // Featured (always present) + Active
     expect(sections[0]?.id).toBe('featured')
     expect(sections[1]?.id).toBe('active')
-    expect(sections[1]?.displayName).toBe('✓ Active Plugins')
+    expect(sections[1]?.displayName).toBe('Active Plugins')
     expect(sections[1]?.cards).toHaveLength(1)
   })
 
@@ -248,7 +248,7 @@ describe('groupIntoSections', () => {
 
     expect(sections).toHaveLength(1)
     expect(sections[0]?.id).toBe('featured')
-    expect(sections[0]?.displayName).toBe('⭐ Featured')
+    expect(sections[0]?.displayName).toBe('Featured')
   })
 
   it('should not include already-installed plugins in featured section', () => {

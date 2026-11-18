@@ -8,6 +8,7 @@
     "src/server"
   ],
   "compilerOptions": {
+    "types": ["vite/client"],
     "jsxImportSource": "solid-js",
     "jsx": "preserve"
   }
