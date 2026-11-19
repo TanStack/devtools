@@ -30,8 +30,38 @@ function watch<T>(compute: () => T, apply: (value: T) => void) {
   }
 }
 
-/** A Solid element: `JSX.Element` in Solid 1, `Element` in Solid 2. */
-type SolidElement = unknown
+/**
+ * Puts `values` into `el` in order. Nodes that are already in place stay
+ * attached, so an input that is not replaced keeps its focus. Only nodes that
+ * this function put in `el` are removed.
+ */
+function place(el: Element, current: Array<Node>, values: Array<unknown>) {
+  const next = values.flatMap((value) =>
+    value instanceof Node
+      ? [value]
+      : typeof value === 'string' || typeof value === 'number'
+        ? [document.createTextNode(String(value))]
+        : [],
+  )
+  for (const node of current) {
+    if (!next.includes(node) && node.parentNode === el) el.removeChild(node)
+  }
+  let anchor: Node | null = null
+  for (let i = next.length - 1; i >= 0; i--) {
+    const node = next[i]!
+    if (node.parentNode !== el || node.nextSibling !== anchor) {
+      el.insertBefore(node, anchor)
+    }
+    anchor = node
+  }
+  return next
+}
+
+/**
+ * A Solid element: `JSX.Element` in Solid 1, `Element` in Solid 2. It has no
+ * function type in it, so TypeScript can still type the `render` callback.
+ */
+type SolidElement = object | string | number | boolean | null | undefined
 
 type SolidPluginRender =
   | SolidElement
@@ -142,21 +172,15 @@ export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
         mounts.set(el, () => {
           dispose()
           el.replaceChildren()
+          mounts.delete(el)
         })
         const resolved = children(content as () => any)
-        watch(
-          () => resolved.toArray(),
-          (nodes) =>
-            el.replaceChildren(
-              ...(nodes as Array<unknown>).flatMap((node) =>
-                node instanceof Node ||
-                typeof node === 'string' ||
-                typeof node === 'number'
-                  ? [node instanceof Node ? node : String(node)]
-                  : [],
-              ),
-            ),
-        )
+        // Insert the first nodes now, before the plugin's `onMount` runs, so
+        // it finds them in the document. The effect then applies updates.
+        let current = place(el, [], Solid.untrack(resolved.toArray))
+        watch(resolved.toArray, (nodes) => {
+          current = place(el, current, nodes)
+        })
       }),
     )
   }
@@ -171,15 +195,32 @@ export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
 
   // Convert plugins to the format expected by the core
   const pluginsMap = createMemo<Array<TanStackDevtoolsPlugin> | undefined>(() =>
-    props.plugins?.map((plugin) => ({
-      ...plugin,
-      name:
-        typeof plugin.name === 'string'
-          ? plugin.name
-          : (el, renderProps) => convertRender(el, plugin.name, renderProps),
-      render: (el: HTMLDivElement, renderProps: TanStackDevtoolsPluginProps) =>
-        convertRender(el, plugin.render, renderProps),
-    })),
+    props.plugins?.map((plugin) => {
+      // The pane elements of this plugin. The shell calls `destroy` when a
+      // pane closes, so their roots are disposed then.
+      // ponytail: title roots stay until the adapter unmounts, because the
+      // shell does not say when a title element goes away.
+      const panes = new Set<Element>()
+      return {
+        ...plugin,
+        name:
+          typeof plugin.name === 'string'
+            ? plugin.name
+            : (el, renderProps) => convertRender(el, plugin.name, renderProps),
+        render: (
+          el: HTMLDivElement,
+          renderProps: TanStackDevtoolsPluginProps,
+        ) => {
+          panes.add(el)
+          convertRender(el, plugin.render, renderProps)
+        },
+        destroy: (pluginId: string) => {
+          for (const el of panes) mounts.get(el)?.()
+          panes.clear()
+          plugin.destroy?.(pluginId)
+        },
+      }
+    }),
   )
 
   const convertTrigger = (el: HTMLElement, triggerProps: TriggerProps) => {
