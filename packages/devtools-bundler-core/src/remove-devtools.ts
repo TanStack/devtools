@@ -22,7 +22,19 @@ function getPluginReferences(opening: JSXOpeningElement): Array<string> {
       continue
 
     for (const el of attr.value.expression.elements) {
-      if (!el || el.type !== 'ObjectExpression') continue
+      if (!el) continue
+
+      // handle plugins={[myPlugin]} and plugins={[myPlugin()]}
+      if (el.type === 'Identifier') {
+        refs.push(el.name)
+        continue
+      }
+      if (el.type === 'CallExpression' && el.callee.type === 'Identifier') {
+        refs.push(el.callee.name)
+        continue
+      }
+
+      if (el.type !== 'ObjectExpression') continue
 
       for (const prop of el.properties) {
         if (
