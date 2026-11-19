@@ -37,8 +37,15 @@ function solidV2Plugin(generate: 'dom' | 'ssr'): Plugin {
 /**
  * Swaps the Solid 1 compiler in `tsup-preset-solid`'s options for the Solid 2
  * one. The preset marks its server build with `platform: 'node'`.
+ *
+ * With `bundleSolid`, Solid and the listed packages that use it go into the
+ * output, so the package runs on its own copy of Solid. The app's Solid
+ * version and the bundler's `solid-js` dedupe then cannot change it.
  */
-export function withSolidV2(options: Array<Options>): Array<Options> {
+export function withSolidV2(
+  options: Array<Options>,
+  { bundleSolid }: { bundleSolid?: Array<string | RegExp> } = {},
+): Array<Options> {
   return options.map((option) => {
     const plugins = option.esbuildPlugins ?? []
     const others = plugins.filter((plugin) => !plugin.name.includes('solid'))
@@ -49,12 +56,24 @@ export function withSolidV2(options: Array<Options>): Array<Options> {
         solidV2Plugin(option.platform === 'node' ? 'ssr' : 'dom'),
         ...others,
       ],
-      // Resolve `isServer` and friends in the consumer's build, not ours.
-      external: [
-        ...(Array.isArray(option.external) ? option.external : []),
-        '@solidjs/web',
-        'solid-js',
-      ],
+      ...(bundleSolid
+        ? {
+            noExternal: [/^solid-js(\/|$)/, /^@solidjs\//, ...bundleSolid],
+            // The production build of Solid, also in `dev.js`: the app's
+            // dev mode must not turn on Solid's dev checks for our code.
+            esbuildOptions(esOptions, context) {
+              option.esbuildOptions?.(esOptions, context)
+              esOptions.conditions = []
+            },
+          }
+        : {
+            // Resolve `isServer` and friends in the consumer's build, not ours.
+            external: [
+              ...(Array.isArray(option.external) ? option.external : []),
+              '@solidjs/web',
+              'solid-js',
+            ],
+          }),
     }
   })
 }
