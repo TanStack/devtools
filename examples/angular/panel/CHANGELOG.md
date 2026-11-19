@@ -1,5 +1,14 @@
 # @tanstack/devtools-example-angular-panel
 
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies [[`560cbec`](https://github.com/TanStack/devtools/commit/560cbec67149068e08671d89f3626019f255232b), [`e672e44`](https://github.com/TanStack/devtools/commit/e672e444a6cbf3f3e4acce57ad8167b0abcc2a74)]:
+  - @tanstack/devtools@0.17.0
+  - @tanstack/devtools-utils@0.8.0
+  - @tanstack/angular-devtools@0.0.14
+
 ## 0.0.13
 
 ### Patch Changes

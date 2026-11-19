@@ -1,5 +1,12 @@
 # @tanstack/devtools-example-angular-basic
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @tanstack/angular-devtools@0.0.14
+
 ## 0.0.12
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @tanstack/devtools-example-angular-a11y-devtools
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [[`560cbec`](https://github.com/TanStack/devtools/commit/560cbec67149068e08671d89f3626019f255232b)]:
+  - @tanstack/devtools-a11y@0.3.0
+  - @tanstack/angular-devtools@0.0.14
+
 ## 0.0.12
 
 ### Patch Changes

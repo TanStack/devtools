@@ -1,5 +1,14 @@
 # @tanstack/svelte-devtools
 
+## 0.1.9
+
+### Patch Changes
+
+- [#565](https://github.com/TanStack/devtools/pull/565) [`8cd7dc1`](https://github.com/TanStack/devtools/commit/8cd7dc1864fb92ce582356a1ef9f4e10961b4b04) - Import `./types` with a `.js` extension so the published declarations resolve under `moduleResolution: "NodeNext"` and `"Node16"`. Before this fix, those setups reported `TS2835` with `skipLibCheck: false`, and with `skipLibCheck: true` the `<TanStackDevtools />` props and the exported plugin types silently became `any`.
+
+- Updated dependencies [[`560cbec`](https://github.com/TanStack/devtools/commit/560cbec67149068e08671d89f3626019f255232b), [`e672e44`](https://github.com/TanStack/devtools/commit/e672e444a6cbf3f3e4acce57ad8167b0abcc2a74)]:
+  - @tanstack/devtools@0.17.0
+
 ## 0.1.8
 
 ### Patch Changes

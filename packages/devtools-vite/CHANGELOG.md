@@ -1,5 +1,11 @@
 # @tanstack/devtools-event-client
 
+## 0.8.7
+
+### Patch Changes
+
+- [#563](https://github.com/TanStack/devtools/pull/563) [`560cbec`](https://github.com/TanStack/devtools/commit/560cbec67149068e08671d89f3626019f255232b) - Detect Solid 2 entry files, which render from `@solidjs/web`, when injecting console piping.
+
 ## 0.8.6
 
 ### Patch Changes
