@@ -1,5 +1,5 @@
 import { createComponent } from 'solid-js'
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import DevTools from '../src/devtools'
 import { TanStackDevtoolsCore } from '../src/core'
@@ -49,6 +49,9 @@ beforeEach(() => {
 })
 
 afterEach(() => {
+  // The held-keys list is a singleton root, so a test that leaves a key down
+  // (the open hotkey test) would arm the next one's inspect hotkey.
+  window.dispatchEvent(new Event('blur'))
   for (const [host, dispose] of shellDisposers) {
     dispose()
     host.remove()

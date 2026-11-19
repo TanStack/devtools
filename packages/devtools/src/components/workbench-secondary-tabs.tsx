@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from '@tanstack/devtools-ui'
 import { createStyles } from '../styles/use-styles'
 import { createCollapsed } from '../context/use-devtools-context'
-import type { JSX } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 
 export const WorkbenchSecondaryTabs = (props: {
   ariaLabel: string
@@ -49,7 +49,7 @@ export const CollapseToggle = () => {
       type="button"
       aria-label={label()}
       title={label()}
-      aria-expanded={!isCollapsed()}
+      aria-expanded={isCollapsed() ? 'false' : 'true'}
       data-testid="workbench-collapse-toggle"
       data-tsd-control
       class={styles().workbenchCollapseToggle(isCollapsed())}
@@ -85,7 +85,13 @@ export const WorkbenchSecondaryTab = (props: {
     <button
       type="button"
       aria-current={props.ariaCurrent}
-      aria-pressed={props.ariaPressed}
+      aria-pressed={
+        props.ariaPressed === undefined
+          ? undefined
+          : props.ariaPressed
+            ? 'true'
+            : 'false'
+      }
       aria-labelledby={props.ariaLabelledBy}
       data-plugin-title-control={props.pluginTitleControl ? '' : undefined}
       data-workbench-secondary-tab

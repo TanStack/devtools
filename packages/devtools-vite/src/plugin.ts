@@ -541,7 +541,9 @@ export const devtools = (args?: TanStackDevtoolsViteConfig): Array<Plugin> => {
             code.includes('StartClient') ||
             code.includes('hydrateRoot') ||
             code.includes('createRoot') ||
-            (code.includes('solid-js/web') && code.includes('render('))
+            // Solid 1 renders from `solid-js/web`, Solid 2 from `@solidjs/web`.
+            ((code.includes('solid-js/web') || code.includes('@solidjs/web')) &&
+              code.includes('render('))
 
           if (isRootEntry) {
             const viteServerUrl = `http://localhost:${port}`

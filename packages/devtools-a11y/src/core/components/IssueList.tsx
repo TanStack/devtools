@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 
 import { For, Show } from 'solid-js'
 import { createAllyContext } from '../contexts/allyContext'
@@ -91,10 +91,12 @@ export function A11yIssueList(props: A11yIssueListProps) {
               <button
                 data-tsd-control
                 data-tsd-selected={active() ? 'true' : undefined}
-                class={styles().summaryButton}
-                classList={{
-                  [styles().summaryButtonActive(impact)]: active(),
-                }}
+                class={[
+                  styles().summaryButton,
+                  {
+                    [styles().summaryButtonActive(impact)]: active(),
+                  },
+                ]}
                 onClick={() => {
                   ally.setImpactKey(
                     ally.impactKey() === impact ? 'all' : impact,
@@ -140,10 +142,9 @@ export function A11yIssueList(props: A11yIssueListProps) {
                       selected={selectedIssueId() === issue.id}
                       onSelect={() => handleIssueClick(issue.id)}
                       onDisableRule={() =>
-                        ally.setConfig('disabledRules', [
-                          ...ally.config.disabledRules,
-                          issue.ruleId,
-                        ])
+                        ally.setConfig((config) => {
+                          config.disabledRules.push(issue.ruleId)
+                        })
                       }
                     />
                   )}

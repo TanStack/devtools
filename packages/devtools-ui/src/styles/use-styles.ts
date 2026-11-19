@@ -1,5 +1,5 @@
 import * as goober from 'goober'
-import { createEffect, createSignal } from 'solid-js'
+import { createMemo } from 'solid-js'
 import { createTheme } from '../components/theme'
 import { resolveSemanticTheme } from './semantic-theme'
 import type { tokens } from './tokens'
@@ -717,9 +717,5 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
 
 export function createStyles() {
   const { theme } = createTheme()
-  const [styles, setStyles] = createSignal(stylesFactory(theme()))
-  createEffect(() => {
-    setStyles(stylesFactory(theme()))
-  })
-  return styles
+  return createMemo(() => stylesFactory(theme()))
 }

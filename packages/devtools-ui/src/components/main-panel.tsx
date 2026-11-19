@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { createStyles } from '../styles/use-styles'
-import type { JSX } from 'solid-js/jsx-runtime'
+import type { JSX } from '@solidjs/web'
 
 type PanelProps = JSX.IntrinsicElements['div'] & {
   children?: any
@@ -8,24 +8,19 @@ type PanelProps = JSX.IntrinsicElements['div'] & {
   withPadding?: boolean
 }
 
-export const MainPanel = ({
-  className,
-  children,
-  class: classStyles,
-  withPadding,
-}: PanelProps) => {
+export const MainPanel = (props: PanelProps) => {
   const styles = createStyles()
 
   return (
     <div
       data-tsd-surface
       class={clsx(
-        styles().mainPanel.panel(Boolean(withPadding)),
-        className,
-        classStyles,
+        styles().mainPanel.panel(Boolean(props.withPadding)),
+        props.className,
+        props.class,
       )}
     >
-      {children}
+      {props.children}
     </div>
   )
 }

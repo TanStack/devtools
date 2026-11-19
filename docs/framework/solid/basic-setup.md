@@ -13,19 +13,25 @@ Install the [TanStack Devtools](https://www.npmjs.com/package/@tanstack/solid-de
 npm i -D @tanstack/solid-devtools
 ```
 
+The Solid adapter works with Solid 1 (`solid-js` 1.9.13 or later) and Solid 2. The examples below use Solid 2. In a Solid 1 app, import `render` from `solid-js/web`.
+
 Next in the root of your application import the `TanStackDevtools` from the required framework adapter (in this case @tanstack/solid-devtools).
 
 ```tsx
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 
 import App from './App'
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
+render(
+  () => (
+    <>
+      <App />
 
-    <TanStackDevtools />
-  </StrictMode>,
+      <TanStackDevtools />
+    </>
+  ),
+  document.getElementById('root')!,
 )
 ```
 
@@ -38,7 +44,7 @@ Currently TanStack offers:
 - `FormDevtools`
 
 ```tsx
-import { render } from 'solid-js/web';
+import { render } from '@solidjs/web';
 
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 

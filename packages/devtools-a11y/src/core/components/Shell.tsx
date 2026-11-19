@@ -1,4 +1,4 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 
 import { Match, Show, Switch, createMemo, createSignal } from 'solid-js'
 import { Button, Header, MainPanel } from '@tanstack/devtools-ui'
@@ -81,7 +81,11 @@ export function Shell() {
             <Button
               data-tsd-selected={showOverlayState() ? 'true' : undefined}
               variant={showOverlayState() ? 'success' : 'warning'}
-              onClick={() => setConfig('showOverlays', !config.showOverlays)}
+              onClick={() =>
+                setConfig((c) => {
+                  c.showOverlays = !c.showOverlays
+                })
+              }
             >
               {showOverlayState() ? 'Hide' : 'Show'} Overlays
             </Button>

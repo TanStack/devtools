@@ -27,23 +27,28 @@ export const PluginCardComponent = (props: PluginCardComponentProps) => {
   return (
     <div
       data-tsd-surface
-      class={styles().pluginMarketplaceCard}
-      classList={{
-        [styles().pluginMarketplaceCardDisabled]:
-          !card.isCurrentFramework && card.actionType !== 'already-installed',
-        [styles().pluginMarketplaceCardFeatured]:
-          !!card.metadata?.featured && card.actionType !== 'already-installed',
-        [styles().pluginMarketplaceCardActive]:
-          card.actionType === 'already-installed',
-      }}
+      class={[
+        styles().pluginMarketplaceCard,
+        {
+          [styles().pluginMarketplaceCardDisabled]:
+            !card.isCurrentFramework && card.actionType !== 'already-installed',
+          [styles().pluginMarketplaceCardFeatured]:
+            !!card.metadata?.featured &&
+            card.actionType !== 'already-installed',
+          [styles().pluginMarketplaceCardActive]:
+            card.actionType === 'already-installed',
+        },
+      ]}
       style={{ position: 'relative' }}
     >
       <span class={getBadgeClass(card, styles)}>{getBadgeText(card)}</span>
       <div
-        class={styles().pluginMarketplaceCardIcon}
-        classList={{
-          'custom-logo': !!card.metadata?.logoUrl,
-        }}
+        class={[
+          styles().pluginMarketplaceCardIcon,
+          {
+            'custom-logo': !!card.metadata?.logoUrl,
+          },
+        ]}
       >
         <Show when={card.metadata?.logoUrl} fallback={<PackageIcon />}>
           <img

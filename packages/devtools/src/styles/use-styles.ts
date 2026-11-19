@@ -1,6 +1,6 @@
 import * as goober from 'goober'
 import { resolveSemanticTheme } from '@tanstack/devtools-ui/internal'
-import { createEffect, createSignal } from 'solid-js'
+import { createMemo } from 'solid-js'
 import { createTheme } from '../context/use-devtools-context'
 import { TRIGGER_MARK_GRADIENT } from '../components/tanstack-trigger-mark'
 import {
@@ -2156,9 +2156,5 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
 
 export function createStyles() {
   const { theme } = createTheme()
-  const [styles, setStyles] = createSignal(stylesFactory(theme()))
-  createEffect(() => {
-    setStyles(stylesFactory(theme()))
-  })
-  return styles
+  return createMemo(() => stylesFactory(theme()))
 }

@@ -1,4 +1,4 @@
-import { createEffect, onCleanup } from 'solid-js'
+import { createEffect } from 'solid-js'
 import type { Accessor } from 'solid-js'
 
 /**
@@ -16,83 +16,89 @@ export function createModalHost(
   root: Accessor<HTMLElement | undefined>,
   isOpen: Accessor<boolean>,
 ) {
-  createEffect(() => {
-    const element = root()
-    if (!enabled() || !element) return
+  // Set while a host is installed, so the open state can re-sync it.
+  let syncHost: (() => void) | undefined
 
-    const doc = element.ownerDocument
-    const host = doc.createElement('dialog')
-    // A zero-size box: the devtools are `position: fixed`, so they still lay
-    // out against the viewport.
-    host.style.cssText =
-      'position:fixed;inset:0;width:0;height:0;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:visible;background:transparent'
-    // Escape closes the panel through the devtools' own keydown handler, which
-    // also closes this dialog. Without preventDefault the browser then sends
-    // the same Escape to the app dialog and closes it too. The capture phase
-    // on the window sees the key wherever the focus is.
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (host.open && event.key === 'Escape') event.preventDefault()
-    }
-    doc.defaultView?.addEventListener('keydown', onKeyDown, true)
-    // The dialog must never close by itself, or the root stays hidden in it.
-    host.addEventListener('cancel', (event) => event.preventDefault())
-    let home: Node | null = null
+  createEffect(
+    () => (enabled() ? root() : undefined),
+    (element) => {
+      if (!element) return
 
-    const sync = () => {
-      const wanted =
-        isOpen() &&
-        Array.from(doc.querySelectorAll('dialog')).some(
-          (dialog) => dialog !== host && dialog.matches(':modal'),
+      const doc = element.ownerDocument
+      const host = doc.createElement('dialog')
+      // A zero-size box: the devtools are `position: fixed`, so they still lay
+      // out against the viewport.
+      host.style.cssText =
+        'position:fixed;inset:0;width:0;height:0;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:visible;background:transparent'
+      // Escape closes the panel through the devtools' own keydown handler, which
+      // also closes this dialog. Without preventDefault the browser then sends
+      // the same Escape to the app dialog and closes it too. The capture phase
+      // on the window sees the key wherever the focus is.
+      const onKeyDown = (event: KeyboardEvent) => {
+        if (host.open && event.key === 'Escape') event.preventDefault()
+      }
+      doc.defaultView?.addEventListener('keydown', onKeyDown, true)
+      // The dialog must never close by itself, or the root stays hidden in it.
+      host.addEventListener('cancel', (event) => event.preventDefault())
+      let home: Node | null = null
+
+      const sync = () => {
+        const wanted =
+          isOpen() &&
+          Array.from(doc.querySelectorAll('dialog')).some(
+            (dialog) => dialog !== host && dialog.matches(':modal'),
+          )
+        if (wanted) {
+          if (host.open) return
+          home = element.parentNode
+          host.append(element)
+          doc.body.append(host)
+          host.showModal()
+        } else if (host.open) {
+          host.close()
+          home?.appendChild(element)
+          host.remove()
+        }
+      }
+
+      // `showModal()` and `close()` toggle the `open` attribute. Removing an open
+      // dialog from the page is a child list change instead.
+      const observer = new MutationObserver((records) => {
+        // An app dialog shown after the host goes on top of it. Showing the host
+        // again puts the host back on top.
+        const appModalShown = records.some(
+          (record) =>
+            record.type === 'attributes' &&
+            record.target !== host &&
+            (record.target as Element).matches('dialog:modal'),
         )
-      if (wanted) {
-        if (host.open) return
-        home = element.parentNode
-        host.append(element)
-        doc.body.append(host)
-        host.showModal()
-      } else if (host.open) {
-        host.close()
-        home?.appendChild(element)
+        if (host.open && appModalShown) {
+          host.close()
+          host.showModal()
+          return
+        }
+        sync()
+      })
+      observer.observe(doc.documentElement, {
+        subtree: true,
+        childList: true,
+        attributeFilter: ['open'],
+      })
+      syncHost = sync
+      sync()
+
+      return () => {
+        syncHost = undefined
+        doc.defaultView?.removeEventListener('keydown', onKeyDown, true)
+        observer.disconnect()
+        if (host.open) {
+          host.close()
+          home?.appendChild(element)
+        }
         host.remove()
       }
-    }
+    },
+  )
 
-    // `showModal()` and `close()` toggle the `open` attribute. Removing an open
-    // dialog from the page is a child list change instead.
-    const observer = new MutationObserver((records) => {
-      // An app dialog shown after the host goes on top of it. Showing the host
-      // again puts the host back on top.
-      const appModalShown = records.some(
-        (record) =>
-          record.type === 'attributes' &&
-          record.target !== host &&
-          (record.target as Element).matches('dialog:modal'),
-      )
-      if (host.open && appModalShown) {
-        host.close()
-        host.showModal()
-        return
-      }
-      sync()
-    })
-    observer.observe(doc.documentElement, {
-      subtree: true,
-      childList: true,
-      attributeFilter: ['open'],
-    })
-    createEffect(() => {
-      isOpen()
-      sync()
-    })
-
-    onCleanup(() => {
-      doc.defaultView?.removeEventListener('keydown', onKeyDown, true)
-      observer.disconnect()
-      if (host.open) {
-        host.close()
-        home?.appendChild(element)
-      }
-      host.remove()
-    })
-  })
+  createEffect(isOpen, () => syncHost?.())
 }

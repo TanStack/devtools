@@ -10,7 +10,7 @@ interface CheckboxProps {
 
 export function Checkbox(props: CheckboxProps) {
   const styles = createStyles()
-  const [isChecked, setIsChecked] = createSignal(props.checked || false)
+  const [isChecked, setIsChecked] = createSignal(() => props.checked || false)
   const descriptionId = `${createUniqueId()}-description`
 
   const handleChange = (e: Event) => {

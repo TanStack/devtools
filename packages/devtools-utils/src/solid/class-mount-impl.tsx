@@ -1,9 +1,10 @@
-/** @jsxImportSource solid-js - we use Solid.js as JSX here */
+/** @jsxImportSource @solidjs/web - we use Solid.js as JSX here */
 
-import { lazy } from 'solid-js'
-import { Portal, render } from 'solid-js/web'
+import { Show, createComponent, createSignal } from 'solid-js'
+import { Portal, render } from '@solidjs/web'
 
-import type { JSX } from 'solid-js'
+import type { Component } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
 
 export function __mountComponent(
@@ -13,13 +14,26 @@ export function __mountComponent(
     default: (props: TanStackDevtoolsPluginProps) => JSX.Element
   }>,
 ): () => void {
-  const Component = lazy(importFn)
+  // Loaded by hand rather than with `lazy`, which would need a `Loading`
+  // boundary to keep the root from waiting on the chunk.
+  const [panel, setPanel] =
+    createSignal<Component<TanStackDevtoolsPluginProps>>()
+  importFn().then(
+    (mod) => setPanel(() => mod.default),
+    // The panel stays empty. `unmount()` still works, so a new mount can try
+    // again.
+    (err: unknown) =>
+      console.error('[TanStack Devtools] Failed to load the panel:', err),
+  )
 
   return render(
     () => (
       <Portal mount={el}>
         <div style={{ height: '100%' }}>
-          <Component {...props} />
+          {/* Set once, when the chunk arrives. */}
+          <Show when={panel()} keyed>
+            {(Panel) => createComponent(Panel, props)}
+          </Show>
         </div>
       </Portal>
     ),

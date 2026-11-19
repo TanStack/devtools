@@ -1,4 +1,4 @@
-import { For, Show, createSignal, onCleanup, onMount } from 'solid-js'
+import { For, Show, createSignal, flush, onSettled } from 'solid-js'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import { createPlugins } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
@@ -121,7 +121,7 @@ export const PluginMarketplace = () => {
       .filter((section) => section.cards.length > 0)
   }
 
-  onMount(() => {
+  onSettled(() => {
     // Listen for package.json updates
     const cleanupJsonRead = devtoolsEventClient.on(
       'package-json-read',
@@ -181,6 +181,8 @@ export const PluginMarketplace = () => {
 
         // When plugin is successfully added, recalculate to move it to active section
         if (event.payload.success) {
+          // `updatePluginCards` keeps the statuses written just above.
+          flush()
           const pkg = currentPackageJson()
           if (pkg) {
             updatePluginCards(pkg)
@@ -208,16 +210,16 @@ export const PluginMarketplace = () => {
       requestPackageJson()
     }, 400)
 
-    onCleanup(() => {
+    // Kick off the initial request immediately on open.
+    requestPackageJson()
+
+    return () => {
       cleanupJsonRead()
       cleanupJsonUpdated()
       cleanupDevtoolsInstalled()
       cleanupPluginAdded()
       clearInterval(refetchInterval)
-    })
-
-    // Kick off the initial request immediately on open.
-    requestPackageJson()
+    }
   })
 
   const updatePluginCards = (pkg: PackageJson | null) => {

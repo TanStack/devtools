@@ -1,13 +1,15 @@
-/** @jsxImportSource solid-js */
+/** @jsxImportSource @solidjs/web */
 
 import {
   createContext,
   createEffect,
   createMemo,
   createSignal,
+  createStore,
+  deep,
   useContext as getContext,
+  snapshot,
 } from 'solid-js'
-import { createStore } from 'solid-js/store'
 import { createTheme } from '@tanstack/devtools-ui'
 import { filterIssuesAboveThreshold, runAudit } from '../utils/ally-audit.utils'
 import { mergeConfig, saveConfig } from '../utils/config.utils'
@@ -40,8 +42,14 @@ function createAllyValue() {
   )
 
   const triggerAllyScan = async () => {
-    setAllyResult('state', 'scanning')
-    setAllyResult({ audit: await runAudit(config), state: 'done' })
+    setAllyResult((result) => {
+      result.state = 'scanning'
+    })
+    const audit = await runAudit(config)
+    setAllyResult((result) => {
+      result.audit = audit
+      result.state = 'done'
+    })
   }
 
   const filteredIssues = createMemo(() => {
@@ -63,19 +71,20 @@ function createAllyValue() {
     return results.filter((val) => val.impact === impactKey())
   })
 
-  createEffect(() => {
-    if (config.showOverlays === false) {
-      clearHighlights()
-      return
-    }
+  createEffect(
+    () =>
+      config.showOverlays === false
+        ? null
+        : allyResult.state === 'done'
+          ? { issues: filteredIssues(), theme: theme() }
+          : undefined,
+    (overlay) => {
+      if (overlay === null) clearHighlights()
+      else if (overlay) highlightAllIssues(overlay.issues, overlay.theme)
+    },
+  )
 
-    if (allyResult.state === 'done')
-      highlightAllIssues(filteredIssues(), theme())
-  })
-
-  createEffect(() => {
-    saveConfig(config)
-  })
+  createEffect(() => snapshot(deep(config)), saveConfig)
 
   return {
     impactKey,
@@ -99,24 +108,16 @@ type ContextType = ReturnType<typeof createAllyValue>
 // context
 //
 
-const AllyContext = createContext<ContextType | null>(null)
+const AllyContext = createContext<ContextType>()
 
 type AllyProviderProps = {}
 
 export const AllyProvider: ParentComponent<AllyProviderProps> = (props) => {
   const value = createAllyValue()
 
-  return (
-    <AllyContext.Provider value={value}>{props.children}</AllyContext.Provider>
-  )
+  return <AllyContext value={value}>{props.children}</AllyContext>
 }
 
 export function createAllyContext() {
-  const context = getContext(AllyContext)
-
-  if (context === null) {
-    throw new Error('createAllyContext must be used within an AllyProvider')
-  }
-
-  return context
+  return getContext(AllyContext)
 }

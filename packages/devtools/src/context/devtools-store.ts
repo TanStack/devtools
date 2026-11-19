@@ -1,7 +1,10 @@
 import type { TabName } from '../tabs'
 import type { LayoutNode } from '../utils/layout-tree'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
-import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
+
+// The same type as in `@tanstack/devtools-ui`. It is written here so the
+// public types of this package do not import devtools-ui, which is bundled.
+export type TanStackDevtoolsTheme = 'light' | 'dark'
 
 type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta'
 type KeyboardKey = ModifierKey | (string & {})

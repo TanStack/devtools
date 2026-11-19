@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@solidjs/testing-library'
-import { createSignal } from 'solid-js'
+import { createSignal, flush } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DevtoolsProvider } from '../context/devtools-context'
 import { TANSTACK_DEVTOOLS_SETTINGS } from '../utils/storage'
@@ -16,6 +16,12 @@ import {
   toPixels,
 } from './trigger'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
+
+// Timer callbacks write signals; flush so the DOM reflects them.
+const advanceTimers = (ms: number) => {
+  vi.advanceTimersByTime(ms)
+  flush()
+}
 
 const renderTrigger = (config?: Partial<TanStackDevtoolsConfig>) => {
   const [isOpen, setIsOpen] = createSignal(false)
@@ -325,7 +331,7 @@ describe('the drag tooltip', () => {
       drag(button, 'pointerdown', 400, 400)
       expect(queryByText(/magnetic mode/)).not.toBeNull()
 
-      vi.advanceTimersByTime(1500)
+      advanceTimers(1500)
       expect(queryByText(/magnetic mode/)).toBeNull()
 
       drag(button, 'pointermove', 500, 400)
@@ -467,9 +473,9 @@ describe('holding a drag on a hot corner', () => {
     drag(button, 'pointermove', 1016, 760)
     expect(mark()).not.toBeNull()
 
-    vi.advanceTimersByTime(1999)
+    advanceTimers(1999)
     expect(mark()).not.toBeNull()
-    vi.advanceTimersByTime(1)
+    advanceTimers(1)
     expect(mark()).toBeNull()
 
     drag(button, 'pointermove', 500, 400)
@@ -486,7 +492,7 @@ describe('holding a drag on a hot corner', () => {
 
     drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
-    vi.advanceTimersByTime(2000)
+    advanceTimers(2000)
     expect(mark()).toBeNull()
 
     drag(button, 'pointermove', 1010, 750)
@@ -509,11 +515,11 @@ describe('holding a drag on a hot corner', () => {
 
     drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
-    vi.advanceTimersByTime(1500)
+    advanceTimers(1500)
     drag(button, 'pointermove', 1020, 750)
-    vi.advanceTimersByTime(1500)
+    advanceTimers(1500)
     expect(mark()).not.toBeNull()
-    vi.advanceTimersByTime(500)
+    advanceTimers(500)
     expect(mark()).toBeNull()
 
     drag(button, 'pointermove', 500, 400)
@@ -526,7 +532,7 @@ describe('holding a drag on a hot corner', () => {
 
     drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 1016, 760)
-    vi.advanceTimersByTime(1500)
+    advanceTimers(1500)
     drag(button, 'pointerup', 1016, 760)
     expect(storedSettings().triggerCorner).toBe('bottom-right')
   })
@@ -539,7 +545,7 @@ describe('holding a drag on a hot corner', () => {
 
     drag(button, 'pointerdown', 8, 8)
     drag(button, 'pointermove', 2000, 2000)
-    vi.advanceTimersByTime(2000)
+    advanceTimers(2000)
     drag(button, 'pointerup', 2000, 2000)
 
     expect(storedSettings().triggerCorner).toBeUndefined()

@@ -36,7 +36,7 @@
     "test:lib": "nx affected --targets=test:lib --exclude=examples/**",
     "test:lib:dev": "pnpm test:lib && nx watch --all -- pnpm test:lib",
     "test:pr": "nx affected --targets=test:eslint,test:sherif,test:knip,test:lib,test:types,test:build,build",
-    "test:e2e": "nx run-many --target=test:e2e --parallel=1 --projects=devtools-e2e-react-vite,devtools-e2e-react-start,devtools-e2e-react-cloudflare,devtools-e2e-react-nitro,devtools-e2e-solid,devtools-e2e-vue,devtools-e2e-preact,devtools-e2e-angular",
+    "test:e2e": "nx run-many --target=test:e2e --parallel=1 --projects=devtools-e2e-react-vite,devtools-e2e-react-start,devtools-e2e-react-cloudflare,devtools-e2e-react-nitro,devtools-e2e-solid,devtools-e2e-solid1,devtools-e2e-vue,devtools-e2e-preact,devtools-e2e-angular",
     "test:sherif": "sherif",
     "test:types": "nx affected --targets=test:types --exclude=examples/**",
     "watch": "pnpm run build:all && nx watch --all -- pnpm run build:all"
@@ -48,10 +48,15 @@
       "test:sherif"
     ]
   },
+  "sherif": {
+    "ignoreDependency": [
+      "solid-js"
+    ]
+  },
   "size-limit": [
     {
       "path": "packages/devtools/dist/index.js",
-      "limit": "67 KB"
+      "limit": "86 KB"
     },
     {
       "path": "packages/event-bus-client/dist/esm/plugin.js",
@@ -67,10 +72,13 @@
     }
   ],
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-typescript": "^7.27.1",
     "@changesets/changelog-github": "^0.7.0",
     "@changesets/cli": "^2.30.0",
     "@faker-js/faker": "^9.9.0",
     "@size-limit/preset-small-lib": "^11.2.0",
+    "@solidjs/babel-plugin": "^2.0.0",
     "@tanstack/eslint-config": "0.3.2",
     "@tanstack/intent": "^0.0.14",
     "@tanstack/typedoc-config": "0.3.3",
@@ -90,6 +98,7 @@
     "sherif": "^1.7.0",
     "size-limit": "^11.2.0",
     "tinyglobby": "^0.2.15",
+    "tsup": "^8.5.0",
     "typescript": "~5.9.2",
     "vite": "^8.0.0",
     "vitest": "^4.1.10"

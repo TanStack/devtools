@@ -4,11 +4,11 @@ import {
   createMemo,
   createSignal,
   useContext as getContext,
-  onCleanup,
 } from 'solid-js'
-import { delegateEvents } from 'solid-js/web'
+import { delegateEvents } from '@solidjs/web'
 import { ensureDevtoolsStyles } from '@tanstack/devtools-ui/internal'
-import type { Accessor, JSX } from 'solid-js'
+import type { Accessor } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 
 interface PiPProviderProps {
   children: JSX.Element
@@ -24,9 +24,7 @@ type PiPContextType = {
   disabled: boolean
 }
 
-const PiPContext = createContext<Accessor<PiPContextType> | undefined>(
-  undefined,
-)
+const PiPContext = createContext<Accessor<PiPContextType>>()
 
 export const PiPProvider = (props: PiPProviderProps) => {
   // Expose pipWindow that is currently active
@@ -114,28 +112,26 @@ export const PiPProvider = (props: PiPProviderProps) => {
       }
     })
     ensureDevtoolsStyles(pip.document)
-    delegateEvents(
-      [
-        'focusin',
-        'focusout',
-        'pointermove',
-        'keydown',
-        'pointerdown',
-        'pointerup',
-        'click',
-        'mousedown',
-        'input',
-      ],
-      pip.document,
-    )
+    // The Portal that renders into this window registers it with the render
+    // root, so delegated events reach it once their names are declared.
+    delegateEvents([
+      'focusin',
+      'focusout',
+      'pointermove',
+      'keydown',
+      'pointerdown',
+      'pointerup',
+      'click',
+      'mousedown',
+      'input',
+    ])
 
     setPipWindow(pip)
   }
 
-  createEffect(() => {
+  createEffect(pipWindow, (w) => {
     // Setup mutation observer for goober styles with id `_goober
     const gooberStyles = document.querySelector('#_goober')
-    const w = pipWindow()
     if (gooberStyles && w) {
       const observer = new MutationObserver(() => {
         const pip_style = w.document.querySelector('#_goober')
@@ -148,10 +144,9 @@ export const PiPProvider = (props: PiPProviderProps) => {
         subtree: true, // and lower descendants too
         characterDataOldValue: true, // pass old data to callback
       })
-      onCleanup(() => {
-        observer.disconnect()
-      })
+      return () => observer.disconnect()
     }
+    return undefined
   })
 
   const value = createMemo(() => ({
@@ -161,18 +156,7 @@ export const PiPProvider = (props: PiPProviderProps) => {
     disabled: props.disabled ?? false,
   }))
 
-  return (
-    <PiPContext.Provider value={value}>{props.children}</PiPContext.Provider>
-  )
+  return <PiPContext value={value}>{props.children}</PiPContext>
 }
 
-export const createPiPWindow = () => {
-  const context = createMemo(() => {
-    const ctx = getContext(PiPContext)
-    if (!ctx) {
-      throw new Error('createPiPWindow must be used within a PiPProvider')
-    }
-    return ctx()
-  })
-  return context
-}
+export const createPiPWindow = () => getContext(PiPContext)

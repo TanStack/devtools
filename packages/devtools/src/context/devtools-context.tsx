@@ -1,5 +1,10 @@
-import { createComponent, createContext, createEffect } from 'solid-js'
-import { createStore, reconcile } from 'solid-js/store'
+import {
+  createComponent,
+  createContext,
+  createEffect,
+  createStore,
+  reconcile,
+} from 'solid-js'
 import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
 import { flattenTabs, repairLayout, singleGroup } from '../utils/layout-tree'
 import { tryParseJson } from '../utils/sanitize'
@@ -10,9 +15,8 @@ import {
   setStorageItem,
 } from '../utils/storage'
 import { initialState } from './devtools-store'
-import type { DevtoolsStore } from './devtools-store'
-import type { JSX, Setter } from 'solid-js'
-import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
+import type { DevtoolsStore, TanStackDevtoolsTheme } from './devtools-store'
+import type { JSX } from '@solidjs/web'
 
 export interface TanStackDevtoolsPluginProps {
   theme: TanStackDevtoolsTheme
@@ -77,7 +81,9 @@ export interface TanStackDevtoolsPlugin {
 }
 export const DevtoolsContext = createContext<{
   store: DevtoolsStore
-  setStore: Setter<DevtoolsStore>
+  setStore: (
+    updater: (prev: DevtoolsStore) => DevtoolsStore | Partial<DevtoolsStore>,
+  ) => void
   /**
    * Swap the layout tree wholesale.
    *
@@ -214,12 +220,16 @@ export const getExistingStateFromStorage = (
 
 export type TanStackDevtoolsConfig = DevtoolsStore['settings']
 
-export const DevtoolsProvider = (props: ContextProps) => {
-  const [store, setStore] = createStore(
-    getExistingStateFromStorage(props.config, props.plugins),
-  )
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value)
 
-  setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(store.state))
+export const DevtoolsProvider = (props: ContextProps) => {
+  // `config` and `plugins` are plain values here (initial settings; plugins
+  // update through `onSetPlugins`).
+  const initial = getExistingStateFromStorage(props.config, props.plugins)
+  const [store, setStore] = createStore(initial)
+
+  setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(initial.state))
 
   // Provide a way for the core to update plugins reactively
   const updatePlugins = (newPlugins: Array<TanStackDevtoolsPlugin>) => {
@@ -231,15 +241,16 @@ export const DevtoolsProvider = (props: ContextProps) => {
       }
     })
 
-    setStore('plugins', pluginsWithIds)
+    setStore((draft) => {
+      draft.plugins = pluginsWithIds
+    })
   }
 
   // Call the callback to give core access to updatePlugins
-  createEffect(() => {
-    if (props.onSetPlugins) {
-      props.onSetPlugins(updatePlugins)
-    }
-  })
+  createEffect(
+    () => props.onSetPlugins,
+    (onSetPlugins) => onSetPlugins?.(updatePlugins),
+  )
 
   const value = {
     store,
@@ -249,14 +260,30 @@ export const DevtoolsProvider = (props: ContextProps) => {
     ) => {
       const newState = updater(store)
       const { settings, state: internalState } = newState
-      // Store user settings for dev tools into local storage
-      setStorageItem(TANSTACK_DEVTOOLS_SETTINGS, JSON.stringify(settings))
-      // Store general state into local storage
-      setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(internalState))
-      setStore((prev) => ({
-        ...prev,
-        ...newState,
-      }))
+      // Save only the sections the updater returned, merged the same way as
+      // the store below, so a partial result keeps the other saved values.
+      if (settings) {
+        setStorageItem(
+          TANSTACK_DEVTOOLS_SETTINGS,
+          JSON.stringify({ ...store.settings, ...settings }),
+        )
+      }
+      if (internalState) {
+        setStorageItem(
+          TANSTACK_DEVTOOLS_STATE,
+          JSON.stringify({ ...store.state, ...internalState }),
+        )
+      }
+      // Callers hand back spread copies of `settings`/`state`. Write their
+      // leaves into the existing nodes so only readers of a changed key re-run.
+      setStore((draft) => {
+        for (const key of Object.keys(newState) as Array<keyof DevtoolsStore>) {
+          const next = newState[key]
+          const current = draft[key]
+          if (isRecord(next) && isRecord(current)) Object.assign(current, next)
+          else Object.assign(draft, { [key]: next })
+        }
+      })
     },
     replaceLayout: (next: DevtoolsStore['state']['layout']) => {
       // `reconcile`, not a plain write. A Solid store merges one object node into
@@ -266,16 +293,22 @@ export const DevtoolsProvider = (props: ContextProps) => {
       // would fix that but empties the layout for an instant, which tears every
       // plugin down and rebuilds it. `reconcile` diffs in one step, shrinking
       // arrays and dropping absent keys, with no empty state in between.
-      setStore(
-        'state',
-        'layout',
-        next === null ? null : reconcile(next, { key: null }),
+      setStore((draft) => {
+        if (next === null || draft.state.layout === null) {
+          draft.state.layout = next
+        } else {
+          reconcile(next, null)(draft.state.layout)
+        }
+      })
+      // The store write above is not committed yet, so save `next` directly.
+      setStorageItem(
+        TANSTACK_DEVTOOLS_STATE,
+        JSON.stringify({ ...store.state, layout: next }),
       )
-      setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(store.state))
     },
   }
 
-  return createComponent(DevtoolsContext.Provider, {
+  return createComponent(DevtoolsContext, {
     value,
     get children() {
       return props.children

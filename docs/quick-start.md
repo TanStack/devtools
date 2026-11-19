@@ -111,6 +111,8 @@ render(
 
 ## Solid
 
+`@tanstack/solid-devtools` works in Solid 1 (`solid-js` 1.9.13 or later) and Solid 2 apps. The example below uses Solid 2. In a Solid 1 app, import `render` from `solid-js/web`.
+
 Install the devtools and the Vite plugin:
 
 ```bash
@@ -120,7 +122,7 @@ npm install -D @tanstack/solid-devtools @tanstack/devtools-vite
 Add the `TanStackDevtools` component using Solid's `render(() => ...)` pattern:
 
 ```tsx
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 
 import App from './App'
@@ -136,7 +138,7 @@ render(() => (
 To add plugins, pass them via the `plugins` prop:
 
 ```tsx
-import { render } from 'solid-js/web'
+import { render } from '@solidjs/web'
 import { TanStackDevtools } from '@tanstack/solid-devtools'
 import { SolidQueryDevtoolsPanel } from '@tanstack/solid-query-devtools'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/solid-router-devtools'

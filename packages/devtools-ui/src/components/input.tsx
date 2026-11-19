@@ -12,13 +12,13 @@ interface InputProps {
 
 export function Input(props: InputProps) {
   const styles = createStyles()
-  const [val, setVal] = createSignal(props.value || '')
+  const [val, setVal] = createSignal(() => props.value || '')
   const id = createUniqueId()
   const descriptionId = `${id}-description`
 
   const handleChange = (e: Event) => {
     const value = (e.target as HTMLInputElement).value
-    setVal((prev) => (prev !== value ? value : prev))
+    setVal(value)
     props.onChange?.(value)
   }
 

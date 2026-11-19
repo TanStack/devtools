@@ -1,4 +1,4 @@
-import { For, Match, Show, Switch, createSignal } from 'solid-js'
+import { For, Match, Show, Switch, createMemo, createSignal } from 'solid-js'
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 
@@ -173,96 +173,98 @@ const ArrayValue = (props: {
   const styles = createStyles()
 
   const [expanded, setExpanded] = createSignal(
-    props.depth <= props.defaultExpansionDepth &&
+    () =>
+      props.depth <= props.defaultExpansionDepth &&
       !props.collapsePaths?.includes(props.path),
   )
 
-  if (props.value.length === 0) {
-    return (
+  return (
+    <Show
+      when={props.value.length > 0}
+      fallback={
+        <span class={styles().tree.expanderContainer}>
+          {props.keyName && (
+            <span
+              data-tsd-syntax="property"
+              class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+            >
+              &quot;{props.keyName}&quot;:{' '}
+            </span>
+          )}
+
+          <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+            []
+          </span>
+        </span>
+      }
+    >
       <span class={styles().tree.expanderContainer}>
+        <Expander
+          onClick={() => setExpanded(!expanded())}
+          expanded={expanded()}
+        />
+
         {props.keyName && (
           <span
+            onClick={(e) => {
+              e.stopPropagation()
+              e.stopImmediatePropagation()
+              setExpanded(!expanded())
+            }}
             data-tsd-syntax="property"
             class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
           >
             &quot;{props.keyName}&quot;:{' '}
+            <span class={styles().tree.info}>{props.value.length} items</span>
           </span>
         )}
 
         <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
-          []
+          [
         </span>
-      </span>
-    )
-  }
-  return (
-    <span class={styles().tree.expanderContainer}>
-      <Expander
-        onClick={() => setExpanded(!expanded())}
-        expanded={expanded()}
-      />
 
-      {props.keyName && (
-        <span
-          onclick={(e) => {
-            e.stopPropagation()
-            e.stopImmediatePropagation()
-            setExpanded(!expanded())
-          }}
-          data-tsd-syntax="property"
-          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-        >
-          &quot;{props.keyName}&quot;:{' '}
-          <span class={styles().tree.info}>{props.value.length} items</span>
-        </span>
-      )}
+        <Show when={expanded()}>
+          <span
+            data-tsd-separator={props.keyName ? '' : undefined}
+            class={styles().tree.expandedLine(Boolean(props.keyName))}
+          >
+            <For each={props.value}>
+              {(item, i) => {
+                return (
+                  <JsonValue
+                    copyable={props.copyable}
+                    value={item}
+                    isLastKey={i() === props.value.length - 1}
+                    defaultExpansionDepth={props.defaultExpansionDepth}
+                    depth={props.depth + 1}
+                    collapsePaths={props.collapsePaths}
+                    path={props.path ? `${props.path}[${i()}]` : `[${i()}]`}
+                    config={props.config}
+                  />
+                )
+              }}
+            </For>
+          </span>
+        </Show>
 
-      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
-        [
-      </span>
-
-      <Show when={expanded()}>
-        <span
-          data-tsd-separator={props.keyName ? '' : undefined}
-          class={styles().tree.expandedLine(Boolean(props.keyName))}
-        >
-          <For each={props.value}>
-            {(item, i) => {
-              const isLastKey = i() === props.value.length - 1
-              return (
-                <JsonValue
-                  copyable={props.copyable}
-                  value={item}
-                  isLastKey={isLastKey}
-                  defaultExpansionDepth={props.defaultExpansionDepth}
-                  depth={props.depth + 1}
-                  collapsePaths={props.collapsePaths}
-                  path={props.path ? `${props.path}[${i()}]` : `[${i()}]`}
-                  config={props.config}
-                />
-              )
+        <Show when={!expanded()}>
+          <span
+            data-tsd-syntax="comment"
+            onClick={(e) => {
+              e.stopPropagation()
+              e.stopImmediatePropagation()
+              setExpanded(!expanded())
             }}
-          </For>
+            class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+          >
+            {`...`}
+          </span>
+        </Show>
+        <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+          ]
         </span>
-      </Show>
-
-      <Show when={!expanded()}>
-        <span
-          data-tsd-syntax="comment"
-          onClick={(e) => {
-            e.stopPropagation()
-            e.stopImmediatePropagation()
-            setExpanded(!expanded())
-          }}
-          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-        >
-          {`...`}
-        </span>
-      </Show>
-      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
-        ]
       </span>
-    </span>
+    </Show>
   )
 }
 
@@ -279,124 +281,124 @@ const ObjectValue = (props: {
   const styles = createStyles()
 
   const [expanded, setExpanded] = createSignal(
-    props.depth <= props.defaultExpansionDepth &&
+    () =>
+      props.depth <= props.defaultExpansionDepth &&
       !props.collapsePaths?.includes(props.path),
   )
 
-  const keys = Object.keys(props.value)
-  const lastKeyName = keys[keys.length - 1]
-
-  if (props.value instanceof Date) {
-    return (
-      <span class={styles().tree.expanderContainer}>
-        {props.keyName && (
-          <span
-            data-tsd-syntax="property"
-            class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-          >
-            &quot;{props.keyName}&quot;:{' '}
-          </span>
-        )}
-
-        <span data-tsd-syntax="string" class={styles().tree.valueBraces}>
-          {dayjs(props.value).format(
-            props.config?.dateFormat ? props.config.dateFormat : 'DDMMMYY',
-          )}
-        </span>
-      </span>
-    )
-  }
-
-  if (keys.length === 0) {
-    return (
-      <span class={styles().tree.expanderContainer}>
-        {props.keyName && (
-          <span
-            data-tsd-syntax="property"
-            class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-          >
-            &quot;{props.keyName}&quot;:{' '}
-          </span>
-        )}
-
-        <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
-          {'{}'}
-        </span>
-      </span>
-    )
-  }
+  const keys = createMemo(() => Object.keys(props.value))
+  const lastKeyName = () => keys()[keys().length - 1]
 
   return (
-    <span class={styles().tree.expanderContainer}>
-      {props.keyName && (
-        <Expander
-          onClick={() => setExpanded(!expanded())}
-          expanded={expanded()}
-        />
-      )}
+    <Switch
+      fallback={
+        <span class={styles().tree.expanderContainer}>
+          {props.keyName && (
+            <Expander
+              onClick={() => setExpanded(!expanded())}
+              expanded={expanded()}
+            />
+          )}
 
-      {props.keyName && (
-        <span
-          onClick={(e) => {
-            e.stopPropagation()
-            e.stopImmediatePropagation()
-            setExpanded(!expanded())
-          }}
-          data-tsd-syntax="property"
-          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-        >
-          &quot;{props.keyName}&quot;:{' '}
-          <span class={styles().tree.info}>{keys.length} items</span>
+          {props.keyName && (
+            <span
+              onClick={(e) => {
+                e.stopPropagation()
+                e.stopImmediatePropagation()
+                setExpanded(!expanded())
+              }}
+              data-tsd-syntax="property"
+              class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+            >
+              &quot;{props.keyName}&quot;:{' '}
+              <span class={styles().tree.info}>{keys().length} items</span>
+            </span>
+          )}
+
+          <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+            {'{'}
+          </span>
+
+          <Show when={expanded()}>
+            <span
+              data-tsd-separator={props.keyName ? '' : undefined}
+              class={styles().tree.expandedLine(Boolean(props.keyName))}
+            >
+              <For each={keys()}>
+                {(k) => (
+                  <>
+                    <JsonValue
+                      value={props.value[k]}
+                      keyName={k}
+                      isLastKey={lastKeyName() === k}
+                      copyable={props.copyable}
+                      defaultExpansionDepth={props.defaultExpansionDepth}
+                      depth={props.depth + 1}
+                      collapsePaths={props.collapsePaths}
+                      path={`${props.path}${props.path ? '.' : ''}${k}`}
+                      config={props.config}
+                    />
+                  </>
+                )}
+              </For>
+            </span>
+          </Show>
+
+          <Show when={!expanded()}>
+            <span
+              data-tsd-syntax="comment"
+              onClick={(e) => {
+                e.stopPropagation()
+                e.stopImmediatePropagation()
+                setExpanded(!expanded())
+              }}
+              class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+            >
+              {`...`}
+            </span>
+          </Show>
+
+          <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+            {'}'}
+          </span>
         </span>
-      )}
+      }
+    >
+      <Match when={props.value instanceof Date}>
+        <span class={styles().tree.expanderContainer}>
+          {props.keyName && (
+            <span
+              data-tsd-syntax="property"
+              class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+            >
+              &quot;{props.keyName}&quot;:{' '}
+            </span>
+          )}
 
-      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
-        {'{'}
-      </span>
-
-      <Show when={expanded()}>
-        <span
-          data-tsd-separator={props.keyName ? '' : undefined}
-          class={styles().tree.expandedLine(Boolean(props.keyName))}
-        >
-          <For each={keys}>
-            {(k) => (
-              <>
-                <JsonValue
-                  value={props.value[k]}
-                  keyName={k}
-                  isLastKey={lastKeyName === k}
-                  copyable={props.copyable}
-                  defaultExpansionDepth={props.defaultExpansionDepth}
-                  depth={props.depth + 1}
-                  collapsePaths={props.collapsePaths}
-                  path={`${props.path}${props.path ? '.' : ''}${k}`}
-                  config={props.config}
-                />
-              </>
+          <span data-tsd-syntax="string" class={styles().tree.valueBraces}>
+            {dayjs(props.value as unknown as Date).format(
+              props.config?.dateFormat ? props.config.dateFormat : 'DDMMMYY',
             )}
-          </For>
+          </span>
         </span>
-      </Show>
+      </Match>
+      <Match when={keys().length === 0}>
+        <span class={styles().tree.expanderContainer}>
+          {props.keyName && (
+            <span
+              data-tsd-syntax="property"
+              class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
+            >
+              &quot;{props.keyName}&quot;:{' '}
+            </span>
+          )}
 
-      <Show when={!expanded()}>
-        <span
-          data-tsd-syntax="comment"
-          onClick={(e) => {
-            e.stopPropagation()
-            e.stopImmediatePropagation()
-            setExpanded(!expanded())
-          }}
-          class={clsx(styles().tree.valueKey, styles().tree.collapsible)}
-        >
-          {`...`}
+          <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
+            {'{}'}
+          </span>
         </span>
-      </Show>
-
-      <span data-tsd-syntax="punctuation" class={styles().tree.valueBraces}>
-        {'}'}
-      </span>
-    </span>
+      </Match>
+    </Switch>
   )
 }
 
@@ -469,8 +471,8 @@ const Expander = (props: { expanded: boolean; onClick: () => void }) => {
     <span
       data-tsd-control
       role="button"
-      tabIndex={0}
-      aria-expanded={props.expanded}
+      tabindex={0}
+      aria-expanded={props.expanded ? 'true' : 'false'}
       aria-label={props.expanded ? 'Collapse value' : 'Expand value'}
       onClick={props.onClick}
       onKeyDown={(event) => {

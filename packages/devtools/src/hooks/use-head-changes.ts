@@ -1,4 +1,4 @@
-import { onCleanup, onMount } from 'solid-js'
+import { onSettled } from 'solid-js'
 
 type HeadChange =
   | { kind: 'added'; node: Node }
@@ -59,7 +59,7 @@ export function createHeadChanges(
     observeTitle = true,
   } = opts
 
-  onMount(() => {
+  onSettled(() => {
     const headObserver = new MutationObserver((mutations) => {
       for (const m of mutations) {
         if (m.type === 'childList') {
@@ -119,9 +119,9 @@ export function createHeadChanges(
       })
     }
 
-    onCleanup(() => {
+    return () => {
       headObserver.disconnect()
       titleObserver?.disconnect()
-    })
+    }
   })
 }

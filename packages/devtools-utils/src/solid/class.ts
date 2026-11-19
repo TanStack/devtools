@@ -1,5 +1,5 @@
 import type { TanStackDevtoolsPluginProps } from '@tanstack/devtools'
-import type { JSX } from 'solid-js'
+import type { JSX } from '@solidjs/web'
 
 /**
  * Constructs the core class for the Devtools.

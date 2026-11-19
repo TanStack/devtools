@@ -1,7 +1,7 @@
 import { defineConfig, mergeConfig } from 'vitest/config'
 import { fileURLToPath } from 'node:url'
 import { tanstackViteConfig } from '@tanstack/vite-config'
-import solid from 'vite-plugin-solid'
+import solid from '@solidjs/vite-plugin'
 import packageJson from './package.json'
 import type { Plugin } from 'vite'
 
@@ -9,9 +9,6 @@ const config = defineConfig({
   plugins: [
     solid({
       ssr: process.env.VITEST !== 'true',
-      // Vitest 4's module runner treats `/@solid-refresh` as `file:///@solid-refresh`
-      // and throws. HMR is not used in tests.
-      hot: process.env.VITEST !== 'true',
     }) as any satisfies Plugin,
   ],
   test: {
