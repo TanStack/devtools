@@ -230,9 +230,7 @@ interface HttpServerLike {
     listener: (...args: Array<any>) => void,
   ) => this
   address: () =>
-    | { port: number; family: string; address: string }
-    | string
-    | null
+    { port: number; family: string; address: string } | string | null
 }
 ```
 

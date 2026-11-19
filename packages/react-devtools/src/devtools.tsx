@@ -19,8 +19,7 @@ type TriggerProps = {
 }
 
 type TriggerRender =
-  | JSX.Element
-  | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
+  JSX.Element | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
 
 export type TanStackDevtoolsReactPlugin = Omit<
   TanStackDevtoolsPlugin,

@@ -145,8 +145,7 @@ interface TanStackDevtoolsInit {
      * An optional custom function to render the dev tools trigger component.
      */
     customTrigger?:
-      | ((el: HTMLElement, props: TriggerProps) => SolidElement)
-      | SolidElement
+      ((el: HTMLElement, props: TriggerProps) => SolidElement) | SolidElement
   }
   /**
    * Configuration for the TanStack Devtools client event bus.
