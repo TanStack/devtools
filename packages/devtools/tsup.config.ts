@@ -1,3 +1,4 @@
+import { constants } from 'node:fs'
 import { copyFile, mkdir, readFile } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { defineConfig } from 'tsup'
@@ -38,10 +39,15 @@ const devtoolsUiFonts: Plugin = {
         const [, relativePath, fileName] = match
         const outDir = join(build.initialOptions.outdir!, 'assets')
         await mkdir(outDir, { recursive: true })
+        // The prod and dev builds run at the same time and copy the same
+        // fonts. When the other build has the file already, skip it.
         await copyFile(
           resolve(dirname(args.path), relativePath!),
           join(outDir, fileName!),
-        )
+          constants.COPYFILE_EXCL,
+        ).catch((error: NodeJS.ErrnoException) => {
+          if (error.code !== 'EEXIST' && error.code !== 'EBUSY') throw error
+        })
         return {
           contents: source.replace(relativePath!, `../assets/${fileName}`),
           loader: 'js',

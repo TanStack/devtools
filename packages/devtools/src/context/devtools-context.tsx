@@ -15,9 +15,8 @@ import {
   setStorageItem,
 } from '../utils/storage'
 import { initialState } from './devtools-store'
-import type { DevtoolsStore } from './devtools-store'
+import type { DevtoolsStore, TanStackDevtoolsTheme } from './devtools-store'
 import type { JSX } from '@solidjs/web'
-import type { TanStackDevtoolsTheme } from '@tanstack/devtools-ui'
 
 export interface TanStackDevtoolsPluginProps {
   theme: TanStackDevtoolsTheme
