@@ -28,6 +28,7 @@ packages:
 #   - nx:      build orchestrator; postinstall sets up native bindings
 #
 # Denied (not required for `pnpm run build` / `pnpm run test:ci`):
+#   - @google/genai: preinstall only echoes "no-op" (start-repro example)
 #   - @parcel/watcher: only used for `nx watch`, not for builds
 #   - lmdb / msgpackr-extract: nx cache optimization (JS fallback works)
 #   - protobufjs: postinstall is a perf-only optimization
@@ -36,6 +37,7 @@ packages:
 #   - vue-demi: postinstall is a no-op outside Vue 2/3 projects
 #   - workerd: only used by the bundling-repro example (excluded from build)
 allowBuilds:
+  '@google/genai': false
   '@parcel/watcher': false
   esbuild: true
   lmdb: false
