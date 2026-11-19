@@ -5,6 +5,7 @@ import { SourceInspector } from './source-inspector'
 import type { TanStackDevtoolsConfig } from '../context/devtools-context'
 
 const SOURCE = 'src/App.tsx:12:3'
+const INSPECT_KEYS = ['Shift', 'Alt', 'Control']
 
 const renderInspector = (config?: Partial<TanStackDevtoolsConfig>) =>
   render(() => (
@@ -13,27 +14,39 @@ const renderInspector = (config?: Partial<TanStackDevtoolsConfig>) =>
     </DevtoolsProvider>
   ))
 
+/** jsdom implements no `elementFromPoint`, so it is assigned rather than spied on. */
+const hover = (element: Element) => {
+  document.elementFromPoint = () => element
+  document.dispatchEvent(
+    new MouseEvent('mousemove', { clientX: 5, clientY: 5 }),
+  )
+}
+
+const holdInspectHotkey = () => {
+  for (const key of INSPECT_KEYS) {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key }))
+  }
+}
+
 /**
- * Puts the pointer over a `data-tsd-source` element, arms the inspector and
- * clicks.
+ * Puts the pointer over `element` and arms the inspector.
  *
  * The highlight effect reads the element under the cursor rather than the event
- * target, so `elementFromPoint` is stubbed and the pointer moved before the
- * hotkey flips the inspector on. jsdom implements no `elementFromPoint`, hence
- * the assignment rather than a spy.
+ * target, so the position has to be moved and `elementFromPoint` stubbed before
+ * the hotkey flips the inspector on.
  */
+const hoverWithHotkey = (element: Element) => {
+  hover(element)
+  holdInspectHotkey()
+}
+
+/** Arms the inspector over a `data-tsd-source` element and clicks it. */
 const inspectClick = async () => {
   const target = document.createElement('button')
   target.setAttribute('data-tsd-source', SOURCE)
   document.body.append(target)
-  document.elementFromPoint = () => target
 
-  document.dispatchEvent(
-    new MouseEvent('mousemove', { clientX: 5, clientY: 5 }),
-  )
-  for (const key of ['Shift', 'Alt', 'Control']) {
-    window.dispatchEvent(new KeyboardEvent('keydown', { key }))
-  }
+  hoverWithHotkey(target)
   await Promise.resolve()
 
   target.dispatchEvent(new MouseEvent('click', { bubbles: true }))
@@ -113,5 +126,56 @@ describe('SourceInspector', () => {
     expect(writeText).toHaveBeenCalledWith(SOURCE)
     expect(openSourceUrl).not.toHaveBeenCalled()
     expect(fetch).not.toHaveBeenCalled()
+  })
+
+  it('opens the source of an element whose ancestor stops click propagation', async () => {
+    renderInspector()
+
+    // A modal, a dropdown, a menu: anything that closes on an outside click
+    // stops propagation, which is enough to hide the click from a listener that
+    // waits for the bubble phase.
+    const modal = document.createElement('div')
+    const target = document.createElement('button')
+    target.setAttribute('data-tsd-source', SOURCE)
+    modal.append(target)
+    document.body.append(modal)
+    modal.addEventListener('click', (e) => e.stopPropagation())
+
+    const activated = vi.fn()
+    target.addEventListener('click', activated)
+
+    hoverWithHotkey(target)
+    await Promise.resolve()
+
+    target.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+
+    expect(activated).not.toHaveBeenCalled()
+    expect(fetch).toHaveBeenCalledOnce()
+    expect(String(vi.mocked(fetch).mock.calls[0]![0])).toContain(
+      `__tsd/open-source?source=${encodeURIComponent(SOURCE)}`,
+    )
+
+    modal.remove()
+  })
+
+  it('leaves ordinary clicks alone when the hotkey is not held', async () => {
+    renderInspector()
+
+    const target = document.createElement('button')
+    target.setAttribute('data-tsd-source', SOURCE)
+    document.body.append(target)
+
+    const activated = vi.fn()
+    target.addEventListener('click', activated)
+
+    hover(target)
+    await Promise.resolve()
+
+    target.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+
+    expect(activated).toHaveBeenCalledOnce()
+    expect(fetch).not.toHaveBeenCalled()
+
+    target.remove()
   })
 })
