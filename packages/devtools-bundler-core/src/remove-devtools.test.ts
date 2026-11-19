@@ -427,6 +427,50 @@ export default function DevtoolsExample() {
       )
     })
 
+    test('it removes the import when a plugin factory is called directly in the plugins array', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+import { hotkeysDevtoolsPlugin } from '@tanstack/react-hotkeys-devtools'
+
+export const App = () => (
+  <TanStackDevtools plugins={[hotkeysDevtoolsPlugin()]} />
+)
+`,
+          'test.tsx',
+        )!.code,
+      )
+
+      expect(output).toBe(
+        removeEmptySpace(`
+export const App = () => (null)
+`),
+      )
+    })
+
+    test('it removes the import when a plugin identifier is used directly in the plugins array', () => {
+      const output = removeEmptySpace(
+        removeDevtools(
+          `
+import { TanStackDevtools } from '@tanstack/react-devtools'
+import { myPlugin } from './my-plugin'
+
+export const App = () => (
+  <TanStackDevtools plugins={[myPlugin]} />
+)
+`,
+          'test.tsx',
+        )!.code,
+      )
+
+      expect(output).toBe(
+        removeEmptySpace(`
+export const App = () => (null)
+`),
+      )
+    })
+
     test('it removes the import completely even if used as a function instead of jsx', () => {
       const output = removeEmptySpace(
         removeDevtools(
