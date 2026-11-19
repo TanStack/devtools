@@ -1,0 +1,30 @@
+import { createSignal } from 'solid-js'
+import { render } from 'solid-js/web'
+import { TanStackDevtools } from '@tanstack/solid-devtools'
+
+function DemoPlugin() {
+  const [count, setCount] = createSignal(0)
+  return (
+    <button data-testid="demo-plugin" onClick={() => setCount(count() + 1)}>
+      clicks: {count()}
+    </button>
+  )
+}
+
+function App() {
+  return (
+    <>
+      <h1>solid 1 e2e</h1>
+      <TanStackDevtools
+        plugins={[
+          {
+            name: 'Demo',
+            render: <DemoPlugin />,
+          },
+        ]}
+      />
+    </>
+  )
+}
+
+render(() => <App />, document.getElementById('root')!)
