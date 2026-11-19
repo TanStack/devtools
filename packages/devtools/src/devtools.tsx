@@ -4,7 +4,6 @@ import {
   createMemo,
   createSignal,
   onCleanup,
-  untrack,
 } from 'solid-js'
 import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from '@solidjs/web'
@@ -76,9 +75,10 @@ export default function DevTools() {
   const { setHeight } = createHeight()
   const { persistOpen, setPersistOpen } = createPersistOpen()
   const [rootEl, setRootEl] = createSignal<HTMLDivElement>()
-  const [isOpen, setIsOpen] = createSignal(
-    untrack(() => settings().defaultOpen || persistOpen()),
-  )
+  // Follows the stored open state; local writes (toggle, resize) win until
+  // `defaultOpen` or the persisted state changes.
+  const defaultOpen = createMemo(() => settings().defaultOpen)
+  const [isOpen, setIsOpen] = createSignal(() => defaultOpen() || persistOpen())
   const pip = createPiPWindow()
   let panelRef: HTMLDivElement | undefined
   const [isResizing, setIsResizing] = createSignal(false)
@@ -177,18 +177,12 @@ export default function DevTools() {
   // A memo owns what it creates, so changing the hotkey disposes the old
   // shortcuts before registering the new ones.
   createMemo(() => {
-    const permutations = getHotkeyPermutations(settings().openHotkey)
-    untrack(() => {
-      for (const permutation of permutations) {
-        createShortcut(permutation, () => {
-          if (
-            !hiddenInAutomation() &&
-            !isEditableTarget(document.activeElement)
-          )
-            toggleOpen()
-        })
-      }
-    })
+    for (const permutation of getHotkeyPermutations(settings().openHotkey)) {
+      createShortcut(permutation, () => {
+        if (!hiddenInAutomation() && !isEditableTarget(document.activeElement))
+          toggleOpen()
+      })
+    }
   })
 
   const { theme } = createTheme()

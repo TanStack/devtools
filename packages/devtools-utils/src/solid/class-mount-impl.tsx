@@ -1,6 +1,6 @@
 /** @jsxImportSource @solidjs/web - we use Solid.js as JSX here */
 
-import { Show, createComponent, createSignal, untrack } from 'solid-js'
+import { Show, createComponent, createSignal } from 'solid-js'
 import { Portal, render } from '@solidjs/web'
 
 import type { Component } from 'solid-js'
@@ -25,8 +25,8 @@ export function __mountComponent(
       <Portal mount={el}>
         <div style={{ height: '100%' }}>
           {/* Set once, when the chunk arrives. */}
-          <Show when={panel()}>
-            {(Panel) => createComponent(untrack(Panel), props)}
+          <Show when={panel()} keyed>
+            {(Panel) => createComponent(Panel, props)}
           </Show>
         </div>
       </Portal>

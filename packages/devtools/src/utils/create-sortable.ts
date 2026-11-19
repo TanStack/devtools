@@ -1,4 +1,4 @@
-import { createEffect, onCleanup, untrack } from 'solid-js'
+import { createEffect, createSignal, onCleanup } from 'solid-js'
 import { SORTABLE_KEY_ATTR, SortableList } from '@neodrag/core/sortable'
 import type { SortableOptions, SortableRow } from '@neodrag/core/sortable'
 
@@ -8,11 +8,18 @@ import type { SortableOptions, SortableRow } from '@neodrag/core/sortable'
  * item. Pass `items` (and any other option) as a getter to keep it live.
  */
 export function createSortable<T = unknown>(options: SortableOptions<T>) {
+  const [node, setNode] = createSignal<HTMLElement>()
   let list: SortableList<T> | null = null
+  let listNode: HTMLElement | undefined
 
   createEffect(
-    () => ({ ...options }),
-    (next) => list?.update(next),
+    () => ({ el: node(), next: { ...options } }),
+    ({ el, next }) => {
+      if (el === listNode) return list?.update(next)
+      list?.destroy()
+      listNode = el
+      list = el ? new SortableList(el, next) : null
+    },
   )
   onCleanup(() => {
     list?.destroy()
@@ -20,12 +27,8 @@ export function createSortable<T = unknown>(options: SortableOptions<T>) {
   })
 
   return {
-    ref: (node: HTMLElement) => {
-      list?.destroy()
-      list = new SortableList(
-        node,
-        untrack(() => ({ ...options })),
-      )
+    ref: (el: HTMLElement) => {
+      setNode(el)
     },
     row: (key: string): SortableRow => ({ [SORTABLE_KEY_ATTR]: key }),
   }

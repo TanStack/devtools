@@ -7,7 +7,6 @@ import {
   onCleanup,
   onSettled,
   runWithOwner,
-  untrack,
 } from 'solid-js'
 import { Portal } from '@solidjs/web'
 import type { JSX } from '@solidjs/web'
@@ -167,28 +166,34 @@ export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
       ? (el, triggerProps) => convertTrigger(el, triggerProps)
       : undefined,
   })
-  const devtools = new TanStackDevtoolsCore({
-    config: untrack(shellConfig),
-    eventBusConfig: untrack(() => props.eventBusConfig),
-    plugins: untrack(pluginsMap),
-  })
+  // Created at mount with the values current then; later changes reach it
+  // through the effects below.
+  let devtools: TanStackDevtoolsCore | undefined
   let devToolRef: HTMLDivElement | undefined
 
   createEffect(shellConfig, (config) => {
-    devtools.setConfig({ config })
+    devtools?.setConfig({ config })
   })
 
   // Update plugins when they change
   createEffect(pluginsMap, (currentPlugins) => {
     if (currentPlugins) {
-      devtools.setConfig({ plugins: currentPlugins })
+      devtools?.setConfig({ plugins: currentPlugins })
     }
   })
 
   onSettled(() => {
     if (!devToolRef) return
-    devtools.mount(devToolRef)
-    return () => devtools.unmount()
+    const core = (devtools = new TanStackDevtoolsCore({
+      config: shellConfig(),
+      eventBusConfig: props.eventBusConfig,
+      plugins: pluginsMap(),
+    }))
+    core.mount(devToolRef)
+    return () => {
+      core.unmount()
+      devtools = undefined
+    }
   })
   return <div style={{ position: 'absolute' }} ref={devToolRef} />
 }

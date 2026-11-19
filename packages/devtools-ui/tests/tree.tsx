@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { flush } from 'solid-js'
+import { createStore, flush } from 'solid-js'
 import { render } from '@solidjs/web'
 import { JsonTree } from '../src/components/tree'
 import { ThemeContextProvider } from '../src/components/theme'
@@ -309,6 +309,28 @@ describe('JsonTree', () => {
       const text = String(el.textContent)
       expect(text.indexOf('[')).toBeLessThan(text.indexOf('10'))
       expect(text.indexOf('10')).toBeLessThan(text.indexOf(']'))
+    })
+  })
+
+  describe('live values', () => {
+    it('follows a store whose array and keys change in place', () => {
+      const [state, setState] = createStore<{
+        items: Array<number>
+        meta: Record<string, number>
+      }>({ items: [], meta: {} })
+      const el = renderTree(state, { defaultExpansionDepth: 2 })
+      expect(el.textContent).toContain('"items": []')
+      expect(el.textContent).toContain('"meta": {}')
+
+      setState((s) => {
+        s.items.push(7)
+        s.meta.added = 3
+      })
+      flush()
+      expect(el.textContent).toContain('"items": 1 items')
+      expect(el.textContent).toContain('7')
+      expect(el.textContent).toContain('"meta": 1 items')
+      expect(el.textContent).toContain('"added": 3')
     })
   })
 })

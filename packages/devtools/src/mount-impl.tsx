@@ -1,4 +1,4 @@
-import { Show, createComponent, createSignal, untrack } from 'solid-js'
+import { Show, createComponent, createSignal } from 'solid-js'
 import { Portal, render } from '@solidjs/web'
 import { ClientEventBus } from '@tanstack/devtools-event-bus/client'
 import { DevtoolsProvider } from './context/devtools-context'
@@ -46,8 +46,8 @@ export function mountDevtools(options: MountOptions): MountResult {
         <PiPProvider>
           <Portal mount={el}>
             {/* Set once, when the chunk arrives. */}
-            <Show when={devtools()}>
-              {(Shell) => createComponent(untrack(Shell), {})}
+            <Show when={devtools()} keyed>
+              {(Shell) => createComponent(Shell, {})}
             </Show>
           </Portal>
         </PiPProvider>

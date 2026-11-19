@@ -1,4 +1,4 @@
-import { For, createEffect, createMemo, untrack } from 'solid-js'
+import { For, createEffect, createMemo } from 'solid-js'
 import {
   createCollapsed,
   createDevtoolsState,
@@ -124,8 +124,8 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
               name(heading, renderProps)
             }
           }
-          // The ref renders the name first; this re-renders it on change.
-          createEffect(nameProps, renderName, { defer: true })
+          // Runs after the ref is set, and again when the name inputs change.
+          createEffect(nameProps, renderName)
 
           return (
             <WorkbenchSecondaryTab
@@ -146,7 +146,6 @@ export const PluginsStrip = (props: { isOpen: Accessor<boolean> }) => {
                 id={`${PLUGIN_TITLE_CONTAINER_ID}-${plugin.id}`}
                 ref={(element) => {
                   heading = element
-                  renderName(untrack(nameProps))
                 }}
                 style={
                   typeof plugin.name === 'function'

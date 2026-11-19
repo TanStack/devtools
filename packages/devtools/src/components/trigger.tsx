@@ -5,7 +5,6 @@ import {
   createSignal,
   flush,
   onCleanup,
-  untrack,
 } from 'solid-js'
 import clsx from 'clsx'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
@@ -211,12 +210,14 @@ export const Trigger = (props: {
   // On-screen pixels, used by drag and throw. The stored `triggerCoords` is a
   // percent of the free space, see `persist` and `placeFromSettings`.
   const [coords, setCoords] = createSignal<TriggerCoords | null>(null)
+  // Follow the stored corner/edge (local writes win until settings change;
+  // `persist` writes them back).
   const [pinnedCorner, setPinnedCorner] = createSignal<TriggerCorner | null>(
-    untrack(() => settings().triggerCorner ?? null),
+    () => settings().triggerCorner ?? null,
   )
   const [hotCorner, setHotCorner] = createSignal<TriggerCorner | null>(null)
   const [dockedEdge, setDockedEdge] = createSignal<TriggerEdge | null>(
-    untrack(() => settings().triggerEdge ?? null),
+    () => settings().triggerEdge ?? null,
   )
   const [hoverEdge, setHoverEdge] = createSignal<TriggerEdge | null>(null)
   const [tooltipVisible, setTooltipVisible] = createSignal(false)
@@ -678,14 +679,17 @@ export const Trigger = (props: {
   // position. The percent always maps into view, so a spot saved in a larger
   // window, or the off-screen spot it was docked at, never loads off-screen.
   let seededSpot: TriggerCoords | undefined
-  const placeFromSettings = (el: HTMLElement) => {
+  const placeFromSettings = (
+    el: HTMLElement,
+    corner: TriggerCorner | null,
+    stored: TriggerCoords | undefined,
+  ) => {
     const b = bounds(el)
-    const corner = pinnedCorner()
     if (corner) {
       setCoords(cornerCoords(corner, b))
       return
     }
-    let spot = settings().triggerCoords ?? seededSpot
+    let spot = stored ?? seededSpot
     if (!spot) {
       const rect = el.getBoundingClientRect()
       spot = seededSpot = {
@@ -699,12 +703,19 @@ export const Trigger = (props: {
     })
   }
 
-  // Runs on going floating and on coming back from an edge dock. Reads
-  // settings untracked so this only runs on mode/ref/dock changes.
+  // Places the trigger on going floating, on coming back from an edge dock,
+  // and when the stored spot changes. Gestures set `coords` themselves (and
+  // persist the same spot), so a drag or throw in flight is left alone.
   createEffect(
-    () => (isFloating() && !dockedEdge() ? buttonRef() : undefined),
-    (el) => {
-      if (el) untrack(() => placeFromSettings(el))
+    () => {
+      const el = isFloating() && !dockedEdge() ? buttonRef() : undefined
+      return (
+        el && { el, corner: pinnedCorner(), stored: settings().triggerCoords }
+      )
+    },
+    (place) => {
+      if (place && !dragging && raf === undefined)
+        placeFromSettings(place.el, place.corner, place.stored)
     },
   )
 
@@ -729,7 +740,7 @@ export const Trigger = (props: {
       const el = buttonRef()
       // A drag or throw in flight owns the position; it persists when it ends.
       if (el && !dragging && raf === undefined) {
-        untrack(() => placeFromSettings(el))
+        placeFromSettings(el, pinnedCorner(), settings().triggerCoords)
       }
     }
     window.addEventListener('resize', onResize)

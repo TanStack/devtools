@@ -4,7 +4,6 @@ import {
   createEffect,
   createStore,
   reconcile,
-  untrack,
 } from 'solid-js'
 import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
 import { flattenTabs, repairLayout, singleGroup } from '../utils/layout-tree'
@@ -226,9 +225,9 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
 export const DevtoolsProvider = (props: ContextProps) => {
-  const initial = untrack(() =>
-    getExistingStateFromStorage(props.config, props.plugins),
-  )
+  // `config` and `plugins` are plain values here (initial settings; plugins
+  // update through `onSetPlugins`).
+  const initial = getExistingStateFromStorage(props.config, props.plugins)
   const [store, setStore] = createStore(initial)
 
   setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(initial.state))

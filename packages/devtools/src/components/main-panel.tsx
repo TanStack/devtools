@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { createEffect, createSignal, untrack } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
 import {
   createDevtoolsSettings,
   createHeight,
@@ -32,7 +32,7 @@ export const MainPanel = (props: {
       targetWindow.innerWidth
     )
   }
-  const [clientWidth, setClientWidth] = createSignal(untrack(readClientWidth))
+  const [clientWidth, setClientWidth] = createSignal(readClientWidth)
 
   createEffect(panelWindow, (targetWindow) => {
     if (!targetWindow) return
