@@ -491,9 +491,11 @@ const stylesFactory = (theme: TanStackDevtoolsTheme) => {
         display: block;
         padding-left: ${semantic.space[3]};
         margin-left: -${semantic.space[3]};
-        ${hasBorder
-          ? `border-left: 1px solid ${semantic.color.border.decorative};`
-          : ''}
+        ${
+          hasBorder
+            ? `border-left: 1px solid ${semantic.color.border.decorative};`
+            : ''
+        }
       `,
       collapsible: css`
         cursor: pointer;

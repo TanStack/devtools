@@ -6,8 +6,7 @@ import type {
 } from '@tanstack/devtools'
 
 export type TanStackDevtoolsAngularPluginInputs =
-  | Record<string, any>
-  | (() => Record<string, any>)
+  Record<string, any> | (() => Record<string, any>)
 
 interface DefaultExport<T> {
   /**

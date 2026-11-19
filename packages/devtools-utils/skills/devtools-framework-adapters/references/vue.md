@@ -246,12 +246,7 @@ const [MyPlugin, NoOpPlugin] = createVuePlugin('My Store', MyPanel)
 
 ```vue
 <template>
-  <MyPanel
-    theme="dark"
-    :devtools-props="{
-      /* ... */
-    }"
-  />
+  <MyPanel theme="dark" :devtools-props="{/* ... */}" />
 </template>
 ```
 
