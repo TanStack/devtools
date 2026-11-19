@@ -3,7 +3,10 @@ import { createComponent, createEffect, flush, useContext } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MAX_ACTIVE_PLUGINS } from '../utils/constants'
 import { flattenTabs } from '../utils/layout-tree'
-import { TANSTACK_DEVTOOLS_STATE } from '../utils/storage'
+import {
+  TANSTACK_DEVTOOLS_SETTINGS,
+  TANSTACK_DEVTOOLS_STATE,
+} from '../utils/storage'
 import {
   DevtoolsContext,
   DevtoolsProvider,
@@ -434,6 +437,47 @@ describe('provider resilience', () => {
     replace([{ name: 'New', render: () => {} }])
     flush()
     expect(ids).toEqual(['new-0'])
+    unmount()
+  })
+})
+
+describe('saving to localStorage', () => {
+  beforeEach(() => localStorage.clear())
+
+  const useDevtools = () => useContext(DevtoolsContext)
+  const mountProvider = () => {
+    let context!: ReturnType<typeof useDevtools>
+    const { unmount } = render(() =>
+      createComponent(DevtoolsProvider, {
+        plugins: [{ name: 'One', render: () => {} }],
+        get children() {
+          context = useDevtools()
+          return null
+        },
+      }),
+    )
+    flush()
+    return { context, unmount }
+  }
+  const saved = (key: string) => JSON.parse(localStorage.getItem(key)!)
+
+  it('keeps the saved settings when an update returns only state', () => {
+    const { context, unmount } = mountProvider()
+    context.setStore((prev) => ({
+      settings: { ...prev.settings, panelLocation: 'top' },
+    }))
+    flush()
+    context.setStore((prev) => ({ state: { ...prev.state, height: 321 } }))
+    flush()
+    expect(saved(TANSTACK_DEVTOOLS_SETTINGS).panelLocation).toBe('top')
+    expect(saved(TANSTACK_DEVTOOLS_STATE).height).toBe(321)
+    unmount()
+  })
+
+  it('saves the new layout from replaceLayout', () => {
+    const { context, unmount } = mountProvider()
+    context.replaceLayout(null)
+    expect(saved(TANSTACK_DEVTOOLS_STATE).layout).toBeNull()
     unmount()
   })
 })

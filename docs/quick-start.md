@@ -111,6 +111,8 @@ render(
 
 ## Solid
 
+`@tanstack/solid-devtools` works in Solid 1 (`solid-js` 1.9.13 or later) and Solid 2 apps. The example below uses Solid 2. In a Solid 1 app, import `render` from `solid-js/web`.
+
 Install the devtools and the Vite plugin:
 
 ```bash

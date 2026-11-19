@@ -18,7 +18,13 @@ export function __mountComponent(
   // boundary to keep the root from waiting on the chunk.
   const [panel, setPanel] =
     createSignal<Component<TanStackDevtoolsPluginProps>>()
-  void importFn().then((mod) => setPanel(() => mod.default))
+  importFn().then(
+    (mod) => setPanel(() => mod.default),
+    // The panel stays empty. `unmount()` still works, so a new mount can try
+    // again.
+    (err: unknown) =>
+      console.error('[TanStack Devtools] Failed to load the panel:', err),
+  )
 
   return render(
     () => (

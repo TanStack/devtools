@@ -260,10 +260,20 @@ export const DevtoolsProvider = (props: ContextProps) => {
     ) => {
       const newState = updater(store)
       const { settings, state: internalState } = newState
-      // Store user settings for dev tools into local storage
-      setStorageItem(TANSTACK_DEVTOOLS_SETTINGS, JSON.stringify(settings))
-      // Store general state into local storage
-      setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(internalState))
+      // Save only the sections the updater returned, merged the same way as
+      // the store below, so a partial result keeps the other saved values.
+      if (settings) {
+        setStorageItem(
+          TANSTACK_DEVTOOLS_SETTINGS,
+          JSON.stringify({ ...store.settings, ...settings }),
+        )
+      }
+      if (internalState) {
+        setStorageItem(
+          TANSTACK_DEVTOOLS_STATE,
+          JSON.stringify({ ...store.state, ...internalState }),
+        )
+      }
       // Callers hand back spread copies of `settings`/`state`. Write their
       // leaves into the existing nodes so only readers of a changed key re-run.
       setStore((draft) => {
@@ -290,7 +300,11 @@ export const DevtoolsProvider = (props: ContextProps) => {
           reconcile(next, null)(draft.state.layout)
         }
       })
-      setStorageItem(TANSTACK_DEVTOOLS_STATE, JSON.stringify(store.state))
+      // The store write above is not committed yet, so save `next` directly.
+      setStorageItem(
+        TANSTACK_DEVTOOLS_STATE,
+        JSON.stringify({ ...store.state, layout: next }),
+      )
     },
   }
 
