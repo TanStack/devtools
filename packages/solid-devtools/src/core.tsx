@@ -1,15 +1,5 @@
 import { TanStackDevtoolsCore } from '@tanstack/devtools'
-import {
-  createEffect,
-  createMemo,
-  createRoot,
-  getOwner,
-  onCleanup,
-  onSettled,
-  runWithOwner,
-} from 'solid-js'
-import { Portal } from '@solidjs/web'
-import type { JSX } from '@solidjs/web'
+import * as Solid from 'solid-js'
 import type {
   ClientEventBusConfig,
   TanStackDevtoolsConfig,
@@ -18,12 +8,37 @@ import type {
   TanStackDevtoolsTheme,
 } from '@tanstack/devtools'
 
+// This file works with Solid 1 and Solid 2, so it uses only the `solid-js`
+// APIs that both have, and no JSX (the two compilers emit different code).
+const { children, createMemo, createRoot, getOwner, onCleanup, runWithOwner } =
+  Solid
+
+/**
+ * Runs `apply` with the value of `compute` now and each time it changes.
+ * Solid 2 splits an effect into these two functions; Solid 1 runs one
+ * function, so the tracked read and the untracked write go in it in order.
+ */
+const isSolid2: boolean = 'onSettled' in Solid
+function watch<T>(compute: () => T, apply: (value: T) => void) {
+  if (isSolid2) {
+    ;(Solid.createEffect as any)(compute, apply)
+  } else {
+    ;(Solid.createEffect as any)(() => {
+      const value = compute()
+      Solid.untrack(() => apply(value))
+    })
+  }
+}
+
+/** A Solid element: `JSX.Element` in Solid 1, `Element` in Solid 2. */
+type SolidElement = unknown
+
 type SolidPluginRender =
-  | JSX.Element
+  | SolidElement
   | ((
       el: HTMLDivElement | HTMLHeadingElement,
       props: TanStackDevtoolsPluginProps,
-    ) => JSX.Element)
+    ) => SolidElement)
 export type TanStackDevtoolsSolidPlugin = Omit<
   TanStackDevtoolsPlugin,
   'render' | 'name'
@@ -71,10 +86,10 @@ export type TanStackDevtoolsSolidPlugin = Omit<
 interface TriggerProps {
   theme: TanStackDevtoolsTheme
 }
-export interface TanStackDevtoolsInit {
+interface TanStackDevtoolsInit {
   /**
    * Array of plugins to be used in the devtools.
-   * Each plugin should have a `render` function that returns a React element or a function
+   * Each plugin should have a `render` function that returns a Solid element or a function
    *
    * Example:
    * ```jsx
@@ -100,8 +115,8 @@ export interface TanStackDevtoolsInit {
      * An optional custom function to render the dev tools trigger component.
      */
     customTrigger?:
-      | ((el: HTMLElement, props: TriggerProps) => JSX.Element)
-      | JSX.Element
+      | ((el: HTMLElement, props: TriggerProps) => SolidElement)
+      | SolidElement
   }
   /**
    * Configuration for the TanStack Devtools client event bus.
@@ -109,27 +124,42 @@ export interface TanStackDevtoolsInit {
   eventBusConfig?: ClientEventBusConfig
 }
 
+/**
+ * Renders nothing. After the first render it mounts the devtools shell into an
+ * element at the end of `<body>`, so server and client output always match.
+ */
 export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
   // The shell calls `render`, `name` and `customTrigger` from its own
-  // effects, which own nothing in Solid 2 (and may run on another copy of
-  // Solid). Each mount node gets a root owned by this component instead: a
-  // new call replaces the node's previous root, and unmounting disposes them
-  // all.
+  // effects, on its own copy of Solid. Each mount node gets a root owned by
+  // this component, so plugins see the app's context and are disposed with
+  // it. A new call replaces the node's previous root.
   const owner = getOwner()
   const mounts = new Map<Element, () => void>()
-  const mountInto = (el: Element, content: () => JSX.Element) => {
+  const mountInto = (el: Element, content: () => unknown) => {
     mounts.get(el)?.()
     runWithOwner(owner, () =>
       createRoot((dispose) => {
-        mounts.set(el, dispose)
-        return <Portal mount={el}>{content()}</Portal>
+        mounts.set(el, () => {
+          dispose()
+          el.replaceChildren()
+        })
+        const resolved = children(content as () => any)
+        watch(
+          () => resolved.toArray(),
+          (nodes) =>
+            el.replaceChildren(
+              ...(nodes as Array<unknown>).flatMap((node) =>
+                node instanceof Node ||
+                typeof node === 'string' ||
+                typeof node === 'number'
+                  ? [node instanceof Node ? node : String(node)]
+                  : [],
+              ),
+            ),
+        )
       }),
     )
   }
-  onCleanup(() => {
-    for (const dispose of mounts.values()) dispose()
-    mounts.clear()
-  })
   const convertRender = (
     el: HTMLDivElement | HTMLHeadingElement,
     Component: SolidPluginRender,
@@ -146,9 +176,7 @@ export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
       name:
         typeof plugin.name === 'string'
           ? plugin.name
-          : // The check above confirms that `plugin.name` is of Render type
-            (el, renderProps) =>
-              convertRender(el, plugin.name as SolidPluginRender, renderProps),
+          : (el, renderProps) => convertRender(el, plugin.name, renderProps),
       render: (el: HTMLDivElement, renderProps: TanStackDevtoolsPluginProps) =>
         convertRender(el, plugin.render, renderProps),
     })),
@@ -166,34 +194,39 @@ export default function SolidDevtoolsCore(props: TanStackDevtoolsInit) {
       ? (el, triggerProps) => convertTrigger(el, triggerProps)
       : undefined,
   })
-  // Created at mount with the values current then; later changes reach it
-  // through the effects below.
-  let devtools: TanStackDevtoolsCore | undefined
-  let devToolRef: HTMLDivElement | undefined
 
-  createEffect(shellConfig, (config) => {
-    devtools?.setConfig({ config })
-  })
-
+  let core: TanStackDevtoolsCore | undefined
+  let host: HTMLDivElement | undefined
+  // Effects run only in the browser and after the first render, so this is
+  // where the shell is created and mounted. Later runs pass on new config.
+  watch(
+    () => ({ config: shellConfig(), eventBusConfig: props.eventBusConfig }),
+    ({ config, eventBusConfig }) => {
+      if (core) {
+        core.setConfig({ config })
+        return
+      }
+      host = document.createElement('div')
+      document.body.append(host)
+      core = new TanStackDevtoolsCore({
+        config,
+        eventBusConfig,
+        plugins: Solid.untrack(pluginsMap),
+      })
+      core.mount(host)
+    },
+  )
   // Update plugins when they change
-  createEffect(pluginsMap, (currentPlugins) => {
-    if (currentPlugins) {
-      devtools?.setConfig({ plugins: currentPlugins })
-    }
+  watch(pluginsMap, (plugins) => {
+    if (plugins) core?.setConfig({ plugins })
   })
 
-  onSettled(() => {
-    if (!devToolRef) return
-    const core = (devtools = new TanStackDevtoolsCore({
-      config: shellConfig(),
-      eventBusConfig: props.eventBusConfig,
-      plugins: pluginsMap(),
-    }))
-    core.mount(devToolRef)
-    return () => {
-      core.unmount()
-      devtools = undefined
-    }
+  onCleanup(() => {
+    core?.unmount()
+    host?.remove()
+    core = undefined
+    for (const dispose of mounts.values()) dispose()
+    mounts.clear()
   })
-  return <div style={{ position: 'absolute' }} ref={devToolRef} />
+  return null
 }

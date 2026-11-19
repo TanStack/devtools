@@ -6,8 +6,9 @@
 '@tanstack/solid-devtools': minor
 ---
 
-Move the devtools to Solid 2. They require `solid-js` and `@solidjs/web` 2.0.0 or later.
+Move the devtools to Solid 2.
 
-- `@tanstack/devtools`, `@tanstack/devtools-ui` and `@tanstack/devtools-a11y` render with their own copy of Solid 2 and no longer have a `solid-js` peer, so React, Vue, Svelte, Angular and Preact apps are unaffected. A Solid 1 app that uses them bundles a second copy of Solid in development.
-- `@tanstack/solid-devtools` and `@tanstack/devtools-utils/solid` are for Solid 2 apps. Solid 1 apps stay on `@tanstack/solid-devtools` 0.8.x and `@tanstack/devtools-utils` 0.7.x.
-- Panels built on `@tanstack/devtools-ui` 0.7.x keep working, because they render with their own Solid 1 copy. Moving a panel to `@tanstack/devtools-ui` 0.8 means moving it to Solid 2.
+- `@tanstack/devtools` bundles its own production copy of Solid 2. It works the same in React, Vue, Svelte, Angular, Preact, Solid 1 and Solid 2 apps, and it adds no Solid warnings to the app's console.
+- `@tanstack/solid-devtools` works in Solid 1 (`solid-js` 1.9.13 or later) and Solid 2 apps.
+- `@tanstack/devtools-ui`, `@tanstack/devtools-a11y` and `@tanstack/devtools-utils/solid` use Solid 2 (`solid-js` and `@solidjs/web` 2.0.0 or later). In a Solid 1 app built with `vite-plugin-solid`, these versions stop the dev server, because the plugin gives every package the app's copy of `solid-js`. Solid 1 apps stay on `@tanstack/devtools-a11y` 0.2.x and `@tanstack/devtools-utils` 0.7.x.
+- Panels built on `@tanstack/devtools-ui` 0.7.x keep working in React and Solid 1 apps. Moving a panel to `@tanstack/devtools-ui` 0.8 means moving it to Solid 2.
