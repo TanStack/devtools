@@ -1,4 +1,5 @@
 cleanupUnusedCatalogs: true
+minimumReleaseAge: 1440
 linkWorkspacePackages: true
 preferWorkspacePackages: true
 blockExoticSubdeps: true
@@ -9,6 +10,13 @@ trustPolicyExclude:
   - 'semver@5.7.2 || 6.3.1' # transitive dependencies of Babel, already in the lockfile
   - 'rxjs@7.8.2' # already in the lockfile; an earlier-published 8.0 alpha had provenance
   - 'solid-js@1.9.17' # Solid 1 for examples on the published adapters; released after a provenance-signed 2.0 RC
+
+trustPolicyExclude:
+  - 'chokidar@4.0.3' # Socket score 99; popular and well maintained.
+  - 'semver@5.7.2' # Socket score 100; popular and well maintained.
+  - 'semver@6.3.1' # Socket score 100; popular and well maintained.
+  - 'undici-types@6.21.0' # Socket score 100; popular and well maintained.
+  - 'vite@6.4.1' # Socket score 94; popular and well maintained.
 
 packages:
   - examples/**/*
