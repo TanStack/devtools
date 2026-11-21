@@ -66,13 +66,13 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@solidjs/web": "^2.0.0",
+    "@solidjs/web": "^2.0.3",
     "clsx": "^2.1.1",
-    "dayjs": "^1.11.19",
-    "goober": "^2.1.16",
-    "solid-js": "^2.0.0"
+    "dayjs": "^1.11.23",
+    "goober": "^2.1.19",
+    "solid-js": "^2.0.3"
   },
   "devDependencies": {
-    "@solidjs/vite-plugin": "^3.0.0"
+    "@solidjs/vite-plugin": "^3.0.1"
   }
 }
