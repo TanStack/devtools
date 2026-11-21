@@ -10,16 +10,16 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@solidjs/web": "^2.0.0",
+    "@solidjs/web": "^2.0.3",
     "@tanstack/devtools-e2e": "workspace:*",
     "@tanstack/solid-devtools": "workspace:*",
-    "solid-js": "^2.0.0"
+    "solid-js": "^2.0.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0",
-    "@solidjs/vite-plugin": "^3.0.0",
+    "@playwright/test": "^1.65.1",
+    "@solidjs/vite-plugin": "^3.0.1",
     "@tanstack/devtools-vite": "workspace:*",
-    "typescript": "~5.9.2",
+    "typescript": "~5.9.3",
     "vite": "^8.0.0"
   }
 }
