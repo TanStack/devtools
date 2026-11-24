@@ -17,9 +17,7 @@ import { devtools } from '@tanstack/devtools-rspack'
 export default {
   plugins: [
     // Important to include it first!
-    devtools({
-      /* options */
-    }),
+    devtools({/* options */}),
     // ...rest of the plugins
   ],
 }

@@ -602,9 +602,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
      */
     workbenchCollapseToggle: (isCollapsed: boolean) => css`
       position: absolute;
-      top: ${isCollapsed
-        ? WORKBENCH_HEADER_HEIGHT
-        : WORKBENCH_HEADER_HEIGHT + PLUGINS_STRIP_HEIGHT}px;
+      top: ${
+        isCollapsed
+          ? WORKBENCH_HEADER_HEIGHT
+          : WORKBENCH_HEADER_HEIGHT + PLUGINS_STRIP_HEIGHT
+      }px;
       inset-inline-end: 7%;
       z-index: 10;
       display: inline-flex;
@@ -935,21 +937,25 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        ${vertical
-          ? `width: 18px; height: ${TRIGGER_EDGE_TAB_LENGTH}px;`
-          : `width: ${TRIGGER_EDGE_TAB_LENGTH}px; height: 18px;`}
+        ${
+          vertical
+            ? `width: 18px; height: ${TRIGGER_EDGE_TAB_LENGTH}px;`
+            : `width: ${TRIGGER_EDGE_TAB_LENGTH}px; height: 18px;`
+        }
         padding: 0;
         appearance: none;
         background: ${TRIGGER_MARK_GRADIENT};
         color: ${semantic.color.text.inverse};
         border: 0;
-        ${edge === 'left'
-          ? `border-radius: 0 10px 10px 0;`
-          : edge === 'right'
-            ? `border-radius: 10px 0 0 10px;`
-            : edge === 'top'
-              ? `border-radius: 0 0 10px 10px;`
-              : `border-radius: 10px 10px 0 0;`}
+        ${
+          edge === 'left'
+            ? `border-radius: 0 10px 10px 0;`
+            : edge === 'right'
+              ? `border-radius: 10px 0 0 10px;`
+              : edge === 'top'
+                ? `border-radius: 0 0 10px 10px;`
+                : `border-radius: 10px 10px 0 0;`
+        }
         box-shadow: ${semantic.shadow.sm};
         cursor: pointer;
         overflow: hidden;
@@ -986,8 +992,9 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
           width: 30px;
           height: 30px;
         }
-        ${expandable
-          ? `
+        ${
+          expandable
+            ? `
               &:hover > [data-tsd-edge-chevron],
               &:focus-visible > [data-tsd-edge-chevron] {
                 opacity: 0;
@@ -997,19 +1004,22 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
                 opacity: 1;
               }
             `
-          : ''}
+            : ''
+        }
         @media (prefers-reduced-motion: reduce) {
           transition: opacity 0.25s ease-out;
           & > span {
             transition: none;
           }
         }
-        ${preview
-          ? `
+        ${
+          preview
+            ? `
               opacity: 0.6;
               pointer-events: none;
             `
-          : ''}
+            : ''
+        }
       `
     },
     triggerTooltip: css`
@@ -1066,24 +1076,36 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
     `,
     mainCloseBtnPosition: (position: TanStackDevtoolsConfig['position']) => {
       const base = css`
-        ${position === 'top-left'
-          ? `top: ${semantic.space[2]}; left: ${semantic.space[2]};`
-          : ''}
-        ${position === 'top-right'
-          ? `top: ${semantic.space[2]}; right: ${semantic.space[2]};`
-          : ''}
-        ${position === 'middle-left'
-          ? `top: 50%; left: ${semantic.space[2]}; transform: translateY(-50%);`
-          : ''}
-        ${position === 'middle-right'
-          ? `top: 50%; right: ${semantic.space[2]}; transform: translateY(-50%);`
-          : ''}
-        ${position === 'bottom-left'
-          ? `bottom: ${semantic.space[2]}; left: ${semantic.space[2]};`
-          : ''}
-        ${position === 'bottom-right'
-          ? `bottom: ${semantic.space[2]}; right: ${semantic.space[2]};`
-          : ''}
+        ${
+          position === 'top-left'
+            ? `top: ${semantic.space[2]}; left: ${semantic.space[2]};`
+            : ''
+        }
+        ${
+          position === 'top-right'
+            ? `top: ${semantic.space[2]}; right: ${semantic.space[2]};`
+            : ''
+        }
+        ${
+          position === 'middle-left'
+            ? `top: 50%; left: ${semantic.space[2]}; transform: translateY(-50%);`
+            : ''
+        }
+        ${
+          position === 'middle-right'
+            ? `top: 50%; right: ${semantic.space[2]}; transform: translateY(-50%);`
+            : ''
+        }
+        ${
+          position === 'bottom-left'
+            ? `bottom: ${semantic.space[2]}; left: ${semantic.space[2]};`
+            : ''
+        }
+        ${
+          position === 'bottom-right'
+            ? `bottom: ${semantic.space[2]}; right: ${semantic.space[2]};`
+            : ''
+        }
       `
       return base
     },
@@ -1350,9 +1372,11 @@ const stylesFactory = (theme: DevtoolsStore['settings']['theme']) => {
         background: transparent;
         border-radius: 999px;
         transition: background-color 0.15s ease;
-        ${dir === 'row'
-          ? 'top: 8px; bottom: 8px; left: 50%; width: 4px; transform: translateX(-50%);'
-          : 'left: 8px; right: 8px; top: 50%; height: 4px; transform: translateY(-50%);'}
+        ${
+          dir === 'row'
+            ? 'top: 8px; bottom: 8px; left: 50%; width: 4px; transform: translateX(-50%);'
+            : 'left: 8px; right: 8px; top: 50%; height: 4px; transform: translateY(-50%);'
+        }
       }
       &:hover::after,
       &:focus-visible::after {

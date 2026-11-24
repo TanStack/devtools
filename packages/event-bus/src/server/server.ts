@@ -58,11 +58,11 @@ export class ServerEventBus {
   #debug: boolean
   #externalServer: HttpServerLike | null = null
   #externalRequestHandler:
-    | ((req: http.IncomingMessage, res: http.ServerResponse) => void)
-    | null = null
+    ((req: http.IncomingMessage, res: http.ServerResponse) => void) | null =
+    null
   #externalUpgradeHandler:
-    | ((req: http.IncomingMessage, socket: Duplex, head: Buffer) => void)
-    | null = null
+    ((req: http.IncomingMessage, socket: Duplex, head: Buffer) => void) | null =
+    null
   #dispatcher = (e: Event) => {
     const event = (e as CustomEvent).detail
     this.debugLog('Dispatching event from dispatcher, forwarding', event)

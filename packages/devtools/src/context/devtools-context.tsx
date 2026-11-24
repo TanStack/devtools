@@ -106,8 +106,7 @@ export const DevtoolsContext = createContext<{
    */
   paneDragBridge: {
     handler:
-      | ((pluginId: string, point: { x: number; y: number }) => void)
-      | null
+      ((pluginId: string, point: { x: number; y: number }) => void) | null
   }
 }>()
 

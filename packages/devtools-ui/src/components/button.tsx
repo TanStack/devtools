@@ -6,12 +6,7 @@ import { createStyles } from '../styles/use-styles'
 import type { JSX } from '@solidjs/web'
 
 export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'danger'
-  | 'success'
-  | 'info'
-  | 'warning'
+  'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'warning'
 type ButtonProps = JSX.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant
   outline?: boolean
