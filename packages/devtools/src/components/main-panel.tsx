@@ -71,7 +71,7 @@ export const MainPanel = (props: {
       id={TANSTACK_DEVTOOLS}
       data-testid="tanstack-devtools-panel"
       data-open={String(props.isOpen())}
-      inert={!props.isOpen()}
+      inert={!props.isOpen() || undefined}
       data-subheader-collapsed={String(props.isCollapsed())}
       data-tsd-surface
       style={{
