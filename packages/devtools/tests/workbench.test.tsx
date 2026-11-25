@@ -206,6 +206,26 @@ afterEach(() => {
 })
 
 describe('workbench', { timeout: 30_000 }, () => {
+  it('preserves the resize handle tab stop when the panel opens', () => {
+    mountWorkbench([plugin('one')], { defaultOpen: false })
+    const panel = document.querySelector<HTMLElement>(
+      '[data-testid="tanstack-devtools-panel"]',
+    )!
+    const resizeHandle = panel.querySelector<HTMLElement>(
+      '[data-testid="tsd-resize-handle"]',
+    )!
+
+    click('Open TanStack Devtools')
+    flush()
+    expect(resizeHandle.tabIndex).toBe(0)
+    expect(panel.hasAttribute('inert')).toBe(false)
+
+    click('Close TanStack Devtools')
+    flush()
+    expect(panel.hasAttribute('inert')).toBe(true)
+    expect(resizeHandle.tabIndex).toBe(0)
+  })
+
   describe('hideInAutomation', () => {
     const devtoolsRoot = () =>
       document.querySelector('[data-testid="tanstack_devtools"]')

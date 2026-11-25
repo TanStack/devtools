@@ -17,7 +17,6 @@ import {
   createPersistOpen,
   createTheme,
 } from './context/use-devtools-context'
-import { createDisableTabbing } from './hooks/use-disable-tabbing'
 import { createModalHost } from './hooks/use-modal-host'
 import { TANSTACK_DEVTOOLS } from './utils/storage'
 import { getHotkeyPermutations } from './utils/hotkey'
@@ -158,7 +157,6 @@ export default function DevTools() {
   }
   window.addEventListener('keydown', onEscape)
   onCleanup(() => window.removeEventListener('keydown', onEscape))
-  createDisableTabbing(isOpen)
   createModalHost(() => settings().openAsModal, rootEl, isOpen)
   createEffect(rootEl, (element) => {
     if (element) {
