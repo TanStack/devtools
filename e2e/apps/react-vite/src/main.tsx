@@ -26,6 +26,7 @@ function App() {
       <TanStackDevtools
         config={{
           theme: 'dark',
+          defaultOpen: new URLSearchParams(location.search).has('default-open'),
           requireUrlFlag: new URLSearchParams(location.search).has('gated'),
           hideInAutomation: new URLSearchParams(location.search).has(
             'automation-hidden',

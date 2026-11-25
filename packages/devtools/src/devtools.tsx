@@ -89,6 +89,11 @@ export default function DevTools() {
   const hiddenInAutomation = () =>
     settings().hideInAutomation && navigator.webdriver
 
+  const isPanelVisible = () =>
+    pip().pipWindow !== null ||
+    !settings().requireUrlFlag ||
+    window.location.search.includes(settings().urlFlag)
+
   const updateHeight = (nextHeight: number) => {
     setHeight(nextHeight)
     setIsOpen(nextHeight >= PANEL_CLOSE_THRESHOLD)
@@ -159,7 +164,11 @@ export default function DevTools() {
   window.addEventListener('keydown', onEscape)
   onCleanup(() => window.removeEventListener('keydown', onEscape))
   createDisableTabbing(isOpen)
-  createModalHost(() => settings().openAsModal, rootEl, isOpen)
+  createModalHost(
+    () => settings().openAsModal && isPanelVisible(),
+    rootEl,
+    isOpen,
+  )
   createEffect(rootEl, (element) => {
     if (element) {
       element.style.setProperty(
@@ -202,15 +211,7 @@ export default function DevTools() {
       <Show when={!hiddenInAutomation()}>
         <Portal mount={(pip().pipWindow ?? window).document.body}>
           <div ref={setRootEl} data-testid={TANSTACK_DEVTOOLS}>
-            <Show
-              when={
-                pip().pipWindow !== null
-                  ? true
-                  : settings().requireUrlFlag
-                    ? window.location.search.includes(settings().urlFlag)
-                    : true
-              }
-            >
+            <Show when={isPanelVisible()}>
               <Trigger isOpen={isOpen} setIsOpen={toggleOpen} />
               <MainPanel
                 isResizing={isResizing}

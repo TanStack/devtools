@@ -29,6 +29,20 @@ async function closeButtonTakesClicks(page: Page) {
 }
 
 test.describe('openAsModal', () => {
+  test('the app dialog stays interactive without the required URL flag', async ({
+    page,
+  }) => {
+    const dt = new DevtoolsPage(page)
+    await dt.goto('/?gated&open-as-modal&default-open')
+    await expect(page.getByTestId('tanstack_devtools')).toBeAttached()
+    await page.getByTestId('open-app-dialog').click()
+
+    await expect(dt.panel()).toHaveCount(0)
+    const appDialogButton = page.getByTestId('app-dialog-button')
+    await appDialogButton.click({ timeout: 5000 })
+    await expect(appDialogButton).toBeFocused()
+  })
+
   test('the open panel takes input on top of a modal app dialog', async ({
     page,
   }) => {
