@@ -97,7 +97,7 @@ importers:
         version: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
 
   e2e/apps/angular:
     dependencies:
@@ -131,7 +131,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: ^21.2.0
-        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
+        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
       '@angular/cli':
         specifier: ^21.2.0
         version: 21.2.10(@cfworker/json-schema@4.1.6)(@types/node@22.19.15)(chokidar@5.0.0)
@@ -531,7 +531,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: ^21.2.0
-        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
+        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
       '@angular/cli':
         specifier: ^21.2.0
         version: 21.2.10(@cfworker/json-schema@4.1.6)(@types/node@22.19.15)(chokidar@5.0.0)
@@ -580,7 +580,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: ^21.2.0
-        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
+        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
       '@angular/cli':
         specifier: ^21.2.0
         version: 21.2.10(@cfworker/json-schema@4.1.6)(@types/node@22.19.15)(chokidar@5.0.0)
@@ -635,7 +635,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: ^21.2.0
-        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
+        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
       '@angular/cli':
         specifier: ^21.2.0
         version: 21.2.10(@cfworker/json-schema@4.1.6)(@types/node@22.19.15)(chokidar@5.0.0)
@@ -689,7 +689,7 @@ importers:
     devDependencies:
       '@angular/build':
         specifier: ^21.2.0
-        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
+        version: 21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)
       '@angular/cli':
         specifier: ^21.2.0
         version: 21.2.10(@cfworker/json-schema@4.1.6)(@types/node@22.19.15)(chokidar@5.0.0)
@@ -904,25 +904,25 @@ importers:
         version: 4.3.0(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
       '@tanstack/ai':
         specifier: latest
-        version: 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+        version: 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-anthropic':
         specifier: latest
-        version: 1.1.1(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(zod@4.4.3)
+        version: 1.2.1(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(zod@4.4.3)
       '@tanstack/ai-client':
         specifier: latest
-        version: 1.1.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+        version: 1.2.1(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-gemini':
         specifier: latest
-        version: 1.2.2(@modelcontextprotocol/sdk@1.26.0(@cfworker/json-schema@4.1.6)(zod@4.4.3))(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))
+        version: 1.3.0(@modelcontextprotocol/sdk@1.26.0(@cfworker/json-schema@4.1.6)(zod@4.4.3))(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))
       '@tanstack/ai-ollama':
         specifier: latest
-        version: 1.1.1(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))
+        version: 1.1.1(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))
       '@tanstack/ai-openai':
         specifier: latest
-        version: 1.1.1(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3)
+        version: 1.2.0(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3)
       '@tanstack/ai-react':
         specifier: latest
-        version: 1.0.2(@opentelemetry/api@1.10.0)(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(zod@4.4.3)
+        version: 1.1.1(@opentelemetry/api@1.10.0)(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(zod@4.4.3)
       '@tanstack/react-ai-devtools':
         specifier: latest
         version: 1.0.1(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@opentelemetry/api@1.10.0)(@types/react@19.2.14)(csstype@3.2.3)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.17)(svelte@5.55.1(@typescript-eslint/types@8.58.0))(vue@3.5.34(typescript@5.9.3))(zod@4.4.3)
@@ -1004,10 +1004,10 @@ importers:
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.0
-        version: 10.4.1
+        version: 10.4.2
       '@testing-library/react':
         specifier: ^16.2.0
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 16.3.2(@testing-library/dom@10.4.2)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@types/node':
         specifier: ^22.15.2
         version: 22.19.15
@@ -1034,7 +1034,7 @@ importers:
         version: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
       web-vitals:
         specifier: ^5.1.0
         version: 5.2.0
@@ -1227,10 +1227,10 @@ importers:
         version: link:../../../packages/devtools-vite
       '@testing-library/dom':
         specifier: ^10.4.0
-        version: 10.4.1
+        version: 10.4.2
       '@testing-library/react':
         specifier: ^16.2.0
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        version: 16.3.2(@testing-library/dom@10.4.2)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@types/node':
         specifier: ^22.15.2
         version: 22.19.15
@@ -1254,7 +1254,7 @@ importers:
         version: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
       web-vitals:
         specifier: ^5.1.0
         version: 5.2.0
@@ -1550,7 +1550,7 @@ importers:
         version: 21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3)
       vitest:
         specifier: ^4.1.10
-        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
 
   packages/devtools:
     dependencies:
@@ -1675,8 +1675,8 @@ importers:
         specifier: ^4.0.2
         version: 4.0.3
       happy-dom:
-        specifier: ^20.0.0
-        version: 20.9.0
+        specifier: ^21.0.0
+        version: 21.0.4
 
   packages/devtools-client:
     dependencies:
@@ -1703,8 +1703,8 @@ importers:
         version: 5.6.2
     devDependencies:
       happy-dom:
-        specifier: ^20.0.0
-        version: 20.9.0
+        specifier: ^21.0.0
+        version: 21.0.4
 
   packages/devtools-ui:
     dependencies:
@@ -1796,8 +1796,8 @@ importers:
         version: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
     devDependencies:
       happy-dom:
-        specifier: ^20.0.0
-        version: 20.9.0
+        specifier: ^21.0.0
+        version: 21.0.4
 
   packages/devtools-webmcp: {}
 
@@ -1805,7 +1805,7 @@ importers:
     dependencies:
       ws:
         specifier: ^8.18.3
-        version: 8.20.0
+        version: 8.23.0
     devDependencies:
       '@types/node':
         specifier: ^22.15.2
@@ -2570,11 +2570,11 @@ packages:
 
   '@esbuild-kit/core-utils@3.3.2':
     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
-    deprecated: 'Merged into tsx: https://tsx.is'
+    deprecated: 'Merged into tsx: https://tsx.hirok.io'
 
   '@esbuild-kit/esm-loader@2.6.5':
     resolution: {integrity: sha512-FxEMIkJKnodyA1OaCUoEvbYRkoZlLZ4d/eXFu9Fh8CbBBgP5EmZxrfTRyN0qpXZ4vOvqnE5YdRdcrmUUXuU+dA==}
-    deprecated: 'Merged into tsx: https://tsx.is'
+    deprecated: 'Merged into tsx: https://tsx.hirok.io'
 
   '@esbuild/aix-ppc64@0.25.12':
     resolution: {integrity: sha512-Hhmwd6CInZ3dwpuGTF8fJG6yoWmsToE+vYgD4nytZVxcu1ulHpUQRAB1UJ8+N1Am3Mz4+xOByoQoSZf4D+CpkA==}
@@ -4001,12 +4001,6 @@ packages:
   '@napi-rs/wasm-runtime@1.0.7':
     resolution: {integrity: sha512-SeDnOO0Tk7Okiq6DbXmmBODgOAb9dp9gjlphokTUxmt8U3liIP1ZsozBahH69j/RJv+Rfs6IwUKHTgQYJ/HBAw==}
 
-  '@napi-rs/wasm-runtime@1.1.4':
-    resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
-    peerDependencies:
-      '@emnapi/core': ^1.7.1
-      '@emnapi/runtime': ^1.7.1
-
   '@napi-rs/wasm-runtime@1.2.7':
     resolution: {integrity: sha512-zJccwplOAbgfZju95IUHazLnx9RAPtPN2YGJXI6UbrgeaR9QfPjGrQL6ERkSAtnVCA4Q+83ApGyaX5zdpCaKkQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=23.5.0}
@@ -5421,44 +5415,44 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tanstack/ai-anthropic@1.1.1':
-    resolution: {integrity: sha512-pQvU543yZ+HoLvuInTqx9xe93hWu0nBYyPPkXtsUQOBF2yO+aAfTyJpBZE9zz6EO2t/s5uVVJFq1BBwiNYOFag==}
+  '@tanstack/ai-anthropic@1.2.1':
+    resolution: {integrity: sha512-IrdliaPfwaiKIMWq4iEJoKWqKPGY1zDSQlqGhJoeaLcHoyvRQF4se7B10x71Ll+ekhVWvmiYsoWxTKOzYY8kvw==}
     peerDependencies:
       '@anthropic-ai/vertex-sdk': ^0.19.0
-      '@tanstack/ai': ^1.2.0
+      '@tanstack/ai': ^1.7.0
     peerDependenciesMeta:
       '@anthropic-ai/vertex-sdk':
         optional: true
 
-  '@tanstack/ai-client@1.1.0':
-    resolution: {integrity: sha512-XMTdKzB9JG851Sztd/ywaL9D9Mw5DS87nV2i+5/Yq9dT+JKMcGoXCriztyO+djwxHu5ZGY32o9o29zbMMBo9VQ==}
+  '@tanstack/ai-client@1.2.1':
+    resolution: {integrity: sha512-m6EjS6pRdbOxMrIIgWm6QtOfCGBbAh2QnV7PJ6b64xfeq908bTYk5U2dJKQboFN2PuAIHFa02Udbvu6nU5tp8g==}
 
   '@tanstack/ai-devtools-core@1.0.1':
     resolution: {integrity: sha512-XLlzw6XqPfqtR1E0E14ToVRIlNrKiX5iPsWPWz7InXetP1pDa2CP2X+j3WzUiIBsYIC+RS2Gz8C55g9+BAtqpA==}
 
-  '@tanstack/ai-event-client@1.0.1':
-    resolution: {integrity: sha512-IURnn4oRKJbtbAuC3GcXRcuKHi8DrPmwuACqaTq6ApSGlyJyHhq0NTksKEmzql2Z12+njFjsKSXG9c7UbSHTxg==}
+  '@tanstack/ai-event-client@1.1.0':
+    resolution: {integrity: sha512-g4ctAzbvC1CuAjjTnp8iH5hlnFzVPJybVhuRMItUb5ISC4bQsrhUyhrsZ4QHW1brEpaAhfdss+MpdWux+7glUw==}
 
-  '@tanstack/ai-gemini@1.2.2':
-    resolution: {integrity: sha512-TvPtHF2aajwgXIxsZKBIeQYT/X5Da3ZvTQgwpIX4blh/BCnC7N/4hs2Q3JG0r4IqIFToJSNfohoSVNBxpFTajg==}
+  '@tanstack/ai-gemini@1.3.0':
+    resolution: {integrity: sha512-PlaHO7+T7uRfoJtY2vAdmeM2v8g0k9W9sEHG3J7WG3L7MeAvwrgslzSEumZeWiCEFdlG4Qn0AOoyNnGe4ASWYw==}
     peerDependencies:
-      '@tanstack/ai': ^1.4.0
+      '@tanstack/ai': ^1.8.0
 
   '@tanstack/ai-ollama@1.1.1':
     resolution: {integrity: sha512-mxWIZp/1p2Q4+ctbjQVAq1fkExpLpOTT1TRsQcWJM1HObc/4W12SV2b3oQfmL8BoMq61LWrj+s6Sv0JVCwxBsw==}
     peerDependencies:
       '@tanstack/ai': ^1.3.0
 
-  '@tanstack/ai-openai@1.1.1':
-    resolution: {integrity: sha512-IzieUf8FmAaZOVV4ADM3PrL0W7GQ+SPB1BOLHU/EG+cVGcg+KuunlflNrjJJB7pcvJTZUoOhgBn2ljn8NH4mdw==}
+  '@tanstack/ai-openai@1.2.0':
+    resolution: {integrity: sha512-OLZ/w0m5J3Iu+8i0f78Jp+LOc2I3K8+yWTmDK+Rb5ft/LM+AqdM8krPKthvB//qPOSlmyK+qmrVeGShUYlcXVw==}
     peerDependencies:
-      '@tanstack/ai': ^1.2.0
+      '@tanstack/ai': ^1.7.0
 
-  '@tanstack/ai-react@1.0.2':
-    resolution: {integrity: sha512-c4khP6tKUVWUI0rehUuBSJTGJ2lH99qvdkxT6aBxmvhZVCps3icJYso0PCXJTCwEadML3k8j3+7o6159cu42/A==}
+  '@tanstack/ai-react@1.1.1':
+    resolution: {integrity: sha512-BAOSK+2w/g/r2l8NXbl0GgOR3hd+uqKalWwaFLPFEVSNzTwYIoHm27uX+1D+3Fo/DArwN6P2zLkhlDPK3+jaEg==}
     peerDependencies:
       '@mcp-ui/client': ^7
-      '@tanstack/ai': ^1.1.0
+      '@tanstack/ai': ^1.7.0
       '@types/react': '>=18.0.0'
       react: '>=18.0.0'
       react-dom: '>=18.0.0'
@@ -5471,8 +5465,8 @@ packages:
   '@tanstack/ai-utils@1.1.0':
     resolution: {integrity: sha512-li47v/794azVLourgteS/+jjH/ZF+cIp/3RMVA1VybtKAFiMy3ZGxREU10OzfUghMzYLdfpK2l6ahvlWxNVHug==}
 
-  '@tanstack/ai@1.4.0':
-    resolution: {integrity: sha512-3f0D9gFCk8LUe9qAPCsRkjlXU2bqbIKKMGGo9P6Q6O0vR+5/0N/J3x1J2QWYY8L3LNvJliZBDnutudEIRzNU8w==}
+  '@tanstack/ai@1.8.0':
+    resolution: {integrity: sha512-y6Ya7qweT4U8gsi/t16cQkHXB2SLxmVJBvvjEPdkSvgDqGeea6LWRk3vpjzs12IsNAHK231DY9t4hTC0x3ZiAw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@opentelemetry/api': '>=1.9.0'
@@ -5555,8 +5549,8 @@ packages:
     resolution: {integrity: sha512-83cjen+tYll6z0MIN0JC9GuMljUkfYfHFDOLhmROz4XMmbD/0ZjvKNOsFgpO7eq957XHB/qyK+hCO+3OS/D6HQ==}
     hasBin: true
 
-  '@tanstack/markdown@0.0.13':
-    resolution: {integrity: sha512-ZSQP2ulBvlPzdpZeRheBJnaELo7e4ET/D/XrfgweHyqhhLMN5vUJJAUl7ufSRd7GlfO/vwdzjKPh0E0JwqJkDA==}
+  '@tanstack/markdown@1.2.1':
+    resolution: {integrity: sha512-D/W8VHZe39mTGh74E5ZdmUPz9f/Gqso7ogKab3TRt3Mcto/IUGP94FTeI53hcNz1djwmo/s4hwU1og0rCPinOQ==}
     peerDependencies:
       octane: '>=0.1.12'
       react: '>=18'
@@ -5570,10 +5564,10 @@ packages:
     resolution: {integrity: sha512-Wo1iKt2b9OT7d+YGhvEPD3DXvPv2etTusIMhMUoG7fbhmxcXCtIjJDEygy91Y2JFlwGyjqiBPRozme7UD8hoqg==}
     engines: {node: '>=12'}
 
-  '@tanstack/openai-base@1.0.4':
-    resolution: {integrity: sha512-PjWt6NJzFhnNfxPKJgigyuM1ADWMEMp+11MyA6UTVpc9EtoyGDeM156KMZ68gX2y3Vhmxkb4Gmw/+B6TQpblRQ==}
+  '@tanstack/openai-base@1.1.0':
+    resolution: {integrity: sha512-Ki3i39DgnkhgYNk+NK9ec94m/+8hUDbkVRaRj8Zwvdg+IoSpfaQa0XKH8oEw7BY188di4j3p8k1t5BcFjWR0Vg==}
     peerDependencies:
-      '@tanstack/ai': ^1.4.0
+      '@tanstack/ai': ^1.7.0
 
   '@tanstack/pacer-lite@0.1.1':
     resolution: {integrity: sha512-y/xtNPNt/YeyoVxE/JCx+T7yjEzpezmbb+toK8DDD1P4m7Kzs5YR956+7OKexG3f8aXgC3rLZl7b1V+yNUSy5w==}
@@ -5871,10 +5865,6 @@ packages:
       '@vue/composition-api':
         optional: true
 
-  '@testing-library/dom@10.4.1':
-    resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
-    engines: {node: '>=18'}
-
   '@testing-library/dom@10.4.2':
     resolution: {integrity: sha512-yzr2S9HyAIdhz2/6qHgbs665Q7PKVcDF05vsOlHPxG1mo36gKVesdYVeDLnXgfjJ03CrKRk08knc6+E/9m8v2Q==}
     engines: {node: '>=18'}
@@ -5905,12 +5895,6 @@ packages:
   '@tufjs/models@4.1.0':
     resolution: {integrity: sha512-Y8cK9aggNRsqJVaKUlEYs4s7CvQ1b1ta2DVPyAimb0I2qhzjNk+A+mxvll/klL0RlfuIUei8BF7YWiua4kQqww==}
     engines: {node: ^20.17.0 || >=22.9.0}
-
-  '@tybys/wasm-util@0.10.1':
-    resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
-
-  '@tybys/wasm-util@0.10.2':
-    resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
 
   '@tybys/wasm-util@0.10.4':
     resolution: {integrity: sha512-W3c4gRigFS0T/Ma4qIYF3GDAc5AQdHb1yL5znJT1Zv1YaD9Kitx656wBjvr19qbiosmZT8lWDM5BEMynUqX65A==}
@@ -6719,6 +6703,10 @@ packages:
 
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
+
+  buffer-image-size@0.6.4:
+    resolution: {integrity: sha512-nEh+kZOPY1w+gcCMobZ6ETUp9WfibndnosbpwB1iJk/8Gt5ZF2bhS6+B6bPYz424KtwsR6Rflc3tCz1/ghX2dQ==}
+    engines: {node: '>=4.0'}
 
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -7755,6 +7743,7 @@ packages:
   eslint@9.39.4:
     resolution: {integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -8150,8 +8139,8 @@ packages:
   handle-thing@2.0.1:
     resolution: {integrity: sha512-9Qn4yBxelxoh2Ow62nP+Ka/kMnOXRi8BXnRaUwezLNhqelnN49xKz4F/dPP8OYLxLxq6JDtZb2i9XznUQbNPTg==}
 
-  happy-dom@20.9.0:
-    resolution: {integrity: sha512-GZZ9mKe8r646NUAf/zemnGbjYh4Bt8/MqASJY+pSm5ZDtc3YQox+4gsLI7yi1hba6o+eCsGxpHn5+iEVn31/FQ==}
+  happy-dom@21.0.4:
+    resolution: {integrity: sha512-tFm+GaLBgo6o0awHnvHaNoraVo27qJ+2tZEtZ+cIa08hXbeitrxAJajLI05hsUy/2/YTKcUjQYzHe5mCcraLBw==}
     engines: {node: '>=20.0.0'}
 
   has-flag@4.0.0:
@@ -8339,6 +8328,7 @@ packages:
   image-size@0.5.5:
     resolution: {integrity: sha512-6TDAlDPZxUFCv+fuOkIoXT/V/f3Qbq8e37p+YOiYrUv3v9cc3/6x78VdfPgFVaB9dZYeLUfKgHRebpkm/oP2VQ==}
     engines: {node: '>=0.10.0'}
+    deprecated: Please migrate to image-size@2.x
     hasBin: true
 
   immutable@5.1.5:
@@ -8653,9 +8643,6 @@ packages:
   langium@4.2.1:
     resolution: {integrity: sha512-zu9QWmjpzJcomzdJQAHgDVhLGq5bLosVak1KVa40NzQHXfqr4eAHupvnPOVXEoLkg6Ocefvf/93d//SB7du4YQ==}
     engines: {node: '>=20.10.0', npm: '>=10.2.3'}
-
-  launch-editor@2.13.2:
-    resolution: {integrity: sha512-4VVDnbOpLXy/s8rdRCSXb+zfMeFR0WlJWpET1iA9CQdlZDfwyLjUuGQzXU4VeOoey6AicSAluWan7Etga6Kcmg==}
 
   launch-editor@2.14.1:
     resolution: {integrity: sha512-QWBrQsMpH7gPr965dsKD/3cKWiNoTjpATQf++Xq63N6sKRGMwlVXz41O1IZTMfZQgBctD/K5Zt06+/I6pP6+HA==}
@@ -10161,21 +10148,9 @@ packages:
     resolution: {integrity: sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==}
     engines: {node: '>= 18'}
 
-  seroval-plugins@1.5.4:
-    resolution: {integrity: sha512-S0xQPhUTefAhNvNWFg0c1J8qJArHt5KdtJ/cFAofo06KD1MVSeFWyl4iiu+ApDIuw0WhjpOfCdgConOfAnLgkw==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      seroval: ^1.0
-
   seroval-plugins@1.6.12:
     resolution: {integrity: sha512-+reiwp/lYxiyctSrdvX7OQ1YLrcbWYgBiZrhSFL+V43b0/DGRLNVSDyZINbQe+tWplPOI2fw2dPrdv6hcc09kQ==}
     engines: {node: '>=10'}
-    peerDependencies:
-      seroval: ^1.0
-
-  seroval-plugins@1.7.0:
-    resolution: {integrity: sha512-WM4rArfPtLZriTuxC5DBvNulEwAaRcjNe/dkMOEesOcuvXf5nEwKf5Bw3AT92WHohqcc45+57GdtsCuBTI0mjw==}
-    engines: {node: '>=20'}
     peerDependencies:
       seroval: ^1.0
 
@@ -10185,17 +10160,9 @@ packages:
     peerDependencies:
       seroval: ^1.8.0
 
-  seroval@1.5.4:
-    resolution: {integrity: sha512-46uFvgrXTVxZcUorgSSRZ4y+ieqLLQRMlG4bnCZKW3qI6BZm7Rg4ntMW4p1mILEEBZWrFlcpp0AyIIlM6jD9iw==}
-    engines: {node: '>=10'}
-
   seroval@1.6.12:
     resolution: {integrity: sha512-CqbIVfk/7GL3ITwZI55lcPbpQbjHZ2DD5cUj4iH7E9YsCfHNJV1mx7yNp86Z84w5IpmkZZS/2s5vPOWmVWSdQg==}
     engines: {node: '>=10'}
-
-  seroval@1.7.0:
-    resolution: {integrity: sha512-FU+LUkmDzWNsJ6oubZFN3dGPKny53DRhPJG6nftEaXDL8MIn19+kEE1Gvc+63Go+qPOwVUlKIdKhsu2HN6tksw==}
-    engines: {node: '>=20'}
 
   seroval@1.8.1:
     resolution: {integrity: sha512-7z9x1flFYfZBz+LfDkXNfm5UIhZJ/97ASaV8Q1wctoVkeqVfv+tLPsWebeMXBNw6XprvwxDE5wC5Ylqmr+iSrA==}
@@ -10230,10 +10197,6 @@ packages:
 
   shell-quote@1.10.0:
     resolution: {integrity: sha512-w1aiOKwKuRgtwAReIIj89puqg+I7GvX4IbLrvmhXbzQsj1+Zwi4VO3+fa6ZF91TWSjIxoEkKnMeHcLEODK5ZXA==}
-    engines: {node: '>= 0.4'}
-
-  shell-quote@1.8.3:
-    resolution: {integrity: sha512-ObmnIF4hXNg1BqhnHmgbDETF8dLPCggZWBjkQfhZpbszZnYur5DUljTcCHii5LC3J5E0yeO/1LIMyH+UvHQgyw==}
     engines: {node: '>= 0.4'}
 
   sherif-darwin-arm64@1.11.1:
@@ -10420,11 +10383,6 @@ packages:
 
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
-
-  srvx@0.11.15:
-    resolution: {integrity: sha512-iXsux0UcOjdvs0LCMa2Ws3WwcDUozA3JN3BquNXkaFPP7TpRqgunKdEgoZ/uwb1J6xaYHfxtz9Twlh6yzwM6Tg==}
-    engines: {node: '>=20.16.0'}
-    hasBin: true
 
   srvx@0.11.16:
     resolution: {integrity: sha512-bp07zRuycfTY43IjAvvTFnmnJi8ikW0VFiHwOhhYcVW/L4xQ1XY4PAd4Nuum1rsA17C39zL7x+CDhrn5AL32Rw==}
@@ -10714,6 +10672,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
@@ -11347,8 +11306,8 @@ packages:
       utf-8-validate:
         optional: true
 
-  ws@8.20.0:
-    resolution: {integrity: sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA==}
+  ws@8.23.0:
+    resolution: {integrity: sha512-wCkmX8QMOrKjgO8HW2WyDbTSGeqkocxgDzS9iR79rEAexty6/2qzilx3Ag8Tqf9ykop3irLKle0MtVn5qjVnoQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -11612,7 +11571,7 @@ snapshots:
     transitivePeerDependencies:
       - chokidar
 
-  '@angular/build@21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)':
+  '@angular/build@21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.10(chokidar@5.0.0)
@@ -11653,7 +11612,7 @@ snapshots:
       ng-packagr: 21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.14
       tailwindcss: 4.3.0
-      vitest: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -11669,7 +11628,7 @@ snapshots:
       - tsx
       - yaml
 
-  '@angular/build@21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)':
+  '@angular/build@21.2.10(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(@angular/compiler@21.2.12)(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@angular/platform-browser@21.2.12(@angular/common@21.2.12(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2)))(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)(@types/node@22.19.15)(chokidar@5.0.0)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(ng-packagr@21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3))(postcss@8.5.14)(tailwindcss@4.3.0)(tslib@2.8.1)(tsx@4.21.0)(typescript@5.9.3)(vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)))(yaml@2.8.3)':
     dependencies:
       '@ampproject/remapping': 2.3.0
       '@angular-devkit/architect': 0.2102.10(chokidar@5.0.0)
@@ -11710,7 +11669,7 @@ snapshots:
       ng-packagr: 21.2.3(@angular/compiler-cli@21.2.12(@angular/compiler@21.2.12)(typescript@5.9.3))(tailwindcss@4.3.0)(tslib@2.8.1)(typescript@5.9.3)
       postcss: 8.5.14
       tailwindcss: 4.3.0
-      vitest: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
+      vitest: 4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -12353,30 +12312,30 @@ snapshots:
     dependencies:
       '@emnapi/wasi-threads': 1.2.1
       tslib: 2.8.1
+    optional: true
 
   '@emnapi/core@1.11.3':
     dependencies:
       '@emnapi/wasi-threads': 1.2.3
       tslib: 2.8.1
-    optional: true
 
   '@emnapi/runtime@1.10.0':
     dependencies:
       tslib: 2.8.1
+    optional: true
 
   '@emnapi/runtime@1.11.3':
     dependencies:
       tslib: 2.8.1
-    optional: true
 
   '@emnapi/wasi-threads@1.2.1':
     dependencies:
       tslib: 2.8.1
+    optional: true
 
   '@emnapi/wasi-threads@1.2.3':
     dependencies:
       tslib: 2.8.1
-    optional: true
 
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:
@@ -12845,7 +12804,7 @@ snapshots:
       google-auth-library: 10.6.2
       p-retry: 4.6.2
       protobufjs: 7.5.8
-      ws: 8.20.0
+      ws: 8.23.0
     optionalDependencies:
       '@modelcontextprotocol/sdk': 1.26.0(@cfworker/json-schema@4.1.6)(zod@4.4.3)
     transitivePeerDependencies:
@@ -12963,7 +12922,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.34.5':
     dependencies:
-      '@emnapi/runtime': 1.10.0
+      '@emnapi/runtime': 1.11.3
     optional: true
 
   '@img/sharp-win32-arm64@0.34.5':
@@ -13520,34 +13479,27 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.11.3
       '@emnapi/runtime': 1.11.3
-      '@tybys/wasm-util': 0.10.1
+      '@tybys/wasm-util': 0.10.4
     optional: true
 
   '@napi-rs/wasm-runtime@0.2.4':
     dependencies:
-      '@emnapi/core': 1.10.0
-      '@emnapi/runtime': 1.10.0
+      '@emnapi/core': 1.11.3
+      '@emnapi/runtime': 1.11.3
       '@tybys/wasm-util': 0.9.0
 
   '@napi-rs/wasm-runtime@1.0.7':
     dependencies:
       '@emnapi/core': 1.11.3
       '@emnapi/runtime': 1.11.3
-      '@tybys/wasm-util': 0.10.2
+      '@tybys/wasm-util': 0.10.4
     optional: true
 
-  '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
+  '@napi-rs/wasm-runtime@1.2.7(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
-      '@tybys/wasm-util': 0.10.1
-    optional: true
-
-  '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
-    dependencies:
-      '@emnapi/core': 1.11.3
-      '@emnapi/runtime': 1.11.3
-      '@tybys/wasm-util': 0.10.1
+      '@tybys/wasm-util': 0.10.4
     optional: true
 
   '@napi-rs/wasm-runtime@1.2.7(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
@@ -13730,7 +13682,7 @@ snapshots:
 
   '@oxc-parser/binding-wasm32-wasi@0.120.0(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -13801,7 +13753,7 @@ snapshots:
 
   '@oxc-resolver/binding-wasm32-wasi@11.19.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -13862,7 +13814,7 @@ snapshots:
       detect-libc: 2.1.2
       is-glob: 4.0.3
       node-addon-api: 7.1.1
-      picomatch: 4.0.4
+      picomatch: 4.0.5
     optionalDependencies:
       '@parcel/watcher-android-arm64': 2.5.6
       '@parcel/watcher-darwin-arm64': 2.5.6
@@ -14031,12 +13983,12 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
-      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
     optional: true
 
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -14077,9 +14029,9 @@ snapshots:
 
   '@rollup/pluginutils@5.3.0(rollup@4.60.1)':
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       estree-walker: 2.0.2
-      picomatch: 4.0.4
+      picomatch: 4.0.5
     optionalDependencies:
       rollup: 4.60.1
 
@@ -14239,7 +14191,7 @@ snapshots:
       http-proxy-middleware: 2.0.10(@types/express@4.17.25)
       p-retry: 6.2.1
       webpack-dev-server: 5.2.2(tslib@2.8.1)
-      ws: 8.20.0
+      ws: 8.23.0
     transitivePeerDependencies:
       - '@types/express'
       - bufferutil
@@ -14271,7 +14223,7 @@ snapshots:
       graceful-fs: 4.2.11
       http-proxy-middleware: 2.0.10(@types/express@4.17.25)
       ipaddr.js: 2.4.0
-      launch-editor: 2.13.2
+      launch-editor: 2.14.1
       open: 10.2.0
       p-retry: 6.2.1
       schema-utils: 4.3.3
@@ -14280,7 +14232,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 7.4.5(tslib@2.8.1)
-      ws: 8.20.0
+      ws: 8.23.0
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -14645,7 +14597,7 @@ snapshots:
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
       estraverse: 5.3.0
-      picomatch: 4.0.4
+      picomatch: 4.0.5
 
   '@sveltejs/acorn-typescript@1.0.9(acorn@8.16.0)':
     dependencies:
@@ -14749,18 +14701,18 @@ snapshots:
       tailwindcss: 4.3.0
       vite: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
 
-  '@tanstack/ai-anthropic@1.1.1(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(zod@4.4.3)':
+  '@tanstack/ai-anthropic@1.2.1(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(zod@4.4.3)':
     dependencies:
       '@anthropic-ai/sdk': 0.135.0(zod@4.4.3)
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-utils': 1.1.0
     transitivePeerDependencies:
       - zod
 
-  '@tanstack/ai-client@1.1.0(@opentelemetry/api@1.10.0)(zod@4.4.3)':
+  '@tanstack/ai-client@1.2.1(@opentelemetry/api@1.10.0)(zod@4.4.3)':
     dependencies:
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
-      '@tanstack/ai-event-client': 1.0.1
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai-event-client': 1.1.0
       '@tanstack/ai-utils': 1.1.0
       '@tanstack/store': 0.11.2
     transitivePeerDependencies:
@@ -14769,8 +14721,8 @@ snapshots:
 
   '@tanstack/ai-devtools-core@1.0.1(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@opentelemetry/api@1.10.0)(@types/react@19.2.14)(csstype@3.2.3)(preact@11.0.1)(react@19.2.6)(svelte@5.55.1(@typescript-eslint/types@8.58.0))(vue@3.5.34(typescript@5.9.3))(zod@4.4.3)':
     dependencies:
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
-      '@tanstack/ai-event-client': 1.0.1
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai-event-client': 1.1.0
       '@tanstack/devtools-ui': 0.5.1(csstype@3.2.3)(solid-js@1.9.17)
       '@tanstack/devtools-utils': 0.7.2(@angular/core@21.2.12(@angular/compiler@21.2.12)(rxjs@7.8.2))(@types/react@19.2.14)(preact@11.0.1)(react@19.2.6)(solid-js@1.9.17)(svelte@5.55.1(@typescript-eslint/types@8.58.0))(vue@3.5.34(typescript@5.9.3))
       goober: 2.1.18(csstype@3.2.3)
@@ -14786,14 +14738,14 @@ snapshots:
       - vue
       - zod
 
-  '@tanstack/ai-event-client@1.0.1':
+  '@tanstack/ai-event-client@1.1.0':
     dependencies:
       '@tanstack/devtools-event-client': 0.4.3
 
-  '@tanstack/ai-gemini@1.2.2(@modelcontextprotocol/sdk@1.26.0(@cfworker/json-schema@4.1.6)(zod@4.4.3))(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))':
+  '@tanstack/ai-gemini@1.3.0(@modelcontextprotocol/sdk@1.26.0(@cfworker/json-schema@4.1.6)(zod@4.4.3))(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))':
     dependencies:
       '@google/genai': 2.32.0(@modelcontextprotocol/sdk@1.26.0(@cfworker/json-schema@4.1.6)(zod@4.4.3))
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-utils': 1.1.0
       partial-json: 0.1.7
     transitivePeerDependencies:
@@ -14802,18 +14754,18 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@tanstack/ai-ollama@1.1.1(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))':
+  '@tanstack/ai-ollama@1.1.1(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))':
     dependencies:
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-utils': 1.1.0
       ollama: 0.6.3
 
-  '@tanstack/ai-openai@1.1.1(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3)':
+  '@tanstack/ai-openai@1.2.0(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3)':
     dependencies:
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-utils': 1.1.0
-      '@tanstack/openai-base': 1.0.4(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3)
-      openai: 7.56.0(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3)
+      '@tanstack/openai-base': 1.1.0(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3)
+      openai: 7.56.0(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3)
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@smithy/hash-node'
@@ -14823,11 +14775,11 @@ snapshots:
       - ws
       - zod
 
-  '@tanstack/ai-react@1.0.2(@opentelemetry/api@1.10.0)(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(zod@4.4.3)':
+  '@tanstack/ai-react@1.1.1(@opentelemetry/api@1.10.0)(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(zod@4.4.3)':
     dependencies:
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
-      '@tanstack/ai-client': 1.1.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
-      '@tanstack/markdown': 0.0.13(react@19.2.6)
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai-client': 1.2.1(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/markdown': 1.2.1(react@19.2.6)
       '@types/react': 19.2.14
       react: 19.2.6
     optionalDependencies:
@@ -14839,12 +14791,12 @@ snapshots:
 
   '@tanstack/ai-utils@1.1.0': {}
 
-  '@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)':
+  '@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)':
     dependencies:
       '@ag-ui/core': 1.0.0(zod@4.4.3)
       '@cfworker/json-schema': 4.1.6
       '@standard-schema/spec': 1.1.0
-      '@tanstack/ai-event-client': 1.0.1
+      '@tanstack/ai-event-client': 1.1.0
       '@tanstack/ai-utils': 1.1.0
       fast-json-patch: 3.1.1
       partial-json: 0.1.7
@@ -14931,7 +14883,7 @@ snapshots:
     dependencies:
       yaml: 2.8.3
 
-  '@tanstack/markdown@0.0.13(react@19.2.6)':
+  '@tanstack/markdown@1.2.1(react@19.2.6)':
     optionalDependencies:
       react: 19.2.6
 
@@ -14939,11 +14891,11 @@ snapshots:
     dependencies:
       remove-accents: 0.5.0
 
-  '@tanstack/openai-base@1.0.4(@tanstack/ai@1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3)':
+  '@tanstack/openai-base@1.1.0(@tanstack/ai@1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3))(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3)':
     dependencies:
-      '@tanstack/ai': 1.4.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
+      '@tanstack/ai': 1.8.0(@opentelemetry/api@1.10.0)(zod@4.4.3)
       '@tanstack/ai-utils': 1.1.0
-      openai: 7.56.0(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3)
+      openai: 7.56.0(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3)
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-node'
       - '@smithy/hash-node'
@@ -15163,15 +15115,15 @@ snapshots:
     dependencies:
       '@tanstack/history': 1.161.6
       cookie-es: 3.1.1
-      seroval: 1.5.4
-      seroval-plugins: 1.5.4(seroval@1.5.4)
+      seroval: 1.8.1
+      seroval-plugins: 1.8.0(seroval@1.8.1)
 
   '@tanstack/router-core@1.171.22':
     dependencies:
       '@tanstack/history': 1.162.1
       cookie-es: 3.1.1
-      seroval: 1.7.0
-      seroval-plugins: 1.7.0(seroval@1.7.0)
+      seroval: 1.8.1
+      seroval-plugins: 1.8.0(seroval@1.8.1)
 
   '@tanstack/router-devtools-core@1.167.3(@tanstack/router-core@1.171.22)(csstype@3.2.3)':
     dependencies:
@@ -15304,7 +15256,7 @@ snapshots:
       '@tanstack/router-core': 1.169.2
       '@tanstack/start-fn-stubs': 1.161.6
       '@tanstack/start-storage-context': 1.166.35
-      seroval: 1.5.4
+      seroval: 1.8.1
 
   '@tanstack/start-fn-stubs@1.161.6': {}
 
@@ -15324,10 +15276,10 @@ snapshots:
       exsolve: 1.0.8
       lightningcss: 1.32.0
       pathe: 2.0.3
-      picomatch: 4.0.4
-      seroval: 1.5.4
+      picomatch: 4.0.5
+      seroval: 1.8.1
       source-map: 0.7.6
-      srvx: 0.11.15
+      srvx: 0.11.16
       tinyglobby: 0.2.16
       ufo: 1.6.3
       vitefu: 1.1.2(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
@@ -15358,10 +15310,10 @@ snapshots:
       exsolve: 1.0.8
       lightningcss: 1.32.0
       pathe: 2.0.3
-      picomatch: 4.0.4
-      seroval: 1.5.4
+      picomatch: 4.0.5
+      seroval: 1.8.1
       source-map: 0.7.6
-      srvx: 0.11.15
+      srvx: 0.11.16
       tinyglobby: 0.2.16
       ufo: 1.6.3
       vitefu: 1.1.2(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
@@ -15384,7 +15336,7 @@ snapshots:
       '@tanstack/start-storage-context': 1.166.35
       fetchdts: 0.1.7
       h3-v2: h3@2.0.1-rc.20(crossws@0.4.17(srvx@1.0.8))
-      seroval: 1.5.4
+      seroval: 1.8.1
     transitivePeerDependencies:
       - crossws
 
@@ -15435,17 +15387,6 @@ snapshots:
       vue: 3.5.34(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.34(typescript@5.9.3))
 
-  '@testing-library/dom@10.4.1':
-    dependencies:
-      '@babel/code-frame': 7.29.0
-      '@babel/runtime': 7.29.2
-      '@types/aria-query': 5.0.4
-      aria-query: 5.3.0
-      dom-accessibility-api: 0.5.16
-      lz-string: 1.5.0
-      picocolors: 1.1.1
-      pretty-format: 27.5.1
-
   '@testing-library/dom@10.4.2':
     dependencies:
       '@babel/code-frame': 7.29.0
@@ -15466,16 +15407,6 @@ snapshots:
       picocolors: 1.1.1
       redent: 3.0.0
 
-  '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
-    dependencies:
-      '@babel/runtime': 7.29.2
-      '@testing-library/dom': 10.4.1
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-    optionalDependencies:
-      '@types/react': 19.2.14
-      '@types/react-dom': 19.2.3(@types/react@19.2.14)
-
   '@testing-library/react@16.3.2(@testing-library/dom@10.4.2)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@babel/runtime': 7.29.2
@@ -15492,16 +15423,6 @@ snapshots:
     dependencies:
       '@tufjs/canonical-json': 2.0.0
       minimatch: 10.2.5
-
-  '@tybys/wasm-util@0.10.1':
-    dependencies:
-      tslib: 2.8.1
-    optional: true
-
-  '@tybys/wasm-util@0.10.2':
-    dependencies:
-      tslib: 2.8.1
-    optional: true
 
   '@tybys/wasm-util@0.10.4':
     dependencies:
@@ -16422,6 +16343,10 @@ snapshots:
   buffer-equal-constant-time@1.0.1: {}
 
   buffer-from@1.1.2: {}
+
+  buffer-image-size@0.6.4:
+    dependencies:
+      '@types/node': 22.19.15
 
   buffer@5.7.1:
     dependencies:
@@ -17495,7 +17420,7 @@ snapshots:
   eslint-scope@9.1.2:
     dependencies:
       '@types/esrecurse': 4.3.1
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       esrecurse: 4.3.0
       estraverse: 5.3.0
 
@@ -17518,7 +17443,7 @@ snapshots:
       '@humanfs/node': 0.16.7
       '@humanwhocodes/module-importer': 1.0.1
       '@humanwhocodes/retry': 0.4.3
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       ajv: 6.14.0
       chalk: 4.1.2
       cross-spawn: 7.0.6
@@ -17717,10 +17642,6 @@ snapshots:
   fd-package-json@2.0.0:
     dependencies:
       walk-up-path: 4.0.0
-
-  fdir@6.5.0(picomatch@4.0.4):
-    optionalDependencies:
-      picomatch: 4.0.4
 
   fdir@6.5.0(picomatch@4.0.5):
     optionalDependencies:
@@ -17979,14 +17900,15 @@ snapshots:
 
   handle-thing@2.0.1: {}
 
-  happy-dom@20.9.0:
+  happy-dom@21.0.4:
     dependencies:
       '@types/node': 22.19.15
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
+      buffer-image-size: 0.6.4
       entities: 7.0.1
       whatwg-mimetype: 3.0.0
-      ws: 8.20.0
+      ws: 8.23.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -18082,7 +18004,7 @@ snapshots:
 
   hast-util-to-jsx-runtime@2.3.6:
     dependencies:
-      '@types/estree': 1.0.8
+      '@types/estree': 1.0.9
       '@types/hast': 3.0.4
       '@types/unist': 3.0.3
       comma-separated-tokens: 2.0.3
@@ -18452,7 +18374,7 @@ snapshots:
       webidl-conversions: 8.0.1
       whatwg-mimetype: 4.0.0
       whatwg-url: 15.1.0
-      ws: 8.20.0
+      ws: 8.23.0
       xml-name-validator: 5.0.0
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -18528,7 +18450,7 @@ snapshots:
       minimist: 1.2.8
       oxc-resolver: 11.19.1(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)
       picocolors: 1.1.1
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       smol-toml: 1.6.1
       strip-json-comments: 5.0.3
       typescript: 5.9.3
@@ -18548,11 +18470,6 @@ snapshots:
       vscode-languageserver: 9.0.1
       vscode-languageserver-textdocument: 1.0.12
       vscode-uri: 3.1.0
-
-  launch-editor@2.13.2:
-    dependencies:
-      picocolors: 1.1.1
-      shell-quote: 1.8.3
 
   launch-editor@2.14.1:
     dependencies:
@@ -19660,10 +19577,11 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  openai@7.56.0(google-auth-library@10.6.2)(undici@7.24.8)(zod@4.4.3):
+  openai@7.56.0(google-auth-library@10.6.2)(undici@7.24.8)(ws@8.23.0)(zod@4.4.3):
     optionalDependencies:
       google-auth-library: 10.6.2
       undici: 7.24.8
+      ws: 8.23.0
       zod: 4.4.3
 
   opener@1.5.2: {}
@@ -20523,27 +20441,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  seroval-plugins@1.5.4(seroval@1.5.4):
-    dependencies:
-      seroval: 1.5.4
-
   seroval-plugins@1.6.12(seroval@1.6.12):
     dependencies:
       seroval: 1.6.12
-
-  seroval-plugins@1.7.0(seroval@1.7.0):
-    dependencies:
-      seroval: 1.7.0
 
   seroval-plugins@1.8.0(seroval@1.8.1):
     dependencies:
       seroval: 1.8.1
 
-  seroval@1.5.4: {}
-
   seroval@1.6.12: {}
-
-  seroval@1.7.0: {}
 
   seroval@1.8.1: {}
 
@@ -20617,8 +20523,6 @@ snapshots:
   shebang-regex@3.0.0: {}
 
   shell-quote@1.10.0: {}
-
-  shell-quote@1.8.3: {}
 
   sherif-darwin-arm64@1.11.1:
     optional: true
@@ -20860,8 +20764,6 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
-  srvx@0.11.15: {}
-
   srvx@0.11.16: {}
 
   srvx@1.0.8: {}
@@ -21094,13 +20996,13 @@ snapshots:
 
   tinyglobby@0.2.15:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
 
   tinyglobby@0.2.16:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
 
   tinyrainbow@3.1.1: {}
 
@@ -21148,7 +21050,7 @@ snapshots:
 
   ts-declaration-location@1.0.7(typescript@5.9.3):
     dependencies:
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       typescript: 5.9.3
 
   ts-dedent@2.2.0: {}
@@ -21338,12 +21240,12 @@ snapshots:
   unplugin-utils@0.3.1:
     dependencies:
       pathe: 2.0.3
-      picomatch: 4.0.4
+      picomatch: 4.0.5
 
   unplugin@3.0.0:
     dependencies:
       '@jridgewell/remapping': 2.3.5
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       webpack-virtual-modules: 0.6.2
 
   unrs-resolver@1.11.1:
@@ -21532,8 +21434,8 @@ snapshots:
   vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       esbuild: 0.27.4
-      fdir: 6.5.0(picomatch@4.0.4)
-      picomatch: 4.0.4
+      fdir: 6.5.0(picomatch@4.0.5)
+      picomatch: 4.0.5
       postcss: 8.5.14
       rollup: 4.60.1
       tinyglobby: 0.2.16
@@ -21550,7 +21452,7 @@ snapshots:
   vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       lightningcss: 1.32.0
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       postcss: 8.5.14
       rolldown: 1.0.0
       tinyglobby: 0.2.16
@@ -21568,7 +21470,7 @@ snapshots:
     optionalDependencies:
       vite: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
 
-  vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)):
+  vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3))
@@ -21582,7 +21484,7 @@ snapshots:
       magic-string: 0.30.21
       obug: 2.1.3
       pathe: 2.0.3
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       std-env: 4.0.0
       tinybench: 2.9.0
       tinyexec: 1.0.4
@@ -21593,13 +21495,13 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.10.0
       '@types/node': 22.19.15
-      happy-dom: 20.9.0
+      happy-dom: 21.0.4
       jsdom: 27.4.0
     transitivePeerDependencies:
       - msw
     optional: true
 
-  vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)):
+  vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@21.0.4)(jsdom@27.4.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@vitest/expect': 4.1.10
       '@vitest/mocker': 4.1.10(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
@@ -21613,7 +21515,7 @@ snapshots:
       magic-string: 0.30.21
       obug: 2.1.3
       pathe: 2.0.3
-      picomatch: 4.0.4
+      picomatch: 4.0.5
       std-env: 4.0.0
       tinybench: 2.9.0
       tinyexec: 1.0.4
@@ -21624,7 +21526,7 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.10.0
       '@types/node': 22.19.15
-      happy-dom: 20.9.0
+      happy-dom: 21.0.4
       jsdom: 27.4.0
     transitivePeerDependencies:
       - msw
@@ -21753,7 +21655,7 @@ snapshots:
       graceful-fs: 4.2.11
       http-proxy-middleware: 2.0.10(@types/express@4.17.25)
       ipaddr.js: 2.4.0
-      launch-editor: 2.13.2
+      launch-editor: 2.14.1
       open: 10.2.0
       p-retry: 6.2.1
       schema-utils: 4.3.3
@@ -21762,7 +21664,7 @@ snapshots:
       sockjs: 0.3.24
       spdy: 4.0.2
       webpack-dev-middleware: 7.4.5(tslib@2.8.1)
-      ws: 8.20.0
+      ws: 8.23.0
     transitivePeerDependencies:
       - bufferutil
       - debug
@@ -21865,7 +21767,7 @@ snapshots:
 
   ws@8.18.0: {}
 
-  ws@8.20.0: {}
+  ws@8.23.0: {}
 
   wsl-utils@0.1.0:
     dependencies:
