@@ -87,15 +87,15 @@
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
-    "@solidjs/babel-plugin": "^2.0.0",
-    "@solidjs/vite-plugin": "^3.0.0",
-    "@solidjs/web": "^2.0.0",
-    "@sveltejs/vite-plugin-svelte": "^6.0.0",
+    "@solidjs/babel-plugin": "^2.0.3",
+    "@solidjs/vite-plugin": "^3.0.1",
+    "@solidjs/web": "^2.0.4",
+    "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "@tanstack/devtools": "workspace:^",
-    "preact": "^11.0.1",
-    "solid-js": "^2.0.0",
+    "preact": "^11.2.0",
+    "solid-js": "^2.0.4",
     "svelte": "^5.0.0",
-    "tsup": "^8.5.0",
+    "tsup": "^8.5.1",
     "tsup-preset-solid": "^2.2.0"
   },
   "peerDependencies": {
