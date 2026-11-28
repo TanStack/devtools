@@ -2,18 +2,9 @@ import { test, expect } from '@playwright/test'
 import { DevtoolsPage, SELECTORS } from '@tanstack/devtools-e2e'
 import type { Page } from '@playwright/test'
 
-// See hotkey.spec.ts: dispatch the exact keydown events of Control+~.
+// See hotkey.spec.ts: the default open hotkey, Control+~.
 async function pressOpenHotkey(page: Page) {
-  await page.evaluate(() => {
-    window.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Control', ctrlKey: true }),
-    )
-    window.dispatchEvent(
-      new KeyboardEvent('keydown', { key: '~', ctrlKey: true }),
-    )
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: '~' }))
-    window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Control' }))
-  })
+  await page.keyboard.press('Control+Shift+Backquote')
 }
 
 /** Whether a click at the center of the close button reaches it. */

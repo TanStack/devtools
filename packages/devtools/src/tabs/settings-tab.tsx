@@ -17,13 +17,11 @@ import {
 } from '@tanstack/devtools-ui/icons'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
-import { HotkeyConfig } from './hotkey-config'
-import type { KeyboardKey } from '../context/devtools-store'
+import { HeldModifiersConfig, OpenHotkeyConfig } from './hotkey-config'
 
 export const SettingsTab = () => {
   const { setSettings, settings } = createDevtoolsSettings()
   const styles = createStyles()
-  const modifiers: Array<KeyboardKey> = ['CtrlOrMeta', 'Alt', 'Shift']
 
   return (
     <div
@@ -121,21 +119,18 @@ export const SettingsTab = () => {
             Customize keyboard shortcuts for quick access.
           </SectionDescription>
           <div class={styles().settingsStack}>
-            <HotkeyConfig
+            <OpenHotkeyConfig
               title="Open/Close Devtools"
               description="Hotkey to open/close devtools"
               hotkey={settings().openHotkey}
-              modifiers={modifiers}
               onHotkeyChange={(hotkey) => setSettings({ openHotkey: hotkey })}
             />
-            <HotkeyConfig
+            <HeldModifiersConfig
               title="Source Inspector"
-              description="Hotkey to open source inspector"
-              hotkey={settings().inspectHotkey}
-              modifiers={modifiers}
-              onHotkeyChange={(hotkey) =>
-                setSettings({ inspectHotkey: hotkey })
-              }
+              description="Keys to hold for the source inspector"
+              modifiers={['Mod', 'Alt', 'Shift']}
+              value={settings().inspectHotkey}
+              onChange={(keys) => setSettings({ inspectHotkey: keys })}
             />
           </div>
         </Section>

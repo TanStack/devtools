@@ -61,7 +61,11 @@ export default defineConfig(() => {
   const parsed_data = parsePresetOptions(preset_options)
   const tsup_options = withSolidV2(generateTsupOptions(parsed_data), {
     // Bundled with their Solid copy; see `withSolidV2`.
-    bundleSolid: [/^@solid-primitives\//, /^@tanstack\/devtools-ui(\/|$)/],
+    bundleSolid: [
+      /^@solid-primitives\//,
+      /^@tanstack\/devtools-ui(\/|$)/,
+      /^@tanstack\/solid-hotkeys(\/|$)/,
+    ],
   })
 
   return tsup_options.map((option) => ({

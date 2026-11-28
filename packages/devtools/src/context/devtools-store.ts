@@ -1,3 +1,4 @@
+import type { Hotkey, ResolvableModifier } from '@tanstack/hotkeys'
 import type { TabName } from '../tabs'
 import type { LayoutNode } from '../utils/layout-tree'
 import type { TanStackDevtoolsPlugin } from './devtools-context'
@@ -5,17 +6,6 @@ import type { TanStackDevtoolsPlugin } from './devtools-context'
 // The same type as in `@tanstack/devtools-ui`. It is written here so the
 // public types of this package do not import devtools-ui, which is bundled.
 export type TanStackDevtoolsTheme = 'light' | 'dark'
-
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta'
-type KeyboardKey = ModifierKey | (string & {})
-export type { ModifierKey, KeyboardKey }
-export const keyboardModifiers: Array<ModifierKey> = [
-  'Alt',
-  'Control',
-  'Meta',
-  'Shift',
-  'CtrlOrMeta',
-]
 
 type TriggerPosition =
   | 'top-left'
@@ -94,15 +84,18 @@ export type DevtoolsStore = {
      */
     panelLocation: 'top' | 'bottom'
     /**
-     * The hotkey to open the dev tools
-     * @default ["Control", "~"]
+     * The hotkey that opens and closes the dev tools, in TanStack Hotkeys
+     * syntax. `Mod` is Command on macOS and Control elsewhere.
+     * @default "Control+~"
      */
-    openHotkey: Array<KeyboardKey>
+    openHotkey: Hotkey
     /**
-     * The hotkey to open the source inspector
-     * @default ["Shift", "Alt", "CtrlOrMeta"]
+     * The modifiers to hold for the source inspector. It is active while
+     * exactly these keys are held. `Mod` is Command on macOS and Control
+     * elsewhere.
+     * @default ["Shift", "Alt", "Mod"]
      */
-    inspectHotkey: Array<KeyboardKey>
+    inspectHotkey: Array<ResolvableModifier>
     /**
      * Whether to require the URL flag to open the dev tools
      * @default false
@@ -210,8 +203,8 @@ export const initialState: DevtoolsStore = {
     triggerCorner: undefined,
     triggerEdge: undefined,
     panelLocation: 'bottom',
-    openHotkey: ['Control', '~'],
-    inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
+    openHotkey: 'Control+~',
+    inspectHotkey: ['Shift', 'Alt', 'Mod'],
     requireUrlFlag: false,
     urlFlag: 'tanstack-devtools',
     hideInAutomation: false,

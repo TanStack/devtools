@@ -47,22 +47,29 @@ The `config` object is mainly focused around user interaction with the devtools 
 { panelLocation: 'top' | 'bottom' }
 ```
 
-- `openHotkey` - The hotkey set to open the devtools
+- `openHotkey` - The hotkey that opens and closes the devtools, written in [TanStack Hotkeys](https://tanstack.com/hotkeys) syntax. `Mod` is Command on macOS and Control on other platforms. The hotkey does not fire while you type in a text field. The default is `'Control+~'`.
 
 ```ts
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta';
-type KeyboardKey = ModifierKey | (string & {});
+import type { Hotkey } from '@tanstack/hotkeys'
 
-{ openHotkey: Array<KeyboardKey> }
+{ openHotkey: Hotkey }
 ```
 
-- `inspectHotkey` - The hotkey set to open the source inspector
+- `inspectHotkey` - The modifier keys to hold for the [source inspector](./source-inspector). The inspector is active while you hold exactly these keys. The default is `['Shift', 'Alt', 'Mod']`.
 
 ```ts
-type ModifierKey = 'Alt' | 'Control' | 'Meta' | 'Shift' | 'CtrlOrMeta';
-type KeyboardKey = ModifierKey | (string & {});
+type ResolvableModifier = 'Control' | 'Shift' | 'Alt' | 'Meta' | 'Mod'
 
-{ inspectHotkey: Array<KeyboardKey> }
+{ inspectHotkey: Array<ResolvableModifier> }
+```
+
+If your app also uses TanStack Hotkeys, the devtools share its hotkey manager and register their hotkeys in the `tanstack-devtools` scope:
+
+- While a devtools hotkey is enabled, it runs instead of your app's global hotkey for the same key. For example, while the devtools panel is open, Escape closes the panel and your app's global `Escape` hotkey doesn't run.
+- While your app has an exclusive scope active, the devtools hotkeys don't fire. To keep them, add the devtools scope to `allow`:
+
+```tsx
+<HotkeysProvider scope="editor" exclusive={{ allow: ['tanstack-devtools'] }}>
 ```
 
 - `requireUrlFlag` - Requires a flag present in the url to enable devtools

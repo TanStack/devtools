@@ -222,7 +222,7 @@ graph TD
 
 The "Go to Source" feature lets you click on any element in your browser and open its source file in your editor at the exact line where it's defined. It works by injecting `data-tsd-source` attributes into your components via an AST transformation during development. These attributes encode the file path and line number of each element.
 
-To use it, activate the source inspector by holding the inspect hotkey (default: Shift+Alt+Ctrl/Meta). An overlay will highlight elements under your cursor and display their source location. Clicking on a highlighted element opens the corresponding file in your editor at the exact line, powered by `launch-editor` under the hood.
+To use it, activate the source inspector by holding the inspect hotkey (default: Shift+Alt+Ctrl, or Shift+Option+Command on macOS). An overlay will highlight elements under your cursor and display their source location. Clicking on a highlighted element opens the corresponding file in your editor at the exact line, powered by `launch-editor` under the hood.
 
 For a complete guide on configuration and usage, see the [Source Inspector](./source-inspector) docs.
 

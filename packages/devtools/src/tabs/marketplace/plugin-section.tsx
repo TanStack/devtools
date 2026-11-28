@@ -1,4 +1,5 @@
-import { For, Show } from 'solid-js'
+import { For, Show, createSignal } from 'solid-js'
+import { createHotkeys } from '@tanstack/solid-hotkeys'
 import { ChevronDownIcon } from '@tanstack/devtools-ui'
 import { createStyles } from '../../styles/use-styles'
 import { PluginCardComponent } from './plugin-card'
@@ -39,6 +40,18 @@ const MailIcon = () => (
 
 export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
   const styles = createStyles()
+  // A div with the button role: Enter and Space press it, like a button.
+  const [header, setHeader] = createSignal<HTMLDivElement>()
+  createHotkeys(
+    [
+      { hotkey: 'Enter', callback: () => props.onToggleCollapse() },
+      { hotkey: 'Space', callback: () => props.onToggleCollapse() },
+    ],
+    () => ({
+      target: header() ?? null,
+      meta: { name: 'Expand or collapse a marketplace section' },
+    }),
+  )
 
   return (
     <div class={styles().pluginMarketplaceSection}>
@@ -48,13 +61,8 @@ export const PluginSectionComponent = (props: PluginSectionComponentProps) => {
         aria-expanded={props.isCollapsed() ? 'false' : 'true'}
         data-tsd-control
         class={styles().pluginMarketplaceSectionHeader}
+        ref={setHeader}
         onClick={props.onToggleCollapse}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault()
-            props.onToggleCollapse()
-          }
-        }}
       >
         <div class={styles().pluginMarketplaceSectionHeaderLeft}>
           <div

@@ -1,4 +1,4 @@
-import { createEffect } from 'solid-js'
+import { createEffect, createSignal } from 'solid-js'
 import type { Accessor } from 'solid-js'
 
 /**
@@ -10,14 +10,21 @@ import type { Accessor } from 'solid-js'
  * devtools root into a modal dialog of its own, shown on top of the app's. It
  * moves the root back when the panel or the app dialog closes. The app dialog
  * is inert in the meantime.
+ *
+ * Returns the host dialog while it is open. Escape then has to be handled
+ * inside the host, the topmost dialog, so the app dialog under it stays open.
+ * A close request that reaches the host anyway, such as Escape with the focus
+ * outside it, calls `onCancel` instead of closing the host.
  */
 export function createModalHost(
   enabled: Accessor<boolean>,
   root: Accessor<HTMLElement | undefined>,
   isOpen: Accessor<boolean>,
-) {
+  onCancel: () => void,
+): Accessor<HTMLDialogElement | undefined> {
   // Set while a host is installed, so the open state can re-sync it.
   let syncHost: (() => void) | undefined
+  const [openHost, setOpenHost] = createSignal<HTMLDialogElement>()
 
   createEffect(
     () => (enabled() ? root() : undefined),
@@ -30,16 +37,14 @@ export function createModalHost(
       // out against the viewport.
       host.style.cssText =
         'position:fixed;inset:0;width:0;height:0;max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:visible;background:transparent'
-      // Escape closes the panel through the devtools' own keydown handler, which
-      // also closes this dialog. Without preventDefault the browser then sends
-      // the same Escape to the app dialog and closes it too. The capture phase
-      // on the window sees the key wherever the focus is.
-      const onKeyDown = (event: KeyboardEvent) => {
-        if (host.open && event.key === 'Escape') event.preventDefault()
-      }
-      doc.defaultView?.addEventListener('keydown', onKeyDown, true)
+      // Focusable, so a click on plain text in the devtools focuses the host
+      // instead of the page body, and Escape reaches the host's hotkey.
+      host.tabIndex = -1
       // The dialog must never close by itself, or the root stays hidden in it.
-      host.addEventListener('cancel', (event) => event.preventDefault())
+      host.addEventListener('cancel', (event) => {
+        event.preventDefault()
+        onCancel()
+      })
       let home: Node | null = null
 
       const sync = () => {
@@ -59,6 +64,7 @@ export function createModalHost(
           home?.appendChild(element)
           host.remove()
         }
+        setOpenHost(host.open ? host : undefined)
       }
 
       // `showModal()` and `close()` toggle the `open` attribute. Removing an open
@@ -89,16 +95,18 @@ export function createModalHost(
 
       return () => {
         syncHost = undefined
-        doc.defaultView?.removeEventListener('keydown', onKeyDown, true)
         observer.disconnect()
         if (host.open) {
           host.close()
           home?.appendChild(element)
         }
         host.remove()
+        setOpenHost(undefined)
       }
     },
   )
 
   createEffect(isOpen, () => syncHost?.())
+
+  return openHost
 }

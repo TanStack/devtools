@@ -266,7 +266,9 @@ describe('workbench', { timeout: 30_000 }, () => {
       )
       mountWorkbench([plugin('one')], { hideInAutomation: true })
 
-      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+      )
 
       const stored = JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_STATE)!)
       expect(stored.persistOpen).toBe(true)
@@ -1478,6 +1480,33 @@ describe('workbench', { timeout: 30_000 }, () => {
     ).toEqual(['one'])
     expect(events).toContain('render:one:dark:false')
     expect(events).not.toContain('destroy:one')
+  })
+
+  it('cancels a keyboard tab move with Escape without closing the panel', () => {
+    mountWorkbench(['one', 'two'].map(plugin))
+    for (const name of ['Plugin one', 'Plugin two']) click(name)
+    const panel = document.querySelector(
+      '[data-testid="tanstack-devtools-panel"]',
+    )
+    const tab = document.querySelector<HTMLButtonElement>(
+      '[data-testid="plugin-tab-two"]',
+    )!
+    const held = () => tab.closest('[data-tsd-held]')
+    const press = (key: string) =>
+      tab.dispatchEvent(
+        new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }),
+      )
+    tab.focus()
+
+    press('Enter')
+    expect(held()).not.toBeNull()
+    press('Escape')
+    expect(held()).toBeNull()
+    expect(panel).toHaveAttribute('data-open', 'true')
+
+    // With nothing held, Escape closes the panel.
+    press('Escape')
+    expect(panel).toHaveAttribute('data-open', 'false')
   })
 
   it('gives three active plugins equal shares and a draggable gutter between each', () => {
