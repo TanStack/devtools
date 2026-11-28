@@ -2,6 +2,8 @@ import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal, flush } from 'solid-js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { Select, ThemeContextProvider } from '@tanstack/devtools-ui'
+import { getHotkeyManager } from '@tanstack/hotkeys'
+import { TANSTACK_DEVTOOLS_SETTINGS } from '../utils/storage'
 import { DevtoolsProvider } from '../context/devtools-context'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { SettingsTab } from './settings-tab'
@@ -146,5 +148,63 @@ describe('SettingsTab', () => {
 
     fireEvent.click(getByRole('button', { name: 'Reset' }))
     expect(select.value).toBe('1')
+  })
+
+  describe('keyboard', () => {
+    const savedSettings = () =>
+      JSON.parse(localStorage.getItem(TANSTACK_DEVTOOLS_SETTINGS) ?? '{}')
+    const pressCtrlK = () =>
+      document.activeElement!.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'k',
+          code: 'KeyK',
+          ctrlKey: true,
+          bubbles: true,
+          cancelable: true,
+        }),
+      )
+
+    it('records the open shortcut from a key press', () => {
+      const { getByRole, getByText } = renderSettingsTab()
+      const record = getByRole('button', { name: 'Record shortcut' })
+      fireEvent.click(record)
+      record.focus()
+      pressCtrlK()
+      flush()
+
+      expect(savedSettings().openHotkey).toMatch(/\+K$/)
+      expect(getByText('Ctrl+K')).toBeTruthy()
+    })
+
+    it('rejects a shortcut the app already uses', () => {
+      const search = getHotkeyManager().register('Mod+K', () => {}, {
+        meta: { name: 'Search' },
+      })
+      try {
+        const { getByRole } = renderSettingsTab()
+        const record = getByRole('button', { name: 'Record shortcut' })
+        fireEvent.click(record)
+        record.focus()
+        pressCtrlK()
+        flush()
+
+        expect(getByRole('alert').textContent).toContain('Search')
+        expect(savedSettings().openHotkey).toBeUndefined()
+      } finally {
+        search.unregister()
+      }
+    })
+
+    it('toggles the modifiers held for the source inspector, but never the last one', () => {
+      const { getByRole, setSettings } = renderSettingsTab()
+      setSettings({ inspectHotkey: ['Shift', 'Alt'] })
+
+      fireEvent.click(getByRole('button', { name: 'Alt' }))
+      expect(savedSettings().inspectHotkey).toEqual(['Shift'])
+      expect(getByRole('button', { name: 'Shift' })).toBeDisabled()
+
+      fireEvent.click(getByRole('button', { name: 'Ctrl' }))
+      expect(savedSettings().inspectHotkey).toEqual(['Shift', 'Mod'])
+    })
   })
 })

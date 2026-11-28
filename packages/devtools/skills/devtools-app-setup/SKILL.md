@@ -171,8 +171,8 @@ All config properties are optional. Defaults shown below:
     position: 'bottom-right', // used when triggerMode is 'fixed': 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right'
     triggerMode: 'floating', // 'floating' (default, draggable) | 'fixed'
     panelLocation: 'bottom', // panel position: 'top' | 'bottom'
-    openHotkey: ['Control', '~'],
-    inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
+    openHotkey: 'Control+~', // TanStack Hotkeys syntax; Mod is Cmd on macOS, Ctrl elsewhere
+    inspectHotkey: ['Shift', 'Alt', 'Mod'], // modifiers to hold for the source inspector
     requireUrlFlag: false, // require URL param to show devtools
     urlFlag: 'tanstack-devtools', // the URL param name when requireUrlFlag is true
     theme: 'dark', // 'light' | 'dark' (defaults to system preference)

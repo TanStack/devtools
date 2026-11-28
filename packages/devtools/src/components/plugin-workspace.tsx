@@ -8,6 +8,7 @@ import {
   onCleanup,
 } from 'solid-js'
 import { Portal } from '@solidjs/web'
+import { createHotkeys } from '@tanstack/solid-hotkeys'
 import { PackageIcon, X } from '@tanstack/devtools-ui/icons'
 import { createSortable } from '../utils/create-sortable'
 import {
@@ -45,6 +46,7 @@ import {
   zoneAt,
 } from '../utils/layout-tree'
 import type { DropZone, Rect, SplitterHandle } from '../utils/layout-tree'
+import type { Hotkey } from '@tanstack/solid-hotkeys'
 
 type Box = { w: number; h: number }
 
@@ -93,6 +95,94 @@ const KEYBOARD_STEP_COARSE = 0.1
  */
 const DRAG_HOLD_MS = 500
 
+/** The keyboard version of dragging a tab, from `PluginWorkspace`. */
+type TabMoveKeys = {
+  isHolding: (tabId: string) => boolean
+  pickUpOrDrop: (tabId: string) => void
+  cancel: (tabId: string) => void
+  aim: (tabId: string, zone: DropZone) => void
+}
+
+/**
+ * Enter or Space picks the focused tab up or drops it, the arrows aim it and
+ * Escape puts it back. Escape stops there, so it doesn't also close the panel.
+ */
+const createTabMoveHotkeys = (
+  tabId: string,
+  button: () => HTMLButtonElement | undefined,
+  keys: TabMoveKeys,
+) =>
+  createHotkeys(
+    () => {
+      const holding = keys.isHolding(tabId)
+      const aim = (zone: DropZone) => ({
+        callback: () => keys.aim(tabId, zone),
+        options: { enabled: holding },
+      })
+      return [
+        { hotkey: 'Enter', callback: () => keys.pickUpOrDrop(tabId) },
+        { hotkey: 'Space', callback: () => keys.pickUpOrDrop(tabId) },
+        {
+          hotkey: 'Escape',
+          callback: () => keys.cancel(tabId),
+          options: { enabled: holding, stopPropagation: true },
+        },
+        { hotkey: 'ArrowLeft', ...aim('left') },
+        { hotkey: 'ArrowRight', ...aim('right') },
+        { hotkey: 'ArrowUp', ...aim('top') },
+        { hotkey: 'ArrowDown', ...aim('bottom') },
+      ]
+    },
+    () => ({
+      target: button() ?? null,
+      meta: { name: 'Move a devtools pane' },
+    }),
+  )
+
+/**
+ * How far each key moves a gutter, as a fraction of the split: the arrows
+ * along the split, by more with Shift. Home and End move it all the way.
+ */
+const SPLITTER_KEYS: Record<
+  SplitterHandle['dir'],
+  ReadonlyArray<readonly [Hotkey, number]>
+> = {
+  row: [
+    ['ArrowLeft', -KEYBOARD_STEP],
+    ['Shift+ArrowLeft', -KEYBOARD_STEP_COARSE],
+    ['ArrowRight', KEYBOARD_STEP],
+    ['Shift+ArrowRight', KEYBOARD_STEP_COARSE],
+    ['Home', -1],
+    ['End', 1],
+  ],
+  col: [
+    ['ArrowUp', -KEYBOARD_STEP],
+    ['Shift+ArrowUp', -KEYBOARD_STEP_COARSE],
+    ['ArrowDown', KEYBOARD_STEP],
+    ['Shift+ArrowDown', KEYBOARD_STEP_COARSE],
+    ['Home', -1],
+    ['End', 1],
+  ],
+}
+
+const createSplitterHotkeys = (
+  splitter: () => HTMLDivElement | undefined,
+  handle: () => SplitterHandle,
+  resizeBy: (handle: SplitterHandle, delta: number) => void,
+) =>
+  createHotkeys(
+    () =>
+      SPLITTER_KEYS[handle().dir].map(([hotkey, delta]) => ({
+        hotkey,
+        // Read at key time: the gutter may have been re-measured since.
+        callback: () => resizeBy(handle(), delta),
+      })),
+    () => ({
+      target: splitter() ?? null,
+      meta: { name: 'Resize devtools panes' },
+    }),
+  )
+
 /**
  * One group's tab bar. Split out so each bar can own its own `createSortable`
  * binding — the primitive is per-container, and all bars share a `group` so a tab
@@ -116,7 +206,7 @@ const GroupTabBar = (props: {
   onSelect: (tabId: string) => void
   onClose: (tabId: string) => void
   onPointerDown: (tabId: string, event: PointerEvent) => void
-  onKeyDown: (tabId: string, event: KeyboardEvent) => void
+  moveKeys: TabMoveKeys
 }) => {
   const styles = createStyles()
   // Plugin ids are the items: a primitive is its own key, so no key accessor is
@@ -148,53 +238,59 @@ const GroupTabBar = (props: {
       }}
     >
       <For each={props.tabs}>
-        {(tabId, index) => (
-          <span
-            class={styles().pluginGroupTabItem}
-            data-tsd-selected={
-              index() === props.activeIndex ? 'true' : undefined
-            }
-            data-tsd-held={props.heldTabId === tabId ? 'true' : undefined}
-          >
-            {/* Only this span carries the sortable key. The drag engine listens
+        {(tabId, index) => {
+          const [tabButton, setTabButton] = createSignal<HTMLButtonElement>()
+          createTabMoveHotkeys(tabId, tabButton, props.moveKeys)
+          return (
+            <span
+              class={styles().pluginGroupTabItem}
+              data-tsd-selected={
+                index() === props.activeIndex ? 'true' : undefined
+              }
+              data-tsd-held={props.heldTabId === tabId ? 'true' : undefined}
+            >
+              {/* Only this span carries the sortable key. The drag engine listens
                 globally and walks *up* from whatever the pointer hit looking for
                 that key, so anything inside here is a drag surface no matter what
                 its own handlers do — `stopPropagation` cannot help. Keeping the
                 close button outside is what makes clicking it never start a
                 drag. */}
-            <span {...sortable.row(tabId)} class={styles().pluginGroupTabRow}>
+              <span {...sortable.row(tabId)} class={styles().pluginGroupTabRow}>
+                <button
+                  type="button"
+                  data-tsd-group-tab
+                  data-testid={`plugin-tab-${tabId}`}
+                  data-tsd-control
+                  aria-pressed={
+                    index() === props.activeIndex ? 'true' : 'false'
+                  }
+                  aria-describedby={props.moveHintId}
+                  class={styles().pluginGroupTab}
+                  ref={setTabButton}
+                  onPointerDown={(event) => props.onPointerDown(tabId, event)}
+                  onClick={() => props.onSelect(tabId)}
+                >
+                  {props.titleOf(tabId)}
+                </button>
+              </span>
+              {/* Sibling of the row, laid over its right end. */}
               <button
                 type="button"
-                data-tsd-group-tab
-                data-testid={`plugin-tab-${tabId}`}
+                aria-label={`Close ${props.titleOf(tabId)}`}
+                data-testid={`plugin-tab-close-${tabId}`}
                 data-tsd-control
-                aria-pressed={index() === props.activeIndex ? 'true' : 'false'}
-                aria-describedby={props.moveHintId}
-                class={styles().pluginGroupTab}
-                onPointerDown={(event) => props.onPointerDown(tabId, event)}
-                onKeyDown={(event) => props.onKeyDown(tabId, event)}
-                onClick={() => props.onSelect(tabId)}
+                class={styles().pluginGroupTabClose}
+                onPointerUp={() => props.onClose(tabId)}
+                // Keyboard activation fires `click` with no pointer events at all,
+                // so both paths are needed. Closing twice is harmless: the second
+                // call finds no such tab and returns the tree unchanged.
+                onClick={() => props.onClose(tabId)}
               >
-                {props.titleOf(tabId)}
+                <X aria-hidden="true" />
               </button>
             </span>
-            {/* Sibling of the row, laid over its right end. */}
-            <button
-              type="button"
-              aria-label={`Close ${props.titleOf(tabId)}`}
-              data-testid={`plugin-tab-close-${tabId}`}
-              data-tsd-control
-              class={styles().pluginGroupTabClose}
-              onPointerUp={() => props.onClose(tabId)}
-              // Keyboard activation fires `click` with no pointer events at all,
-              // so both paths are needed. Closing twice is harmless: the second
-              // call finds no such tab and returns the tree unchanged.
-              onClick={() => props.onClose(tabId)}
-            >
-              <X aria-hidden="true" />
-            </button>
-          </span>
-        )}
+          )
+        }}
       </For>
     </div>
   )
@@ -616,21 +712,8 @@ export const PluginWorkspace = (props: {
     setLayout(resetSplit(layout(), handle.path, handle.gutterIndex))
   }
 
-  const resizeFromKeyboard = (handle: SplitterHandle, event: KeyboardEvent) => {
-    const step = event.shiftKey ? KEYBOARD_STEP_COARSE : KEYBOARD_STEP
-    const grows =
-      handle.dir === 'row'
-        ? event.key === 'ArrowRight'
-        : event.key === 'ArrowDown'
-    const shrinks =
-      handle.dir === 'row' ? event.key === 'ArrowLeft' : event.key === 'ArrowUp'
-    let delta: number | undefined
-    if (grows) delta = step
-    if (shrinks) delta = -step
-    if (event.key === 'Home') delta = -1
-    if (event.key === 'End') delta = 1
-    if (delta === undefined) return
-    event.preventDefault()
+  /** Moves a gutter by a fraction of the split; -1 or 1 moves it all the way. */
+  const resizeSplitterBy = (handle: SplitterHandle, delta: number) => {
     const minFraction =
       handle.extent > 0
         ? (handle.dir === 'row' ? MIN_PANE_SIZE.w : MIN_PANE_SIZE.h) /
@@ -647,17 +730,14 @@ export const PluginWorkspace = (props: {
    * mouse can do to the layout is reachable this way, which matters because the
    * pointer gestures are suppressed while detached into a PiP window.
    */
-  const moveModeKeys = (tabId: string, event: KeyboardEvent) => {
-    const holding = held()?.tabId === tabId
-    if (event.key === 'Escape' && holding) {
-      event.preventDefault()
+  const tabMoveKeys: TabMoveKeys = {
+    isHolding: (tabId) => held()?.tabId === tabId,
+    cancel: (tabId) => {
       clearDrag()
       announce(`${titleOf(tabId)} left where it was`)
-      return
-    }
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      if (!holding) {
+    },
+    pickUpOrDrop: (tabId) => {
+      if (held()?.tabId !== tabId) {
         setHeld({ tabId })
         setDropTarget(null)
         announce(
@@ -676,56 +756,46 @@ export const PluginWorkspace = (props: {
           `${titleOf(tabId)} ${target.willStack ? 'stacked as a tab' : `split to the ${target.zone}`}`,
         )
       }
-      return
-    }
-    if (!holding) return
-
-    const zoneForKey: Record<string, DropZone> = {
-      ArrowLeft: 'left',
-      ArrowRight: 'right',
-      ArrowUp: 'top',
-      ArrowDown: 'bottom',
-    }
-    const zone = zoneForKey[event.key]
-    if (zone === undefined) return
-    event.preventDefault()
-    const group = groupOf(tabId)
-    if (group === null) return
-    // Aim at the neighbour in that direction if there is one, otherwise split
-    // the tab's own group, which is how a lone pane gets divided by keyboard.
-    const rect = groupRects()[group.id]
-    const neighbour = groups().find((entry) => {
-      if (entry.id === group.id) return false
-      const other = groupRects()[entry.id]
-      if (!other || !rect) return false
-      return zone === 'left'
-        ? other.left + other.width <= rect.left + 1
-        : zone === 'right'
-          ? other.left >= rect.left + rect.width - 1
-          : zone === 'top'
-            ? other.top + other.height <= rect.top + 1
-            : other.top >= rect.top + rect.height - 1
-    })
-    setDropTarget(
-      neighbour
-        ? { groupId: neighbour.id, zone: 'center', willStack: true }
-        : resolveTarget(group.id, {
-            x:
-              (rect?.left ?? 0) +
-              (zone === 'left'
-                ? 1
-                : zone === 'right'
-                  ? (rect?.width ?? 0) - 1
-                  : (rect?.width ?? 0) / 2),
-            y:
-              (rect?.top ?? 0) +
-              (zone === 'top'
-                ? 1
-                : zone === 'bottom'
-                  ? (rect?.height ?? 0) - 1
-                  : (rect?.height ?? 0) / 2),
-          }),
-    )
+    },
+    aim: (tabId, zone) => {
+      const group = groupOf(tabId)
+      if (group === null) return
+      // Aim at the neighbour in that direction if there is one, otherwise split
+      // the tab's own group, which is how a lone pane gets divided by keyboard.
+      const rect = groupRects()[group.id]
+      const neighbour = groups().find((entry) => {
+        if (entry.id === group.id) return false
+        const other = groupRects()[entry.id]
+        if (!other || !rect) return false
+        return zone === 'left'
+          ? other.left + other.width <= rect.left + 1
+          : zone === 'right'
+            ? other.left >= rect.left + rect.width - 1
+            : zone === 'top'
+              ? other.top + other.height <= rect.top + 1
+              : other.top >= rect.top + rect.height - 1
+      })
+      setDropTarget(
+        neighbour
+          ? { groupId: neighbour.id, zone: 'center', willStack: true }
+          : resolveTarget(group.id, {
+              x:
+                (rect?.left ?? 0) +
+                (zone === 'left'
+                  ? 1
+                  : zone === 'right'
+                    ? (rect?.width ?? 0) - 1
+                    : (rect?.width ?? 0) / 2),
+              y:
+                (rect?.top ?? 0) +
+                (zone === 'top'
+                  ? 1
+                  : zone === 'bottom'
+                    ? (rect?.height ?? 0) - 1
+                    : (rect?.height ?? 0) / 2),
+            }),
+      )
+    },
   }
 
   /** The highlight for where a held tab would land. */
@@ -791,7 +861,7 @@ export const PluginWorkspace = (props: {
               onSelect={(tabId) => setLayout(activateTab(layout(), tabId))}
               onClose={(tabId) => setLayout(closeTab(layout(), tabId))}
               onPointerDown={startTabDrag}
-              onKeyDown={moveModeKeys}
+              moveKeys={tabMoveKeys}
             />
           )}
         </For>
@@ -853,8 +923,11 @@ export const PluginWorkspace = (props: {
             // geometry (two equal panes) after a third pane opens or the
             // workspace is re-measured.
             const rect = () => expandSplitterRect(handle(), PANE_CARD_INSET)
+            const [splitter, setSplitter] = createSignal<HTMLDivElement>()
+            createSplitterHotkeys(splitter, handle, resizeSplitterBy)
             return (
               <div
+                ref={setSplitter}
                 role="separator"
                 tabindex={0}
                 data-tsd-control
@@ -884,7 +957,6 @@ export const PluginWorkspace = (props: {
                 // been re-measured since render still moves the right sizes.
                 onPointerDown={(event) => startSplitterDrag(handle(), event)}
                 onDblClick={() => resetSplitterDrag(handle())}
-                onKeyDown={(event) => resizeFromKeyboard(handle(), event)}
               />
             )
           }}

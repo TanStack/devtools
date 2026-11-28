@@ -30,17 +30,14 @@ The Vite plugin uses oxc-parser to parse your JSX/TSX files during development. 
 
 ## Activating the Inspector
 
-There are two ways to activate the source inspector:
+Hold the `inspectHotkey` keys to show the inspector overlay. The default is Shift+Alt+Ctrl, or Shift+Option+Command on macOS. The overlay stays while you hold exactly those keys.
 
-- **Hotkey**: Hold Shift+Alt+Ctrl (or Shift+Alt+Meta on Mac) — this is the default `inspectHotkey`. While held, the inspector overlay appears.
-- **Settings panel**: The inspect hotkey can be customized in the devtools Settings tab.
-
-The hotkey can also be configured programmatically:
+To change the keys, use the **Source Inspector** buttons in the devtools **Settings** tab, or set `inspectHotkey` in the config. `Mod` is Command on macOS and Control on other platforms:
 
 ```ts
 <TanStackDevtools
   config={{
-    inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
+    inspectHotkey: ['Shift', 'Alt', 'Mod'],
   }}
 />
 ```

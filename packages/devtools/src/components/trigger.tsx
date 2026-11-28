@@ -7,6 +7,7 @@ import {
   onCleanup,
 } from 'solid-js'
 import clsx from 'clsx'
+import { createFormatForDisplay, createHotkeys } from '@tanstack/solid-hotkeys'
 import { createDevtoolsSettings } from '../context/use-devtools-context'
 import { createStyles } from '../styles/use-styles'
 import {
@@ -224,6 +225,7 @@ export const Trigger = (props: {
   const [magneticMode, setMagneticMode] = createSignal(false)
   const [shiftMagnetic, setShiftMagnetic] = createSignal(false)
   const styles = createStyles()
+  const formatForDisplay = createFormatForDisplay()
 
   const isFloating = createMemo(() => settings().triggerMode === 'floating')
   const docked = createMemo(() => isFloating() && dockedEdge() !== null)
@@ -286,11 +288,17 @@ export const Trigger = (props: {
   let snoozedCorner: TriggerCorner | null = null
   let tooltipShowTimer: ReturnType<typeof setTimeout> | undefined
   let tooltipHideTimer: ReturnType<typeof setTimeout> | undefined
+  // Mirrors `dragging || raf`, so the Escape hotkey is live only while there
+  // is a gesture to cancel. A live devtools hotkey outranks the app's own
+  // global hotkeys for the same key.
+  const [gestureActive, setGestureActive] = createSignal(false)
+  const syncGesture = () => setGestureActive(dragging || raf !== undefined)
 
   const cancelThrow = () => {
     if (raf !== undefined) {
       cancelAnimationFrame(raf)
       raf = undefined
+      syncGesture()
     }
   }
 
@@ -430,6 +438,7 @@ export const Trigger = (props: {
   const cancelGesture = () => {
     if (dragging) {
       dragging = false
+      syncGesture()
       vx = 0
       vy = 0
       cancelHold()
@@ -468,6 +477,7 @@ export const Trigger = (props: {
       const current = coords()
       if (!el || !current) {
         raf = undefined
+        syncGesture()
         return
       }
       const b = bounds(el)
@@ -482,6 +492,7 @@ export const Trigger = (props: {
         raf = requestAnimationFrame(tick)
       } else {
         raf = undefined
+        syncGesture()
         setShiftMagnetic(false)
         flush()
         const corner = hotCorner()
@@ -490,6 +501,7 @@ export const Trigger = (props: {
       }
     }
     raf = requestAnimationFrame(tick)
+    syncGesture()
   }
 
   const onPointerDown = (e: PointerEvent) => {
@@ -512,6 +524,7 @@ export const Trigger = (props: {
     setPinnedCorner(null)
     setHotCorner(null)
     dragging = true
+    syncGesture()
     moved = false
     setShiftMagnetic(e.shiftKey)
     activePointer = e.pointerId
@@ -615,6 +628,7 @@ export const Trigger = (props: {
   const endDrag = (e: PointerEvent, canThrow: boolean) => {
     if (!dragging) return
     dragging = false
+    syncGesture()
     cancelHold()
     hideTooltip()
     snoozedCorner = null
@@ -719,18 +733,29 @@ export const Trigger = (props: {
     },
   )
 
-  createEffect(isFloating, (floating) => {
-    if (!floating) return
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && cancelGesture()) event.stopPropagation()
-      if (event.altKey && event.key.toLowerCase() === 'm') {
-        setMagneticMode((v) => !v)
-        event.stopPropagation()
-      }
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
-  })
+  createHotkeys(() => [
+    // Shift may still be held from magnetizing the drag.
+    ...(['Escape', 'Shift+Escape'] as const).map((hotkey) => ({
+      hotkey,
+      callback: () => cancelGesture(),
+      options: {
+        enabled: gestureActive(),
+        preventDefault: false,
+        // Escape also closes the panel; both run, as they always have.
+        conflictBehavior: 'allow' as const,
+        meta: { name: 'Cancel moving the devtools trigger' },
+      },
+    })),
+    ...(['Alt+M', 'Alt+Shift+M'] as const).map((hotkey) => ({
+      hotkey,
+      callback: () => setMagneticMode((v) => !v),
+      options: {
+        enabled: isFloating(),
+        stopPropagation: true,
+        meta: { name: 'Toggle magnetic mode for the devtools trigger' },
+      },
+    })),
+  ])
 
   // Keep the trigger at the same relative spot when the window is resized.
   createEffect(isFloating, (floating) => {
@@ -858,10 +883,14 @@ export const Trigger = (props: {
         </button>
         <Show when={isFloating() && tooltipVisible()}>
           <div aria-hidden="true" class={styles().triggerTooltip}>
-            <kbd class={styles().triggerTooltipKeys}>Alt</kbd>+
-            <kbd class={styles().triggerTooltipKeys}>M</kbd> or{' '}
-            <kbd class={styles().triggerTooltipKeys}>Shift</kbd> to activate
-            magnetic mode
+            <kbd class={styles().triggerTooltipKeys}>
+              {formatForDisplay('Alt+M')}
+            </kbd>{' '}
+            or{' '}
+            <kbd class={styles().triggerTooltipKeys}>
+              {formatForDisplay('Shift')}
+            </kbd>{' '}
+            to activate magnetic mode
           </div>
         </Show>
       </Show>

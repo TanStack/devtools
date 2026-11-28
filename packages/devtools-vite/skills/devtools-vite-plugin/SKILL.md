@@ -81,7 +81,7 @@ From `packages/devtools-vite/src/index.ts`:
 
 ### Source Injection
 
-Adds `data-tsd-source="<relative-path>:<line>:<column>"` attributes to every JSX opening element via oxc-parser + MagicString. This powers the "Go to Source" feature -- hold the inspect hotkey (default: Shift+Alt+Ctrl/Meta), hover over elements, click to open in editor.
+Adds `data-tsd-source="<relative-path>:<line>:<column>"` attributes to every JSX opening element via oxc-parser + MagicString. This powers the "Go to Source" feature -- hold the inspect hotkey (default: Shift+Alt+Ctrl, or Shift+Option+Command on macOS), hover over elements, click to open in editor.
 
 **Key behaviors:**
 

@@ -1,7 +1,9 @@
 import { fireEvent, render } from '@solidjs/testing-library'
 import { createSignal, flush } from 'solid-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { HotkeysProvider, getHotkeyManager } from '@tanstack/solid-hotkeys'
 import { DevtoolsProvider } from '../context/devtools-context'
+import { DEVTOOLS_HOTKEY_SCOPE } from '../utils/constants'
 import { TANSTACK_DEVTOOLS_SETTINGS } from '../utils/storage'
 import {
   Trigger,
@@ -358,6 +360,56 @@ describe('the drag tooltip', () => {
   })
 })
 
+describe('magnetic mode hotkey', () => {
+  beforeEach(() => localStorage.clear())
+
+  const altM = () =>
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'm',
+        code: 'KeyM',
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    )
+
+  it('toggles magnetic mode with Alt+M while the trigger floats', () => {
+    const { getByLabelText } = renderTrigger({ triggerMode: 'floating' })
+    const button = getByLabelText('Open TanStack Devtools')
+    const idle = button.className
+
+    altM()
+    flush()
+    expect(button.className).not.toBe(idle)
+
+    altM()
+    flush()
+    expect(button.className).toBe(idle)
+  })
+
+  it('ignores Alt+M while typing in a text field', () => {
+    const { getByLabelText } = renderTrigger({ triggerMode: 'floating' })
+    const button = getByLabelText('Open TanStack Devtools')
+    const idle = button.className
+    const input = document.body.appendChild(document.createElement('input'))
+    input.focus()
+
+    input.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'm',
+        code: 'KeyM',
+        altKey: true,
+        bubbles: true,
+        cancelable: true,
+      }),
+    )
+    flush()
+    expect(button.className).toBe(idle)
+    input.remove()
+  })
+})
+
 describe('escape during a trigger drag', () => {
   beforeEach(() => {
     localStorage.clear()
@@ -378,7 +430,7 @@ describe('escape during a trigger drag', () => {
     )
 
   const escape = () =>
-    window.dispatchEvent(
+    document.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
     )
 
@@ -419,6 +471,49 @@ describe('escape during a trigger drag', () => {
     escape()
     expect(storedSettings().triggerCorner).toBe('bottom-right')
     expect(storedSettings().triggerCoords).toEqual({ x: 100, y: 100 })
+  })
+
+  it('cancels with Shift still held from magnetizing the drag', () => {
+    const { container, getByLabelText } = renderTrigger({
+      triggerMode: 'floating',
+    })
+    const button = getByLabelText('Open TanStack Devtools')
+
+    drag(button, 'pointerdown', 8, 8)
+    drag(button, 'pointermove', 1016, 760)
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        shiftKey: true,
+        bubbles: true,
+      }),
+    )
+    expect(container.querySelector('[data-tsd-hot-corner]')).toBeNull()
+    expect(storedSettings().triggerCoords).toEqual({ x: 0, y: 0 })
+  })
+
+  it("leaves Escape to the app's own hotkey when nothing is moving", () => {
+    // The devtools scope outranks the app's global hotkeys, so a live
+    // devtools Escape would shadow this one.
+    const appEscape = vi.fn()
+    const registration = getHotkeyManager().register('Escape', appEscape)
+    const [isOpen, setIsOpen] = createSignal(false)
+    const { unmount } = render(() => (
+      <DevtoolsProvider
+        config={{ triggerMode: 'floating' } as TanStackDevtoolsConfig}
+      >
+        <HotkeysProvider scope={DEVTOOLS_HOTKEY_SCOPE}>
+          <Trigger isOpen={isOpen} setIsOpen={setIsOpen} />
+        </HotkeysProvider>
+      </DevtoolsProvider>
+    ))
+    try {
+      escape()
+      expect(appEscape).toHaveBeenCalledOnce()
+    } finally {
+      unmount()
+      registration.unregister()
+    }
   })
 
   it('leaves a settled trigger alone', () => {

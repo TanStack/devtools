@@ -5,8 +5,8 @@ import {
   createSignal,
   onCleanup,
 } from 'solid-js'
-import { createShortcut } from '@solid-primitives/keyboard'
 import { Portal } from '@solidjs/web'
+import { HotkeysProvider, createHotkeys } from '@tanstack/solid-hotkeys'
 import { ThemeContextProvider } from '@tanstack/devtools-ui'
 import { devtoolsEventClient } from '@tanstack/devtools-client'
 import {
@@ -20,7 +20,6 @@ import {
 import { createDisableTabbing } from './hooks/use-disable-tabbing'
 import { createModalHost } from './hooks/use-modal-host'
 import { TANSTACK_DEVTOOLS } from './utils/storage'
-import { getHotkeyPermutations } from './utils/hotkey'
 import { Trigger } from './components/trigger'
 import { MainPanel } from './components/main-panel'
 import { ContentPanel } from './components/content-panel'
@@ -29,7 +28,11 @@ import { createPiPWindow } from './context/pip-context'
 import { SourceInspector } from './components/source-inspector'
 import { WorkbenchHeader } from './components/workbench-header'
 import { PluginsStrip } from './components/plugins-strip'
-import { PANEL_CLOSE_THRESHOLD } from './utils/constants'
+import {
+  DEVTOOLS_HOTKEY_SCOPE,
+  OPEN_HOTKEY_NAME,
+  PANEL_CLOSE_THRESHOLD,
+} from './utils/constants'
 
 const themeDocumentOwners = new WeakMap<Document, Map<symbol, string>>()
 const previousThemeAttributes = new WeakMap<Document, string | null>()
@@ -69,7 +72,24 @@ const clearDocumentTheme = (document: Document, owner: symbol) => {
   previousThemeAttributes.delete(document)
 }
 
+/**
+ * Every devtools hotkey is in one scope, so an app with an exclusive scope can
+ * let them through with `exclusive: { allow: ['tanstack-devtools'] }`. The
+ * devtools never stopped key presses from reaching the app's own listeners, so
+ * no hotkey stops propagation unless it says so.
+ */
 export default function DevTools() {
+  return (
+    <HotkeysProvider
+      scope={DEVTOOLS_HOTKEY_SCOPE}
+      defaultOptions={{ hotkey: { stopPropagation: false } }}
+    >
+      <DevtoolsShell />
+    </HotkeysProvider>
+  )
+}
+
+function DevtoolsShell() {
   const { settings } = createDevtoolsSettings()
   const { state } = createDevtoolsState()
   const { setHeight } = createHeight()
@@ -152,14 +172,13 @@ export default function DevTools() {
     document.addEventListener('mouseup', stop)
   }
 
-  const onEscape = (event: KeyboardEvent) => {
-    if (event.key === 'Escape' && isOpen() && !hiddenInAutomation())
-      toggleOpen()
-  }
-  window.addEventListener('keydown', onEscape)
-  onCleanup(() => window.removeEventListener('keydown', onEscape))
   createDisableTabbing(isOpen)
-  createModalHost(() => settings().openAsModal, rootEl, isOpen)
+  const modalHost = createModalHost(
+    () => settings().openAsModal,
+    rootEl,
+    isOpen,
+    toggleOpen,
+  )
   createEffect(rootEl, (element) => {
     if (element) {
       element.style.setProperty(
@@ -168,22 +187,39 @@ export default function DevTools() {
       )
     }
   })
-  const isEditableTarget = (element: Element | null) => {
-    if (!element || !(element instanceof HTMLElement)) return false
-    if (element.isContentEditable) return true
-    if (['INPUT', 'TEXTAREA', 'SELECT'].includes(element.tagName)) return true
-    return element.getAttribute('role') === 'textbox'
-  }
-  // A memo owns what it creates, so changing the hotkey disposes the old
-  // shortcuts before registering the new ones.
-  createMemo(() => {
-    for (const permutation of getHotkeyPermutations(settings().openHotkey)) {
-      createShortcut(permutation, () => {
-        if (!hiddenInAutomation() && !isEditableTarget(document.activeElement))
-          toggleOpen()
-      })
-    }
-  })
+  createHotkeys(() => [
+    {
+      hotkey: settings().openHotkey,
+      callback: toggleOpen,
+      options: {
+        enabled: !hiddenInAutomation(),
+        // Never while typing in a field, whatever the hotkey.
+        ignoreInputs: true,
+        requireReset: true,
+        meta: {
+          name: OPEN_HOTKEY_NAME,
+          description: 'Opens and closes TanStack Devtools',
+        },
+      },
+    },
+    {
+      hotkey: 'Escape',
+      callback: toggleOpen,
+      options: {
+        enabled: isOpen() && !hiddenInAutomation(),
+        // An Escape for an open dialog or popover of the app goes to it, not
+        // here. In the modal host the devtools are the topmost dialog, and only
+        // a hotkey inside it keeps Escape.
+        target: modalHost() ?? document,
+        // Only in the modal host: it keeps the browser from also closing the
+        // app dialog under the host.
+        preventDefault: modalHost() !== undefined,
+        // The trigger's Escape cancels a drag; both run, as they always have.
+        conflictBehavior: 'allow',
+        meta: { name: 'Close TanStack Devtools' },
+      },
+    },
+  ])
 
   const { theme } = createTheme()
   createEffect(

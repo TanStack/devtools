@@ -5,6 +5,7 @@ import {
   createStore,
   reconcile,
 } from 'solid-js'
+import { validateHotkey } from '@tanstack/hotkeys'
 import { getDefaultActivePlugins } from '../utils/get-default-active-plugins'
 import { flattenTabs, repairLayout, singleGroup } from '../utils/layout-tree'
 import { tryParseJson } from '../utils/sanitize'
@@ -16,6 +17,7 @@ import {
 } from '../utils/storage'
 import { initialState } from './devtools-store'
 import type { DevtoolsStore, TanStackDevtoolsTheme } from './devtools-store'
+import type { ResolvableModifier } from '@tanstack/hotkeys'
 import type { JSX } from '@solidjs/web'
 
 export interface TanStackDevtoolsPluginProps {
@@ -120,12 +122,43 @@ interface ContextProps {
   ) => void
 }
 
+const inspectModifiers: ReadonlyArray<string> = [
+  'Shift',
+  'Alt',
+  'Control',
+  'Meta',
+  'Mod',
+] satisfies Array<ResolvableModifier>
+
+/**
+ * Drops keyboard settings this version can't use, so the next source (the
+ * config, then the default) applies. Older versions saved `openHotkey` as an
+ * array of keys and spelled `Mod` as `CtrlOrMeta`.
+ */
+const withUsableHotkeys = <T extends Partial<DevtoolsStore['settings']>>(
+  settings: T | undefined,
+): Partial<T> => {
+  if (!settings) return {}
+  const { openHotkey, inspectHotkey, ...rest } = settings
+  const usable: Partial<DevtoolsStore['settings']> = {}
+  if (typeof openHotkey === 'string' && validateHotkey(openHotkey).valid) {
+    usable.openHotkey = openHotkey
+  }
+  if (
+    Array.isArray(inspectHotkey) &&
+    inspectHotkey.length > 0 &&
+    inspectHotkey.every((key) => inspectModifiers.includes(key))
+  ) {
+    usable.inspectHotkey = inspectHotkey
+  }
+  return { ...rest, ...usable } as Partial<T>
+}
+
 const getSettings = () => {
   const settingsString = getStorageItem(TANSTACK_DEVTOOLS_SETTINGS)
-  const settings = tryParseJson<DevtoolsStore['settings']>(settingsString)
-  return {
-    ...settings,
-  }
+  return withUsableHotkeys(
+    tryParseJson<DevtoolsStore['settings']>(settingsString),
+  )
 }
 
 const generatePluginId = (plugin: TanStackDevtoolsPlugin, index: number) => {
@@ -208,7 +241,7 @@ export const getExistingStateFromStorage = (
     },
     settings: {
       ...initialState.settings,
-      ...config,
+      ...withUsableHotkeys(config),
       ...settings,
       // Not in the settings tab, so the config wins over a stored value.
       hideInAutomation:

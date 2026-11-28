@@ -370,6 +370,50 @@ describe('getExistingStateFromStorage - integration tests', () => {
     expect(state.settings.theme).toBe('light')
     expect(flattenTabs(state.state.layout)).toEqual(['plugin1'])
   })
+
+  it('keeps saved hotkeys that this version can use', () => {
+    localStorage.setItem(
+      TANSTACK_DEVTOOLS_SETTINGS,
+      JSON.stringify({ openHotkey: 'Mod+Shift+D', inspectHotkey: ['Alt'] }),
+    )
+
+    const { settings } = getExistingStateFromStorage(
+      { openHotkey: 'Control+~' } as any,
+      [],
+    )
+    expect(settings.openHotkey).toBe('Mod+Shift+D')
+    expect(settings.inspectHotkey).toEqual(['Alt'])
+  })
+
+  it('replaces saved hotkeys from older versions with the config, then the defaults', () => {
+    // The format before TanStack Hotkeys: arrays of keys and `CtrlOrMeta`.
+    localStorage.setItem(
+      TANSTACK_DEVTOOLS_SETTINGS,
+      JSON.stringify({
+        openHotkey: ['Control', '~'],
+        inspectHotkey: ['Shift', 'Alt', 'CtrlOrMeta'],
+        theme: 'dark',
+      }),
+    )
+
+    const { settings } = getExistingStateFromStorage(
+      { openHotkey: 'Alt+D' } as any,
+      [],
+    )
+    expect(settings.openHotkey).toBe('Alt+D')
+    expect(settings.inspectHotkey).toEqual(['Shift', 'Alt', 'Mod'])
+    // Other saved settings are kept.
+    expect(settings.theme).toBe('dark')
+  })
+
+  it('ignores config hotkeys in the old format', () => {
+    const { settings } = getExistingStateFromStorage(
+      { openHotkey: ['Control', '~'], inspectHotkey: ['CtrlOrMeta'] } as any,
+      [],
+    )
+    expect(settings.openHotkey).toBe('Control+~')
+    expect(settings.inspectHotkey).toEqual(['Shift', 'Alt', 'Mod'])
+  })
 })
 
 describe('provider resilience', () => {

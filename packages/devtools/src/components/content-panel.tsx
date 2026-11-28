@@ -1,3 +1,5 @@
+import { createSignal } from 'solid-js'
+import { createHotkeys } from '@tanstack/solid-hotkeys'
 import {
   createDevtoolsSettings,
   createHeight,
@@ -24,26 +26,34 @@ export const ContentPanel = (props: {
     Math.floor(window.innerHeight * PANEL_MAX_VIEWPORT_RATIO)
   const clampedHeight = () =>
     Math.min(maxHeight(), Math.max(PANEL_CLOSE_THRESHOLD, Math.round(height())))
-  const resizeWithKeyboard: JSX.EventHandlerUnion<
-    HTMLDivElement,
-    KeyboardEvent
-  > = (event) => {
-    const step = event.shiftKey ? 50 : 10
-    const grows =
-      (settings().panelLocation === 'bottom' && event.key === 'ArrowUp') ||
-      (settings().panelLocation === 'top' && event.key === 'ArrowDown')
-    const shrinks =
-      (settings().panelLocation === 'bottom' && event.key === 'ArrowDown') ||
-      (settings().panelLocation === 'top' && event.key === 'ArrowUp')
-    let nextHeight: number | undefined
-    if (grows) nextHeight = clampedHeight() + step
-    if (shrinks) nextHeight = clampedHeight() - step
-    if (event.key === 'Home') nextHeight = PANEL_CLOSE_THRESHOLD
-    if (event.key === 'End') nextHeight = maxHeight()
-    if (nextHeight === undefined) return
-    event.preventDefault()
+  const [resizeHandle, setResizeHandle] = createSignal<HTMLDivElement>()
+  const setHeight = (nextHeight: number) =>
     props.handleHeightChange?.(Math.min(maxHeight(), nextHeight))
-  }
+  // The arrow towards the page grows the panel, by more with Shift. Home closes
+  // it and End makes it as tall as it gets.
+  const growBy = (step: number) => () =>
+    setHeight(
+      clampedHeight() + (settings().panelLocation === 'bottom' ? step : -step),
+    )
+  createHotkeys(
+    [
+      { hotkey: 'ArrowUp', callback: growBy(10) },
+      { hotkey: 'Shift+ArrowUp', callback: growBy(50) },
+      { hotkey: 'ArrowDown', callback: growBy(-10) },
+      { hotkey: 'Shift+ArrowDown', callback: growBy(-50) },
+      { hotkey: 'Home', callback: () => setHeight(PANEL_CLOSE_THRESHOLD) },
+      { hotkey: 'End', callback: () => setHeight(maxHeight()) },
+    ],
+    () => ({
+      // The handle isn't rendered in the PiP window, but its ref keeps the old
+      // element.
+      target:
+        props.handleDragStart && pip().pipWindow === null
+          ? (resizeHandle() ?? null)
+          : null,
+      meta: { name: 'Resize the devtools panel' },
+    }),
+  )
 
   return (
     <div
@@ -55,6 +65,7 @@ export const ContentPanel = (props: {
     >
       {props.handleDragStart && pip().pipWindow === null ? (
         <div
+          ref={setResizeHandle}
           data-testid="tsd-resize-handle"
           class={styles().dragHandle(settings().panelLocation)}
           onMouseDown={props.handleDragStart}
@@ -67,7 +78,6 @@ export const ContentPanel = (props: {
           aria-valuemax={maxHeight()}
           aria-valuenow={clampedHeight()}
           tabindex={0}
-          onKeyDown={resizeWithKeyboard}
         />
       ) : null}
       {props.children}

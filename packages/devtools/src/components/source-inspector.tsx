@@ -1,10 +1,9 @@
 import { createEffect, createMemo, createSignal, createStore } from 'solid-js'
 import { createElementSize } from '@solid-primitives/resize-observer'
-import { useKeyDownList as getKeyDownList } from '@solid-primitives/keyboard'
 import { createEventListener } from '@solid-primitives/event-listener'
+import { createHeldKeys, resolveModifier } from '@tanstack/solid-hotkeys'
 
 import { createDevtoolsSettings } from '../context/use-devtools-context'
-import { isHotkeyCombinationPressed } from '../utils/hotkey'
 
 export const SourceInspector = () => {
   const { settings } = createDevtoolsSettings()
@@ -30,12 +29,21 @@ export const SourceInspector = () => {
     })
   })
 
-  const downList = getKeyDownList()
+  const heldKeys = createHeldKeys()
 
   const [disabledAfterClick, setDisabledAfterClick] = createSignal(false)
 
+  // Exactly the inspect keys: holding another key as well turns it off.
   const isHighlightingKeysHeld = createMemo(() => {
-    return isHotkeyCombinationPressed(downList(), settings().inspectHotkey)
+    const keys = new Set<string>(
+      settings().inspectHotkey.map((key) => resolveModifier(key)),
+    )
+    const held = heldKeys()
+    return (
+      keys.size > 0 &&
+      held.length === keys.size &&
+      held.every((key) => keys.has(key))
+    )
   })
 
   createEffect(isHighlightingKeysHeld, (held) => {

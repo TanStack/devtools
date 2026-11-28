@@ -60,3 +60,8 @@ export const TRIGGER_EDGE_TAB_LENGTH = 44
 export const TRIGGER_EDGE_TAB_PAD = 8
 /** How long (ms) the floating trigger's hint stays up before it gets out of the way. */
 export const TRIGGER_TOOLTIP_MS = 1500
+
+/** The TanStack Hotkeys scope of every devtools hotkey. */
+export const DEVTOOLS_HOTKEY_SCOPE = 'tanstack-devtools'
+/** `meta.name` of the open hotkey, so the settings recorder can skip it. */
+export const OPEN_HOTKEY_NAME = 'Toggle TanStack Devtools'

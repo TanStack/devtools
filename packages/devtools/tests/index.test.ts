@@ -94,7 +94,7 @@ describe('devtools core boundaries', () => {
     mountShell({
       requireUrlFlag: true,
       urlFlag: 'tanstack-devtools',
-      openHotkey: ['Control', '~'],
+      openHotkey: 'Control+~',
     })
     expect(
       document.querySelector('[aria-label="Open TanStack Devtools"]'),

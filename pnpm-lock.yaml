@@ -1563,6 +1563,9 @@ importers:
       '@tanstack/devtools-event-bus':
         specifier: workspace:*
         version: link:../event-bus
+      '@tanstack/hotkeys':
+        specifier: ^0.37.0
+        version: 0.37.0
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1576,9 +1579,6 @@ importers:
       '@solid-primitives/event-listener':
         specifier: ^3.0.0
         version: 3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
-      '@solid-primitives/keyboard':
-        specifier: ^2.0.0
-        version: 2.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solid-primitives/resize-observer':
         specifier: ^4.0.0
         version: 4.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
@@ -1590,22 +1590,25 @@ importers:
         version: 1.0.0-rc.2(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
       '@solidjs/vite-plugin':
         specifier: ^3.0.0
-        version: 3.0.0(@babel/core@7.29.0)(@solidjs/babel-plugin@2.0.0(@babel/core@7.29.0))(@solidjs/web@2.0.0(solid-js@2.0.0))(@testing-library/jest-dom@6.9.1)(solid-js@2.0.0)(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3))
+        version: 3.0.0(@babel/core@7.29.0)(@solidjs/babel-plugin@2.0.0(@babel/core@7.29.0))(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)(vite@8.0.12(esbuild@0.27.4))
       '@solidjs/web':
         specifier: ^2.0.0
         version: 2.0.0(solid-js@2.0.0)
       '@tanstack/devtools-ui':
         specifier: workspace:*
         version: link:../devtools-ui
+      '@tanstack/solid-hotkeys':
+        specifier: ^0.27.0
+        version: 0.27.0(solid-js@2.0.0)
       solid-js:
         specifier: ^2.0.0
         version: 2.0.0
       tsup:
         specifier: ^8.5.0
-        version: 8.5.1(@microsoft/api-extractor@7.47.7(@types/node@22.19.15))(jiti@2.7.0)(postcss@8.5.14)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3)
+        version: 8.5.1(postcss@8.5.14)
       tsup-preset-solid:
         specifier: ^2.2.0
-        version: 2.2.0(esbuild@0.27.4)(solid-js@2.0.0)(tsup@8.5.1(@microsoft/api-extractor@7.47.7(@types/node@22.19.15))(jiti@2.7.0)(postcss@8.5.14)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3))
+        version: 2.2.0(esbuild@0.27.4)(solid-js@2.0.0)(tsup@8.5.1(postcss@8.5.14))
 
   packages/devtools-a11y:
     dependencies:
@@ -5125,12 +5128,6 @@ packages:
     peerDependencies:
       solid-js: ^1.6.12
 
-  '@solid-primitives/keyboard@2.0.0':
-    resolution: {integrity: sha512-ZDYb84vkDQxBsFf15gddBAssQVblAHHTlCDeo1o5G/sBGXL8sHT+rqQwg0w6KPa6CMxHl1sy2qFRtzng4FQ01g==}
-    peerDependencies:
-      '@solidjs/web': ^2.0.0
-      solid-js: ^2.0.0
-
   '@solid-primitives/media@2.3.5':
     resolution: {integrity: sha512-LX9fB5WDaK87FMDtUB1qokBOfT2et9Uobv/zZaKLH9caFSz4+P70MBKEIBHcZQy+9MV5M2XvGYLTbLskjkzMjA==}
     peerDependencies:
@@ -5551,6 +5548,10 @@ packages:
     resolution: {integrity: sha512-DR9t6lfLVdrjgCwpglrR9DR7Ok8/HlXjcOE+goWXF3zyuLUO/ug7vMbSFxTqrQTtbRghJfyhmIZ0S6LhPIy44w==}
     engines: {node: '>=20.19'}
 
+  '@tanstack/hotkeys@0.37.0':
+    resolution: {integrity: sha512-6d+n+3zhgq3Iw6uuR+kB7P0GpymVO7OPLJ7B5eZBXuRxLp0kO2ZyAu7bcCLmdplZIPyus6IdUnqBTH5JkD77dg==}
+    engines: {node: '>=20'}
+
   '@tanstack/intent@0.0.14':
     resolution: {integrity: sha512-83cjen+tYll6z0MIN0JC9GuMljUkfYfHFDOLhmROz4XMmbD/0ZjvKNOsFgpO7eq957XHB/qyK+hCO+3OS/D6HQ==}
     hasBin: true
@@ -5772,6 +5773,12 @@ packages:
   '@tanstack/router-utils@1.161.8':
     resolution: {integrity: sha512-xyiLWEKjfBAVhauDSSjXxyf7s8elU6SM+V050sbkofvGmIIvkwPFtDsX7Gvwh14kBd6iCwAT+RiPvXTxAptY0Q==}
     engines: {node: '>=20.19'}
+
+  '@tanstack/solid-hotkeys@0.27.0':
+    resolution: {integrity: sha512-hM6HkqqteRaZNEDq1M3M3fX//kWLnY6Sp+8ajE1tNlwPLcu9pDCDw2dQmBeU0ojIWBxUKBzpRKJhiaGatHQ+vg==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      solid-js: ^2.0.0
 
   '@tanstack/solid-query-devtools@6.0.0-rc.5':
     resolution: {integrity: sha512-T3FPk9vQkUP9tPLhGl0KXQdN1wWXn+RpDZ9WZwlf7U6r2UAPJJiWp+qBICJsAFRkaumiRB3tm2WOPv0j1msISw==}
@@ -13536,18 +13543,18 @@ snapshots:
       '@tybys/wasm-util': 0.10.2
     optional: true
 
-  '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
-    dependencies:
-      '@emnapi/core': 1.10.0
-      '@emnapi/runtime': 1.10.0
-      '@tybys/wasm-util': 0.10.1
-    optional: true
-
   '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
     dependencies:
       '@emnapi/core': 1.11.3
       '@emnapi/runtime': 1.11.3
       '@tybys/wasm-util': 0.10.1
+    optional: true
+
+  '@napi-rs/wasm-runtime@1.2.7(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
+    dependencies:
+      '@emnapi/core': 1.10.0
+      '@emnapi/runtime': 1.10.0
+      '@tybys/wasm-util': 0.10.4
     optional: true
 
   '@napi-rs/wasm-runtime@1.2.7(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
@@ -14031,7 +14038,7 @@ snapshots:
     dependencies:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
-      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+      '@napi-rs/wasm-runtime': 1.2.7(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
     optional: true
 
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.4(@emnapi/core@1.11.3)(@emnapi/runtime@1.11.3)':
@@ -14478,14 +14485,6 @@ snapshots:
       '@solid-primitives/utils': 6.4.0(solid-js@2.0.0)
       solid-js: 2.0.0
 
-  '@solid-primitives/keyboard@2.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)':
-    dependencies:
-      '@solid-primitives/event-listener': 3.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
-      '@solid-primitives/rootless': 2.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
-      '@solid-primitives/utils': 7.0.0(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)
-      '@solidjs/web': 2.0.0(solid-js@2.0.0)
-      solid-js: 2.0.0
-
   '@solid-primitives/media@2.3.5(solid-js@2.0.0)':
     dependencies:
       '@solid-primitives/event-listener': 2.4.5(solid-js@2.0.0)
@@ -14623,6 +14622,20 @@ snapshots:
       '@babel/core': 7.29.0
       '@solidjs/babel-plugin': 2.0.0(@babel/core@7.29.0)
       '@testing-library/jest-dom': 6.9.1
+
+  '@solidjs/vite-plugin@3.0.0(@babel/core@7.29.0)(@solidjs/babel-plugin@2.0.0(@babel/core@7.29.0))(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0)(vite@8.0.12(esbuild@0.27.4))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@solidjs/compiler': 2.0.0
+      '@solidjs/web': 2.0.0(solid-js@2.0.0)
+      magic-string: 0.30.21
+      merge-anything: 5.1.7
+      solid-js: 2.0.0
+      vite: 8.0.12(esbuild@0.27.4)
+      vitefu: 1.1.2(vite@8.0.12(esbuild@0.27.4))
+    optionalDependencies:
+      '@babel/core': 7.29.0
+      '@solidjs/babel-plugin': 2.0.0(@babel/core@7.29.0)
 
   '@solidjs/web@2.0.0(solid-js@2.0.0)':
     dependencies:
@@ -14926,6 +14939,8 @@ snapshots:
   '@tanstack/history@1.161.6': {}
 
   '@tanstack/history@1.162.1': {}
+
+  '@tanstack/hotkeys@0.37.0': {}
 
   '@tanstack/intent@0.0.14':
     dependencies:
@@ -15264,6 +15279,11 @@ snapshots:
       tinyglobby: 0.2.16
     transitivePeerDependencies:
       - supports-color
+
+  '@tanstack/solid-hotkeys@0.27.0(solid-js@2.0.0)':
+    dependencies:
+      '@tanstack/hotkeys': 0.37.0
+      solid-js: 2.0.0
 
   '@tanstack/solid-query-devtools@6.0.0-rc.5(@tanstack/solid-query@6.0.0-rc.5(@solidjs/web@2.0.0(solid-js@2.0.0))(solid-js@2.0.0))(solid-js@2.0.0)':
     dependencies:
@@ -19984,6 +20004,12 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.3
 
+  postcss-load-config@6.0.1(postcss@8.5.14):
+    dependencies:
+      lilconfig: 3.1.3
+    optionalDependencies:
+      postcss: 8.5.14
+
   postcss-media-query-parser@0.2.3: {}
 
   postcss-safe-parser@7.0.1(postcss@8.5.14):
@@ -21178,6 +21204,15 @@ snapshots:
       - solid-js
       - supports-color
 
+  tsup-preset-solid@2.2.0(esbuild@0.27.4)(solid-js@2.0.0)(tsup@8.5.1(postcss@8.5.14)):
+    dependencies:
+      esbuild-plugin-solid: 0.5.0(esbuild@0.27.4)(solid-js@2.0.0)
+      tsup: 8.5.1(postcss@8.5.14)
+    transitivePeerDependencies:
+      - esbuild
+      - solid-js
+      - supports-color
+
   tsup@8.5.1(@microsoft/api-extractor@7.47.7(@types/node@22.19.15))(jiti@2.7.0)(postcss@8.5.14)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.4)
@@ -21201,6 +21236,33 @@ snapshots:
       '@microsoft/api-extractor': 7.47.7(@types/node@22.19.15)
       postcss: 8.5.14
       typescript: 5.9.3
+    transitivePeerDependencies:
+      - jiti
+      - supports-color
+      - tsx
+      - yaml
+
+  tsup@8.5.1(postcss@8.5.14):
+    dependencies:
+      bundle-require: 5.1.0(esbuild@0.27.4)
+      cac: 6.7.14
+      chokidar: 4.0.3
+      consola: 3.4.2
+      debug: 4.4.3
+      esbuild: 0.27.4
+      fix-dts-default-cjs-exports: 1.0.1
+      joycon: 3.1.1
+      picocolors: 1.1.1
+      postcss-load-config: 6.0.1(postcss@8.5.14)
+      resolve-from: 5.0.0
+      rollup: 4.60.1
+      source-map: 0.7.6
+      sucrase: 3.35.1
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.16
+      tree-kill: 1.2.2
+    optionalDependencies:
+      postcss: 8.5.14
     transitivePeerDependencies:
       - jiti
       - supports-color
@@ -21564,9 +21626,24 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.3
 
+  vite@8.0.12(esbuild@0.27.4):
+    dependencies:
+      lightningcss: 1.32.0
+      picomatch: 4.0.5
+      postcss: 8.5.14
+      rolldown: 1.0.0
+      tinyglobby: 0.2.16
+    optionalDependencies:
+      esbuild: 0.27.4
+      fsevents: 2.3.3
+
   vitefu@1.1.2(vite@8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)):
     optionalDependencies:
       vite: 8.0.12(@types/node@22.19.15)(esbuild@0.27.4)(jiti@2.7.0)(less@4.6.4)(sass@1.99.0)(tsx@4.21.0)(yaml@2.8.3)
+
+  vitefu@1.1.2(vite@8.0.12(esbuild@0.27.4)):
+    optionalDependencies:
+      vite: 8.0.12(esbuild@0.27.4)
 
   vitest@4.1.10(@opentelemetry/api@1.10.0)(@types/node@22.19.15)(happy-dom@20.9.0)(jsdom@27.4.0)(vite@7.3.2(@types/node@22.19.15)(jiti@2.7.0)(less@4.6.4)(lightningcss@1.32.0)(sass@1.97.3)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
