@@ -64,24 +64,24 @@
     "build": "tsup"
   },
   "dependencies": {
-    "@neodrag/core": "3.0.0-next.11",
+    "@neodrag/core": "3.0.0-next.12",
     "@tanstack/devtools-client": "workspace:*",
     "@tanstack/devtools-event-bus": "workspace:*",
     "clsx": "^2.1.1",
-    "goober": "^2.1.16"
+    "goober": "^2.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@solid-primitives/event-listener": "^3.0.0",
-    "@solid-primitives/keyboard": "^2.0.0",
-    "@solid-primitives/resize-observer": "^4.0.0",
-    "@solidjs/babel-plugin": "^2.0.0",
+    "@solid-primitives/keyboard": "^2.1.0",
+    "@solid-primitives/resize-observer": "^4.1.0",
+    "@solidjs/babel-plugin": "^2.0.3",
     "@solidjs/testing-library": "^1.0.0-rc.2",
-    "@solidjs/vite-plugin": "^3.0.0",
-    "@solidjs/web": "^2.0.0",
+    "@solidjs/vite-plugin": "^3.0.1",
+    "@solidjs/web": "^2.0.4",
     "@tanstack/devtools-ui": "workspace:*",
-    "solid-js": "^2.0.0",
-    "tsup": "^8.5.0",
+    "solid-js": "^2.0.4",
+    "tsup": "^8.5.1",
     "tsup-preset-solid": "^2.2.0"
   }
 }
